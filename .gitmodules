@@ -1,0 +1,27 @@
+[submodule "frameworks/runtime-src/Classes/Live2D"]
+	path = frameworks/runtime-src/Classes/Live2D
+	url = https://github.com/Xrysnow/cocos2d-x-live2d.git
+[submodule "frameworks/runtime-src/Classes/Audio"]
+	path = frameworks/runtime-src/Classes/Audio
+	url = https://github.com/Xrysnow/lstgx_Audio.git
+[submodule "frameworks/runtime-src/Classes/fcyLib"]
+	path = frameworks/runtime-src/Classes/fcyLib
+	url = https://github.com/Xrysnow/lstgx_fcylib.git
+[submodule "frameworks/runtime-src/Classes/Math"]
+	path = frameworks/runtime-src/Classes/Math
+	url = https://github.com/Xrysnow/lstgx_Math.git
+[submodule "frameworks/runtime-src/Classes/Video"]
+	path = frameworks/runtime-src/Classes/Video
+	url = https://github.com/Xrysnow/lstgx_Video.git
+[submodule "frameworks/runtime-src/Classes/reader"]
+	path = frameworks/runtime-src/Classes/reader
+	url = https://github.com/Xrysnow/creator_to_cocos2dx.git
+[submodule "frameworks/runtime-src/external"]
+	path = frameworks/runtime-src/external
+	url = https://github.com/Xrysnow/lstgx_external.git
+[submodule "frameworks/cocos2d-x"]
+	path = frameworks/cocos2d-x
+	url = https://github.com/Xrysnow/cocos2d-x.git
+[submodule "src"]
+	path = src
+	url = https://github.com/Xrysnow/lstgx_LuaCore.git
