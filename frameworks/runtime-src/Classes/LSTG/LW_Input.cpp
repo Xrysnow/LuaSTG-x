@@ -105,9 +105,9 @@ static int SetOnControllerDisconnect(lua_State* L) noexcept
 *******************************************************************************/
 static int GetMousePosition(lua_State* L) noexcept
 {
-	auto tPos = LIM.getMousePosition();
-	lua_pushnumber(L, tPos.x);
-	lua_pushnumber(L, tPos.y);
+	const auto pos = LIM.getMousePosition();
+	lua_pushnumber(L, pos.x);
+	lua_pushnumber(L, pos.y);
 	return 2;
 }
 static int GetMouseState(lua_State* L) noexcept

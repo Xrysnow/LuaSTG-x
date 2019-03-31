@@ -28,17 +28,18 @@
 #include "../LuaBindings/lua_ParticlePool_auto.hpp"
 #include "../LuaBindings/lua_ResourceMgr_auto.hpp"
 #include "../LuaBindings/lua_XTriangles_auto.hpp"
+#include "../LuaBindings/lua_cc_ui_fix.h"
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_ANDROID) && (CC_TARGET_PLATFORM != CC_PLATFORM_IOS)
 #include "../LuaBindings/lua_cc_controller_auto.hpp"
 #include "../LuaBindings/lua_cc_controller_manual.hpp"
 #endif
 #include "UtilLua.h"
+#include <iostream>
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 #include "../../proj.win32/SimulatorWin.h"
 #include "../../proj.win32/WindowHelperWin32.h"
 #endif
-#include <iostream>
 
 #ifdef max
 #undef max
@@ -144,14 +145,12 @@ bool AppFrame::applicationDidFinishLaunching()
 	register_all_x_FileDialog(L);
 	register_all_x_ResourceMgr(L);
 	register_all_x_XTriangles(L);
+	register_all_cocos2dx_ui_fix(L);
 
 	register_all_packages();
 	stack->setXXTEAKeyAndSign("2dxLua", strlen("2dxLua"), "XXTEA", strlen("XXTEA"));
 	luaopen_lfs(L);
 	RegistWrapper(L);
-	//luaopen_libeffil(L);
-	//lua_setglobal(L, "effil");
-	//lua_settop(L, 0);
 
 	InitGameObjectPropertyHash();
 	CC_SAFE_DELETE(threadPool);
