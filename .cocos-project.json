@@ -1,5 +1,5 @@
 {
-    "engine_version": "cocos2d-x-3.17", 
+    "engine_version": "cocos2d-x-3.17.1", 
     "has_native": true, 
     "project_type": "lua"
 }
