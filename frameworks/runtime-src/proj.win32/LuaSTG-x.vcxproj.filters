@@ -862,6 +862,9 @@
     <ClInclude Include="..\Classes\Live2D\Framework\src\Rendering\OpenGL\CubismRenderer_OpenGLES2.hpp">
       <Filter>Classes\Live2D\Framework\Rendering\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\LuaBindings\lua_cc_ui_fix.h">
+      <Filter>Classes\LuaBindings</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -1442,6 +1445,9 @@
     </ClCompile>
     <ClCompile Include="..\Classes\Live2D\Framework\src\Rendering\OpenGL\CubismRenderer_OpenGLES2.cpp">
       <Filter>Classes\Live2D\Framework\Rendering\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\LuaBindings\lua_cc_ui_fix.cpp">
+      <Filter>Classes\LuaBindings</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

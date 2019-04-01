@@ -348,6 +348,7 @@ xcopy /Y /Q "$(ProjectDir)..\external\ffmpeg\prebuilt_win32\*.*" "$(OutDir)"</Co
     <ClInclude Include="..\Classes\LuaBindings\lua_BlendMode_auto.hpp" />
     <ClInclude Include="..\Classes\LuaBindings\lua_cc_controller_auto.hpp" />
     <ClInclude Include="..\Classes\LuaBindings\lua_cc_controller_manual.hpp" />
+    <ClInclude Include="..\Classes\LuaBindings\lua_cc_ui_fix.h" />
     <ClInclude Include="..\Classes\LuaBindings\lua_FileDialog_auto.hpp" />
     <ClInclude Include="..\Classes\LuaBindings\lua_LogSystem_auto.hpp" />
     <ClInclude Include="..\Classes\LuaBindings\lua_ObjSym_auto.hpp" />
@@ -574,6 +575,7 @@ xcopy /Y /Q "$(ProjectDir)..\external\ffmpeg\prebuilt_win32\*.*" "$(OutDir)"</Co
     <ClCompile Include="..\Classes\LuaBindings\lua_BlendMode_auto.cpp" />
     <ClCompile Include="..\Classes\LuaBindings\lua_cc_controller_auto.cpp" />
     <ClCompile Include="..\Classes\LuaBindings\lua_cc_controller_manual.cpp" />
+    <ClCompile Include="..\Classes\LuaBindings\lua_cc_ui_fix.cpp" />
     <ClCompile Include="..\Classes\LuaBindings\lua_FileDialog_auto.cpp" />
     <ClCompile Include="..\Classes\LuaBindings\lua_LogSystem_auto.cpp" />
     <ClCompile Include="..\Classes\LuaBindings\lua_ObjSym_auto.cpp" />
