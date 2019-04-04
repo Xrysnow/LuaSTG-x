@@ -21,9 +21,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 # ****************************************************************************/
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.6)
 
-set(APP_NAME TemplateLua)
+set(APP_NAME LuaSTG-x)
 
 project(${APP_NAME})
 
@@ -32,11 +32,8 @@ set(COCOS2DX_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/frameworks/cocos2d-x)
 set(CMAKE_MODULE_PATH ${COCOS2DX_ROOT_PATH}/cmake/Modules/)
 
 include(CocosBuildSet)
-if(NOT USE_COCOS_PREBUILT)
-    set(BUILD_LUA_LIBS ON)
-    set(BUILD_SIMU_LIB ON)
-    add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos ${ENGINE_BINARY_PATH}/cocos/core)
-endif()
+set(BUILD_LUA_LIBS ON)
+add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos ${ENGINE_BINARY_PATH}/cocos/core)
 
 # script and source files info, not need to compile
 set(res_res_folders
@@ -56,13 +53,10 @@ if(APPLE OR VS)
 endif()
 
 # record sources, headers
-# set(GAME_HEADER ${RUNTIME_SRC_ROOT}/Classes/AppDelegate.h)
-# set(GAME_SOURCE ${RUNTIME_SRC_ROOT}/Classes/AppDelegate.cpp)
-include(${RUNTIME_SRC_ROOT}/src.cmake)
-
+include(src.cmake)
 # sources need to compile info, include dirs and source files
 include_directories(
-        # ${RUNTIME_SRC_ROOT}/Classes
+        ${RUNTIME_SRC_ROOT}/Classes
         ${COCOS2DX_ROOT_PATH}/cocos/scripting/lua-bindings/auto
         ${COCOS2DX_ROOT_PATH}/cocos/scripting/lua-bindings/manual
         ${COCOS2DX_ROOT_PATH}/external/lua/luajit/include
@@ -76,7 +70,6 @@ if(ANDROID)
 elseif(LINUX)
     list(APPEND GAME_SOURCE ${RUNTIME_SRC_ROOT}/proj.linux/main.cpp)
 elseif(WINDOWS)
-    add_definitions(-D_USRLUASTATIC -D_USRLIBSIMSTATIC)
     list(APPEND GAME_HEADER
          ${RUNTIME_SRC_ROOT}/proj.win32/main.h
          ${RUNTIME_SRC_ROOT}/proj.win32/stdafx.h
@@ -137,15 +130,32 @@ endif()
 set(APP_SRC ${GAME_HEADER} ${GAME_SOURCE})
 
 # mark app complie info and libs info
-cocos_build_app(${APP_NAME}
-                APP_SRC "${APP_SRC}"
-                DEPEND_COMMON_LIBS "luacocos2d" "cocos2d"
-                DEPEND_ANDROID_LIBS "cocos2d_android"
-                DEPEND_MACOSX_LIBS "simulator"
-                DEPEND_WINDOWS_LIBS "simulator"
-                )
+if(NOT ANDROID)
+    add_executable(${APP_NAME} ${APP_SRC})
+else()
+    add_library(${APP_NAME} SHARED ${APP_SRC})
+    add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos/platform/android ${ENGINE_BINARY_PATH}/cocos/platform)
+    target_link_libraries(${APP_NAME} -Wl,--whole-archive cpp_android_spec -Wl,--no-whole-archive)
+    add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos/scripting/lua-bindings/proj.android ${ENGINE_BINARY_PATH}/cocos/lua-android)
+    target_link_libraries(${APP_NAME} -Wl,--whole-archive lua_android_spec -Wl,--no-whole-archive)
+endif()
 
-# mark app resources
+target_link_libraries(${APP_NAME} luacocos2d)
+target_include_directories(${APP_NAME} PRIVATE ${RUNTIME_SRC_ROOT}/Classes)
+
+if(WINDOWS OR MACOSX)
+    add_subdirectory(${COCOS2DX_ROOT_PATH}/tools/simulator/libsimulator ${ENGINE_BINARY_PATH}/cocos/simulatorlib)
+    target_link_libraries(${APP_NAME} simulatorlib)
+endif()
+
+# mark app resources, resource will be copy auto after mark
+setup_cocos_app_config(${APP_NAME})
+
+include(external.cmake)
+if(MSVC)
+	set_property(TARGET ${APP_NAME} APPEND_STRING PROPERTY LINK_FLAGS " /SAFESEH:NO")
+endif()
+
 if(APPLE)
     set_target_properties(${APP_NAME} PROPERTIES RESOURCE "${APP_UI_RES}")
     if(MACOSX)
@@ -157,11 +167,13 @@ if(APPLE)
         set_xcode_property(${APP_NAME} ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon")
     endif()
 elseif(WINDOWS)
-    cocos_copy_target_dll(${APP_NAME} COPY_TO ${APP_BIN_DIR})
+    cocos_copy_target_dll(${APP_NAME} COPY_TO ${APP_RES_DIR}/..)
 endif()
 # copy resource on linux or WINDOWS
 if(LINUX OR WINDOWS)
-    cocos_copy_target_res(${APP_NAME} COPY_TO ${APP_RES_DIR}/res FOLDERS ${res_res_folders})
-    cocos_copy_target_res(${APP_NAME} COPY_TO ${APP_RES_DIR}/src FOLDERS ${res_src_folders})
-    cocos_copy_target_res(${APP_NAME} COPY_TO ${APP_RES_DIR}/src/cocos FOLDERS ${res_script_folders})
+    cocos_copy_res(COPY_TO ${APP_RES_DIR}/res FOLDERS ${res_res_folders})
+    cocos_copy_res(COPY_TO ${APP_RES_DIR}/src FOLDERS ${res_src_folders})
+    cocos_copy_res(COPY_TO ${APP_RES_DIR}/src/cocos FOLDERS ${res_script_folders})
 endif()
+
+message("${CMAKE_EXE_LINKER_FLAGS}")
