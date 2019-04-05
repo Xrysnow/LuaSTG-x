@@ -6,7 +6,6 @@
 
 namespace lstg
 {
-	/// @brief 资源类型
 	enum class ResourceType
 	{
 		Texture = 1,
@@ -58,7 +57,6 @@ namespace lstg
 	}
 
 
-	/// @brief 资源接口
 	class Resource : public cocos2d::Ref
 	{
 	protected:

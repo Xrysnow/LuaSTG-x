@@ -1,11 +1,9 @@
-﻿/// @file Dictionary.hpp
-/// @brief 基于MPQ哈希的字典
-#pragma once
+﻿#pragma once
 #include "Global.h"
 
 namespace lstg
 {
-	/// @brief MPQHash表
+	// MPQ hash table
 	class MPQHashCryptTable
 	{
 	public:
@@ -40,7 +38,7 @@ namespace lstg
 		}
 	};
 
-	/// @brief MPQ Hash算法
+	// MPQ Hash
 	template <uint32_t dwHashType>
 	uint32_t MPQHash(const char* key)
 	{
@@ -55,7 +53,6 @@ namespace lstg
 		return seed1;
 	}
 
-	/// @brief 字典键
 	struct DictionaryKey
 	{
 		uint32_t HashKey;

@@ -13,9 +13,7 @@ namespace lstg
 		std::array<bool, AllocCount> m_DataUsed;
 		std::array<T, AllocCount> m_DataBuffer;
 	public:
-		/// @brief 申请一个对象
-		/// @param[out] id 对象id
-		/// @return 是否成功，失败返回false表明对象池已满
+		// allocate one, return false if pool is full
 		bool Alloc(size_t& id)
 		{
 			if (!m_FreeIndex.empty())
@@ -28,7 +26,7 @@ namespace lstg
 			id = static_cast<size_t>(-1);
 			return false;
 		}
-		/// @brief 回收一个对象
+		// recycle
 		void Free(size_t id)
 		{
 			if (id < AllocCount && m_DataUsed[id])
@@ -37,20 +35,19 @@ namespace lstg
 				m_FreeIndex.push_back(id);
 			}
 		}
-		/// @brief 获取对象的数据
-		/// @return 若id无效返回nullptr
+		// get data, return nullptr if id is invalid
 		T* Data(size_t id)
 		{
 			if (id < AllocCount && m_DataUsed[id])
 				return &m_DataBuffer[id];
 			return nullptr;
 		}
-		/// @brief 返回已分配对象数
+		// allocated count
 		size_t Size()
 		{
 			return m_DataBuffer.size() - m_FreeIndex.size();
 		}
-		/// @brief 清空对象池并回收所有对象
+		// clear and recycle all
 		void Clear()
 		{
 			m_FreeIndex.resize(m_DataBuffer.size());

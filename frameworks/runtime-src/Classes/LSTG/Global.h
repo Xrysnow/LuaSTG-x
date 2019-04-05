@@ -1,6 +1,4 @@
-﻿/// @file Global.h
-/// @brief 全局定义文件
-#pragma once
+﻿#pragma once
 
 // C
 #include <cassert>

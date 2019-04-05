@@ -33,7 +33,6 @@ void BuiltInFunctionWrapper::Register(lua_State* L)
 	for(auto& lw : lw_base)
 		functions.insert(functions.end(), lw.begin(), lw.end());
 
-	// 杂项
 	struct Misc
 	{
 		static int Snapshot(lua_State* L) noexcept
@@ -47,7 +46,6 @@ void BuiltInFunctionWrapper::Register(lua_State* L)
 		}
 	};
 
-	// 调试函数
 	struct Debug
 	{
 		static int ObjTable(lua_State* L) noexcept
@@ -56,7 +54,6 @@ void BuiltInFunctionWrapper::Register(lua_State* L)
 		}
 	};
 
-	// 对象构造函数
 	struct Constructor
 	{
 		static int NewColor(lua_State* L) noexcept

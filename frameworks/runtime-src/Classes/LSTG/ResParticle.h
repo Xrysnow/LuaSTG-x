@@ -7,12 +7,10 @@
 
 namespace lstg {
 	// implement of HGE particle system
-	//TODO: WIP
 	class ResParticle :
 		public ResourceColliable
 	{
 	public:
-		/// @brief 粒子信息
 		struct ParticleInfo
 		{
 			uint32_t BlendInfo;
@@ -42,7 +40,6 @@ namespace lstg {
 			float ColorVar;           // 颜色抖动值
 			float AlphaVar;           // alpha抖动值
 		};
-		/// @brief 粒子实例
 		struct ParticleInstance
 		{
 			cocos2d::Vec2 vecLocation;  // 位置
@@ -59,7 +56,7 @@ namespace lstg {
 			float life;                 // 当前存活时间
 			float terminalLife;         // 终止时间
 		};
-		/// @brief 粒子池
+		// particle pool instance
 		class ParticlePool : public cocos2d::Ref
 		{
 			friend class ResParticle;

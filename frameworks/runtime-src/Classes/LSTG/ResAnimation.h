@@ -2,7 +2,6 @@
 #include "ResTexture.h"
 
 namespace lstg {
-	/// @brief 动画资源
 	class ResAnimation :
 		public ResourceQuad
 	{

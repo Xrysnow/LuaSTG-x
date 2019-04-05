@@ -16,10 +16,10 @@ namespace lstg {
 		};
 		struct GlyphInfo
 		{
-			cocos2d::Rect GlyphPos;    // 字形在纹理上的uv坐标
-			cocos2d::Vec2 GlyphSize;   // 字形大小
-			cocos2d::Vec2 BrushPos;    // 笔触距离字形左上角坐标
-			cocos2d::Vec2 Advance;     // 笔触的前进量(像素)
+			cocos2d::Rect GlyphPos;    // glyph uv coords in texture
+			cocos2d::Vec2 GlyphSize;   // glyph size
+			cocos2d::Vec2 BrushPos;    // brush position (to left-top)
+			cocos2d::Vec2 Advance;     // brush advance (pixel)
 		};
 	private:
 		BlendMode* blendMode = BlendMode::Default;

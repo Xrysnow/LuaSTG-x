@@ -6,7 +6,6 @@
 
 namespace lstg {
 
-	/// @brief 音效
 	class ResAudio :
 		public Resource
 	{
@@ -71,6 +70,7 @@ namespace lstg {
 	public:
 		virtual ~ResAudio();
 	};
+	// sound effect
 	class ResSound :
 		public ResAudio
 	{
@@ -82,8 +82,7 @@ namespace lstg {
 
 		static ResSound* create(const std::string& name, const std::string& path);
 	};
-	/// @brief 背景音乐
-	//TODO: FFT
+	// background music TODO: FFT
 	class ResMusic :
 		public ResAudio
 	{
