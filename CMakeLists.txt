@@ -48,7 +48,6 @@ set(res_script_folders
 if(APPLE OR VS)
     cocos_mark_multi_resources(res_res RES_TO "Resources/res" FOLDERS ${res_res_folders})
     cocos_mark_multi_resources(res_src RES_TO "Resources/src" FOLDERS ${res_src_folders})
-    cocos_mark_multi_resources(res_script RES_TO "Resources/src/cocos" FOLDERS ${res_script_folders})
     set(cc_common_res ${res_res} ${res_src} ${res_script})
 endif()
 
@@ -171,9 +170,6 @@ elseif(WINDOWS)
 endif()
 # copy resource on linux or WINDOWS
 if(LINUX OR WINDOWS)
-    cocos_copy_res(COPY_TO ${APP_RES_DIR}/res FOLDERS ${res_res_folders})
-    cocos_copy_res(COPY_TO ${APP_RES_DIR}/src FOLDERS ${res_src_folders})
-    cocos_copy_res(COPY_TO ${APP_RES_DIR}/src/cocos FOLDERS ${res_script_folders})
+    cocos_copy_res(COPY_TO ${APP_RES_DIR}/../res FOLDERS ${res_res_folders})
+    cocos_copy_res(COPY_TO ${APP_RES_DIR}/../src FOLDERS ${res_src_folders})
 endif()
-
-message("${CMAKE_EXE_LINKER_FLAGS}")
