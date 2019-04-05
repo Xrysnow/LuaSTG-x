@@ -52,7 +52,7 @@ bool XFileUtils::init()
 	return ret;
 }
 
-string XFileUtils::getStringFromFile(const string& filename)
+string XFileUtils::getStringFromFile(const string& filename) const
 {
 	if (filename.empty())
 	{
@@ -72,7 +72,7 @@ string XFileUtils::getStringFromFile(const string& filename)
 	return "";
 }
 
-Data XFileUtils::getDataFromFile(const string& filename)
+Data XFileUtils::getDataFromFile(const string& filename) const
 {
 	Data d;
 	if (filename.empty())
@@ -143,7 +143,7 @@ vector<string> XFileUtils::listFiles(const string& dirPath) const
 	return ret;
 }
 
-string XFileUtils::getFullPathForDirectoryAndFilename(const string& directory, const string& filename) const
+string XFileUtils::getFullPathForFilenameWithinDirectory(const string& directory, const string& filename) const
 {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 	string dir = convertPathFormatToUnixStyle(directory);
@@ -158,7 +158,7 @@ string XFileUtils::getFullPathForDirectoryAndFilename(const string& directory, c
 		ret = "";
 	return ret;
 #else
-	return _FileUtilsBase::getFullPathForDirectoryAndFilename(directory, filename);
+	return _FileUtilsBase::getFullPathForFilenameWithinDirectory(directory, filename);
 #endif
 }
 
