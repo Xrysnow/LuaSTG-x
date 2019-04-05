@@ -3,6 +3,7 @@
 #include "BlendMode.h"
 #include "Global.h"
 #include "ResSprite.h"
+#include "../fcyLib/fcyMisc/fcyRandom.h"
 
 namespace lstg {
 	// implement of HGE particle system

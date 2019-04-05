@@ -1,6 +1,7 @@
 ﻿#include "Utility.h"
 #include "UtilGLDefinition.h"
 #include "AppFrame.h"
+#include "../fcyLib/fcyMisc/fcyStringHelper.h"
 
 using namespace std;
 using namespace lstg;

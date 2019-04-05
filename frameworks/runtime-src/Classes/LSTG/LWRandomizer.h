@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Global.h"
+#include "../fcyLib/fcyMisc/fcyRandom.h"
 
 namespace lstg
 {

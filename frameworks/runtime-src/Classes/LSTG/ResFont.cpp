@@ -3,6 +3,7 @@
 #include "Utility.h"
 #include "XFileUtils.h"
 #include "AppFrame.h"
+#include "../fcyLib/fcyMisc/fcyStringHelper.h"
 
 using namespace std;
 using namespace cocos2d;

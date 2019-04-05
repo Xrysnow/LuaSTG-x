@@ -1,11 +1,9 @@
-﻿/// @file Utility.h
-/// @brief 实用工具
-#pragma once
+﻿#pragma once
 #include "Global.h"
+#include "../fcyLib/fcyMisc/fcyStopWatch.h"
 
 namespace lstg
 {
-	/// @brief 域
 	class Scope
 	{
 	private:
@@ -21,7 +19,6 @@ namespace lstg
 		}
 	};
 
-	/// @brief 计时域
 	class TimerScope
 	{
 	private:
@@ -38,11 +35,9 @@ namespace lstg
 		}
 	};
 
-	/// @brief 字符串格式化
-	/// @param Format 字符串格式，不支持精度
 	std::string StringFormat(const char* Format, ...)noexcept;
 
-	/** @brief 字符串格式化 va_list版本\n
+	/** @brief string format, va_list\n
 	* @code
 	* bool     b; int32_t   c; unsigned int p;
 	* int32_t  d; uint32_t  u; double  f;
@@ -51,11 +46,9 @@ namespace lstg
 	*/
 	std::string StringFormatV(const char* Format, va_list vaptr)noexcept;
 
-	/// @brief 字符串格式化 宽字符
-	/// @param Format 字符串格式，不支持精度
 	std::wstring StringFormat(const wchar_t* Format, ...)noexcept;
 
-	/** @brief 字符串格式化 宽字符、va_list版本\n
+	/** @brief string format, wstring, va_list\n
 	* @code
 	* bool     b; int32_t   c; unsigned int p;
 	* int32_t  d; uint32_t  u; double  f;
@@ -64,7 +57,7 @@ namespace lstg
 	*/
 	std::wstring StringFormatV(const wchar_t* Format, va_list vaptr)noexcept;
 
-	/// @brief 打印Lua堆栈
+	/** print lua stack */
 	void stackDump(lua_State *L);
 
 	std::string ReplacePathSep(std::string path, const std::string& ori = "\\", const std::string& dst = "/");

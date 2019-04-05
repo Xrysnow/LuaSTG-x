@@ -6,6 +6,7 @@
 #include "UtilLua.h"
 #include "Renderer.h"
 #include "UtilLuaRes.h"
+#include "../fcyLib/fcyMisc/fcyStringHelper.h"
 
 using namespace std;
 using namespace lstg;

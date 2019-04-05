@@ -10,6 +10,7 @@
 #endif
 #include "../Video/SpriteVideo.h"
 #include "Renderer.h"
+#include "../fcyLib/fcyMisc/fcyStopWatch.h"
 
 using namespace std;
 using namespace lstg;

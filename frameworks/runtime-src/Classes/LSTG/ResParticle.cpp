@@ -2,6 +2,7 @@
 #include "AppFrame.h"
 #include "Utility.h"
 #include "Renderer.h"
+#include "../fcyLib/fcyMemPool.h"
 
 using namespace std;
 using namespace cocos2d;

@@ -45,16 +45,6 @@
 #include <crtdbg.h>
 #endif
 
-// fancy2d
-#include "../fcyLib/fcyParser/fcyPathParser.h"
-#include "../fcyLib/fcyMisc/fcyStopWatch.h"
-#include "../fcyLib/fcyMisc/fcyStringHelper.h"
-#include "../fcyLib/fcyMisc/fcyRandom.h"
-#include "../fcyLib/fcyMemPool.h"
-#include "../fcyLib/fcyType.h"
-#include "../fcyLib/fcyMath.h"
-#include "../fcyLib/f2dStruct.h"
-
 // luajit
 #include "../../cocos2d-x/external/lua/luajit/include/lua.hpp"
 

@@ -2,6 +2,7 @@
 #include "cocos2d.h"
 #include "LogSystem.h"
 #include "UtilLua.h"
+#include "../fcyLib/fcyMisc/fcyStringHelper.h"
 
 using namespace std;
 using namespace lstg;
