@@ -1633,7 +1633,7 @@ int GameObjectPool::GetAttr(lua_State* L)noexcept
 			lua_pushstring(L, "del");
 			break;
 		default:
-			CCASSERT(false, "GetAttr: Wrong status.");
+			lua_pushnil(L);
 			break;
 		}
 		break;
