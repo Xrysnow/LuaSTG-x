@@ -3,7 +3,6 @@
 #include "../Math/XMath.h"
 #include "CollisionDetect.h"
 #include "MemPoolManager.h"
-#include "Renderer.h"
 
 using namespace std;
 using namespace lstg;
@@ -43,7 +42,7 @@ static int ATan2(lua_State* L) noexcept
 	lua_pushnumber(L, atan2(luaL_checknumber(L, 1), luaL_checknumber(L, 2)) * LRAD2DEGREE);
 	return 1;
 }
-static int SinCos(lua_State* L) noexcept //TODO
+static int SinCos(lua_State* L) noexcept
 {
 	const auto angle = luaL_checknumber(L, 1) * LDEGREE2RAD;
 	const auto s = std::sin(angle);
@@ -89,6 +88,8 @@ vector<luaL_Reg> lstg::LW_Math()
 		{ "tan", &Tan },
 		{ "atan", &ATan },
 		{ "atan2", &ATan2 },
+
+		{ "sincos", &SinCos },
 
 		{ "SampleBezierA1", &SampleBezierA1_ },
 	};
