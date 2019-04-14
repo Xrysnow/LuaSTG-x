@@ -502,7 +502,7 @@ int AppFrame::run()
 	auto e = director->getEventDispatcher();
 	const auto listener = EventListenerCustom::create(Director::EVENT_AFTER_DRAW, [&](EventCustom* event)
 	{
-		glFinish();
+		//glFinish();
 
 		//if (glview->windowShouldClose())
 		//	return;
