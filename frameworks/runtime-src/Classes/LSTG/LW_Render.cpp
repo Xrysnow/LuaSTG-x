@@ -1,7 +1,6 @@
 ﻿#include "LW_Render.h"
 #include "AppFrame.h"
 #include "LuaWrapper.h"
-#include "Utility.h"
 #include "Renderer.h"
 #include "UtilLua.h"
 #include "UtilLuaRes.h"
@@ -18,7 +17,6 @@ inline int error_render(lua_State* L, int lo)
 
 static int RenderTexture_(lua_State* L) noexcept
 {
-	//static auto CheckUV = [](float x) { return 0.f <= x&&x <= 1.f + FLT_EPSILON; };
 	auto tex = lua::toTexture2D(L, 1);
 	if (!tex)
 		return luaL_error(L, "can't find texture '%s'", lua_tostring(L, 1));
@@ -46,18 +44,11 @@ static int RenderTexture_(lua_State* L) noexcept
 		vi[i].texCoords.v = float(lua_tonumber(L, -1)) / h;
 		lua_pushinteger(L, 6);
 		lua_gettable(L, 3 + i);
-		//vi[i].colors = luaval_to_fcycolor_to_c4b(L, -1);
 		_luaval_to_color4b(L, -1, &vi[i].colors);
 
 		lua_pop(L, 6);
-
-		//if(!CheckUV(vi[i].texCoords.u)||!CheckUV(vi[i].texCoords.v))
-		//{
-		//	lua_settop(L, 0);
-		//	return luaL_error(L, "got wrong uv value");
-		//}
 	}
-	// note: lua中是顺时针顺序
+	// note: it's clockwise in lua
 	std::swap(vi[2], vi[3]);
 	if (blend)
 		LRR.updateBlendMode(blend);

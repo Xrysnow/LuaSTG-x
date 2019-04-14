@@ -4,7 +4,6 @@
 
 using namespace std;
 using namespace lstg;
-using namespace cocos2d;
 
 static int SetFPS(lua_State* L) noexcept
 {
@@ -93,19 +92,11 @@ static int FrameReset(lua_State* L) noexcept
 vector<luaL_Reg> lstg::LW_Frame()
 {
 	vector<luaL_Reg> ret = {
-		//{ "SetWindowed", &SetWindowed },
 		{ "SetFPS", &SetFPS },
 		{ "GetFPS", &GetFPS },
 		{ "SetVsync", &SetVsync },
-		//{ "SetResolution", &SetResolution },
-		//{ "ChangeVideoMode", &ChangeVideoMode },
-		//{ "SetSplash", &SetSplash },
-		//{ "SetTitle", &SetTitle },
 		{ "SystemLog", &SystemLog },
 		{ "Print", &Print },
-		//{ "LoadPack", &LoadPack },
-		//{ "UnloadPack", &UnloadPack },
-		//{ "ExtractRes", &ExtractRes },
 		{ "DoFile", &DoFile },
 		{ "ShowSplashWindow", &ShowSplashWindow },
 

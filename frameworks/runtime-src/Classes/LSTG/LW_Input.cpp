@@ -8,7 +8,6 @@
 using namespace std;
 using namespace lstg;
 using namespace cocos2d;
-//using lua::LuaVal;
 
 static int GetKeyState(lua_State* L) noexcept
 {

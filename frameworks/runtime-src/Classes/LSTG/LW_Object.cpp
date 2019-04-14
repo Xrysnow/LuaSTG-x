@@ -1,13 +1,11 @@
 ﻿#include "LW_Object.h"
 #include "AppFrame.h"
 #include "LuaWrapper.h"
-#include "Utility.h"
 #include <vector>
 #include "UtilLua.h"
 
 using namespace std;
 using namespace lstg;
-//using namespace cocos2d;
 
 static int GetnObj(lua_State* L) noexcept
 {
@@ -16,19 +14,16 @@ static int GetnObj(lua_State* L) noexcept
 }
 static int ObjFrame(lua_State* L) noexcept
 {
-	//LPOOL.CheckIsMainThread(L);
 	LPOOL.DoFrame();
 	return 0;
 }
 static int ObjRender(lua_State* L) noexcept
 {
-	//LPOOL.CheckIsMainThread(L);
 	LPOOL.DoRender();
 	return 0;
 }
 static int BoundCheck(lua_State* L) noexcept
 {
-	//LPOOL.CheckIsMainThread(L);
 	LPOOL.BoundCheck();
 	return 0;
 }
@@ -44,7 +39,6 @@ static int SetBound(lua_State* L) noexcept
 }
 static int CollisionCheck_(lua_State* L) noexcept
 {
-	//LPOOL.CheckIsMainThread(L);
 	const auto t1 = lua_type(L, 1);
 	const auto t2 = lua_type(L, 2);
 	if (t1 == LUA_TNUMBER && t2 == LUA_TNUMBER)
@@ -85,7 +79,6 @@ static int CollisionCheck3D(lua_State* L) noexcept
 
 static int UpdateXY(lua_State* L) noexcept
 {
-	//LPOOL.CheckIsMainThread(L);
 	const int nArg = lua_gettop(L);
 	if (nArg == 0)
 	{
@@ -109,7 +102,6 @@ static int UpdateXY(lua_State* L) noexcept
 }
 static int AfterFrame(lua_State* L) noexcept
 {
-	//LPOOL.CheckIsMainThread(L);
 	LPOOL.AfterFrame();
 	return 0;
 }
@@ -228,14 +220,11 @@ static int SetImgState(lua_State* L) noexcept
 	if (!lua_istable(L, 1))
 		return luaL_objerror(L);
 	lua_rawgeti(L, 1, 2);  // t(object) ??? id
-	auto id = size_t(luaL_checkinteger(L, -1));
+	const auto id = size_t(luaL_checkinteger(L, -1));
 	lua_pop(L, 1);
 
-	auto m = TranslateBlendMode(L, 2);
-	//A R G B
-	//fcyColor c(luaL_checkinteger(L, 3), luaL_checkinteger(L, 4),
-	//luaL_checkinteger(L, 5), luaL_checkinteger(L, 6));
-	//R G B A
+	const auto m = TranslateBlendMode(L, 2);
+	// A R G B -> R G B A
 	const auto c = cocos2d::Color4B(
 		luaL_checkinteger(L, 4),
 		luaL_checkinteger(L, 5),

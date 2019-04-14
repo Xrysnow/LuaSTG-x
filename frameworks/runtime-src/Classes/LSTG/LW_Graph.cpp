@@ -133,31 +133,7 @@ static int PostEffect(lua_State* L) noexcept
 		return luaL_error(L, "PostEffect failed.");
 	return 0;
 }
-//static int PostEffectCapture(lua_State* L) noexcept
-//{
-//	if (!LRR.postEffectCapture())
-//		return luaL_error(L, "PostEffectCapture failed.");
-//	return 0;
-//}
-//static int PostEffectApply(lua_State* L) noexcept
-//{
-//	auto p = lua::toResFX(L, 1);
-//	if (!p)
-//		return luaL_error(L, "can't find effect");
-//	auto blend = TranslateBlendMode(L, 2);
-//	if (lua_gettop(L) >= 3)
-//		lua::setResFX(p, L, 3);
-//	if (!LRR.postEffectApply(p, blend))
-//		return luaL_error(L, "PostEffectApply failed.");
-//	return 0;
-//}
-//static int SetShaderUniform(lua_State* L) noexcept
-//{
-//	auto p = lua::toResFX(L, 1);
-//	if (!p)
-//		return luaL_error(L, "can't find effect");
-//	return lua::setResFX(p, L, 2);
-//}
+
 static int CreateGLProgramFromPath(lua_State* L) noexcept
 {
 	const auto s1 = lua_tostring(L, 1);
@@ -202,10 +178,7 @@ vector<luaL_Reg> lstg::LW_Graph()
 		{ "PushRenderTarget", &PushRenderTarget },
 		{ "PopRenderTarget", &PopRenderTarget },
 		{ "PostEffect", &PostEffect },
-		//{ "PostEffectCapture", &PostEffectCapture },
-		//{ "PostEffectApply", &PostEffectApply },
 
-		//{ "SetShaderUniform", &SetShaderUniform },
 		{ "CreateGLProgramFromPath", &CreateGLProgramFromPath },
 		{ "CreateGLProgramFromString", &CreateGLProgramFromString },
 		{ "CopyFrameBuffer", &CopyFrameBuffer },
