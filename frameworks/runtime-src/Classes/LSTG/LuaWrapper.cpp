@@ -60,10 +60,9 @@ void lstg::TranslateAlignMode(lua_State* L, int argnum, TextHAlignment& halign, 
 
 void lstg::RegistWrapper(lua_State* L)
 {
-	ColorWrapper::Register(L);  // 颜色对象
-	RandomizerWrapper::Register(L);  // 随机数发生器
-	//BentLaserDataWrapper::Register(L);  // 曲线激光
-	BuiltInFunctionWrapper::Register(L);  // 内建函数库
+	ColorWrapper::Register(L);
+	RandomizerWrapper::Register(L);
+	BuiltInFunctionWrapper::Register(L);
 
 	EXWrapper::Register(L);
 

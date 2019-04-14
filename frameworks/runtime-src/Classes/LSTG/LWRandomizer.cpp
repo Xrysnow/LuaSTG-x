@@ -70,14 +70,14 @@ void RandomizerWrapper::Register(lua_State* L)noexcept
 	lua_rawset(L, -3);  // t mt (mt["__index"] = t)
 	lua_pushliteral(L, "__metatable");  // t mt s
 	lua_pushvalue(L, -3);  // t mt s t
-	lua_rawset(L, -3);  // t mt (mt["__metatable"] = t)  保护metatable不被修改
+	lua_rawset(L, -3);  // t mt (mt["__metatable"] = t) // make metatable readonly
 	lua_pop(L, 2);
 }
 
 fcyRandomWELL512* RandomizerWrapper::CreateAndPush(lua_State* L)
 {
 	fcyRandomWELL512* p = static_cast<fcyRandomWELL512*>(lua_newuserdata(L, sizeof(fcyRandomWELL512)));
-	new(p) fcyRandomWELL512();  // 构造
+	new(p) fcyRandomWELL512();
 	luaL_getmetatable(L, TYPENAME_RANDGEN);
 	lua_setmetatable(L, -2);
 	return p;

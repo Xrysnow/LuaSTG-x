@@ -95,11 +95,6 @@ void EXWrapper::Register(lua_State* L)noexcept
 			LAPP.Reset();
 			return 0;
 		}
-		//static int SetResLoadInfo(lua_State* L)noexcept
-		//{
-		//	ResourcePool::LSHOWRESLOADINFO = (lua_toboolean(L, 1) != 0);
-		//	return 0;
-		//}
 		static int Test(lua_State* L)noexcept
 		{
 			auto s = xVideo::SpriteVideo::create(luaL_checkstring(L, 1),1280,548);
@@ -131,7 +126,6 @@ void EXWrapper::Register(lua_State* L)noexcept
 		{ "GetOSName", &WrapperImpl::GetOSName },
 		{ "OnExit", &WrapperImpl::OnExit },
 		//{ "Reset", &WrapperImplement::Reset },
-		//{ "SetResLoadInfo", &WrapperImpl::SetResLoadInfo },
 
 		//{ "Test", &WrapperImpl::Test },
 		{ nullptr, nullptr }

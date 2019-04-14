@@ -1,15 +1,9 @@
 ﻿#include "CollisionDetect.h"
-#include <algorithm>
-#include "LogSystem.h"
-#include "../Math/XMath.h"
-#include "../LSTG/Utility.h"
-#include "Math/XSpline.h"
+#include "Global.h"
 
 using namespace std;
 using namespace lstg;
 using namespace cocos2d;
-using namespace xmath;
-using namespace xmath::intersect;
 
 struct _BezierNode
 {

@@ -85,11 +85,6 @@ void BuiltInFunctionWrapper::Register(lua_State* L)
 			RandomizerWrapper::CreateAndPush(L);
 			return 1;
 		}
-		//static int BentLaserData(lua_State* L) noexcept
-		//{
-		//	GameObjectBentLaser::CreateAndPush(L);
-		//	return 1;
-		//}
 	};
 
 	struct Deprecated
@@ -114,7 +109,6 @@ void BuiltInFunctionWrapper::Register(lua_State* L)
 		{ "ObjTable", &Debug::ObjTable },
 		{ "Color", &Constructor::NewColor },
 		{ "Rand", &Constructor::NewRand },
-		//{ "BentLaserData", &Constructor::BentLaserData },
 		{ "UpdateObjList", &Deprecated::UpdateObjList },
 		{ "RegTTF", &Deprecated::RegTTF },
 		{ "UpdateSound", &Deprecated::UpdateSound },
