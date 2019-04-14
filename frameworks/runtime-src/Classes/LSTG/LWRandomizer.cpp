@@ -3,46 +3,48 @@
 using namespace std;
 using namespace lstg;
 
+#define check_rng(L, idx) (static_cast<fcyRandomWELL512*>(luaL_checkudata(L, idx, TYPENAME_RANDGEN)))
+
 void RandomizerWrapper::Register(lua_State* L)noexcept
 {
 	struct WrapperImplement
 	{
 		static int Seed(lua_State* L)noexcept
 		{
-			fcyRandomWELL512* p = static_cast<fcyRandomWELL512*>(luaL_checkudata(L, 1, TYPENAME_RANDGEN));
+			auto p = check_rng(L, 1);
 			p->SetSeed(uint32_t(luaL_checknumber(L, 2)));
 			return 0;
 		}
 		static int GetSeed(lua_State* L)noexcept
 		{
-			fcyRandomWELL512* p = static_cast<fcyRandomWELL512*>(luaL_checkudata(L, 1, TYPENAME_RANDGEN));
+			auto p = check_rng(L, 1);
 			lua_pushnumber(L, lua_Number(p->GetRandSeed()));
 			return 1;
 		}
 		static int Int(lua_State* L)noexcept
 		{
-			fcyRandomWELL512* p = static_cast<fcyRandomWELL512*>(luaL_checkudata(L, 1, TYPENAME_RANDGEN));
+			auto p = check_rng(L, 1);
 			int a = luaL_checkinteger(L, 2), b = luaL_checkinteger(L, 3);
-			lua_pushinteger(L, a + static_cast<fInt>(p->GetRandUInt(::max(static_cast<uint32_t>(b - a), 0U))));
+			lua_pushinteger(L, a + static_cast<int32_t>(p->GetRandUInt(static_cast<uint32_t>(b - a))));
 			return 1;
 		}
 		static int Float(lua_State* L)noexcept
 		{
-			fcyRandomWELL512* p = static_cast<fcyRandomWELL512*>(luaL_checkudata(L, 1, TYPENAME_RANDGEN));
+			auto p = check_rng(L, 1);
 			double a = luaL_checknumber(L, 2), b = luaL_checknumber(L, 3);
 			lua_pushnumber(L, p->GetRandFloat(float(a), float(b)));
 			return 1;
 		}
 		static int Sign(lua_State* L)noexcept
 		{
-			fcyRandomWELL512* p = static_cast<fcyRandomWELL512*>(luaL_checkudata(L, 1, TYPENAME_RANDGEN));
+			auto p = check_rng(L, 1);
 			lua_pushinteger(L, p->GetRandUInt(1) * 2 - 1);
 			return 1;
 		}
 		static int Meta_ToString(lua_State* L)noexcept
 		{
-			fcyRandomWELL512* p = static_cast<fcyRandomWELL512*>(luaL_checkudata(L, 1, TYPENAME_RANDGEN));
-			lua_pushfstring(L, "lstg.Rand object");
+			auto p = check_rng(L, 1);
+			lua_pushfstring(L, "lstg.Rand object 0x%x", p);
 			return 1;
 		}
 	};
