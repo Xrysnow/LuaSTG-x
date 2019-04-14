@@ -633,7 +633,6 @@ void ComponentManager::drawCollider(const Color4B& color)
 	case ColliderType::OBB:
 		do
 		{
-			//const Vec2 tHalfSize{ a, b };
 			Vec2 tPos[4] = {
 				{ -a, -b },
 				{ a, -b },
@@ -677,7 +676,6 @@ void ComponentManager::drawCollider(const Color4B& color)
 			xmath::SinCos(rot, s, c);
 			const Vec2 hda(c*a, s*a);
 			const Vec2 hdb(-s * b, c*b);
-			//const Vec2 pos(x, y);
 			LRR.getDrawNode()->drawTriangle(
 				pos + hda, pos - hda, pos + hdb, color_f);
 			LRR.getDrawNode()->drawTriangle(
@@ -691,7 +689,6 @@ void ComponentManager::drawCollider(const Color4B& color)
 			xmath::SinCos(rot, s, c);
 			const Vec2 hda(c*a, s*a);
 			const Vec2 db(-s * b, c*b);
-			//const Vec2 pos(x, y);
 			LRR.getDrawNode()->drawTriangle(
 				pos + hda, pos - hda + db, pos - hda - db, color_f);
 		} while (false);

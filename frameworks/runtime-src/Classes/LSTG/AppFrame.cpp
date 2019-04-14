@@ -108,7 +108,7 @@ bool AppFrame::applicationDidFinishLaunching()
 	char tmp[32];
 	::strftime(tmp, sizeof(tmp), "%H:%M:%S", ::localtime(&t));
 	LINFO("=== AppFrame start at: %s ===", tmp);
-	// set default FPS
+	// default FPS is set in lua
 	//Director::getInstance()->setAnimationInterval(1.0 / 60.0f);
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
 	XFileUtils::start();
@@ -257,7 +257,7 @@ void AppFrame::LoadScript(const char* path)noexcept
 		return;
 	}
 	// TODO: Check
-	//if ((luaL_loadstring(L, s.c_str()) || lua_pcall(L, 0, LUA_MULTRET, 0)))// this will return the result
+	//if ((luaL_loadstring(L, s.c_str()) || lua_pcall(L, 0, LUA_MULTRET, 0)))// LUA_MULTRET will return the result
 	if (luaL_loadbuffer(L, (const char*)data->getBytes(), (size_t)data->getSize(), luaL_checkstring(L, 1))
 		|| lua_pcall(L, 0, LUA_MULTRET, 0))
 	{
