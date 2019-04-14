@@ -5,15 +5,21 @@ LuaSTG-x is a multi-platform game engine based on [cocos2d-x](https://github.com
 ## Build Instructions
 
 1. Clone the repo and submodules from GitHub.
+
         $ git clone --recursive https://github.com/Xrysnow/LuaSTG-x.git
+
 2. Execute `download-deps.py` to download and install dependencies (need python 2.7).
+
         $ cd LuaSTG-x
         $ python download-deps.py
+
 3. Download extra files from Cubism SDK ([instructions](https://github.com/Xrysnow/lstgx_external)).
 4. Generate project using CMake ([instructions](https://github.com/cocos2d/cocos2d-x/blob/v3/cmake/README.md)).
+
         $ mkdir build
         $ cd build
         $ cmake ..
+
 5. Compile with your target compiler.
 
 ## Build Requirements
