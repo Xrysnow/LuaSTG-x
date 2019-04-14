@@ -152,8 +152,17 @@ bool AppFrame::applicationDidFinishLaunching()
 
 	InitGameObjectPropertyHash();
 	CC_SAFE_DELETE(threadPool);
+	// note: on android, this is the number of currently activated cores
 	const int nThr = std::thread::hardware_concurrency();
 	threadPool = new XThreadPool(std::max(1, std::min(nThr - 1, 3)));
+	if (nThr > 0)
+	{
+		LINFO("ThreadPool size: %d (core count: %d)", threadPool->size(), nThr);
+	}
+	else
+	{
+		LINFO("ThreadPool size: %d", threadPool->size());
+	}
 
 	auto FU = FileUtils::getInstance();
 	FU->addSearchPath("src");
