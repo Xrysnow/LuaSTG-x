@@ -477,7 +477,7 @@ void lstg::getNodeTransform(const Vec2& anchorPointInPoints,
 	}
 	else
 	{
-		const float halfRadz = -(rot * .5f * 0.01745329252f);
+		const float halfRadz = -(.5f * 0.01745329252f * rot);
 		const float qz = std::sin(halfRadz);
 		const float qw = std::cos(halfRadz);
 		const float z2 = qz + qz;
@@ -485,13 +485,13 @@ void lstg::getNodeTransform(const Vec2& anchorPointInPoints,
 		wz2 = qw * z2;
 	}
 
-	_transform->m[0] = zz2_;
-	_transform->m[1] = wz2;
+	_transform->m[0] = zz2_ * hscale;
+	_transform->m[1] = wz2 * hscale;
 	_transform->m[2] = 0.0f;
 	_transform->m[3] = 0.0f;
 
-	_transform->m[4] = -wz2;
-	_transform->m[5] = zz2_;
+	_transform->m[4] = -wz2 * vscale;
+	_transform->m[5] = zz2_ * vscale;
 	_transform->m[6] = 0.0f;
 	_transform->m[7] = 0.0f;
 
@@ -500,33 +500,11 @@ void lstg::getNodeTransform(const Vec2& anchorPointInPoints,
 	_transform->m[10] = 1.0f;
 	_transform->m[11] = 0.0f;
 
-	_transform->m[12] = x;
-	_transform->m[13] = y;
+	// assert that most anchor points are not 0 (usually center)
+	_transform->m[12] = x - _transform->m[0] * anchorPointInPoints.x - _transform->m[4] * anchorPointInPoints.y;
+	_transform->m[13] = y - _transform->m[1] * anchorPointInPoints.x - _transform->m[5] * anchorPointInPoints.y;
 	_transform->m[14] = z;
 	_transform->m[15] = 1.0f;
-
-	// note that m[2] and m[6] are 0
-	if (hscale != 1.f)
-	{
-		_transform->m[0] *= hscale;
-		_transform->m[1] *= hscale;
-		//_transform->m[2] *= hscale;
-	}
-	if (vscale != 1.f)
-	{
-		_transform->m[4] *= vscale;
-		_transform->m[5] *= vscale;
-		//_transform->m[6] *= vscale;
-	}
-	// assert that most anchor points are not 0 (usually center)
-	//if (!anchorPointInPoints.isZero())
-	//{
-		//_transform->m[12] += _transform->m[0] * -anchorPointInPoints.x + _transform->m[4] * -anchorPointInPoints.y;
-		//_transform->m[13] += _transform->m[1] * -anchorPointInPoints.x + _transform->m[5] * -anchorPointInPoints.y;
-		//_transform->m[14] += _transform->m[2] * -anchorPointInPoints.x + _transform->m[6] * -anchorPointInPoints.y;
-		_transform->m[12] -= _transform->m[0] * anchorPointInPoints.x + _transform->m[4] * anchorPointInPoints.y;
-		_transform->m[13] -= _transform->m[1] * anchorPointInPoints.x + _transform->m[5] * anchorPointInPoints.y;
-	//}
 }
 
 Mat4 lstg::getNodeTransform(const Vec2& anchorPointInPoints,
