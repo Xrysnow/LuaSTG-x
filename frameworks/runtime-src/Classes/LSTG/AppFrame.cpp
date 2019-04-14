@@ -286,7 +286,7 @@ bool AppFrame::Init()noexcept
 	LINFO("initializing GameObjectPool (%u)", LGOBJ_MAXCNT);
 	try
 	{
-		gameObjectPool = make_unique<GameObjectPool>(L);
+		gameObjectPool = make_unique<GameObjectManager>(L);
 	}
 	catch (const bad_alloc&)
 	{

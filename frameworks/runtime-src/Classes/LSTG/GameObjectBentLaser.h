@@ -2,7 +2,7 @@
 #include "Global.h"
 #include "CirularQueue.hpp"
 #include "BlendMode.h"
-#include "GameObjectPool.h"
+#include "GameObject.h"
 
 namespace lstg
 {

@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Global.h"
 #include "ResourceMgr.h"
-#include "GameObjectPool.h"
+#include "GameObjectManager.h"
 #include "MemPoolManager.h"
 #include "XThreadPool.hpp"
 
@@ -48,7 +48,7 @@ namespace lstg
 	private:
 		Status status = Status::NotInitialized;
 
-		std::unique_ptr<GameObjectPool> gameObjectPool;
+		std::unique_ptr<GameObjectManager> gameObjectPool;
 		lua_State* L = nullptr;
 
 		bool optSplashWindow = false;
@@ -69,7 +69,7 @@ namespace lstg
 
 		void SnapShot(const char* path)noexcept;
 	public:
-		GameObjectPool& GetGameObjectPool() const noexcept { return *gameObjectPool; }
+		GameObjectManager& GetGameObjectPool() const noexcept { return *gameObjectPool; }
 		XThreadPool* GetThreadPool() const noexcept { return threadPool; }
 
 		uint32_t GetDropCounter() const { return dropCounter; }

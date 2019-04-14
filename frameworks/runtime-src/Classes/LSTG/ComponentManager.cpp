@@ -9,6 +9,8 @@ using namespace lstg;
 using namespace cocos2d;
 using xmath::collision::ColliderType;
 
+#define PROP(_P) pool->_P[obj->id]
+
 void ComponentManager::setBindNode(Node* node)
 {
 	if (_node != node)
@@ -18,7 +20,7 @@ void ComponentManager::setBindNode(Node* node)
 		_node = node;
 		if (_node&&tr)
 		{
-			tr->anchor = _node->getAnchorPointInPoints();
+			PROP(anchor) = _node->getAnchorPointInPoints();
 		}
 	}
 }
@@ -360,12 +362,10 @@ bool ComponentManager::collisionCheck(ComponentManager* other) const
 {
 	if (other && other->colli && other->tr && tr && colli)
 	{
-		const auto tr1 = this->tr;
-		const auto tr2 = other->tr;
 		const auto colli1 = this->colli;
 		const auto colli2 = other->colli;
-		const auto dx = tr1->x - tr2->x;
-		const auto dy = tr1->y - tr2->y;
+		const auto dx = PROP(x) - pool->x[other->obj->id];
+		const auto dy = PROP(y) - pool->y[other->obj->id];
 		const auto sum = colli1->col_r + colli2->col_r;
 		// AABB fast check
 		if (dx >= sum ||
@@ -382,8 +382,8 @@ bool ComponentManager::collisionCheck(ComponentManager* other) const
 			return true;
 		// precise check
 		return check(
-			Vec2(tr1->x, tr1->y), colli1->a, colli1->b, tr1->rot, colli1->type,
-			Vec2(tr2->x, tr2->y), colli2->a, colli2->b, tr2->rot, colli2->type);
+			obj->getPosition(), colli1->a, colli1->b, PROP(rot), colli1->type,
+			other->obj->getPosition(), colli2->a, colli2->b, pool->rot[other->obj->id], colli2->type);
 	}
 	return false;
 }
@@ -397,8 +397,8 @@ bool ComponentManager::collisionCheck3D(ComponentManager* other) const
 		const auto tr2 = other->tr;
 		const auto colli1 = this->colli;
 		const auto colli2 = other->colli;
-		const auto dx = tr1->x - tr2->x;
-		const auto dy = tr1->y - tr2->y;
+		const auto dx = PROP(x) - pool->x[other->obj->id];
+		const auto dy = PROP(y) - pool->y[other->obj->id];
 		const auto dz = tr1->z - tr2->z;
 		const auto sum = colli1->col_r + colli2->col_r;
 		return dx * dx + dy * dy + dz * dz < sum * sum;
@@ -408,8 +408,7 @@ bool ComponentManager::collisionCheck3D(ComponentManager* other) const
 
 bool ComponentManager::boundCheck(float l, float r, float b, float t) const
 {
-	if (!tr) return false;
-	return l < tr->x && tr->x < r && b < tr->y && tr->y < t;
+	return l < PROP(x) && PROP(x) < r && b < PROP(y) && PROP(y) < t;
 }
 
 void ComponentManager::applyResAnimation(ResAnimation* res)
@@ -432,10 +431,7 @@ void ComponentManager::applyResAnimation(ResAnimation* res)
 		colli->type = res->getColliderType();
 		updateColli();
 	}
-	if (tr)
-	{
-		tr->anchor = res->getSprite(0)->getAnchorPointInPoints();
-	}
+	PROP(anchor) = res->getSprite(0)->getAnchorPointInPoints();
 }
 
 void ComponentManager::applyResSprite(ResSprite* res)
@@ -454,10 +450,7 @@ void ComponentManager::applyResSprite(ResSprite* res)
 		colli->type = res->getColliderType();
 		updateColli();
 	}
-	if (tr)
-	{
-		tr->anchor = res->getSprite()->getAnchorPointInPoints();
-	}
+	PROP(anchor) = res->getSprite()->getAnchorPointInPoints();
 }
 
 void ComponentManager::applyResParticle(ResParticle* res)
@@ -507,14 +500,14 @@ void ComponentManager::updateParticle()
 		if(ps->isActive())
 		{
 			ps->setActive(false);
-			ps->setCenter(Vec2(tr->x, tr->y));
+			ps->setCenter(pool->getPosition(obj->id));
 			ps->setActive(true);
 		}
 		else
 		{
-			ps->setCenter(Vec2(tr->x, tr->y));
+			ps->setCenter(pool->getPosition(obj->id));
 		}
-		ps->setRotation(tr->rot);
+		ps->setRotation(pool->rot[obj->id]);
 	}
 	if (blend)
 	{
@@ -526,7 +519,10 @@ void ComponentManager::updateParticle()
 void ComponentManager::updateTransform()
 {
 	if (!tr) return;
-	tr->update();
+	if (tr->is3D)
+	{
+		tr->update();
+	}
 	setTransformDirty(true);
 }
 
@@ -539,13 +535,12 @@ void ComponentManager::updateTransformMat()
 	// TODO: RAD version for getNodeTransform
 	if(!tr->is3D)
 	{
-		getNodeTransform(tr->anchor, tr->x, tr->y, -(tr->rot) * LRAD2DEGREE,
-			tr->hscale*factor, tr->vscale*factor, tr->z, xtcmd.getMV());
+		pool->getTransformMat(obj->id, factor, tr->z, xtcmd.getMV());
 	}
 	else
 	{
-		getNodeTransform3D(tr->anchor, tr->x, tr->y, tr->z, tr->rotAxis, tr->rot,
-			tr->hscale*factor, tr->vscale*factor, tr->zscale*factor, xtcmd.getMV());
+		getNodeTransform3D(PROP(anchor), PROP(x), PROP(y), tr->z, tr->rotAxis, PROP(rot),
+			PROP(hscale) * factor, PROP(vscale) * factor, tr->zscale*factor, xtcmd.getMV());
 	}
 	if (lightSource)
 		lightSource->setNodeToParentTransform(xtcmd.getModelView());
@@ -587,7 +582,7 @@ void ComponentManager::renderParticle()
 	{
 		const auto factor = L_IMG_FACTOR;
 		if (tr)
-			par->pool->Render(tr->hscale*factor, tr->vscale*factor);
+			par->pool->Render(PROP(hscale) * factor, PROP(vscale) * factor);
 		else
 			par->pool->Render(1.f*factor, 1.f*factor);
 	}
@@ -611,15 +606,12 @@ void ComponentManager::drawCollider(const Color4B& color)
 	if (!tr || !colli)return;
 	LRR.flushTriangles();
 	const Color4F color_f(color);
-	const auto tr = getDataTrasform();
 	const auto colli = getDataColli();
-	const auto x = tr->x;
-	const auto y = tr->y;
 	const auto a = colli->a;
 	const auto b = colli->b;
-	const auto rot = tr->rot;
+	const auto rot = PROP(rot);
 	const auto col_r = colli->col_r;
-	const auto pos = Vec2(x, y);
+	const auto pos = pool->getPosition(obj->id);
 	switch (colli->type)
 	{
 	case ColliderType::Circle:
@@ -644,8 +636,8 @@ void ComponentManager::drawCollider(const Color4B& color)
 			{
 				const auto tx = tPo.x * tCos - tPo.y * tSin;
 				const auto ty = tPo.x * tSin + tPo.y * tCos;
-				tPo.x = tx + x;
-				tPo.y = ty + y;
+				tPo.x = tx + pos.x;
+				tPo.y = ty + pos.y;
 			}
 			LRR.getDrawNode()->drawSolidPoly(tPos, 4, color_f);
 		} while (false);

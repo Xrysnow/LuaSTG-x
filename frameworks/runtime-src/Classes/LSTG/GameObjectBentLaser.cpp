@@ -1,5 +1,5 @@
 ﻿#include "GameObjectBentLaser.h"
-#include "GameObjectPool.h"
+#include "GameObjectManager.h"
 #include "AppFrame.h"
 #include "Renderer.h"
 #include "Utility.h"
@@ -151,11 +151,10 @@ bool GameObjectBentLaser::collisionCheck(GameObject* p)
 	for (size_t i = 0; i < queue.size(); ++i)
 	{
 		auto& node = queue[i];
-		const auto tr = p->cm->getDataTrasform();
 		const auto colli = p->cm->getDataColli();
 		if (xmath::collision::check(
 			node.pos, node.half_width, node.half_width, 0.f, XColliderType::Circle,
-			Vec2(tr->x, tr->y), colli->a, colli->b, tr->rot, colli->type))
+			p->getPosition(), colli->a, colli->b, p->getRotation(), colli->type))
 			return true;
 	}
 	return false;
@@ -184,11 +183,10 @@ bool GameObjectBentLaser::collisionCheckExtendWidth(GameObject* p, float extend)
 	for (size_t i = 0; i < queue.size(); ++i)
 	{
 		auto& node = queue[i];
-		const auto tr = p->cm->getDataTrasform();
 		const auto colli = p->cm->getDataColli();
 		if (xmath::collision::check(
 			node.pos, node.half_width + extend, node.half_width + extend, 0.f, XColliderType::Circle,
-			Vec2(tr->x, tr->y), colli->a, colli->b, tr->rot, colli->type))
+			p->getPosition(), colli->a, colli->b, p->getRotation(), colli->type))
 			return true;
 	}
 	return false;
@@ -221,11 +219,10 @@ bool GameObjectBentLaser::strictCollisionCheck(GameObject* p)
 		const auto rot0 = node.dNormalized.getAngle();
 		const auto a0 = node.dLength / 2;
 		const auto b0 = node.half_width;
-		const auto tr = p->cm->getDataTrasform();
 		const auto colli = p->cm->getDataColli();
 		if (xmath::collision::check(
 			node.pos + node.d / 2, a0, b0, rot0, XColliderType::OBB,
-			Vec2(tr->x, tr->y), colli->a, colli->b, tr->rot, colli->type))
+			p->getPosition(), colli->a, colli->b, p->getRotation(), colli->type))
 			return true;
 	}
 	return false;
@@ -681,9 +678,8 @@ bool GameObjectBentLaser::fastCollisionCheck(GameObject* p)
 	const auto a0 = (maxX - minX) / 2 + maxHW;
 	const auto b0 = (maxY - minY) / 2 + maxHW;
 
-	const auto tr = p->cm->getDataTrasform();
 	const auto colli = p->cm->getDataColli();
-	return xmath::intersect::AABB_Circle(p0, a0, b0, Vec2(tr->x, tr->y), colli->col_r);
+	return xmath::intersect::AABB_Circle(p0, a0, b0, p->getPosition(), colli->col_r);
 #else
 	return false;
 #endif

@@ -3,11 +3,22 @@
 #include "cocos2d.h"
 #include "ResSprite.h"
 #include "XTrianglesCommand.h"
+#include "GameObjectPool.h"
 
 namespace lstg
-{	
+{
+	class GameObjectPool;
+	struct GameObject;
+
 	class ComponentManager
 	{
+	protected:
+		XTrianglesCommand xtcmd;
+		cocos2d::Node* _node;
+	public:
+		GameObjectPool* pool;
+		GameObject* obj;
+
 #define PROPERTY_RETAIN(varType, varName, funName)    \
 private: varType varName; \
 public: inline varType get##funName(void) const { return varName; } \
@@ -33,8 +44,6 @@ inline void set##funName(varType var) \
 		PROPERTY_RETAIN(cocos2d::GLProgramState*, programStateCopy, ProgramStateCopy);
 #undef PROPERTY_RETAIN
 
-	protected:
-		cocos2d::Node* _node;
 	public:
 		cocos2d::Node* getBindNode() const { return _node; }
 		void setBindNode(cocos2d::Node* node);
@@ -49,7 +58,6 @@ inline void set##funName(varType var) \
 		ComponentDataLight* getOrCreateLight();
 	protected:
 		bool transformDirty = true;
-		XTrianglesCommand xtcmd;
 		bool cmdDirty = true;
 		cocos2d::Texture2D* cmdTex = nullptr;
 		BlendMode* cmdBlend = nullptr;
@@ -71,6 +79,8 @@ inline void set##funName(varType var) \
 		void pushLua(lua_State* L, Resource* res);
 		bool isTransformDirty() const { return transformDirty; }
 		void setTransformDirty(bool b) { transformDirty = b; }
+
+		XTrianglesCommand* getTrianglesCommand() { return &xtcmd; }
 
 		//
 

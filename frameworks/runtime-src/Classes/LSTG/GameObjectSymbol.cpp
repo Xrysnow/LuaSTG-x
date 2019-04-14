@@ -18,20 +18,33 @@ static std::vector<GameObject*> currentObjs;
 
 #ifndef DISABLE_SYMBOL
 
-#define GET_PROPERTY_TRANS(_P) [](){ return getCurrentGameObject() ? getCurrentGameObject()->cm->getDataTrasform()->_P : 0.f; }
-#define GET_PROPERTY_COLLI(_P) [](){ return getCurrentGameObject() ? getCurrentGameObject()->cm->getDataColli()->_P : 0.f; }
-#define GET_PROPERTY_OBJ_NUMBER(_P) [](){ return getCurrentGameObject() ? getCurrentGameObject()->_P : 0.f; }
+#define GET_PROPERTY_TRANS(_P) [](){\
+	const auto o = getCurrentGameObject();\
+	return o ? o->cm->pool->_P[o->id] : 0.f; }
+#define GET_PROPERTY_COLLI(_P) [](){\
+	return getCurrentGameObject() ? getCurrentGameObject()->cm->getDataColli()->_P : 0.f; }
+#define GET_PROPERTY_OBJ_NUMBER(_P) [](){\
+	return getCurrentGameObject() ? getCurrentGameObject()->_P : 0.f; }
 
-#define GET_PROPERTY_BOOLEAN_NUMBER(_P) [](){ return getCurrentGameObject() ? float(int(getCurrentGameObject()->_P)) : 0.f; }
-#define GET_PROPERTY_OBJ_BOOLEAN(_P) [](){ return getCurrentGameObject() ? getCurrentGameObject()->_P : false; }
+#define GET_PROPERTY_BOOLEAN_NUMBER(_P) [](){\
+	return getCurrentGameObject() ? float(int(getCurrentGameObject()->_P)) : 0.f; }
+#define GET_PROPERTY_OBJ_BOOLEAN(_P) [](){\
+	return getCurrentGameObject() ? getCurrentGameObject()->_P : false; }
 
-#define GET_PROPERTY_TRANS_BOOLEAN(_P) [](){ return getCurrentGameObject() ? (getCurrentGameObject()->cm->getDataTrasform()->_P != 0.f) : false; }
+#define GET_PROPERTY_TRANS_BOOLEAN(_P) [](){\
+	const auto o = getCurrentGameObject();\
+	return o ? (o->cm->pool->_P[o->id] != 0.f) : false; }
 
-#define SET_PROPERTY_TRANS(_P) [node](){ if(getCurrentGameObject()) getCurrentGameObject()->cm->getDataTrasform()->_P = node->getNumber(); }
-#define SET_PROPERTY_COLLI(_P) [node](){ if(getCurrentGameObject()) getCurrentGameObject()->cm->getDataColli()->_P = node->getNumber(); }
-#define SET_PROPERTY_OBJ(_P) [node](){ if(getCurrentGameObject()) getCurrentGameObject()->_P = node->getNumber(); }
+#define SET_PROPERTY_TRANS(_P) [node](){\
+	const auto o = getCurrentGameObject();\
+	if(o) o->cm->pool->_P[o->id] = node->getNumber(); }
+#define SET_PROPERTY_COLLI(_P) [node](){\
+	if(getCurrentGameObject()) getCurrentGameObject()->cm->getDataColli()->_P = node->getNumber(); }
+#define SET_PROPERTY_OBJ(_P) [node](){\
+	if(getCurrentGameObject()) getCurrentGameObject()->_P = node->getNumber(); }
 
-#define SET_PROPERTY_BOOLEAN(_P) [node](){ if(getCurrentGameObject()) getCurrentGameObject()->_P = node->getBoolean(); }
+#define SET_PROPERTY_BOOLEAN(_P) [node](){\
+	if(getCurrentGameObject()) getCurrentGameObject()->_P = node->getBoolean(); }
 
 #endif
 

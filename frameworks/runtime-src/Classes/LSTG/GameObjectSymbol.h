@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "cocos2d.h"
-#include "GameObjectPool.h"
+#include "GameObject.h"
 #include "GameObjectPropertyHash.h"
 #include <functional>
 
@@ -31,6 +31,7 @@ namespace lstg
 {
 	struct GameObject;
 	class GameClass;
+
 	namespace symbol
 	{
 		//class Number;
