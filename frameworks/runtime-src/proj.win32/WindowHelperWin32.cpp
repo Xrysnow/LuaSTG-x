@@ -312,30 +312,6 @@ uint32_t WindowHelperWin32::GetIMEInfo(F2DIMEINFO InfoType)
 	}
 }
 
-//void WindowHelperWin32::setTitle(const char* s)
-//{
-//	WindowHelperDesktop::setTitle(s);
-//	auto ws = fcyStringHelper::MultiByteToWideChar_UTF8(s);
-//	SetCaption(ws.c_str());
-//}
-//
-//void WindowHelperWin32::setPosition(const cocos2d::Vec2& p)
-//{
-//	auto rect = GetRect();
-//	auto w=rect.GetWidth();
-//	auto h=rect.GetHeight();
-//	rect.a.x = p.x;
-//	rect.a.y = p.y;
-//	rect.b.x = p.x + w;
-//	rect.b.y = p.y - h;
-//	SetRect(rect);
-//}
-//
-//void WindowHelperWin32::setVisible(bool b)
-//{
-//	SetVisiable(b);
-//}
-
 void WindowHelperWin32::setCloseNotify(bool notify)
 {
 	SimulatorWin::setCloseNotify(notify);

@@ -58,6 +58,7 @@
 #include "../LSTG/AppFrame.h"
 #include "XProfiler.h"
 #include "WindowHelperWin32.h"
+#include "../fcyLib/fcyMisc/fcyStringHelper.h"
 
 // define 1 to open console ui and setup windows system menu, 0 to disable
 #define SIMULATOR_WITH_CONSOLE_AND_MENU 1

@@ -102,10 +102,6 @@ namespace lstg
 				return m_IMECandidateList[Index].c_str();
 		}
 
-		//void setTitle(const char* s) override;
-		//void setPosition(const cocos2d::Vec2& p) override;
-		//void setVisible(bool b) override;
-
 		static void setCloseNotify(bool notify);
 		static void setCloseNotifyInfo(const std::string& caption, const std::string& text);
 

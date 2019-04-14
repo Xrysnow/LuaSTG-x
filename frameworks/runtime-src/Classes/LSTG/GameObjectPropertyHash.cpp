@@ -1,8 +1,6 @@
 ﻿#include "GameObjectPropertyHash.h"
 #include "cocos2d.h"
 #include "scripting/lua-bindings/manual/CCLuaEngine.h"
-//#include "fcyLib/fcyMisc/fcyStopWatch.h"
-#include "LogSystem.h"
 #include <unordered_map>
 
 using namespace std;
