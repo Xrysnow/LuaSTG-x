@@ -2,7 +2,6 @@
 #include "AppFrame.h"
 #include "LWColor.h"
 #include "LWRandomizer.h"
-#include "GameObjectBentLaser.h"
 
 #include "LW_Audio.h"
 #include "LW_Frame.h"

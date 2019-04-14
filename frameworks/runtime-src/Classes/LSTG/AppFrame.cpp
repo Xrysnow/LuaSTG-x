@@ -14,7 +14,6 @@
 #include "InputManager.h"
 #include "WindowHelper.h"
 #include <memory>
-//#include "CollisionDetect.h"
 #include "XLive2D.h"
 #include "lua_x_L2D_auto.hpp"
 #include "../LuaBindings/lua_Resource_auto.hpp"
@@ -105,7 +104,6 @@ static int register_all_packages()
 }
 bool AppFrame::applicationDidFinishLaunching()
 {
-	CCLOG("applicationDidFinishLaunching");
 	auto t = ::time(nullptr);
 	char tmp[32];
 	::strftime(tmp, sizeof(tmp), "%H:%M:%S", ::localtime(&t));
@@ -213,28 +211,6 @@ void AppFrame::ShowSplashWindow(const char* imgPath)noexcept
 	{
 #ifdef CC_PLATFORM_PC
 		//TODO:
-		//try
-		//{
-		//	Gdiplus::Image* pImg = nullptr;
-		//	// 若有图片，则加载
-		//	if (imgPath)
-		//	{
-		//		fcyRefPointer<fcyMemStream> tDataBuf;
-		//		if (m_LRES.LoadFile(imgPath, tDataBuf))
-		//			pImg = SplashWindow::LoadImageFromMemory((fcData)tDataBuf->GetInternalBuffer(), (size_t)tDataBuf->GetLength());
-		//		
-		//		if (!pImg)
-		//			LERROR("ShowSplashWindow: 无法加载图片'%s'", imgPath);
-		//	}
-		//	// 显示窗口
-		//	m_SplashWindow.ShowSplashWindow(pImg);
-		//	FCYSAFEDEL(pImg);
-		//}
-		//catch (const bad_alloc&)
-		//{
-		//	LERROR("ShowSplashWindow: OOM");
-		//	return;
-		//}
 #endif
 		optSplashWindow = true;
 	}
@@ -271,9 +247,6 @@ void AppFrame::LoadScript(const char* path)noexcept
 		luaL_error(L, err.c_str());
 		return;
 	}
-	//if (luaL_loadbuffer(L, (const char*)data->getBytes(), (size_t)data->getSize(), luaL_checkstring(L, 1)))
-	//string s = "--[[" + string(path) + "]]";
-	auto s = string((const char*)data->getBytes(), (size_t)data->getSize());
 	// TODO: Check
 	//if ((luaL_loadstring(L, s.c_str()) || lua_pcall(L, 0, LUA_MULTRET, 0)))// this will return the result
 	if (luaL_loadbuffer(L, (const char*)data->getBytes(), (size_t)data->getSize(), luaL_checkstring(L, 1))
@@ -322,7 +295,6 @@ bool AppFrame::Init()noexcept
 #elif CC_TARGET_PLATFORM == CC_PLATFORM_LINUX
 #endif
 #ifdef CC_PLATFORM_PC
-	//WindowHelperDesktop::getInstance()->moveToCenter();
 	WindowHelperDesktop::getInstance()->setTitle("LuaSTG-x");
 #endif
 
@@ -435,8 +407,7 @@ bool AppFrame::Reset()noexcept
 
 	gameObjectPool->ResetPool();
 	LINFO("clear GameObjectPool");
-	//m_LRES.UnloadAllPack();
-	//LINFO("unload all packs"");
+
 	L = LuaEngine::getInstance()->getLuaStack()->getLuaState();
 	gameObjectPool->ResetLua(L);
 	XAudioEngine::stopAll();
