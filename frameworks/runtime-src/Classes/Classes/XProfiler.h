@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <string>
 #include "../LSTG/CirularQueue.hpp"
+#include "../fcyLib/fcyMisc/fcyStopWatch.h"
 
 namespace lstg
 {

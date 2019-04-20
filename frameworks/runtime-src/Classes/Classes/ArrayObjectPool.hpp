@@ -1,5 +1,7 @@
 #pragma once
-#include "Global.h"
+#include <array>
+#include <vector>
+#include <memory>
 
 template <typename T, size_t Size>
 class ArrayObjectPool
