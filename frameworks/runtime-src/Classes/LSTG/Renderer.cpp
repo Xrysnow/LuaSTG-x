@@ -7,6 +7,7 @@
 #include <EGL/egl.h>
 #endif
 
+#define BATCH_COMMAND
 #define MT_UpdateVerts
 
 using namespace std;
@@ -845,12 +846,15 @@ bool XRenderer::postEffect(ResRenderTarget* p, ResFX* shader, BlendMode* blend)n
 
 void XRenderer::addCommand(RenderCommand* cmd)
 {
+#ifdef BATCH_COMMAND
 	flushTriangles();
+#endif
 	pRenderer->addCommand(cmd);
 }
 
 void XRenderer::addXTCommand(XTrianglesCommand* cmd)
 {
+#ifdef BATCH_COMMAND
 	if (triToDraw.empty() || triToDraw.back()->getMaterialID() == cmd->getMaterialID())
 	{
 		// merge
@@ -862,6 +866,9 @@ void XRenderer::addXTCommand(XTrianglesCommand* cmd)
 		flushTriangles();
 		triToDraw.push_back(cmd);
 	}
+#else
+	pRenderer->addCommand(cmd);
+#endif
 }
 
 void XRenderer::flushTriangles()
