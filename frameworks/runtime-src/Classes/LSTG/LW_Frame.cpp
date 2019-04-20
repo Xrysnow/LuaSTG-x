@@ -10,13 +10,13 @@ static int SetFPS(lua_State* L) noexcept
 	int v = luaL_checkinteger(L, 1);
 	if (v <= 0)
 		v = 60;
-	LAPP.SetFPS(static_cast<uint32_t>(v));
+	LAPP.setFPS(static_cast<uint32_t>(v));
 	return 0;
 }
 
 static int GetFPS(lua_State* L) noexcept
 {
-	lua_pushnumber(L, LAPP.GetFPS());
+	lua_pushnumber(L, LAPP.getFPS());
 	return 1;
 }
 
@@ -58,7 +58,7 @@ static int Print(lua_State* L) noexcept
 
 static int DoFile(lua_State* L) noexcept
 {
-	LAPP.LoadScript(luaL_checkstring(L, 1));
+	LAPP.loadScript(luaL_checkstring(L, 1));
 	return 0;
 }
 

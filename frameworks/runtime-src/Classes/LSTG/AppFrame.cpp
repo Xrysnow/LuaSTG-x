@@ -227,25 +227,19 @@ void AppFrame::ShowSplashWindow(const char* imgPath)noexcept
 		LWARNING("ShowSplashWindow: can't load at this moment");
 }
 
-void AppFrame::SetWindowed(bool v)noexcept
-{
-	//if (optWindowed == v)return;
-	//optWindowed = v;
-}
-
-void AppFrame::SetFPS(uint32_t v) noexcept
+void AppFrame::setFPS(uint32_t v) noexcept
 {
 	targetFPS = v;
 	Director::getInstance()->setAnimationInterval(1.0 / v);
 }
 
-double AppFrame::GetFPS() noexcept
+double AppFrame::getFPS() noexcept
 {
 	// TODO: Smooth
 	return Director::getInstance()->getFrameRate();
 }
 
-void AppFrame::LoadScript(const char* path)noexcept
+void AppFrame::loadScript(const char* path)noexcept
 {
 	string err;
 	auto data = LRES.getDataFromFile(path);
@@ -267,7 +261,7 @@ void AppFrame::LoadScript(const char* path)noexcept
 	}
 }
 
-void AppFrame::SnapShot(const char* path)noexcept
+void AppFrame::snapShot(const char* path)noexcept
 {
 	utils::captureScreen(nullptr, path);//TODO: CHECK
 }

@@ -36,7 +36,7 @@ void BuiltInFunctionWrapper::Register(lua_State* L)
 	{
 		static int Snapshot(lua_State* L) noexcept
 		{
-			LAPP.SnapShot(luaL_checkstring(L, 1));
+			LAPP.snapShot(luaL_checkstring(L, 1));
 			return 0;
 		}
 		static int Execute(lua_State* L) noexcept

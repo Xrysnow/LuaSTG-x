@@ -58,22 +58,21 @@ namespace lstg
 		XThreadPool* threadPool = nullptr;
 
 	public:
-		void SetWindowed(bool v)noexcept;
 		void ShowSplashWindow(const char* imgPath = nullptr)noexcept; //TODO: remove?
 
-		void SetFPS(uint32_t v)noexcept;
-		double GetTargetFPS() const noexcept { return targetFPS; }
-		double GetFPS() noexcept;
+		void setFPS(uint32_t v)noexcept;
+		double getTargetFPS() const noexcept { return targetFPS; }
+		double getFPS() noexcept;
 
-		void LoadScript(const char* path)noexcept;
+		void loadScript(const char* path)noexcept;
 
-		void SnapShot(const char* path)noexcept;
+		void snapShot(const char* path)noexcept;
 	public:
 		GameObjectManager& GetGameObjectPool() const noexcept { return *gameObjectPool; }
 		XThreadPool* GetThreadPool() const noexcept { return threadPool; }
 
-		uint32_t GetDropCounter() const { return dropCounter; }
-		void SetDropCounter(uint32_t v) { dropCounter = v; }
+		uint32_t getDropCounter() const { return dropCounter; }
+		void setDropCounter(uint32_t v) { dropCounter = v; }
 
 		bool Init()noexcept;
 		void Shutdown()noexcept;
