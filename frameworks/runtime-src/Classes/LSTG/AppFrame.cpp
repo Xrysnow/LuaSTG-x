@@ -496,7 +496,8 @@ int AppFrame::run()
 	auto e = director->getEventDispatcher();
 	const auto listener = EventListenerCustom::create(Director::EVENT_AFTER_DRAW, [&](EventCustom* event)
 	{
-		//glFinish();
+		// there will be strange frame drop on screen without this, although frame time is steady
+		glFinish();
 
 		//if (glview->windowShouldClose())
 		//	return;
@@ -556,15 +557,12 @@ int AppFrame::run()
 		}
 
 		wglSwapLayerBuffers(hdc, WGL_SWAP_MAIN_PLANE);
-		// note: Sleep here to make swapbuffer steady?
+		// Sleep here to make swapbuffer steady?
 		//Sleep(1);
 	});
 	e->addEventListenerWithFixedPriority(listener, 9);
-	//e->addEventListenerWithFixedPriority(EventListenerCustom::create(Director::EVENT_AFTER_DRAW,[&](EventCustom* event)
-	//{
-	//	wglSwapLayerBuffers(hdc, WGL_SWAP_MAIN_PLANE);
-	//}), 9);
-	const auto listener2 = EventListenerCustom::create(Director::EVENT_BEFORE_UPDATE, [&](EventCustom* event)
+	const auto listener2 = EventListenerCustom::create(
+		Director::EVENT_BEFORE_UPDATE, [&](EventCustom* event)
 	{
 		XProfiler::getInstance()->toc("pullEvents");
 	});
