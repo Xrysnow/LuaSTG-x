@@ -64,7 +64,9 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ComponentDataVertex.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ComponentManager.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/GameClass.h
+	${RUNTIME_SRC_ROOT}/Classes/LSTG/GameObject.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/GameObjectBentLaser.h
+	${RUNTIME_SRC_ROOT}/Classes/LSTG/GameObjectManager.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/GameObjectPool.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/GameObjectPropertyHash.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/GameObjectSymbol.h
@@ -251,7 +253,9 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ComponentDataVertex.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ComponentManager.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/GameClass.cpp
+	${RUNTIME_SRC_ROOT}/Classes/LSTG/GameObject.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/GameObjectBentLaser.cpp
+	${RUNTIME_SRC_ROOT}/Classes/LSTG/GameObjectManager.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/GameObjectPool.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/GameObjectPropertyHash.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/GameObjectSymbol.cpp
