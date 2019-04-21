@@ -79,8 +79,8 @@ bool CheckShader(const string& src, bool isVertexShader)
 		GLchar* _src = (GLchar *)malloc(sizeof(GLchar) * length);
 
 		glGetShaderSource(shader, length, nullptr, _src);
-		XERROR("failed to compile shader:\n%m", _src);
-		XERROR("error info:\n%m", logForOpenGLShader(shader).c_str());
+		XERROR("failed to compile shader:\n%s", _src);
+		XERROR("error info:\n%s", logForOpenGLShader(shader).c_str());
 		free(_src);
 		return false;
 	}
