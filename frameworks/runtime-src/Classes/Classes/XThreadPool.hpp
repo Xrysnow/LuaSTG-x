@@ -8,51 +8,92 @@ namespace lstg
 {
 	class XThreadPool
 	{
+		using _lock = std::unique_lock<std::mutex>;
 	public:
-		XThreadPool(int threads = 4)
-			: _stop(false)
+		XThreadPool(size_t threads)
+			: _stop(false), _numTaskLeft(0)
 		{
-			for (int index = 0; index < threads; ++index)
-			{
-				_workers.emplace_back(std::thread(std::bind(&XThreadPool::threadFunc, this)));
-			}
+			for (size_t i = 0; i < threads; ++i)
+				add_worker();
 			_numWorker = threads;
 		}
 
-		int size() const { return _numWorker; }
+		size_t size() const { return _numWorker; }
+		bool empty() const { return _numWorker == 0; }
+		size_t task_count() const { return _numTaskLeft; }
+		bool task_empty() const { return _numTaskLeft == 0; }
+		size_t queue_size() {
+			_lock lk(_queueMutex);
+			return _taskQueue.size();
+		}
+		bool queue_empty() { return queue_size() == 0; }
 
-		void addTask(const std::function<void()> &task) {
-			std::unique_lock<std::mutex> lk(_queueMutex);
-			_taskQueue.emplace(task);
-			_taskCondition.notify_one();
+		size_t active_worker_count() { return task_count() - queue_size(); }
+
+		void resize(size_t size)
+		{
+			if (size > _numWorker)
+			{
+				for (size_t i = 0; i < size - _numWorker; ++i)
+					add_worker();
+			}
+			else if (size < _numWorker)
+			{
+				wait();
+				join();
+				_workers.clear();
+				for (size_t i = 0; i < size; ++i)
+					add_worker();
+			}
+			_numWorker = size;
 		}
 
-		void stop()
-		{
-			std::unique_lock<std::mutex> lk(_queueMutex);
-			_stop = true;
-			_taskCondition.notify_all();
+		void add_task(const std::function<void()> &task) {
+			if (_numWorker == 0)
+			{
+				task();
+			}
+			else
+			{
+				_lock lk(_queueMutex);
+				_taskQueue.emplace(task);
+				++_numTaskLeft;
+				_taskCondition.notify_one();
+			}
 		}
 
-		void join()
+		template<class F, class... Args>
+		auto add_task_future(F&& f, Args&&... args)
+			-> std::future<typename std::result_of<F(Args...)>::type>
 		{
-			for (auto&& worker : _workers)
-				worker.join();
+			using return_type = typename std::result_of<F(Args...)>::type;
+			auto task = std::make_shared<std::packaged_task<return_type()>>(
+				std::bind(std::forward<F>(f), std::forward<Args>(args)...)
+			);
+			std::future<return_type> fu = task->get_future();
+			add_task([task]() { (*task)(); });
+			return fu;
+		}
+
+		void wait() {
+			if (_numTaskLeft > 0 && _numWorker > 0) {
+				_lock lk(_waitMutex);
+				_waitCondition.wait(lk, [this] { return this->_numTaskLeft == 0; });
+			}
 		}
 
 		~XThreadPool()
 		{
-			stop();
 			join();
 		}
 
 	private:
-		void threadFunc()
+		void thread_func()
 		{
 			while (true) {
 				std::function<void()> task = nullptr;
 				{
-					std::unique_lock<std::mutex> lk(_queueMutex);
+					_lock lk(_queueMutex);
 					if (_stop)
 					{
 						break;
@@ -70,16 +111,35 @@ namespace lstg
 				}
 
 				task();
+				--_numTaskLeft;
+				_waitCondition.notify_one();
 			}
 		}
 
-		std::vector<std::thread>  _workers;
-		std::queue< std::function<void()> > _taskQueue;
+		void add_worker() {
+			_workers.emplace_back(std::thread(std::bind(&XThreadPool::thread_func, this)));
+		}
+
+		void join()
+		{
+			{
+				_lock lk(_queueMutex);
+				_stop = true;
+				_taskCondition.notify_all();
+			}
+			for (auto&& worker : _workers)
+				worker.join();
+		}
+
+		std::vector<std::thread> _workers;
+		std::queue<std::function<void()>> _taskQueue;
 
 		std::mutex _queueMutex;
+		std::mutex _waitMutex;
 		std::condition_variable _taskCondition;
+		std::condition_variable _waitCondition;
 		bool _stop;
-		int _numWorker;
+		size_t _numWorker;
+		std::atomic_int _numTaskLeft;
 	};
-
 }

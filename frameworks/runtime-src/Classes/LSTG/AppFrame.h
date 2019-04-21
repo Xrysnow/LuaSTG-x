@@ -69,7 +69,7 @@ namespace lstg
 		void snapShot(const char* path)noexcept;
 	public:
 		GameObjectManager& GetGameObjectPool() const noexcept { return *gameObjectPool; }
-		XThreadPool* GetThreadPool() const noexcept { return threadPool; }
+		XThreadPool* GetThreadPool() noexcept;
 
 		uint32_t getDropCounter() const { return dropCounter; }
 		void setDropCounter(uint32_t v) { dropCounter = v; }

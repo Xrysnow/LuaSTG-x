@@ -973,13 +973,10 @@ void XRenderer::updateBatchedVerts()
 #ifdef MT_UpdateVerts
 	const auto size = batchTaskInfo.size();
 	const auto nThr = LTHP.size() + 1;
-	static atomic<int> flagn;
-	flagn = 0;
-
 	const auto dat = batchTaskInfo.data();
 	const auto vert = _verts.data();
 	const auto cmds = _cmds.data();
-	deployThreadTask(size, nThr, [=](int start, int end)
+	deployThreadTaskAndWait(size, nThr, [=](int start, int end, int)
 	{
 		for (auto j = start; j < end; j++) {
 			const auto& inf = dat[j];
@@ -994,9 +991,7 @@ void XRenderer::updateBatchedVerts()
 				}
 			}
 		}
-		++flagn;
 	});
-	while (flagn < nThr) {}
 #endif
 }
 

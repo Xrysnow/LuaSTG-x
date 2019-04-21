@@ -15,11 +15,6 @@
 
 #define METATABLE_OBJ "mt"
 #define OPT_RENDER_LIST
-#define MT_UpdateTransformMat
-#define MT_UpdateTransform
-#define MT_CollisionCheck
-#define MT_BoundCheck
-#define USE_ComponentManager
 
 #define error_prop(L, p) luaL_error(L, "invalid argument for property '%s'", p)
 #define error_obj(L) luaL_error(L, "invalid luastg game object")
@@ -279,25 +274,21 @@ void GameObjectManager::DoFrame()noexcept
 	currentObj = nullptr;
 
 	//XProfiler::getInstance()->tic("updateTransform");
-#ifdef MT_UpdateTransform
-	static atomic<int> flagn;
-	flagn = 0;
-	const auto nThr = LTHP.size() + 1;
-	deployThreadTask(pool.size(), nThr, [this](int start, int end)
+	if (LTHP.empty())
 	{
-		pool.update(start, end);
-		for (auto j = start; j < end; j++)
-		{
+		pool.update(0, pool.size());
+		for (auto j = 0u; j < pool.size(); j++)
 			pool.at(j)->cm->updateParticle();
-		}
-		++flagn;
-	});
-	while (flagn < nThr) {}
-#else
-	pool.update(0, pool.size());
-	for (auto j = 0; j < pool.size(); j++)
-		pool.at(j)->cm->updateParticle();
-#endif // MT_UpdateTransform
+	}
+	else
+	{
+		deployThreadTaskAndWait(pool.size(), LTHP.size() + 1, [this](int start, int end, int)
+		{
+			pool.update(start, end);
+			for (auto j = start; j < end; j++)
+				pool.at(j)->cm->updateParticle();
+		});
+	}
 	//XProfiler::getInstance()->toc("updateTransform");
 
 	lua_pop(L, 1);
@@ -308,39 +299,37 @@ void GameObjectManager::DoRender()noexcept
 {
 	inDoRender = true;
 	//XProfiler::getInstance()->tic("updateTransformMat");
-#ifdef MT_UpdateTransformMat
-	static vector<GameObject*> to_render;
-	to_render.clear();
-	to_render.swap(to_render);
-	to_render.reserve(GetObjectCount());
-#endif
-	GameObject* p = m_pRenderListHeader.pRenderNext;
-	while (p && p != &m_pRenderListTail)
+	if (LTHP.empty())
 	{
-		
-		if (!p->hide/*&&p->isDefaultRender*/) // TODO: will waste, should make a flag for p
+		auto p = m_pRenderListHeader.pRenderNext;
+		while (p && p != &m_pRenderListTail)
 		{
-#ifdef MT_UpdateTransformMat
-			to_render.push_back(p);
-#else
-			p->cm->updateTransformMat();
-#endif
+			// TODO: will waste, should make a flag for p
+			if (!p->hide/*&&p->isDefaultRender*/)
+				p->cm->updateTransformMat();
+			p = p->pRenderNext;
 		}
-		p = p->pRenderNext;
 	}
-#ifdef MT_UpdateTransformMat
-	static atomic<int> flagn;
-	flagn = 0;
-	const auto nThr = LTHP.size() + 1;
-	const auto dat = to_render.data();
-	deployThreadTask(to_render.size(), nThr, [=](int start, int end)
+	else
 	{
-		for (auto j = start; j < end; j++)
-			dat[j]->cm->updateTransformMat();
-		++flagn;
-	});
-	while (flagn < nThr) {}
-#endif
+		static vector<GameObject*> to_render;
+		to_render.clear();
+		to_render.reserve(GetObjectCount());
+		auto p = m_pRenderListHeader.pRenderNext;
+		while (p && p != &m_pRenderListTail)
+		{
+			// TODO: will waste, should make a flag for p
+			if (!p->hide/*&&p->isDefaultRender*/)
+				to_render.push_back(p);
+			p = p->pRenderNext;
+		}
+		const auto dat = to_render.data();
+		deployThreadTaskAndWait(to_render.size(), LTHP.size() + 1, [=](int start, int end, int)
+		{
+			for (auto j = start; j < end; j++)
+				dat[j]->cm->updateTransformMat();
+		});
+	}
 	//XProfiler::getInstance()->toc("updateTransformMat");
 
 	// collect light sources
@@ -353,8 +342,7 @@ void GameObjectManager::DoRender()noexcept
 
 	GETOBJTABLE;  // ot
 
-	/*GameObject* */p = m_pRenderListHeader.pRenderNext;
-	CCASSERT(p != nullptr, "DoRender: GameObject is null.");
+	auto p = m_pRenderListHeader.pRenderNext;
 	uint32_t last_classID = 0;
 	while (p && p != &m_pRenderListTail)
 	{
@@ -410,49 +398,37 @@ void GameObjectManager::DoRender()noexcept
 
 void GameObjectManager::BoundCheck()noexcept
 {
-#ifdef MT_BoundCheck
-	auto result = new bool[pool.size()];
-	pool.boundCheck(_boundLeft, _boundRight, _boundBottom, _boundTop, result);
 	GETOBJTABLE;  // ot
-	for (int i = 0; i < pool.size(); ++i)
+	const auto ot_idx = lua_gettop(L);
+	if (LTHP.empty())
 	{
-		if (result[i])
+		auto p = m_pObjectListHeader.pObjectNext;
+		while (p && p != &m_pObjectListTail)
 		{
-			const auto p = pool.at(i);
-			// set to STATUS_DEL when out of bound
-			p->status = STATUS_DEL;
-			// id -> lua table -> class -> delfunc
-			lua_rawgeti(L, -1, p->luaID + 1);  // ot obj
-			lua_rawgeti(L, -1, 1);  // ot obj cls
-			lua_rawgeti(L, -1, LGOBJ_CC_DEL);  // ot obj cls f(del)
-			lua_pushvalue(L, -3);  // ot obj cls f(del) obj
-			lua_call(L, 1, 0);  // ot obj cls
-			lua_pop(L, 2);  // ot
+			if (p->bound && !p->cm->boundCheck(_boundLeft, _boundRight, _boundBottom, _boundTop))
+			{
+				p->status = STATUS_DEL;
+				callBack(L, p, LGOBJ_CC_DEL, ot_idx);
+			}
+			p = p->pObjectNext;
 		}
 	}
-	lua_pop(L, 1);
-	delete[] result;
-#else
-	GETOBJTABLE;  // ot
-	GameObject* p = m_pObjectListHeader.pObjectNext;
-	while (p && p != &m_pObjectListTail)
+	else
 	{
-		if (p->bound && !p->cm->boundCheck(_boundLeft, _boundRight, _boundBottom, _boundTop))
+		auto result = new bool[pool.size()];//TODO:
+		pool.boundCheck(_boundLeft, _boundRight, _boundBottom, _boundTop, result);
+		for (auto i = 0u; i < pool.size(); ++i)
 		{
-			// set to STATUS_DEL when out of bound
-			p->status = STATUS_DEL;
-			// id -> lua table -> class -> delfunc
-			lua_rawgeti(L, -1, p->luaID + 1);  // ot obj
-			lua_rawgeti(L, -1, 1);  // ot obj cls
-			lua_rawgeti(L, -1, LGOBJ_CC_DEL);  // ot obj cls f(del)
-			lua_pushvalue(L, -3);  // ot obj cls f(del) obj
-			lua_call(L, 1, 0);  // ot obj cls
-			lua_pop(L, 2);  // ot
+			if (result[i])
+			{
+				const auto p = pool.at(i);
+				p->status = STATUS_DEL;
+				callBack(L, p, LGOBJ_CC_DEL, ot_idx);
+			}
 		}
-		p = p->pObjectNext;
+		delete[] result;
 	}
 	lua_pop(L, 1);
-#endif
 }
 
 void GameObjectManager::CollisionCheck(size_t groupA, size_t groupB)noexcept
@@ -460,7 +436,8 @@ void GameObjectManager::CollisionCheck(size_t groupA, size_t groupB)noexcept
 	if (groupA >= maxGroupCount || groupB >= maxGroupCount)
 		luaL_error(L, "Invalid collision group.");
 
-	GETOBJTABLE;  // ot
+	GETOBJTABLE;  // groupA groupB ot
+	const auto ot_idx = lua_gettop(L);
 
 	GameObject* pA = m_pCollisionListHeader[groupA].pCollisionNext;
 	const auto pATail = &m_pCollisionListTail[groupA];
@@ -469,96 +446,78 @@ void GameObjectManager::CollisionCheck(size_t groupA, size_t groupB)noexcept
 
 	if (groupA != groupB)
 	{
-#ifdef MT_CollisionCheck
-		static vector<GameObject*> to_colli_lhs;
-		static vector<GameObject*> to_colli_rhs;
-		const auto nobj = GetObjectCount();
-		to_colli_lhs.clear();
-		to_colli_lhs.reserve(nobj);
-		to_colli_rhs.clear();
-		to_colli_rhs.reserve(nobj);
-		array<vector<GameObject*>, 4> ret_colli_lhs;
-		array<vector<GameObject*>, 4> ret_colli_rhs;
-		auto ret_colli_l_p = ret_colli_lhs.data();
-		auto ret_colli_r_p = ret_colli_rhs.data();
+		if (LTHP.empty())
+		{
+			while (pA && pA != pATail)
+			{
+				auto pB = pBHeader;
+				while (pB && pB != pBTail)
+				{
+					if (::CollisionCheck(pA, pB))
+						callBack(L, pA, pB, LGOBJ_CC_COLLI, ot_idx);
+					pB = pB->pCollisionNext;
+				}
+				pA = pA->pCollisionNext;
+			}
+		}
+		else
+		{
+			static vector<GameObject*> to_colli_lhs;
+			static vector<GameObject*> to_colli_rhs;
+			const auto nobj = GetObjectCount();
+			to_colli_lhs.clear();
+			to_colli_lhs.reserve(nobj);
+			to_colli_rhs.clear();
+			to_colli_rhs.reserve(nobj);
 
-		while (pA && pA != pATail)
-		{
-			auto pB = pBHeader;
-			while (pB && pB != pBTail)
+			while (pA && pA != pATail)
 			{
-				if (pA->colli&&pB->colli)
+				if (pA->colli)
 				{
-					to_colli_lhs.push_back(pA);
-					to_colli_rhs.push_back(pB);
+					auto pB = pBHeader;
+					while (pB && pB != pBTail)
+					{
+						if (pB->colli)
+						{
+							to_colli_lhs.push_back(pA);
+							to_colli_rhs.push_back(pB);
+						}
+						pB = pB->pCollisionNext;
+					}
 				}
-				pB = pB->pCollisionNext;
+				pA = pA->pCollisionNext;
 			}
-			pA = pA->pCollisionNext;
-		}
-		const auto size = to_colli_lhs.size();
-		auto dat_l = to_colli_lhs.data();
-		auto dat_r = to_colli_rhs.data();
-		static atomic<int> _colli_flagn;
-		_colli_flagn = 0;
-		const auto nThr = LTHP.size() + 1;
-		// not good to reserve nobj
-		for (auto i = 0; i < nThr; ++i)
-		{
-			ret_colli_l_p[i].reserve(nobj);
-			ret_colli_r_p[i].reserve(nobj);
-		}
-		deployThreadTask(size, nThr, [=](int start, int end, int i)
-		{
-			for (auto j = start; j < end; j++)
+			const auto size = to_colli_lhs.size();
+			auto dat_l = to_colli_lhs.data();
+			auto dat_r = to_colli_rhs.data();
+			const auto nThr = LTHP.size() + 1;
+			using _result_t = std::pair<vector<GameObject*>, vector<GameObject*>>;
+			auto futures = deployThreadTaskFuture(size, nThr, [=](int start, int end, int)
 			{
-				if (::CollisionCheck(dat_l[j], dat_r[j]))
+				vector<GameObject*> lhs;
+				vector<GameObject*> rhs;
+				for (auto j = start; j < end; j++)
 				{
-					ret_colli_l_p[i].push_back(dat_l[j]);
-					ret_colli_r_p[i].push_back(dat_r[j]);
+					if (::CollisionCheck(dat_l[j], dat_r[j]))
+					{
+						lhs.push_back(dat_l[j]);
+						rhs.push_back(dat_r[j]);
+					}
 				}
-			}
-			++_colli_flagn;
-		});
-		while (_colli_flagn < nThr) {}
-
-		for (auto i = 0; i < 4; ++i)
-		{
-			const auto sz = ret_colli_lhs[i].size();
-			for (auto j = 0; j < sz; ++j)
+				return make_shared<_result_t>(std::make_pair(lhs, rhs));
+			});
+			for (auto& fu : futures)
 			{
-				// id -> lua table -> class -> collifunc
-				lua_rawgeti(L, -1, ret_colli_lhs[i][j]->luaID + 1);  // ot obj
-				lua_rawgeti(L, -1, 1);  // ot obj cls
-				lua_rawgeti(L, -1, LGOBJ_CC_COLLI);  // ot obj cls f(colli)
-				lua_pushvalue(L, -3);  // ot obj cls f(colli) obj
-				lua_rawgeti(L, -5, ret_colli_rhs[i][j]->luaID + 1);  // ot obj cls f(colli) obj obj
-				lua_call(L, 2, 0);  // ot obj cls
-				lua_pop(L, 2);  // ot
-			}
-		}
-#else
-		while (pA && pA != pATail)
-		{
-			auto pB = pBHeader;
-			while (pB && pB != pBTail)
-			{
-				if (::CollisionCheck(pA, pB))
+				auto ptr = static_pointer_cast<_result_t>(fu.get());
+				auto& lhs = ptr->first;
+				auto& rhs = ptr->second;
+				const auto sz = lhs.size();
+				for (auto j = 0u; j < sz; ++j)
 				{
-					// id -> lua table -> class -> collifunc
-					lua_rawgeti(L, -1, pA->luaID + 1);  // ot obj
-					lua_rawgeti(L, -1, 1);  // ot obj cls
-					lua_rawgeti(L, -1, LGOBJ_CC_COLLI);  // ot obj cls f(colli)
-					lua_pushvalue(L, -3);  // ot obj cls f(colli) obj
-					lua_rawgeti(L, -5, pB->luaID + 1);  // ot obj cls f(colli) obj obj
-					lua_call(L, 2, 0);  // ot obj cls
-					lua_pop(L, 2);  // ot
+					callBack(L, lhs[j], rhs[j], LGOBJ_CC_COLLI, ot_idx);
 				}
-				pB = pB->pCollisionNext;
 			}
-			pA = pA->pCollisionNext;
 		}
-#endif
 		lua_pop(L, 1);
 	}
 	else
@@ -569,16 +528,7 @@ void GameObjectManager::CollisionCheck(size_t groupA, size_t groupB)noexcept
 			while (pB && pB != pBTail)
 			{
 				if (::CollisionCheck(pA, pB) && pA != pB)
-				{
-					// id -> lua table -> class -> collifunc
-					lua_rawgeti(L, -1, pA->luaID + 1);  // ot obj
-					lua_rawgeti(L, -1, 1);  // ot obj cls
-					lua_rawgeti(L, -1, LGOBJ_CC_COLLI);  // ot obj cls f(colli)
-					lua_pushvalue(L, -3);  // ot obj cls f(colli) obj
-					lua_rawgeti(L, -5, pB->luaID + 1);  // ot obj cls f(colli) obj obj
-					lua_call(L, 2, 0);  // ot obj cls
-					lua_pop(L, 2);  // ot
-				}
+					callBack(L, pA, pB, LGOBJ_CC_COLLI, ot_idx);
 				pB = pB->pCollisionNext;
 			}
 			pA = pA->pCollisionNext;
@@ -598,7 +548,6 @@ void GameObjectManager::CollisionCheck(GameObject* objectA, size_t groupB) noexc
 	const auto pBTail = &m_pCollisionListTail[groupB];
 	auto pB = pBHeader;
 	GETOBJTABLE;  // ot
-	// id -> lua table -> class -> collifunc
 	lua_rawgeti(L, -1, pA->luaID + 1);  // ot objA
 	lua_rawgeti(L, -1, 1);  // ot objA cls
 	lua_rawgeti(L, -1, LGOBJ_CC_COLLI);  // ot objA cls f(colli)
@@ -745,7 +694,7 @@ void GameObjectManager::AfterFrame()noexcept
 	if (GetObjectCount() > 32)
 	{
 		renderMid = m_pRenderListHeader.pRenderNext;
-		for (int i = 0; i < GetObjectCount() / 2; ++i)
+		for (auto i = 0u; i < GetObjectCount() / 2; ++i)
 			renderMid = renderMid->pRenderNext;
 	}
 	else
@@ -841,63 +790,61 @@ int GameObjectManager::New(lua_State* L)noexcept
 	return 1;
 }
 //TODO:
-#ifdef USE_ComponentManager 
 int GameObjectManager::Clone(lua_State* L, int idx) noexcept { return 0; }
-#else
-int GameObjectPool::Clone(lua_State* L, int idx) noexcept
+
+//int GameObjectPool::Clone(lua_State* L, int idx) noexcept
+//{
+//	auto p = checkObject(L, idx);
+//	if (!p)
+//		return luaL_error(L, "not a valid luastg object for 'Clone'.");
+//	const auto pNew = allocateObject();
+//	if (!pNew)
+//		return luaL_error(L, "can't alloc object, object pool may be full.");
+//	pNew->CopyAttrFrom(p);
+//	pNew->layer++;
+//	pNew->group++;
+//	setObjectLayer(pNew, p->layer);
+//	setObjectGroup(pNew, p->group);
+//	if (pNew->res)
+//	{
+//		if (pNew->res->getType() == ResourceType::Particle)
+//		{
+//			pNew->ps = dynamic_cast<ResParticle*>(pNew->res)->AllocInstance();
+//			pNew->ps->setInactive();
+//			pNew->ps->setCenter(Vec2(float(pNew->x), float(pNew->y)));
+//			pNew->ps->setRotation(float(pNew->rot));
+//			pNew->ps->setActive();
+//		}
+//		pNew->res->retain();
+//	}
+//
+//	// obj[1]=class
+//	// obj[2]=id
+//	// setmetatable(obj, ot["mt"])
+//	// ot[id+1]=obj
+//
+//	GETOBJTABLE;  // ... ot
+//	lua_createtable(L, 2, 0);  // ... ot obj
+//	if (idx < 0)idx = idx - 2;
+//	lua_rawgeti(L, idx, 1);  // ... ot obj class
+//	lua_rawseti(L, -2, 1);  // ... ot obj
+//
+//	lua_pushinteger(L, lua_Integer(pNew->luaID));  // ... ot obj id
+//	lua_rawseti(L, -2, 2);  // ... ot obj
+//
+//	lua_getfield(L, -2, METATABLE_OBJ);  // ... ot obj mt
+//	lua_setmetatable(L, -2);  // ... ot obj
+//
+//	lua_pushvalue(L, -1);  // ... ot obj obj
+//	lua_rawseti(L, -3, pNew->luaID + 1);  // ... ot obj
+//
+//	lua_remove(L, -2);  // ... obj
+//	return 1;
+//}
+
+void GameObjectManager::callBack(lua_State* L, int callBack, bool hasParam)
 {
-	auto p = checkObject(L, idx);
-	if (!p)
-		return luaL_error(L, "not a valid luastg object for 'Clone'.");
-	const auto pNew = allocateObject();
-	if (!pNew)
-		return luaL_error(L, "can't alloc object, object pool may be full.");
-	pNew->CopyAttrFrom(p);
-	pNew->layer++;
-	pNew->group++;
-	setObjectLayer(pNew, p->layer);
-	setObjectGroup(pNew, p->group);
-	if (pNew->res)
-	{
-		if (pNew->res->getType() == ResourceType::Particle)
-		{
-			pNew->ps = dynamic_cast<ResParticle*>(pNew->res)->AllocInstance();
-			pNew->ps->setInactive();
-			pNew->ps->setCenter(Vec2(float(pNew->x), float(pNew->y)));
-			pNew->ps->setRotation(float(pNew->rot));
-			pNew->ps->setActive();
-		}
-		pNew->res->retain();
-	}
-
-	// obj[1]=class
-	// obj[2]=id
-	// setmetatable(obj, ot["mt"])
-	// ot[id+1]=obj
-
-	GETOBJTABLE;  // ... ot
-	lua_createtable(L, 2, 0);  // ... ot obj
-	if (idx < 0)idx = idx - 2;
-	lua_rawgeti(L, idx, 1);  // ... ot obj class
-	lua_rawseti(L, -2, 1);  // ... ot obj
-
-	lua_pushinteger(L, lua_Integer(pNew->luaID));  // ... ot obj id
-	lua_rawseti(L, -2, 2);  // ... ot obj
-
-	lua_getfield(L, -2, METATABLE_OBJ);  // ... ot obj mt
-	lua_setmetatable(L, -2);  // ... ot obj
-
-	lua_pushvalue(L, -1);  // ... ot obj obj
-	lua_rawseti(L, -3, pNew->luaID + 1);  // ... ot obj
-
-	lua_remove(L, -2);  // ... obj
-	return 1;
-}
-#endif // USE_ComponentManager
-
-void GameObjectManager::callBack(lua_State* L, GameObject* p, int callBack, bool hasParam)
-{
-	if (!p) return;
+	//if (!p) return;
 	// note: prepare stack
 	if (hasParam)
 	{
@@ -919,6 +866,29 @@ void GameObjectManager::callBack(lua_State* L, GameObject* p, int callBack, bool
 	}
 }
 
+void GameObjectManager::callBack(lua_State* L, GameObject* p, int callBack, int objTableIndex)
+{
+	// id -> lua table -> class -> func
+	lua_rawgeti(L, objTableIndex, p->luaID + 1);  // ... obj
+	lua_rawgeti(L, -1, 1);  // ... obj cls
+	lua_rawgeti(L, -1, callBack);  // ... obj cls f
+	lua_pushvalue(L, -3);  // ... obj cls f obj
+	lua_call(L, 1, 0);  // ... obj cls
+	lua_pop(L, 2);  // ...
+}
+
+void GameObjectManager::callBack(lua_State* L, GameObject* pA, GameObject* pB, int callBack, int objTableIndex)
+{
+	// id -> lua table -> class -> func
+	lua_rawgeti(L, objTableIndex, pA->luaID + 1);  // ... A
+	lua_rawgeti(L, -1, 1);  // ... A cls
+	lua_rawgeti(L, -1, callBack);  // ... A cls f
+	lua_pushvalue(L, -3);  // ... A cls f A
+	lua_rawgeti(L, objTableIndex, pB->luaID + 1);  // ... A cls f A B
+	lua_call(L, 2, 0);  // ... A cls
+	lua_pop(L, 2);  // ...
+}
+
 int GameObjectManager::del_or_kill(lua_State* L, GAMEOBJECTSTATUS status, int callBackIdx)
 {
 	const auto type = lua_type(L, 1);
@@ -936,7 +906,7 @@ int GameObjectManager::del_or_kill(lua_State* L, GAMEOBJECTSTATUS status, int ca
 			if (p->status == STATUS_DEFAULT)
 			{
 				p->status = status;
-				callBack(L, p, callBackIdx, true);
+				callBack(L, callBackIdx, true);
 			}
 			return 0;
 		}
@@ -956,7 +926,7 @@ int GameObjectManager::del_or_kill(lua_State* L, GAMEOBJECTSTATUS status, int ca
 				if (p->status == STATUS_DEFAULT)
 				{
 					p->status = status;
-					callBack(L, p, callBackIdx, false); // t
+					callBack(L, callBackIdx, false); // t
 				}
 			}
 			return 0;
@@ -978,7 +948,7 @@ int GameObjectManager::del_or_kill(lua_State* L, GAMEOBJECTSTATUS status, int ca
 			{
 				p->status = status;
 				lua_rawgeti(L, -1, p->luaID + 1); // ot obj
-				callBack(L, p, callBackIdx, false); // ot
+				callBack(L, callBackIdx, false); // ot
 			}
 			p = p->pCollisionNext;
 		}

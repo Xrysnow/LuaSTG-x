@@ -57,8 +57,8 @@ namespace lstg
 	*/
 	std::wstring StringFormatV(const wchar_t* Format, va_list vaptr)noexcept;
 
-	/** print lua stack */
-	void stackDump(lua_State *L);
+	/** dump lua stack */
+	std::string stackDump(lua_State *L);
 
 	std::string ReplacePathSep(std::string path, const std::string& ori = "\\", const std::string& dst = "/");
 
@@ -103,10 +103,11 @@ namespace lstg
 
 	cocos2d::Image* GetTextureImage(cocos2d::Texture2D* texture, bool flipImage);
 
-	// (start, end)
-	void deployThreadTask(size_t taskSize, size_t nSlice, const std::function<void(int, int)>& task);
 	// (start, end, iThread)
 	void deployThreadTask(size_t taskSize, size_t nSlice, const std::function<void(int, int, int)>& task);
+	void deployThreadTaskAndWait(size_t taskSize, size_t nSlice, const std::function<void(int, int, int)>& task);
+	std::vector<std::future<std::shared_ptr<void>>> deployThreadTaskFuture(size_t taskSize, size_t nSlice,
+		const std::function<std::shared_ptr<void>(int, int, int)>& task);
 
 	// RC4 cryption
 	class RC4

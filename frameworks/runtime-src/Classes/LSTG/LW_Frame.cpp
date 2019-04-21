@@ -71,6 +71,21 @@ static int ShowSplashWindow(lua_State* L) noexcept
 	return 0;
 }
 
+static int SetThreadPoolSize(lua_State* L) noexcept
+{
+	const auto val = luaL_checkinteger(L, 1);
+	if (val < 0)
+		return luaL_error(L, "invalid argument");
+	LTHP.resize(val);
+	return 0;
+}
+
+static int GetThreadPoolSize(lua_State* L) noexcept
+{
+	lua_pushinteger(L, LTHP.size());
+	return 1;
+}
+
 static int FrameInit(lua_State* L) noexcept
 {
 	if (!LAPP.Init())
@@ -99,6 +114,9 @@ vector<luaL_Reg> lstg::LW_Frame()
 		{ "Print", &Print },
 		{ "DoFile", &DoFile },
 		{ "ShowSplashWindow", &ShowSplashWindow },
+
+		{ "SetThreadPoolSize", &SetThreadPoolSize },
+		{ "GetThreadPoolSize", &GetThreadPoolSize },
 
 		{ "FrameInit", &FrameInit },
 		{ "FrameReset", &FrameReset },

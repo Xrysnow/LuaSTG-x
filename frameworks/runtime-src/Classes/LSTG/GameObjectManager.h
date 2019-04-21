@@ -109,7 +109,10 @@ namespace lstg
 		int Clone(lua_State* L, int idx)noexcept;
 
 	private:
-		static void callBack(lua_State* L, GameObject* p, int callBack, bool hasParam);
+		static void callBack(lua_State* L, int callBack, bool hasParam);
+		static void callBack(lua_State* L, GameObject* p, int callBack, int objTableIndex);
+		// note: objTableIndex should be positive
+		static void callBack(lua_State* L, GameObject* pA, GameObject* pB, int callBack, int objTableIndex);
 		int del_or_kill(lua_State* L, GAMEOBJECTSTATUS status, int callBackIdx);
 	public:
 		// trigger del event on object

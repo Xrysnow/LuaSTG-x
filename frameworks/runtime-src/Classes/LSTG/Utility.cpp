@@ -217,41 +217,35 @@ wstring lstg::StringFormatV(const wchar_t* Format, va_list vaptr)noexcept
 	return move(tRet);
 }
 
-void lstg::stackDump(lua_State *L) {
-	int i;
-	int top = lua_gettop(L);
-	string s = "\n";
-	for (i = 1; i <= top; i++) {
+std::string lstg::stackDump(lua_State *L)
+{
+	const auto top = lua_gettop(L);
+	string s;
+	for (auto i = 1; i <= top; i++) {
 		s += "[" + to_string(i) + "] = ";
-		int t = lua_type(L, i);
+		const auto t = lua_type(L, i);
 		switch (t) {
-
 		case LUA_TSTRING:
 			s += "\'";
 			s += lua_tostring(L, i);
 			s += "\'";
 			break;
-
 		case LUA_TBOOLEAN:
 			if (lua_toboolean(L, i))
-			{
 				s += "true";
-			}
-			else { s += "false"; }
+			else
+				s += "false";
 			break;
-
 		case LUA_TNUMBER:
 			s += to_string(lua_tonumber(L, i));
 			break;
-
 		default:
 			s += lua_typename(L, t);
 			break;
-
 		}
 		s += "\n";
 	}
-	LINFO("=== Lua Stack Dump ===\n%s", s.c_str());
+	return s;
 }
 
 string lstg::ReplacePathSep(string path, const string& ori, const string& dst)
@@ -756,27 +750,6 @@ Image* lstg::GetTextureImage(Texture2D* texture, bool flipImage)
 	return image;
 }
 
-void lstg::deployThreadTask(size_t taskSize, size_t nSlice, const std::function<void(int, int)>& task)
-{
-	const auto nThr = nSlice;
-	const int num = taskSize / nThr;
-	for (auto i = 0u; i < nThr; ++i)
-	{
-		const auto start = i * num;
-		auto end = (i + 1)*num;
-		if (i == nThr - 1)
-			end = taskSize;
-		auto task_ = [=]()
-		{
-			task(start, end);
-		};
-		if (i == nThr - 1) // reserve one job for this thread
-			task_();
-		else
-			LTHP.addTask(task_);
-	}
-}
-
 void lstg::deployThreadTask(size_t taskSize, size_t nSlice, const std::function<void(int, int, int)>& task)
 {
 	const auto nThr = nSlice;
@@ -794,8 +767,60 @@ void lstg::deployThreadTask(size_t taskSize, size_t nSlice, const std::function<
 		if (i == nThr - 1) // reserve one job for this thread
 			task_();
 		else
-			LTHP.addTask(task_);
+			LTHP.add_task(task_);
 	}
+}
+
+void lstg::deployThreadTaskAndWait(size_t taskSize, size_t nSlice, const std::function<void(int, int, int)>& task)
+{
+	const auto nThr = nSlice;
+	const int num = taskSize / nThr;
+	vector<future<void>> futures;
+	for (auto i = 0u; i < nThr; ++i)
+	{
+		const auto start = i * num;
+		auto end = (i + 1)*num;
+		if (i == nThr - 1)
+			end = taskSize;
+		auto task_ = [=]()
+		{
+			task(start, end, i);
+		};
+		if (i == nThr - 1) // reserve one job for this thread
+			task_();
+		else
+			futures.emplace_back(LTHP.add_task_future(task_));
+	}
+	for (auto& fu : futures)
+		fu.get();
+}
+
+std::vector<std::future<std::shared_ptr<void>>> lstg::deployThreadTaskFuture(size_t taskSize, size_t nSlice,
+	const std::function<std::shared_ptr<void>(int, int, int)>& task)
+{
+	const auto nThr = nSlice;
+	const int num = taskSize / nThr;
+	vector<future<shared_ptr<void>>> futures;
+	for (auto i = 0u; i < nThr; ++i)
+	{
+		const auto start = i * num;
+		auto end = (i + 1)*num;
+		if (i == nThr - 1)
+			end = taskSize;
+		std::function<shared_ptr<void>()> task_ = [=]()
+		{
+			return task(start, end, i);
+		};
+		if (i == nThr - 1) // reserve one job for this thread
+		{
+			packaged_task<shared_ptr<void>()> _task(task_);
+			futures.emplace_back(_task.get_future());
+			_task();
+		}
+		else
+			futures.emplace_back(LTHP.add_task_future(task_));
+	}
+	return futures;
 }
 
 void RC4::operator()(const uint8_t* input, size_t inputlen, uint8_t* output)

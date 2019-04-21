@@ -266,6 +266,13 @@ void AppFrame::snapShot(const char* path)noexcept
 	utils::captureScreen(nullptr, path);//TODO: CHECK
 }
 
+XThreadPool* AppFrame::GetThreadPool() noexcept
+{
+	if (!threadPool)
+		threadPool = new XThreadPool{ 0 };
+	return threadPool;
+}
+
 bool AppFrame::Init()noexcept
 {
 	if (status != Status::NotInitialized)

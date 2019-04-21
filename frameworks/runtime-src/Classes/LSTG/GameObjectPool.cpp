@@ -185,19 +185,18 @@ void GameObjectPool::clear()
 
 void GameObjectPool::update()
 {
-#if defined(MT_OPT)
-	static atomic<int> flagn;
-	flagn = 0;
-	const auto nThr = LTHP.size() + 1;
-	deployThreadTask(size(), nThr, [=](int start, int end)
+	if (LTHP.empty())
 	{
-		update(start, end);
-		++flagn;
-	});
-	while (flagn < nThr) {}
-#else
-	update(0, _size);
-#endif
+		update(0, _size);
+	}
+	else
+	{
+		deployThreadTaskAndWait(_size, LTHP.size() + 1,
+			[=](int start, int end, int)
+		{
+			update(start, end);
+		});
+	}
 }
 
 void GameObjectPool::update(size_t begin, size_t end)
@@ -232,29 +231,30 @@ cocos2d::Vec2 GameObjectPool::getPosition(size_t id) const
 
 void GameObjectPool::getTransformMat(size_t id, cocos2d::Mat4* mat)
 {
-	getTransform(anchor[id], x[id], y[id], -rot[id] * LRAD2DEGREE, hscale[id], vscale[id], 0.f, mat);
+	getTransform(anchor[id], x[id], y[id], -rot[id] * LRAD2DEGREE,
+		hscale[id], vscale[id], 0.f, mat);
 }
 
 void GameObjectPool::getTransformMat(size_t id, float factor, float z, cocos2d::Mat4* mat)
 {
-	getTransform(anchor[id], x[id], y[id], -rot[id] * LRAD2DEGREE, hscale[id] * factor, vscale[id] * factor, z, mat);
+	getTransform(anchor[id], x[id], y[id], -rot[id] * LRAD2DEGREE,
+		hscale[id] * factor, vscale[id] * factor, z, mat);
 }
 
 void GameObjectPool::boundCheck(float l, float r, float b, float t, bool* out)
 {
-#if defined(MT_OPT)
-	static atomic<int> flagn;
-	flagn = 0;
-	const auto nThr = LTHP.size() + 1;
-	deployThreadTask(size(), nThr, [=](int start, int end)
+	if (LTHP.empty())
 	{
-		boundCheck(start, end, l, r, b, t, out + start);
-		++flagn;
-	});
-	while (flagn < nThr) {}
-#else
-	boundCheck(0, _size, l, r, b, t, out);
-#endif
+		deployThreadTaskAndWait(size(), LTHP.size() + 1,
+			[=](int start, int end, int)
+		{
+			boundCheck(start, end, l, r, b, t, out + start);
+		});
+	}
+	else
+	{
+		boundCheck(0, _size, l, r, b, t, out);
+	}
 }
 
 void GameObjectPool::boundCheck(size_t begin, size_t end, float l, float r, float b, float t, bool* out) const
