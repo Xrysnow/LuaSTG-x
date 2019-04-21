@@ -136,8 +136,8 @@ static int PostEffect(lua_State* L) noexcept
 
 static int CreateGLProgramFromPath(lua_State* L) noexcept
 {
-	const auto s1 = lua_tostring(L, 1);
-	const auto s2 = lua_tostring(L, 2);
+	const auto s1 = luaL_checkstring(L, 1);
+	const auto s2 = luaL_checkstring(L, 2);
 	const auto p = util::CreateGLProgramFromPath(s1, s2);
 	if (!p)
 		return luaL_error(L, "can't create GLProgram from path [%s] and [%s]", s1, s2);
@@ -146,8 +146,8 @@ static int CreateGLProgramFromPath(lua_State* L) noexcept
 }
 static int CreateGLProgramFromString(lua_State* L) noexcept
 {
-	const auto s1 = lua_tostring(L, 1);
-	const auto s2 = lua_tostring(L, 2);
+	const auto s1 = luaL_checkstring(L, 1);
+	const auto s2 = luaL_checkstring(L, 2);
 	const auto p = util::CreateGLProgramFromString(s1, s2);
 	if (!p)
 		return luaL_error(L, "can't create GLProgram from string");
