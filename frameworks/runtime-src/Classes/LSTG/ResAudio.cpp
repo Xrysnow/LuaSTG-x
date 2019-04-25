@@ -3,15 +3,9 @@
 #include "../Audio/AudioDecoderManager.h"
 #include "../Audio/AudioDecoder.h"
 #include "LogSystem.h"
-#include "ResAnimation.h"
 #include "AppFrame.h"
 #include "Utility.h"
 #include "Math/XFFT.h"
-
-static float VolumeFix(float v)
-{
-	return -exp(-v * 6.f) + 1;
-}
 
 using namespace std;
 using namespace lstg;
@@ -56,7 +50,7 @@ void ResAudio::play()
 void ResAudio::play(float vol, float pan)
 {
 	param.position.x = pan;
-	param.volume = VolumeFix(vol);
+	param.volume = vol;
 	play();
 }
 
@@ -125,13 +119,16 @@ void ResAudio::setTime(float time)
 
 float ResAudio::getTotalTime()
 {
-	return XAudioEngine::getDuration(audioID);
+	const auto t = XAudioEngine::getDuration(audioID);
+	if (t == XAudioEngine::TIME_UNKNOWN && cache)
+		return cache->getDuration();
+	return t;
 }
 
 void ResAudio::setVolume(float v)
 {
 	param.volume = v;
-	XAudioEngine::setVolume(audioID, VolumeFix(v));
+	XAudioEngine::setVolume(audioID, v);
 }
 
 void ResAudio::setParam(const xAudio::SourceParam& _param)
