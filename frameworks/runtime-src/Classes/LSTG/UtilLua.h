@@ -3,7 +3,6 @@
 #include "scripting/lua-bindings/manual/CCLuaStack.h"
 #include "scripting/lua-bindings/manual/CCLuaEngine.h"
 #include "BlendMode.h"
-#include "Utility.h"
 #include "GameObjectBentLaser.h"
 #include "../Math/XCollision.h"
 
@@ -33,7 +32,6 @@ namespace lstg
 				return nullptr;
 			const auto u = lua_touserdata(L, lo);
 			return static_cast<T*>(u ? *(void**)u : nullptr);
-			//return static_cast<T*>(_tousertype(L, lo));
 		}
 
 		bool _luaval_to_color4b(lua_State* L, int lo, cocos2d::Color4B* outValue, const char* funcName = "");

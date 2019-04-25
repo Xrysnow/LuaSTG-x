@@ -112,111 +112,6 @@ string lstg::StringFormatV(const char* Format, va_list vaptr)noexcept
 	return tRet;
 }
 
-wstring lstg::StringFormat(const wchar_t* Format, ...)noexcept
-{
-	va_list vaptr;
-	va_start(vaptr, Format);
-	wstring tRet = StringFormatV(Format, vaptr);
-	va_end(vaptr);
-	return tRet;
-}
-
-wstring lstg::StringFormatV(const wchar_t* Format, va_list vaptr)noexcept
-{
-	wstring tRet;
-	try
-	{
-		while (*Format != L'\0')
-		{
-			wchar_t c = *Format;
-			if (c != L'%')
-				tRet.push_back(c);
-			else
-			{
-				c = *(++Format);
-
-				switch (c)
-				{
-				case L'%':
-					tRet.push_back(L'%');
-					break;
-				case 'b':
-					tRet.append(va_arg(vaptr, bool) ? L"true" : L"false");
-					break;
-				case L'd':
-					tRet.append(to_wstring(va_arg(vaptr, int32_t)));
-					break;
-				case L'f':
-					tRet.append(to_wstring(va_arg(vaptr, double)));
-					break;
-				case L'l':
-					c = *(++Format);
-					switch (c)
-					{
-					case L'f':
-						tRet.append(to_wstring(va_arg(vaptr, double)));
-						break;
-					case L'd':
-						tRet.append(to_wstring(va_arg(vaptr, int64_t)));
-						break;
-					case L'u':
-						tRet.append(to_wstring(va_arg(vaptr, uint64_t)));
-						break;
-					default:
-						tRet.append(L"%l");
-						if (c == L'\0')
-							Format--;
-						else
-							tRet.push_back(c);
-						break;
-					}
-					break;
-				case L'u':
-					tRet.append(to_wstring(va_arg(vaptr, uint32_t)));
-					break;
-				case L'p':
-					tRet.append(to_wstring(va_arg(vaptr, unsigned int)));
-					break;
-				case L'c':
-					tRet.push_back(va_arg(vaptr, int32_t));
-					break;
-				case L's':
-					{
-						const wchar_t* p = va_arg(vaptr, wchar_t*);
-						if (p)
-							tRet.append(p);
-						else
-							tRet.append(L"<null>");
-					}
-					break;
-				case 'm':
-					{
-						const char* p = va_arg(vaptr, char*);
-						if (p)
-							tRet.append(move(fcyStringHelper::MultiByteToWideChar_UTF8(p)));
-						else
-							tRet.append(L"<null>");
-					}
-					break;
-				default:
-					tRet.push_back(L'%');
-					if (c == L'\0')
-						Format--;
-					else
-						tRet.push_back(c);
-					break;
-				}
-			}
-			Format++;
-		}
-	}
-	catch (const bad_alloc&)
-	{
-	}
-
-	return move(tRet);
-}
-
 std::string lstg::stackDump(lua_State *L)
 {
 	const auto top = lua_gettop(L);
@@ -827,16 +722,12 @@ void RC4::operator()(const uint8_t* input, size_t inputlen, uint8_t* output)
 {
 	uint8_t Scpy[256];
 	memcpy(Scpy, S, sizeof(S));
-
 	for (size_t i = 0, j = 0; i < inputlen; i++)
 	{
-		// S盒置换
-		size_t i2 = (i + 1) % 256;
+		const size_t i2 = (i + 1) % 256;
 		j = (j + Scpy[i2]) % 256;
 		swap(Scpy[i2], Scpy[j]);
-		uint8_t n = Scpy[(Scpy[i2] + Scpy[j]) % 256];
-
-		// 加解密
+		const uint8_t n = Scpy[(Scpy[i2] + Scpy[j]) % 256];
 		*(output + i) = *(input + i) ^ n;
 	}
 }
@@ -844,12 +735,8 @@ void RC4::operator()(const uint8_t* input, size_t inputlen, uint8_t* output)
 RC4::RC4(const uint8_t* password, size_t len)
 {
 	len = min(len, size_t(256));
-
-	// 初始化S盒
 	for (int i = 0; i < 256; ++i)
 		S[i] = i;
-
-	// S盒初始置换
 	for (size_t i = 0, j = 0; i < 256; i++)
 	{
 		j = (j + S[i] + password[i % len]) % 256;

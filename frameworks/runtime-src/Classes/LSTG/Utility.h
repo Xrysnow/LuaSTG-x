@@ -46,17 +46,6 @@ namespace lstg
 	*/
 	std::string StringFormatV(const char* Format, va_list vaptr)noexcept;
 
-	std::wstring StringFormat(const wchar_t* Format, ...)noexcept;
-
-	/** @brief string format, wstring, va_list\n
-	* @code
-	* bool     b; int32_t   c; unsigned int p;
-	* int32_t  d; uint32_t  u; double  f;
-	* int64_t ld; uint64_t lu; double lf;
-	* char*    m; wchar_t*  s; @endcode
-	*/
-	std::wstring StringFormatV(const wchar_t* Format, va_list vaptr)noexcept;
-
 	/** dump lua stack */
 	std::string stackDump(lua_State *L);
 
