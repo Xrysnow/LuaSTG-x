@@ -67,7 +67,8 @@ void ComponentManager::updateCommandAni(ResAnimation* res)
 	auto blendMode = res->getBlendMode();
 	if (blend)
 	{
-		blendMode = blend->blendMode;
+		if (blend->blendMode)
+			blendMode = blend->blendMode;
 		if (blend->useColor)
 		{
 			for (int j = 0; j < 4; ++j)
@@ -115,7 +116,8 @@ void ComponentManager::updateCommandSprite(ResSprite* res)
 	auto blendMode = res->getBlendMode();
 	if (blend)
 	{
-		blendMode = blend->blendMode;
+		if(blend->blendMode)
+			blendMode = blend->blendMode;
 		if (blend->useColor)
 		{
 			for (int j = 0; j < 4; ++j)
@@ -172,7 +174,8 @@ void ComponentManager::updateCommandTexture(ResTexture* res)
 	auto blendMode = BlendMode::Default;
 	if (blend)
 	{
-		blendMode = blend->blendMode;
+		if (blend->blendMode)
+			blendMode = blend->blendMode;
 	}
 	LRR.updateBlendMode(blendMode);
 	auto state = blendMode->getGLProgramState(LRR.getCurrentFogMode());
