@@ -3,7 +3,6 @@
 #include "GameObjectManager.h"
 
 using namespace lstg;
-#define USE_ComponentManager
 
 void GameObject::_Reset()
 {
@@ -18,11 +17,6 @@ void GameObject::_Reset()
 	ReleaseResource();
 	res = nullptr;
 	cm = nullptr;
-
-	pObjectPrev = pObjectNext = nullptr;
-	pRenderPrev = pRenderNext = nullptr;
-	pCollisionPrev = pCollisionNext = nullptr;
-
 	cls = nullptr;
 }
 
@@ -136,19 +130,6 @@ void GameObject::CopyAttrFrom(GameObject* other)
 	hide = other->hide;
 	status = other->status;
 	cls = other->cls;
-}
-
-void GameObject::removeFromList()
-{
-	// remove from obj list
-	pObjectPrev->pObjectNext = pObjectNext;
-	pObjectNext->pObjectPrev = pObjectPrev;
-	// remove from render list
-	pRenderPrev->pRenderNext = pRenderNext;
-	pRenderNext->pRenderPrev = pRenderPrev;
-	// remove from collision list
-	pCollisionPrev->pCollisionNext = pCollisionNext;
-	pCollisionNext->pCollisionPrev = pCollisionPrev;
 }
 
 cocos2d::Vec2 GameObject::getPosition() const

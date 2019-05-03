@@ -18,10 +18,6 @@ namespace lstg
 
 	struct GameObject
 	{
-		// list field
-		GameObject *pObjectPrev, *pObjectNext;
-		GameObject *pRenderPrev, *pRenderNext;
-		GameObject *pCollisionPrev, *pCollisionNext;
 		ComponentManager* cm = nullptr;
 		Resource* res = nullptr;   // resource for render
 		lua_Integer timer = 0;     // frame timer
@@ -49,8 +45,6 @@ namespace lstg
 		void OnDoFrame();
 
 		void CopyAttrFrom(GameObject* other);
-
-		void removeFromList();
 
 		cocos2d::Vec2 getPosition() const;
 		float getRotation() const;

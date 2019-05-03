@@ -19,19 +19,32 @@ namespace lstg
 	class GameObjectManager
 	{
 	private:
+		struct less_obj
+		{
+			bool operator()(GameObject* p1, GameObject* p2) const
+			{
+				return p1->uid < p2->uid;
+			}
+		};
+
+		struct less_render
+		{
+			bool operator()(GameObject* p1, GameObject* p2) const
+			{
+				return (p1->layer < p2->layer) || ((p1->layer == p2->layer) && (p1->uid < p2->uid));
+			}
+		};
+
 		lua_State* L = nullptr;
-		size_t maxObjectCount;
-		size_t maxGroupCount;
 
 		GameObjectPool pool{ LGOBJ_MAXCNT };
 		std::array<ComponentManager, LGOBJ_MAXCNT> cmPool;
 		std::array<uint32_t, LGOBJ_MAXCNT> idForLua;
 
 		uint64_t _iUid = 0;
-		// list header and tail
-		GameObject m_pObjectListHeader, m_pObjectListTail;
-		GameObject m_pRenderListHeader, m_pRenderListTail;
-		GameObject m_pCollisionListHeader[LGOBJ_GROUPCNT], m_pCollisionListTail[LGOBJ_GROUPCNT];
+		std::set<GameObject*, less_obj> objList;
+		std::set<GameObject*, less_render> renderList;
+		std::array<std::set<GameObject*, less_obj>, LGOBJ_GROUPCNT> colliList;
 
 		// bound
 		lua_Number _boundLeft = -100.f;
@@ -40,18 +53,25 @@ namespace lstg
 		lua_Number _boundBottom = -100.f;
 
 		GameObject* currentObj = nullptr;
-		GameObject* renderMid = nullptr;
 		bool inDoFrame = false;
 		bool inDoRender = false;
 
 		std::unordered_set<GameObject*> lightSources;
 
-		GameObject* freeObjectInternal(GameObject* p)noexcept;
 	public:
+		explicit GameObjectManager(lua_State* pL);
+		~GameObjectManager();
+
+		void ResetLua(lua_State* pL);
+
 		static bool isDefaultFrame(GameObject* p);
 		static bool isDefaultRender(GameObject* p);
 		static bool isExtProperty(GameObject* p);
 		static bool isExtProperty3D(GameObject* p);
+	private:
+
+		GameObject* freeObjectInternal(GameObject* p)noexcept;
+	public:
 
 		GameObject* freeObject(GameObject* p)noexcept;
 
@@ -109,6 +129,7 @@ namespace lstg
 		int Clone(lua_State* L, int idx)noexcept;
 
 	private:
+
 		static void callBack(lua_State* L, int callBack, bool hasParam);
 		static void callBack(lua_State* L, GameObject* p, int callBack, int objTableIndex);
 		// note: objTableIndex should be positive
@@ -177,6 +198,7 @@ namespace lstg
 		// for operations of particle pool on object
 		int GetParticlePool(lua_State* L)noexcept;
 	public:
+
 		void DrawGroupCollider(int groupId, const cocos2d::Color4B& fillColor,
 			const cocos2d::Vec2& offset);
 		void DrawGroupCollider(int groupId, const cocos2d::Color4B& fillColor)
@@ -195,6 +217,7 @@ namespace lstg
 		static uint32_t getClassID(lua_State* L, int idx);
 		GameObject* checkObject(lua_State* L, int idx);
 		GameObject* checkObjectFast(lua_State* L, int idx);
+		bool checkGroupID(int groupID) const;
 
 		void setObjectLayer(GameObject* p, lua_Number layer);
 		void setObjectGroup(GameObject* p, lua_Integer group);
@@ -202,21 +225,9 @@ namespace lstg
 
 		size_t updateIDForLua();
 		void pushIDForLua(lua_State* L);
-	private:
-
-		void insertBeforeObjectList(GameObject* p);
-		void insertBeforeRenderList(GameObject* p);
-		void insertBeforeCollisionList(GameObject* p, uint32_t group);
-
-		void sortRenderList(GameObject* p);
-		static void sortCollisionList(GameObject* p);
-
 	public:
+
 		GameObjectManager& operator=(const GameObjectManager&) = delete;
 		GameObjectManager(const GameObjectManager&) = delete;
-		explicit GameObjectManager(lua_State* pL);
-		~GameObjectManager();
-
-		void ResetLua(lua_State* pL);
 	};
 }
