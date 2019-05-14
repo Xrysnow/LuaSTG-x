@@ -110,14 +110,15 @@ namespace lstg
 					}
 				}
 
-				task();
+				if(task)
+					task();
 				--_numTaskLeft;
 				_waitCondition.notify_one();
 			}
 		}
 
 		void add_worker() {
-			_workers.emplace_back(std::thread(std::bind(&XThreadPool::thread_func, this)));
+			_workers.emplace_back(std::bind(&XThreadPool::thread_func, this));
 		}
 
 		void join()

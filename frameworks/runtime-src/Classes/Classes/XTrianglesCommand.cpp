@@ -37,7 +37,7 @@ void XTrianglesCommand::init(float globalOrder, Texture2D* texture, GLProgramSta
 			count, _triangles.indexCount);
 	}
 
-	const auto textureID = texture->getName();
+	const auto textureID = texture ? texture->getName() : 0;
 	if (_textureID != textureID || _blendType.src != blendType.src || _blendType.dst != blendType.dst ||
 		_glProgramState != glProgramState || _isBlendFuncSeparate != isBlendFuncSeparate)
 	{
@@ -47,7 +47,7 @@ void XTrianglesCommand::init(float globalOrder, Texture2D* texture, GLProgramSta
 		_isBlendFuncSeparate = isBlendFuncSeparate;
 		generateMaterialID();
 	}
-	_alphaTextureID = texture->getAlphaTextureName();
+	_alphaTextureID = texture ? texture->getAlphaTextureName() : 0;
 }
 
 void XTrianglesCommand::generateMaterialID()
@@ -74,12 +74,13 @@ void XTrianglesCommand::generateMaterialID()
 void XTrianglesCommand::useMaterial() const
 {
 	//Set texture
-	GL::bindTexture2D(_textureID);
+	if(_textureID)
+		GL::bindTexture2D(_textureID);
 
-	if (_alphaTextureID > 0)
-	{ // ANDROID ETC1 ALPHA supports.
+	// ANDROID ETC1 ALPHA supports.
+	if (_alphaTextureID)
 		GL::bindTexture2DN(1, _alphaTextureID);
-	}
+	
 	//set blend mode
 	if (_isBlendFuncSeparate)
 	{
@@ -91,6 +92,7 @@ void XTrianglesCommand::useMaterial() const
 	{
 		GL::blendFunc(_blendType.src, _blendType.dst);
 	}
+	//WARNING: other command will not restore this value, may need workaround
 	glBlendEquation(_glBlendEquation);
 	_glProgramState->apply(_mv);
 }
