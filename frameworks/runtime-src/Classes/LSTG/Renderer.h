@@ -89,6 +89,8 @@ namespace lstg
 			cocos2d::RenderQueue::QUEUE_GROUP group,
 			float globalZOrder,
 			std::function<void()> f)noexcept;
+		// workaround for XTrianglesCommand::useMaterial
+		void pushDummyCommand()noexcept;
 
 		// must be called before render funcs
 		bool beginScene()noexcept;

@@ -1068,6 +1068,8 @@ bool GameObjectManager::DoDefaultRender(GameObject* p) noexcept
 	if (p->cm->getBindNode())
 	{
 		LRR.flushTriangles();
+		LRR.updateBlendMode(BlendMode::Default);
+		LRR.pushDummyCommand();
 		const auto node = p->cm->getBindNode();
 		const auto sp3d = dynamic_cast<Sprite3D*>(node);
 		const auto zorder = node->getGlobalZOrder();

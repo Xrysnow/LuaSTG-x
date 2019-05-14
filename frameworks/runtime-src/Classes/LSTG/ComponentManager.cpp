@@ -562,6 +562,7 @@ void ComponentManager::renderLabel()
 {
 	if (label&&label->label)
 	{
+		LRR.flushTriangles();
 		auto lb = label->label;
 		if(blend)
 		{
@@ -573,8 +574,13 @@ void ComponentManager::renderLabel()
 				lb->setOpacity(blend->blendColor.a);
 				lb->setColor(Color3B(blend->blendColor));
 			}
+			LRR.updateBlendMode(blend->blendMode);
 		}
-		LRR.flushTriangles();
+		else
+		{
+			LRR.updateBlendMode(BlendMode::Default);
+		}
+		LRR.pushDummyCommand();
 		lb->visit(LRR.getRenderer(), xtcmd.getModelView(), Node::FLAGS_TRANSFORM_DIRTY);
 	}
 }

@@ -234,6 +234,18 @@ void XRenderer::pushCustomCommend(RenderQueue::QUEUE_GROUP group, float globalZO
 	addCommand(cmd);
 }
 
+void XRenderer::pushDummyCommand() noexcept
+{
+	// workaround for XTrianglesCommand::useMaterial, and will make label support blend equation
+	auto dummy = LMP.getXTrianglesCommand();
+	dummy->init(0.f, nullptr, currentBlendMode->getGLProgramState(),
+		currentBlendMode->blendFunc, currentBlendMode->blendEquation);
+	const auto tri = dummy->getTri();
+	tri->vertCount = 0;
+	tri->indexCount = 0;
+	addCommand(dummy);
+}
+
 bool XRenderer::beginScene()noexcept
 {
 	if (bRenderStarted)
@@ -703,6 +715,10 @@ bool XRenderer::renderText(ResFont* p, const char* str,
 		label->setColor(Color3B(p->getColor()));
 		label->setGLProgram(currentBlendMode->getGLProgram());//don't set fog
 	}
+
+	// workaround, and will make label support blend equation
+	pushDummyCommand();
+
 	label->visit(pRenderer, Mat4::IDENTITY, 0);
 	return true;
 }
