@@ -56,6 +56,7 @@ string XFileUtils::getStringFromFile(const string& filename) const
 {
 	if (filename.empty())
 	{
+		//CCLOG("XFileUtils: filename is empty");
 		return "";
 	}
 
@@ -66,10 +67,7 @@ string XFileUtils::getStringFromFile(const string& filename) const
 		return i->second;
 	}
 	// via ResourceMgr
-	const auto data = LRES.getDataFromFile(filename);
-	if (data)
-		return string((const char*)data->getBytes(), (size_t)data->getSize());// internal copied
-	return "";
+	return LRES.getStringFromFile(filename);
 }
 
 Data XFileUtils::getDataFromFile(const string& filename) const
@@ -80,7 +78,10 @@ Data XFileUtils::getDataFromFile(const string& filename) const
 		//CCLOG("XFileUtils: filename is empty");
 	}
 	else
-		d = LRES.getDataCopyFromFile(filename);
+	{
+		const auto data = LRES.getBufferFromFile(filename);
+		d.copy(data->data(), data->size());
+	}
 	return d;
 }
 

@@ -60,6 +60,12 @@ void Buffer::setShrinkable(bool b)
 	canShrink = b;
 }
 
+void Buffer::setResizable(bool b)
+{
+	canAppend = b;
+	canShrink = b;
+}
+
 bool Buffer::isWritable() const
 {
 	return canWrite;
@@ -82,7 +88,7 @@ bool Buffer::isResizable() const
 
 std::string Buffer::to_string() const
 {
-	return std::string((char*)buffer.data(), buffer.size());
+	return buffer.empty() ? "" : std::string((char*)buffer.data(), buffer.size());
 }
 
 uint8_t* Buffer::data() const
@@ -173,12 +179,12 @@ void Buffer::set_values(size_t pos, const std::vector<uint8_t>& values)
 
 uint8_t Buffer::front() const
 {
-	return buffer.front();
+	return buffer.empty() ? 0 : buffer.front();
 }
 
 uint8_t Buffer::back() const
 {
-	return buffer.back();
+	return buffer.empty() ? 0 : buffer.back();
 }
 
 bool Buffer::empty() const

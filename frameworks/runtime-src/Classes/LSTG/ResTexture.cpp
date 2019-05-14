@@ -53,14 +53,14 @@ ResTexture* ResTexture::create(const std::string& name, const std::string& path)
 {
 	try
 	{
-		const auto data = LRES.getDataFromFile(path);
+		const auto data = LRES.getBufferFromFile(path);
 		if (!data)
 			return nullptr;
 		// must use new
 		auto image = new Image();
 		auto tex = new Texture2D();
 		tex->autorelease();
-		if (image->initWithImageData(data->getBytes(), data->getSize()))
+		if (image->initWithImageData(data->data(), data->size()))
 		{
 			if (tex->initWithImage(image))
 			{

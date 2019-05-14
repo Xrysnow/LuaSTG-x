@@ -20,6 +20,7 @@ namespace lstg
 		void setWritable(bool b);
 		void setAppendable(bool b);
 		void setShrinkable(bool b);
+		void setResizable(bool b);
 
 		bool isWritable() const;
 		bool isAppendable() const;

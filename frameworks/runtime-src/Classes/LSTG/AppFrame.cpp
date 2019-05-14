@@ -91,7 +91,6 @@ void AppFrame::destroyInstance()
 
 void AppFrame::initGLContextAttrs()
 {
-	//glfwWindowHint(GLFW_SAMPLES, m_AALevel);
 	// set OpenGL context attributes: red,green,blue,alpha,depth,stencil,msaa
 	GLContextAttrs glContextAttrs = { 8, 8, 8, 8, 24, 8, 0 };//TODO: AALevel
 	GLView::setGLContextAttrs(glContextAttrs);
@@ -242,7 +241,7 @@ double AppFrame::getFPS() noexcept
 void AppFrame::loadScript(const char* path)noexcept
 {
 	string err;
-	auto data = LRES.getDataFromFile(path);
+	auto data = LRES.getBufferFromFile(path);
 	if (!data)
 	{
 		err = string("can't load script [") + path + "]";
@@ -250,9 +249,9 @@ void AppFrame::loadScript(const char* path)noexcept
 		luaL_error(L, err.c_str());
 		return;
 	}
-	// TODO: Check
-	//if ((luaL_loadstring(L, s.c_str()) || lua_pcall(L, 0, LUA_MULTRET, 0)))// LUA_MULTRET will return the result
-	if (luaL_loadbuffer(L, (const char*)data->getBytes(), (size_t)data->getSize(), luaL_checkstring(L, 1))
+	// LUA_MULTRET will return the result
+	//if ((luaL_loadstring(L, s.c_str()) || lua_pcall(L, 0, LUA_MULTRET, 0)))
+	if (luaL_loadbuffer(L, (const char*)data->data(), (size_t)data->size(), luaL_checkstring(L, 1))
 		|| lua_pcall(L, 0, LUA_MULTRET, 0))
 	{
 		err = string("failed to compile [") + string(path) + "]:\n" + string(lua_tostring(L, -1));

@@ -2,6 +2,7 @@
 #include "Global.h"
 #include "unzip/unzip.h"
 #include "GameResources.h"
+#include "../Classes/XBuffer.h"
 
 #define LRES (*lstg::ResourceMgr::getInstance())
 #define L_IMG_FACTOR LRES.getGlobalImageScaleFactor()
@@ -33,11 +34,11 @@ namespace lstg
 		uint64_t sizeUcompr = 0;
 
 		std::unordered_map<std::string, ZipFile> files;
-		std::unordered_map<std::string, data_shared_ptr> loadedFiles;
+		cocos2d::Map<std::string, Buffer*> loadedFiles;
 
 		bool init(const std::string& path_, const std::string& passwd);
 		void loadAllFileInfo();
-		bool loadFile(const std::string& fpath, cocos2d::Data* outBuf);
+		Buffer* loadFile(const std::string& fpath);
 
 	public:
 
@@ -51,7 +52,7 @@ namespace lstg
 		uint32_t getCompressedSize(const std::string& fpath);
 		uint32_t getUncompressedSize(const std::string& fpath);
 		//
-		data_shared_ptr getAndCache(const std::string& fpath);
+		Buffer* loadAndCache(const std::string& fpath);
 		std::string getStringFromFile(const std::string& fpath);
 		//
 		bool cacheFile(const std::string& fpath);
@@ -87,7 +88,7 @@ namespace lstg
 	private:
 		cocos2d::Map<std::string, ResourcePack*> packs;
 		std::mutex mut;
-		std::unordered_map<std::string, data_shared_ptr> localFiles;
+		cocos2d::Map<std::string, Buffer*> localFiles;
 
 		float globalImageScaleFactor = 1.0f;
 
@@ -100,7 +101,7 @@ namespace lstg
 		float getGlobalImageScaleFactor() const noexcept;
 		void setGlobalImageScaleFactor(float v) noexcept;
 
-		data_shared_ptr getLocalAndCache(const std::string& fpath);
+		Buffer* loadLocalFileAndCache(const std::string& fpath);
 		std::string getStringFromLocalFile(const std::string& fpath);
 
 		bool cacheLocalFile(const std::string& fpath);
@@ -128,8 +129,9 @@ namespace lstg
 		bool isFileOrDirectoryExist(const std::string& fpath) const;
 
 		//
-		data_shared_ptr getDataFromFile(const std::string& filePath);
-		cocos2d::Data getDataCopyFromFile(const std::string& filePath);
+		Buffer* getBufferFromFile(const std::string& filePath);
+
+		std::string getStringFromFile(const std::string& filePath);
 
 		/**
 		 * Extract data in pack into a file

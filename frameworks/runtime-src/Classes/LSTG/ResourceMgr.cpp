@@ -64,38 +64,38 @@ void ResourcePack::loadAllFileInfo()
 	}
 }
 
-bool ResourcePack::loadFile(const string& fpath, Data* outBuf)
+Buffer* ResourcePack::loadFile(const std::string& fpath)
 {
 	const auto it = files.find(fpath);
-	if (it != files.end())
+	if (it == files.end())
+		return nullptr;
+	auto pwd = password.empty() ? nullptr : password.c_str();
+	if (unzSetOffset64(zipFile, it->second.pos) != UNZ_OK
+		|| unzOpenCurrentFilePassword(zipFile, pwd) != UNZ_OK)
 	{
-		const char* pwd = password.length() > 0 ? password.c_str() : nullptr;
-		if (unzSetOffset64(zipFile, it->second.pos) != UNZ_OK
-			|| unzOpenCurrentFilePassword(zipFile, pwd) != UNZ_OK)
-		{
-			return false;
-		}
-		try
-		{
-			const auto unc_size = it->second.info.uncompressed_size;
-			auto bytes = (unsigned char*)malloc(sizeof(unsigned char) * unc_size);
-			if (unzReadCurrentFile(zipFile, bytes, unc_size) < 0)
-			{
-				unzCloseCurrentFile(zipFile);
-				return false;
-			}
-			outBuf->fastSet(bytes, unc_size);
-		}
-		catch (const bad_alloc&)
+		return nullptr;
+	}
+	auto ret = Buffer::create();
+	try
+	{
+		const auto unc_size = it->second.info.uncompressed_size;
+		ret->resize(sizeof(unsigned char) * unc_size);
+		if (unzReadCurrentFile(zipFile, ret->data(), unc_size) < 0)
 		{
 			unzCloseCurrentFile(zipFile);
-			XERROR("OOM");
-			return false;
+			return nullptr;
 		}
-		unzCloseCurrentFile(zipFile);
-		return true;
 	}
-	return false;
+	catch (const bad_alloc&)
+	{
+		unzCloseCurrentFile(zipFile);
+		XERROR("OOM");
+		return nullptr;
+	}
+	unzCloseCurrentFile(zipFile);
+	ret->setWritable(false);
+	ret->setResizable(false);
+	return ret;
 }
 
 ResourcePack* ResourcePack::create(const std::string& fullPath, const std::string& password)
@@ -149,17 +149,17 @@ uint32_t ResourcePack::getUncompressedSize(const std::string& fpath)
 	return 0;
 }
 
-data_shared_ptr ResourcePack::getAndCache(const string& fpath)
+Buffer* ResourcePack::loadAndCache(const string& fpath)
 {
 	lock_guard<mutex> lock(mut);
 
 	const auto it = loadedFiles.find(fpath);
 	if (it != loadedFiles.end())
 		return it->second;
-	auto data = make_shared<Data>();
-	if (loadFile(fpath, data.get()))
+	const auto data = loadFile(fpath);
+	if (data)
 	{
-		loadedFiles[fpath] = data;
+		loadedFiles.insert(fpath, data);
 		return data;
 	}
 	return nullptr;
@@ -167,15 +167,15 @@ data_shared_ptr ResourcePack::getAndCache(const string& fpath)
 
 std::string ResourcePack::getStringFromFile(const std::string& fpath)
 {
-	const auto data = getAndCache(fpath);
+	const auto data = loadAndCache(fpath);
 	if (!data)
 		return "";
-	return string((const char*)data->getBytes(), (size_t)data->getSize());
+	return data->to_string();
 }
 
 bool ResourcePack::cacheFile(const std::string& fpath)
 {
-	return !!getAndCache(fpath);
+	return !!loadAndCache(fpath);
 }
 
 void ResourcePack::cacheFileAsync(const std::string& fpath, const std::function<void()>& callback)
@@ -189,7 +189,7 @@ void ResourcePack::cacheFileAsync(const std::string& fpath, const std::function<
 	};
 	const auto task = [this, fpath]()
 	{
-		this->getAndCache(fpath);
+		this->loadAndCache(fpath);
 	};
 	AsyncTaskPool::getInstance()->enqueue(
 		AsyncTaskPool::TaskType::TASK_IO, cb, nullptr, task);
@@ -198,7 +198,7 @@ void ResourcePack::cacheFileAsync(const std::string& fpath, const std::function<
 void ResourcePack::cacheAllFiles()
 {
 	for (auto& f : files)
-		getAndCache(f.first);
+		loadAndCache(f.first);
 }
 
 void ResourcePack::cacheAllFilesAsync(const std::function<void()>& callback)
@@ -286,7 +286,7 @@ void ResourceMgr::setGlobalImageScaleFactor(float v) noexcept
 	globalImageScaleFactor = v;
 }
 
-data_shared_ptr ResourceMgr::getLocalAndCache(const std::string& fpath)
+Buffer* ResourceMgr::loadLocalFileAndCache(const std::string& fpath)
 {
 	lock_guard<mutex> lock(mut);
 	// from cache
@@ -296,13 +296,14 @@ data_shared_ptr ResourceMgr::getLocalAndCache(const std::string& fpath)
 	// from local path
 	try
 	{
-		Data data;
+		const auto data = Buffer::create();
 		const auto path = FileUtils::getInstance()->fullPathForFilename(fpath);
-		if (FileUtils::getInstance()->getContents(path, &data) == FileUtils::Status::OK)
+		if (FileUtils::getInstance()->getContents(path, data) == FileUtils::Status::OK)
 		{
-			auto d = make_shared<Data>(data);
-			localFiles[fpath] = d;
-			return d;
+			localFiles.insert(fpath, data);
+			data->setWritable(false);
+			data->setResizable(false);
+			return data;
 		}
 	}
 	catch (const bad_alloc&)
@@ -314,15 +315,15 @@ data_shared_ptr ResourceMgr::getLocalAndCache(const std::string& fpath)
 
 std::string ResourceMgr::getStringFromLocalFile(const std::string& fpath)
 {
-	const auto data = getLocalAndCache(fpath);
+	const auto data = loadLocalFileAndCache(fpath);
 	if (!data)
 		return "";
-	return string((const char*)data->getBytes(), (size_t)data->getSize());
+	return data->to_string();
 }
 
 bool ResourceMgr::cacheLocalFile(const std::string& fpath)
 {
-	return !!getLocalAndCache(fpath);
+	return !!loadLocalFileAndCache(fpath);
 }
 
 void ResourceMgr::cacheLocalFileAsync(const std::string& fpath, const std::function<void()>& callback)
@@ -443,38 +444,42 @@ bool ResourceMgr::isFileOrDirectoryExist(const std::string& fpath) const
 	return false;
 }
 
-data_shared_ptr ResourceMgr::getDataFromFile(const string& filePath)
+Buffer* ResourceMgr::getBufferFromFile(const std::string& filePath)
 {
 	// from packs
-	data_shared_ptr data = nullptr;
-	// getResourcePacks gives in priority order
 	for (auto& it : getResourcePacks())
 	{
-		const auto d = it->getAndCache(filePath);
+		const auto d = it->loadAndCache(filePath);
 		if (d)
 			return d;
 	}
 	// from cache or local path
-	return getLocalAndCache(filePath);
+	return loadLocalFileAndCache(filePath);
 }
 
-Data ResourceMgr::getDataCopyFromFile(const string& filePath)
+std::string ResourceMgr::getStringFromFile(const std::string& filePath)
 {
-	Data data;
-	const auto d = getDataFromFile(filePath);
-	if (d)
-		data.copy(d->getBytes(), d->getSize());
-	return data;
+	// from packs
+	for (auto& it : getResourcePacks())
+	{
+		const auto d = it->loadAndCache(filePath);
+		if (d)
+			return d->to_string();
+	}
+	// from cache or local path
+	return getStringFromLocalFile(filePath);
 }
 
 bool ResourceMgr::extractFile(const string& filePath, const string& targetPath)
 {
-	const auto data = getDataFromFile(filePath);
+	const auto data = getBufferFromFile(filePath);
 	if (!data)
 		return false;
-	if (!FileUtils::getInstance()->writeDataToFile(*data, targetPath))
-		return false;
-	return true;
+	Data d;
+	d.fastSet(data->data(), data->size());
+	const auto ret = FileUtils::getInstance()->writeDataToFile(d, targetPath);
+	d.fastSet(nullptr, 0);
+	return ret;
 }
 
 void ResourceMgr::clear()

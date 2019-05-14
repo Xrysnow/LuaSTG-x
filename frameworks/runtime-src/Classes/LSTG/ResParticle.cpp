@@ -324,15 +324,15 @@ ResParticle* ResParticle::create(const std::string& name, const std::string& pat
 	const auto clone = Sprite::createWithSpriteFrame(sprite->getSprite()->getSpriteFrame());
 	if (!clone)
 		return nullptr;
-	const auto data = LRES.getDataFromFile(path);
+	const auto data = LRES.getBufferFromFile(path);
 	if (!data)
 		return nullptr;
-	if (data->getSize() != sizeof(ParticleInfo))
+	if (data->size() != sizeof(ParticleInfo))
 		return nullptr;
 	try
 	{
 		ParticleInfo tInfo{};
-		memcpy(&tInfo, data->getBytes(), sizeof(ParticleInfo));
+		memcpy(&tInfo, data->data(), sizeof(ParticleInfo));
 		tInfo.BlendInfo = (tInfo.BlendInfo >> 16) & 0x00000003;
 		//TODO: move to lua
 		auto blend = BlendMode::getByName("add+alpha");

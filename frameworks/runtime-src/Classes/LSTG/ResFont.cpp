@@ -207,17 +207,11 @@ ResFont::~ResFont()
 
 ResFont* ResFont::createHGE(const std::string& name, const std::string& path)
 {
-	const auto data = LRES.getDataFromFile(path);
-	if (!data)
+	if (!LRES.isFileOrDirectoryExist(path))
 		return nullptr;
-	//Data tDataBuf;
-	//if (!LRES.LoadFile(path, &tDataBuf))
-	//	return nullptr;
 	try
 	{
-		const string fData = string(
-			reinterpret_cast<const char*>(data->getBytes()),
-			static_cast<size_t>(data->getSize()));
+		const string fData = LRES.getStringFromFile(path);
 		auto pos = path.find_last_of('/');
 		if (pos == string::npos)
 			pos = path.find_last_of('\\');

@@ -1,8 +1,9 @@
 ﻿#pragma once
 #include "ResBase.h"
-#include "../fcyLib/fcyStream.h"
+#include "../fcyLib/XStream.h"
 #include "../Audio/AudioParam.h"
 #include "../Audio/AudioCache.h"
+#include "../Classes/XBuffer.h"
 
 namespace lstg {
 
@@ -14,8 +15,7 @@ namespace lstg {
 		int audioID;
 		xAudio::SourceParam param;
 		xAudio::AudioCache* cache = nullptr;
-		fcyMemStream* stream = nullptr;
-		std::shared_ptr<cocos2d::Data> data;
+		StreamMemory* stream = nullptr;
 		std::string path;
 		std::array<uint8_t, bufferCopySize> bufferCopy;
 		std::array<float, bufferCopySize / 8> wavValue;
@@ -48,7 +48,7 @@ namespace lstg {
 		virtual void setVolume(float v);
 
 		xAudio::AudioCache* getCache() const { return cache; }
-		fcyMemStream* getStream() const { return stream; }
+		StreamMemory* getStream() const { return stream; }
 		const std::string& getPath() const noexcept override { return path; }
 		xAudio::SourceParam getParam() const { return param; }
 		void setParam(const xAudio::SourceParam& _param);
@@ -66,7 +66,8 @@ namespace lstg {
 		bool check_fft_tmp();
 		bool do_fft();
 
-		ResAudio(const std::string& name, ResourceType type, const std::string& _path, std::shared_ptr<cocos2d::Data> _data);
+		bool init(StreamMemory* _data);
+		ResAudio(const std::string& name, ResourceType type, const std::string& _path);
 	public:
 		virtual ~ResAudio();
 	};
@@ -75,10 +76,15 @@ namespace lstg {
 		public ResAudio
 	{
 	public:
+
 		void play(float vol, float pan = 0.f) override;
 		void setVolume(float v) override;
-		ResSound(const std::string& name, const std::string& path, std::shared_ptr<cocos2d::Data> data);
-		~ResSound() {}
+	private:
+
+		bool initWithBuffer(Buffer* data);
+		ResSound(const std::string& name, const std::string& path);
+		~ResSound();
+	public:
 
 		static ResSound* create(const std::string& name, const std::string& path);
 	};
@@ -89,12 +95,15 @@ namespace lstg {
 	public:
 		//bool ReadCurrentData(fData pBuffer, fuInt SizeToRead, fuInt* pSizeRead);
 		//bool GetFFT(float* in, fuInt N);
-	public:
+
 		void play(float vol, float pan = 0.f) override;
 		void setVolume(float v) override;
-		ResMusic(const std::string& name, const std::string& path, std::shared_ptr<cocos2d::Data> data, double loopA, double loopB);
-		~ResMusic() {}
+	private:
 
+		bool initWithBuffer(Buffer* data, double loopA, double loopB);
+		ResMusic(const std::string& name, const std::string& path);
+		~ResMusic();
+	public:
 		static ResMusic* create(const std::string& name, const std::string& path,
 			double loopStart, double loopEnd);
 	};
