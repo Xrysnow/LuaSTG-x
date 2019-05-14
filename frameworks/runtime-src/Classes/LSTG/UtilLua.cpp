@@ -127,6 +127,54 @@ void lua::_color4b_to_luaval(lua_State* L, const Color4B& cc)
 	*p = cc;
 }
 
+bool lua::_luaarray_to_numbers(lua_State* L, int lo, const std::function<void(double)>& callBack)
+{
+	if (!L || !callBack || lua_gettop(L) < lo)
+		return false;
+	tolua_Error tolua_err;
+	if (!tolua_istable(L, lo, 0, &tolua_err))
+		return false;
+	bool ok = true;
+	const size_t len = lua_objlen(L, lo);
+	for (size_t i = 0; i < len; i++)
+	{
+		lua_pushnumber(L, i + 1);
+		lua_gettable(L, lo);
+		if (lua_isnumber(L, -1))
+			callBack(tolua_tonumber(L, -1, 0));
+		else
+			ok = false;
+		lua_pop(L, 1);
+		if (!ok)
+			break;
+	}
+	return ok;
+}
+
+bool lua::luaval_to_unsigned_long_long(lua_State* L, int lo, unsigned long long* outValue, const char* funcName)
+{
+	if (NULL == L || NULL == outValue)
+		return false;
+
+	bool ok = true;
+
+	tolua_Error tolua_err;
+	if (!tolua_isnumber(L, lo, 0, &tolua_err))
+	{
+#if COCOS2D_DEBUG >=1
+		luaval_to_native_err(L, "#ferror:", &tolua_err, funcName);
+#endif
+		ok = false;
+	}
+
+	if (ok)
+	{
+		*outValue = (unsigned long long)tolua_tonumber(L, lo, 0);
+	}
+
+	return ok;
+}
+
 bool lua::luaval_to_V3F_C4B_T2F_Quad(lua_State* L, int lo, V3F_C4B_T2F_Quad* outValue, const char* /*funcName*/)
 {
 	if (!lua_istable(L, lo))return false;

@@ -41,6 +41,19 @@ namespace lstg
 			return *luaL_checkcolor(L, lo);
 		}
 
+		bool _luaarray_to_numbers(lua_State* L, int lo, const std::function<void(double)>& callBack);
+
+		bool luaval_to_unsigned_long_long(lua_State* L, int lo, unsigned long long* outValue, const char* funcName);
+
+		template<typename T>
+		bool luaval_to_std_vector_number(lua_State* L, int lo, std::vector<T>* outValue, const char* funcName)
+		{
+			static_assert(std::is_arithmetic<T>::value, "");
+			if (!outValue)
+				return false;
+			return _luaarray_to_numbers(L, lo, [=](double v) { outValue->push_back((T)v); });
+		}
+
 		bool luaval_to_V3F_C4B_T2F_Quad(lua_State* L, int lo,
 			cocos2d::V3F_C4B_T2F_Quad* outValue, const char* funcName = "");
 		void V3F_C4B_T2F_Quad_to_luaval(lua_State* L, cocos2d::V3F_C4B_T2F_Quad quad);
