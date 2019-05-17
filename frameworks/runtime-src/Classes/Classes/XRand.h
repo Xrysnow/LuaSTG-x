@@ -5,13 +5,13 @@
 
 namespace lstg
 {
-	class XRandom : public cocos2d::Ref, public xmath::random::Random
+	class Random : public cocos2d::Ref, public xmath::random::Random
 	{
 	private:
 		fcyRandomWELL512 random;
 	public:
-		static XRandom* create();
-		static XRandom* create(uint32_t seed);
+		static Random* create();
+		static Random* create(uint32_t seed);
 
 		void setSeed(uint32_t seed) override;
 		uint32_t getSeed() override;
@@ -25,10 +25,10 @@ namespace lstg
 
 	private:
 		double _rand() override;
-		XRandom();
+		Random();
 	public:
-		virtual ~XRandom();
-		XRandom(const XRandom &) = delete;
-		XRandom &operator =(const XRandom &) = delete;
+		virtual ~Random();
+		Random(const Random &) = delete;
+		Random &operator =(const Random &) = delete;
 	};
 }

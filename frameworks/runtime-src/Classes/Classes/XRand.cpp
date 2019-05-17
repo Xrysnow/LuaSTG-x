@@ -1,11 +1,10 @@
-﻿#include "Randomizer.h"
-//#include <cmath>
+﻿#include "XRand.h"
 
 using namespace lstg;
 
-XRandom* XRandom::create()
+Random* Random::create()
 {
-	auto ret = new (std::nothrow) XRandom();
+	auto ret = new (std::nothrow) Random();
 	if (ret)
 	{
 		return ret;
@@ -14,9 +13,9 @@ XRandom* XRandom::create()
 	return nullptr;
 }
 
-XRandom* XRandom::create(uint32_t seed)
+Random* Random::create(uint32_t seed)
 {
-	auto ret = new (std::nothrow) XRandom();
+	auto ret = new (std::nothrow) Random();
 	if (ret)
 	{
 		ret->setSeed(seed);
@@ -26,40 +25,40 @@ XRandom* XRandom::create(uint32_t seed)
 	return nullptr;
 }
 
-void XRandom::setSeed(uint32_t seed)
+void Random::setSeed(uint32_t seed)
 {
 	random.SetSeed(seed);
 }
 
-uint32_t XRandom::getSeed()
+uint32_t Random::getSeed()
 {
 	return random.GetRandSeed();
 }
 
-int32_t XRandom::randInt(int32_t a, int32_t b)
+int32_t Random::randInt(int32_t a, int32_t b)
 {
 	return a + int32_t(random.GetRandUInt(uint32_t(b - a)));
 }
 
-float XRandom::randFloat(float a, float b)
+float Random::randFloat(float a, float b)
 {
 	return random.GetRandFloat(a, b);
 }
 
-int32_t XRandom::randSign()
+int32_t Random::randSign()
 {
 	return random.GetRandUInt(1) * 2 - 1;
 }
 
-double XRandom::_rand()
+double Random::_rand()
 {
 	return random.GetRandFloat();
 }
 
-XRandom::XRandom()
+Random::Random()
 {
 }
 
-XRandom::~XRandom()
+Random::~Random()
 {
 }

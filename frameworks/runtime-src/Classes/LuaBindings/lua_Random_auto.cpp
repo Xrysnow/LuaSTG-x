@@ -1,12 +1,12 @@
 #include "lua_Random_auto.hpp"
-#include "../Classes/Randomizer.h"
+#include "../Classes/XRand.h"
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
 
 int lua_x_Random_XRandom_randFloat(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XRandom* cobj = nullptr;
+    lstg::Random* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -18,7 +18,7 @@ int lua_x_Random_XRandom_randFloat(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XRandom",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XRandom*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Random*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -59,7 +59,7 @@ int lua_x_Random_XRandom_randFloat(lua_State* tolua_S)
 int lua_x_Random_XRandom_log_norml(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XRandom* cobj = nullptr;
+    lstg::Random* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -71,7 +71,7 @@ int lua_x_Random_XRandom_log_norml(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XRandom",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XRandom*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Random*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -112,7 +112,7 @@ int lua_x_Random_XRandom_log_norml(lua_State* tolua_S)
 int lua_x_Random_XRandom_vonMises(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XRandom* cobj = nullptr;
+    lstg::Random* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -124,7 +124,7 @@ int lua_x_Random_XRandom_vonMises(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XRandom",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XRandom*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Random*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -165,7 +165,7 @@ int lua_x_Random_XRandom_vonMises(lua_State* tolua_S)
 int lua_x_Random_XRandom_getSeed(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XRandom* cobj = nullptr;
+    lstg::Random* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -177,7 +177,7 @@ int lua_x_Random_XRandom_getSeed(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XRandom",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XRandom*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Random*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -212,7 +212,7 @@ int lua_x_Random_XRandom_getSeed(lua_State* tolua_S)
 int lua_x_Random_XRandom_triangular(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XRandom* cobj = nullptr;
+    lstg::Random* cobj = nullptr;
     bool ok  = true;
 #if COCOS2D_DEBUG >= 1
     tolua_Error tolua_err;
@@ -221,7 +221,7 @@ int lua_x_Random_XRandom_triangular(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     if (!tolua_isusertype(tolua_S,1,"lstg.XRandom",0,&tolua_err)) goto tolua_lerror;
 #endif
-    cobj = (lstg::XRandom*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Random*)tolua_tousertype(tolua_S,1,0);
 #if COCOS2D_DEBUG >= 1
     if (!cobj)
     {
@@ -287,7 +287,7 @@ int lua_x_Random_XRandom_triangular(lua_State* tolua_S)
 int lua_x_Random_XRandom_randInt(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XRandom* cobj = nullptr;
+    lstg::Random* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -299,7 +299,7 @@ int lua_x_Random_XRandom_randInt(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XRandom",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XRandom*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Random*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -340,7 +340,7 @@ int lua_x_Random_XRandom_randInt(lua_State* tolua_S)
 int lua_x_Random_XRandom_weibull(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XRandom* cobj = nullptr;
+    lstg::Random* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -352,7 +352,7 @@ int lua_x_Random_XRandom_weibull(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XRandom",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XRandom*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Random*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -393,7 +393,7 @@ int lua_x_Random_XRandom_weibull(lua_State* tolua_S)
 int lua_x_Random_XRandom_normal(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XRandom* cobj = nullptr;
+    lstg::Random* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -405,7 +405,7 @@ int lua_x_Random_XRandom_normal(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XRandom",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XRandom*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Random*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -446,7 +446,7 @@ int lua_x_Random_XRandom_normal(lua_State* tolua_S)
 int lua_x_Random_XRandom_below(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XRandom* cobj = nullptr;
+    lstg::Random* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -458,7 +458,7 @@ int lua_x_Random_XRandom_below(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XRandom",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XRandom*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Random*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -494,7 +494,7 @@ int lua_x_Random_XRandom_below(lua_State* tolua_S)
 int lua_x_Random_XRandom_gauss(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XRandom* cobj = nullptr;
+    lstg::Random* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -506,7 +506,7 @@ int lua_x_Random_XRandom_gauss(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XRandom",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XRandom*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Random*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -547,7 +547,7 @@ int lua_x_Random_XRandom_gauss(lua_State* tolua_S)
 int lua_x_Random_XRandom_uniform(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XRandom* cobj = nullptr;
+    lstg::Random* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -559,7 +559,7 @@ int lua_x_Random_XRandom_uniform(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XRandom",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XRandom*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Random*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -600,7 +600,7 @@ int lua_x_Random_XRandom_uniform(lua_State* tolua_S)
 int lua_x_Random_XRandom_setSeed(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XRandom* cobj = nullptr;
+    lstg::Random* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -612,7 +612,7 @@ int lua_x_Random_XRandom_setSeed(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XRandom",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XRandom*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Random*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -650,7 +650,7 @@ int lua_x_Random_XRandom_setSeed(lua_State* tolua_S)
 int lua_x_Random_XRandom_range(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XRandom* cobj = nullptr;
+    lstg::Random* cobj = nullptr;
     bool ok  = true;
 #if COCOS2D_DEBUG >= 1
     tolua_Error tolua_err;
@@ -659,7 +659,7 @@ int lua_x_Random_XRandom_range(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     if (!tolua_isusertype(tolua_S,1,"lstg.XRandom",0,&tolua_err)) goto tolua_lerror;
 #endif
-    cobj = (lstg::XRandom*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Random*)tolua_tousertype(tolua_S,1,0);
 #if COCOS2D_DEBUG >= 1
     if (!cobj)
     {
@@ -728,7 +728,7 @@ int lua_x_Random_XRandom_range(lua_State* tolua_S)
 int lua_x_Random_XRandom_beta(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XRandom* cobj = nullptr;
+    lstg::Random* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -740,7 +740,7 @@ int lua_x_Random_XRandom_beta(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XRandom",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XRandom*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Random*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -781,7 +781,7 @@ int lua_x_Random_XRandom_beta(lua_State* tolua_S)
 int lua_x_Random_XRandom_expo(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XRandom* cobj = nullptr;
+    lstg::Random* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -793,7 +793,7 @@ int lua_x_Random_XRandom_expo(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XRandom",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XRandom*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Random*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -831,7 +831,7 @@ int lua_x_Random_XRandom_expo(lua_State* tolua_S)
 int lua_x_Random_XRandom_randSign(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XRandom* cobj = nullptr;
+    lstg::Random* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -843,7 +843,7 @@ int lua_x_Random_XRandom_randSign(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XRandom",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XRandom*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Random*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -878,7 +878,7 @@ int lua_x_Random_XRandom_randSign(lua_State* tolua_S)
 int lua_x_Random_XRandom_pareto(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XRandom* cobj = nullptr;
+    lstg::Random* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -890,7 +890,7 @@ int lua_x_Random_XRandom_pareto(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XRandom",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XRandom*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Random*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -928,7 +928,7 @@ int lua_x_Random_XRandom_pareto(lua_State* tolua_S)
 int lua_x_Random_XRandom_gamma(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XRandom* cobj = nullptr;
+    lstg::Random* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -940,7 +940,7 @@ int lua_x_Random_XRandom_gamma(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XRandom",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XRandom*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Random*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -999,8 +999,8 @@ int lua_x_Random_XRandom_create(lua_State* tolua_S)
             unsigned int arg0;
             ok &= luaval_to_uint32(tolua_S, 2,&arg0, "lstg.XRandom:create");
             if (!ok) { break; }
-            lstg::XRandom* ret = lstg::XRandom::create(arg0);
-            object_to_luaval<lstg::XRandom>(tolua_S, "lstg.XRandom",(lstg::XRandom*)ret);
+            lstg::Random* ret = lstg::Random::create(arg0);
+            object_to_luaval<lstg::Random>(tolua_S, "lstg.XRandom",(lstg::Random*)ret);
             return 1;
         }
     } while (0);
@@ -1009,8 +1009,8 @@ int lua_x_Random_XRandom_create(lua_State* tolua_S)
     {
         if (argc == 0)
         {
-            lstg::XRandom* ret = lstg::XRandom::create();
-            object_to_luaval<lstg::XRandom>(tolua_S, "lstg.XRandom",(lstg::XRandom*)ret);
+            lstg::Random* ret = lstg::Random::create();
+            object_to_luaval<lstg::Random>(tolua_S, "lstg.XRandom",(lstg::Random*)ret);
             return 1;
         }
     } while (0);
@@ -1055,7 +1055,7 @@ int lua_register_x_Random_XRandom(lua_State* tolua_S)
         tolua_function(tolua_S,"gamma",lua_x_Random_XRandom_gamma);
         tolua_function(tolua_S,"create", lua_x_Random_XRandom_create);
     tolua_endmodule(tolua_S);
-    std::string typeName = typeid(lstg::XRandom).name();
+    std::string typeName = typeid(lstg::Random).name();
     g_luaType[typeName] = "lstg.XRandom";
     g_typeCast["XRandom"] = "lstg.XRandom";
     return 1;
