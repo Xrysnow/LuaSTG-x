@@ -1,7 +1,7 @@
 ﻿#include "ResAudio.h"
 #include "../Audio/AudioEngine.h"
-#include "../Audio/AudioDecoderManager.h"
-#include "../Audio/AudioDecoder.h"
+//#include "../Audio/AudioDecoderManager.h"
+//#include "../Audio/AudioDecoder.h"
 #include "LogSystem.h"
 #include "AppFrame.h"
 #include "Utility.h"
@@ -354,7 +354,7 @@ bool ResSound::initWithBuffer(Buffer* data)
 		return false;
 	if (!init(memory))
 		return false;
-	XAudioEngine::preload(path, memory, nullptr, &cache);
+	XAudioEngine::preload(path, XAudioStream::create(memory), nullptr, &cache);
 	if (cache)
 		cache->blockToReady();
 	else
@@ -408,7 +408,7 @@ bool ResMusic::initWithBuffer(Buffer* data, double loopA, double loopB)
 		return false;
 	if (!init(memory))
 		return false;
-	XAudioEngine::preload(path, memory, loopA, loopB, nullptr, &cache);
+	XAudioEngine::preload(path, XAudioStream::create(memory), loopA, loopB, nullptr, &cache);
 	if (cache)
 		cache->blockToReady();
 	else

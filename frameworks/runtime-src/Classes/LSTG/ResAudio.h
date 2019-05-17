@@ -1,9 +1,9 @@
 ﻿#pragma once
 #include "ResBase.h"
-#include "../fcyLib/XStream.h"
 #include "../Audio/AudioParam.h"
 #include "../Audio/AudioCache.h"
 #include "../Classes/XBuffer.h"
+#include "../Classes/XStream.h"
 
 namespace lstg {
 
