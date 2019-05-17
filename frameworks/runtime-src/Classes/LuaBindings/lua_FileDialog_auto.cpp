@@ -29,7 +29,7 @@ int lua_x_FileDialog_XFileDialog_openMultiple(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_FileDialog_XFileDialog_openMultiple'", nullptr);
             return 0;
         }
-        std::vector<std::string> ret = lstg::XFileDialog::openMultiple(arg0, arg1);
+        std::vector<std::string> ret = lstg::FileDialog::openMultiple(arg0, arg1);
         ccvector_std_string_to_luaval(tolua_S, ret);
         return 1;
     }
@@ -65,7 +65,7 @@ int lua_x_FileDialog_XFileDialog_pickFolder(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_FileDialog_XFileDialog_pickFolder'", nullptr);
             return 0;
         }
-        std::string ret = lstg::XFileDialog::pickFolder(arg0);
+        std::string ret = lstg::FileDialog::pickFolder(arg0);
         lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
@@ -99,7 +99,7 @@ int lua_x_FileDialog_XFileDialog_getLastError(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_FileDialog_XFileDialog_getLastError'", nullptr);
             return 0;
         }
-        std::string ret = lstg::XFileDialog::getLastError();
+        std::string ret = lstg::FileDialog::getLastError();
         lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
@@ -137,7 +137,7 @@ int lua_x_FileDialog_XFileDialog_save(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_FileDialog_XFileDialog_save'", nullptr);
             return 0;
         }
-        std::string ret = lstg::XFileDialog::save(arg0, arg1);
+        std::string ret = lstg::FileDialog::save(arg0, arg1);
         lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
@@ -175,7 +175,7 @@ int lua_x_FileDialog_XFileDialog_open(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_FileDialog_XFileDialog_open'", nullptr);
             return 0;
         }
-        std::string ret = lstg::XFileDialog::open(arg0, arg1);
+        std::string ret = lstg::FileDialog::open(arg0, arg1);
         lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
@@ -205,7 +205,7 @@ int lua_register_x_FileDialog_XFileDialog(lua_State* tolua_S)
         tolua_function(tolua_S,"save", lua_x_FileDialog_XFileDialog_save);
         tolua_function(tolua_S,"open", lua_x_FileDialog_XFileDialog_open);
     tolua_endmodule(tolua_S);
-    std::string typeName = typeid(lstg::XFileDialog).name();
+    std::string typeName = typeid(lstg::FileDialog).name();
     g_luaType[typeName] = "lstg.XFileDialog";
     g_typeCast["XFileDialog"] = "lstg.XFileDialog";
     return 1;

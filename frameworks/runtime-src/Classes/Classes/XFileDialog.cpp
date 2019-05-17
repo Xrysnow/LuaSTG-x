@@ -4,13 +4,13 @@
 
 using namespace std;
 using namespace lstg;
-std::string XFileDialog::lastError;
+std::string FileDialog::lastError;
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)\
 ||(CC_TARGET_PLATFORM == CC_PLATFORM_MAC)\
 ||(CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
 
-std::string XFileDialog::open(const std::string& filterList, const std::string& defaultPath)
+std::string FileDialog::open(const std::string& filterList, const std::string& defaultPath)
 {
 	string ret;
 	char* out = nullptr;
@@ -27,7 +27,7 @@ std::string XFileDialog::open(const std::string& filterList, const std::string& 
 	return ret;
 }
 
-std::vector<std::string> XFileDialog::openMultiple(const std::string& filterList, const std::string& defaultPath)
+std::vector<std::string> FileDialog::openMultiple(const std::string& filterList, const std::string& defaultPath)
 {
 	vector<string> ret;
 	nfdpathset_t pathSet;
@@ -49,7 +49,7 @@ std::vector<std::string> XFileDialog::openMultiple(const std::string& filterList
 	return ret;
 }
 
-std::string XFileDialog::save(const std::string& filterList, const std::string& defaultPath)
+std::string FileDialog::save(const std::string& filterList, const std::string& defaultPath)
 {
 	string ret;
 	char* out = nullptr;
@@ -66,7 +66,7 @@ std::string XFileDialog::save(const std::string& filterList, const std::string& 
 	return ret;
 }
 
-std::string XFileDialog::pickFolder(const std::string& defaultPath)
+std::string FileDialog::pickFolder(const std::string& defaultPath)
 {
 	string ret;
 	char* out = nullptr;
@@ -83,7 +83,7 @@ std::string XFileDialog::pickFolder(const std::string& defaultPath)
 	return ret;
 }
 
-std::string XFileDialog::getLastError()
+std::string FileDialog::getLastError()
 {
 	return lastError;
 }

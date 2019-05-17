@@ -11,7 +11,7 @@ using namespace lstg::lua;
 int lua_x_XTriangles_XTriangles_setVertex(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XTriangles* cobj = nullptr;
+    lstg::Triangles* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -23,7 +23,7 @@ int lua_x_XTriangles_XTriangles_setVertex(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XTriangles",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XTriangles*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Triangles*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -79,7 +79,7 @@ int lua_x_XTriangles_XTriangles_setVertex(lua_State* tolua_S)
 int lua_x_XTriangles_XTriangles_setIndex(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XTriangles* cobj = nullptr;
+    lstg::Triangles* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -91,7 +91,7 @@ int lua_x_XTriangles_XTriangles_setIndex(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XTriangles",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XTriangles*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Triangles*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -132,7 +132,7 @@ int lua_x_XTriangles_XTriangles_setIndex(lua_State* tolua_S)
 int lua_x_XTriangles_XTriangles_clone(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XTriangles* cobj = nullptr;
+    lstg::Triangles* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -144,7 +144,7 @@ int lua_x_XTriangles_XTriangles_clone(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XTriangles",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XTriangles*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Triangles*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -162,8 +162,8 @@ int lua_x_XTriangles_XTriangles_clone(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_XTriangles_XTriangles_clone'", nullptr);
             return 0;
         }
-        lstg::XTriangles* ret = cobj->clone();
-        object_to_luaval<lstg::XTriangles>(tolua_S, "lstg.XTriangles",(lstg::XTriangles*)ret);
+        lstg::Triangles* ret = cobj->clone();
+        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.XTriangles",(lstg::Triangles*)ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.XTriangles:clone",argc, 0);
@@ -179,7 +179,7 @@ int lua_x_XTriangles_XTriangles_clone(lua_State* tolua_S)
 int lua_x_XTriangles_XTriangles_setVertexCoords(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XTriangles* cobj = nullptr;
+    lstg::Triangles* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -191,7 +191,7 @@ int lua_x_XTriangles_XTriangles_setVertexCoords(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XTriangles",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XTriangles*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Triangles*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -235,7 +235,7 @@ int lua_x_XTriangles_XTriangles_setVertexCoords(lua_State* tolua_S)
 int lua_x_XTriangles_XTriangles_getIndexCount(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XTriangles* cobj = nullptr;
+    lstg::Triangles* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -247,7 +247,7 @@ int lua_x_XTriangles_XTriangles_getIndexCount(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XTriangles",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XTriangles*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Triangles*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -282,7 +282,7 @@ int lua_x_XTriangles_XTriangles_getIndexCount(lua_State* tolua_S)
 int lua_x_XTriangles_XTriangles_setVertexPosition(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XTriangles* cobj = nullptr;
+    lstg::Triangles* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -294,7 +294,7 @@ int lua_x_XTriangles_XTriangles_setVertexPosition(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XTriangles",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XTriangles*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Triangles*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -341,7 +341,7 @@ int lua_x_XTriangles_XTriangles_setVertexPosition(lua_State* tolua_S)
 int lua_x_XTriangles_XTriangles_getVertexCount(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XTriangles* cobj = nullptr;
+    lstg::Triangles* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -353,7 +353,7 @@ int lua_x_XTriangles_XTriangles_getVertexCount(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XTriangles",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XTriangles*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Triangles*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -388,7 +388,7 @@ int lua_x_XTriangles_XTriangles_getVertexCount(lua_State* tolua_S)
 int lua_x_XTriangles_XTriangles_setAllVertexColor(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XTriangles* cobj = nullptr;
+    lstg::Triangles* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -400,7 +400,7 @@ int lua_x_XTriangles_XTriangles_setAllVertexColor(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XTriangles",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XTriangles*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Triangles*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -438,7 +438,7 @@ int lua_x_XTriangles_XTriangles_setAllVertexColor(lua_State* tolua_S)
 int lua_x_XTriangles_XTriangles_setVertexColor(lua_State* tolua_S)
 {
     int argc = 0;
-    lstg::XTriangles* cobj = nullptr;
+    lstg::Triangles* cobj = nullptr;
     bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
@@ -450,7 +450,7 @@ int lua_x_XTriangles_XTriangles_setVertexColor(lua_State* tolua_S)
     if (!tolua_isusertype(tolua_S,1,"lstg.XTriangles",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-    cobj = (lstg::XTriangles*)tolua_tousertype(tolua_S,1,0);
+    cobj = (lstg::Triangles*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
@@ -514,8 +514,8 @@ int lua_x_XTriangles_XTriangles_create(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_XTriangles_XTriangles_create'", nullptr);
             return 0;
         }
-        lstg::XTriangles* ret = lstg::XTriangles::create(arg0, arg1);
-        object_to_luaval<lstg::XTriangles>(tolua_S, "lstg.XTriangles",(lstg::XTriangles*)ret);
+        lstg::Triangles* ret = lstg::Triangles::create(arg0, arg1);
+        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.XTriangles",(lstg::Triangles*)ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.XTriangles:create",argc, 2);
@@ -550,8 +550,8 @@ int lua_x_XTriangles_XTriangles_createQuad(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_XTriangles_XTriangles_createQuad'", nullptr);
             return 0;
         }
-        lstg::XTriangles* ret = lstg::XTriangles::createQuad(arg0);
-        object_to_luaval<lstg::XTriangles>(tolua_S, "lstg.XTriangles",(lstg::XTriangles*)ret);
+        lstg::Triangles* ret = lstg::Triangles::createQuad(arg0);
+        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.XTriangles",(lstg::Triangles*)ret);
         return 1;
     }
     if (argc == 2)
@@ -565,8 +565,8 @@ int lua_x_XTriangles_XTriangles_createQuad(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_XTriangles_XTriangles_createQuad'", nullptr);
             return 0;
         }
-        lstg::XTriangles* ret = lstg::XTriangles::createQuad(arg0, arg1);
-        object_to_luaval<lstg::XTriangles>(tolua_S, "lstg.XTriangles",(lstg::XTriangles*)ret);
+        lstg::Triangles* ret = lstg::Triangles::createQuad(arg0, arg1);
+        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.XTriangles",(lstg::Triangles*)ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.XTriangles:createQuad",argc, 1);
@@ -605,8 +605,8 @@ int lua_x_XTriangles_XTriangles_createCircle(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_XTriangles_XTriangles_createCircle'", nullptr);
             return 0;
         }
-        lstg::XTriangles* ret = lstg::XTriangles::createCircle(arg0, arg1, arg2);
-        object_to_luaval<lstg::XTriangles>(tolua_S, "lstg.XTriangles",(lstg::XTriangles*)ret);
+        lstg::Triangles* ret = lstg::Triangles::createCircle(arg0, arg1, arg2);
+        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.XTriangles",(lstg::Triangles*)ret);
         return 1;
     }
     if (argc == 4)
@@ -624,8 +624,8 @@ int lua_x_XTriangles_XTriangles_createCircle(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_XTriangles_XTriangles_createCircle'", nullptr);
             return 0;
         }
-        lstg::XTriangles* ret = lstg::XTriangles::createCircle(arg0, arg1, arg2, arg3);
-        object_to_luaval<lstg::XTriangles>(tolua_S, "lstg.XTriangles",(lstg::XTriangles*)ret);
+        lstg::Triangles* ret = lstg::Triangles::createCircle(arg0, arg1, arg2, arg3);
+        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.XTriangles",(lstg::Triangles*)ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.XTriangles:createCircle",argc, 3);
@@ -668,8 +668,8 @@ int lua_x_XTriangles_XTriangles_createSector(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_XTriangles_XTriangles_createSector'", nullptr);
             return 0;
         }
-        lstg::XTriangles* ret = lstg::XTriangles::createSector(arg0, arg1, arg2, arg3, arg4);
-        object_to_luaval<lstg::XTriangles>(tolua_S, "lstg.XTriangles",(lstg::XTriangles*)ret);
+        lstg::Triangles* ret = lstg::Triangles::createSector(arg0, arg1, arg2, arg3, arg4);
+        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.XTriangles",(lstg::Triangles*)ret);
         return 1;
     }
     if (argc == 6)
@@ -691,8 +691,8 @@ int lua_x_XTriangles_XTriangles_createSector(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_XTriangles_XTriangles_createSector'", nullptr);
             return 0;
         }
-        lstg::XTriangles* ret = lstg::XTriangles::createSector(arg0, arg1, arg2, arg3, arg4, arg5);
-        object_to_luaval<lstg::XTriangles>(tolua_S, "lstg.XTriangles",(lstg::XTriangles*)ret);
+        lstg::Triangles* ret = lstg::Triangles::createSector(arg0, arg1, arg2, arg3, arg4, arg5);
+        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.XTriangles",(lstg::Triangles*)ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.XTriangles:createSector",argc, 5);
@@ -731,8 +731,8 @@ int lua_x_XTriangles_XTriangles_createGrid(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_XTriangles_XTriangles_createGrid'", nullptr);
             return 0;
         }
-        lstg::XTriangles* ret = lstg::XTriangles::createGrid(arg0, arg1, arg2);
-        object_to_luaval<lstg::XTriangles>(tolua_S, "lstg.XTriangles",(lstg::XTriangles*)ret);
+        lstg::Triangles* ret = lstg::Triangles::createGrid(arg0, arg1, arg2);
+        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.XTriangles",(lstg::Triangles*)ret);
         return 1;
     }
     if (argc == 4)
@@ -750,8 +750,8 @@ int lua_x_XTriangles_XTriangles_createGrid(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_XTriangles_XTriangles_createGrid'", nullptr);
             return 0;
         }
-        lstg::XTriangles* ret = lstg::XTriangles::createGrid(arg0, arg1, arg2, arg3);
-        object_to_luaval<lstg::XTriangles>(tolua_S, "lstg.XTriangles",(lstg::XTriangles*)ret);
+        lstg::Triangles* ret = lstg::Triangles::createGrid(arg0, arg1, arg2, arg3);
+        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.XTriangles",(lstg::Triangles*)ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.XTriangles:createGrid",argc, 3);
@@ -789,7 +789,7 @@ int lua_register_x_XTriangles_XTriangles(lua_State* tolua_S)
         tolua_function(tolua_S,"createSector", lua_x_XTriangles_XTriangles_createSector);
         tolua_function(tolua_S,"createGrid", lua_x_XTriangles_XTriangles_createGrid);
     tolua_endmodule(tolua_S);
-    std::string typeName = typeid(lstg::XTriangles).name();
+    std::string typeName = typeid(lstg::Triangles).name();
     g_luaType[typeName] = "lstg.XTriangles";
     g_typeCast["XTriangles"] = "lstg.XTriangles";
     return 1;

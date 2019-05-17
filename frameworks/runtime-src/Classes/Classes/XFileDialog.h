@@ -4,7 +4,7 @@
 
 namespace lstg
 {
-	class XFileDialog
+	class FileDialog
 	{
 	public:
 		static std::string open(

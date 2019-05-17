@@ -126,7 +126,7 @@ static int DrawGroupCollider(lua_State* L) noexcept
 	const auto color = luaval_to_c4b(L, 2);
 	const auto off_x = luaL_checknumber(L, 3);
 	const auto off_y = luaL_checknumber(L, 4);
-	LAPP.GetGameObjectPool().DrawGroupCollider(group_id, color, cocos2d::Vec2(off_x, off_y));
+	LAPP.getGameObjectPool().DrawGroupCollider(group_id, color, cocos2d::Vec2(off_x, off_y));
 	return 0;
 }
 

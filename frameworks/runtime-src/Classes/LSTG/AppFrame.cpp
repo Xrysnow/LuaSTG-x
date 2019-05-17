@@ -153,7 +153,7 @@ bool AppFrame::applicationDidFinishLaunching()
 	CC_SAFE_DELETE(threadPool);
 	// note: on android, this is the number of currently activated cores
 	const int nThr = std::thread::hardware_concurrency();
-	threadPool = new XThreadPool(std::max(1, std::min(nThr - 1, 3)));
+	threadPool = new ThreadPool(std::max(1, std::min(nThr - 1, 3)));
 	if (nThr > 0)
 	{
 		LINFO("ThreadPool size: %d (core count: %d)", threadPool->size(), nThr);
@@ -265,10 +265,10 @@ void AppFrame::snapShot(const char* path)noexcept
 	utils::captureScreen(nullptr, path);//TODO: CHECK
 }
 
-XThreadPool* AppFrame::GetThreadPool() noexcept
+ThreadPool* AppFrame::getThreadPool() noexcept
 {
 	if (!threadPool)
-		threadPool = new XThreadPool{ 0 };
+		threadPool = new ThreadPool{ 0 };
 	return threadPool;
 }
 

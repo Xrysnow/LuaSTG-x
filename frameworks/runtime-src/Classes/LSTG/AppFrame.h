@@ -8,9 +8,9 @@
 // LSTG AppFrame
 #define LAPP (*lstg::AppFrame::getInstance())
 // LSTG GameObjectPool
-#define LPOOL (LAPP.GetGameObjectPool())
+#define LPOOL (LAPP.getGameObjectPool())
 // LSTG ThreadPool
-#define LTHP (*LAPP.GetThreadPool())
+#define LTHP (*LAPP.getThreadPool())
 
 namespace lstg
 {
@@ -55,7 +55,7 @@ namespace lstg
 		double targetFPS = 0.;
 		uint32_t dropCounter = 0;
 
-		XThreadPool* threadPool = nullptr;
+		ThreadPool* threadPool = nullptr;
 
 	public:
 		void ShowSplashWindow(const char* imgPath = nullptr)noexcept; //TODO: remove?
@@ -68,8 +68,8 @@ namespace lstg
 
 		void snapShot(const char* path)noexcept;
 	public:
-		GameObjectManager& GetGameObjectPool() const noexcept { return *gameObjectPool; }
-		XThreadPool* GetThreadPool() noexcept;
+		GameObjectManager& getGameObjectPool() const noexcept { return *gameObjectPool; }
+		ThreadPool* getThreadPool() noexcept;
 
 		uint32_t getDropCounter() const { return dropCounter; }
 		void setDropCounter(uint32_t v) { dropCounter = v; }

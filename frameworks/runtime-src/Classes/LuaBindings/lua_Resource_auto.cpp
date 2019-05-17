@@ -806,8 +806,8 @@ int lua_x_Resource_ResTexture_getTriangles(lua_State* tolua_S)
 			tolua_error(tolua_S, "invalid arguments in function 'lua_x_Resource_ResTexture_getTriangles'", nullptr);
 			return 0;
 		}
-		lstg::XTriangles* ret = cobj->getTriangles();
-		object_to_luaval<lstg::XTriangles>(tolua_S, "lstg.XTriangles", (lstg::XTriangles*)ret);
+		lstg::Triangles* ret = cobj->getTriangles();
+		object_to_luaval<lstg::Triangles>(tolua_S, "lstg.XTriangles", (lstg::Triangles*)ret);
 		return 1;
 	}
 	luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResTexture:getTriangles", argc, 0);
@@ -848,9 +848,9 @@ int lua_x_Resource_ResTexture_setTriangles(lua_State* tolua_S)
 	argc = lua_gettop(tolua_S) - 1;
 	if (argc == 1)
 	{
-		lstg::XTriangles* arg0;
+		lstg::Triangles* arg0;
 
-		ok &= luaval_to_object<lstg::XTriangles>(tolua_S, 2, "lstg.XTriangles", &arg0, "lstg.ResTexture:setTriangles");
+		ok &= luaval_to_object<lstg::Triangles>(tolua_S, 2, "lstg.XTriangles", &arg0, "lstg.ResTexture:setTriangles");
 		if (!ok)
 		{
 			tolua_error(tolua_S, "invalid arguments in function 'lua_x_Resource_ResTexture_setTriangles'", nullptr);

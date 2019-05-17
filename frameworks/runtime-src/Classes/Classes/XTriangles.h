@@ -3,23 +3,23 @@
 
 namespace lstg
 {
-	class XTriangles : public cocos2d::Ref
+	class Triangles : public cocos2d::Ref
 	{
 		cocos2d::TrianglesCommand::Triangles tri;
 		static const cocos2d::Rect defaultRect;
-		XTriangles();
+		Triangles();
 	public:
-		~XTriangles();
-		CC_DISALLOW_COPY_AND_ASSIGN(XTriangles);
+		~Triangles();
+		CC_DISALLOW_COPY_AND_ASSIGN(Triangles);
 
-		static XTriangles* create(size_t nVertex, size_t nIndex);
-		static XTriangles* createQuad(const cocos2d::Vec2& scale,
+		static Triangles* create(size_t nVertex, size_t nIndex);
+		static Triangles* createQuad(const cocos2d::Vec2& scale,
 			const cocos2d::Rect& texRect = defaultRect);
-		static XTriangles* createGrid(size_t nCol, size_t nRow, const cocos2d::Vec2& scale,
+		static Triangles* createGrid(size_t nCol, size_t nRow, const cocos2d::Vec2& scale,
 			const cocos2d::Rect& texRect = defaultRect);
-		static XTriangles* createSector(size_t nCol, size_t nRow, float rOuter, float rInner, float angle,
+		static Triangles* createSector(size_t nCol, size_t nRow, float rOuter, float rInner, float angle,
 			const cocos2d::Rect& texRect = defaultRect);
-		static XTriangles* createCircle(size_t nCol, size_t nRow, float r,
+		static Triangles* createCircle(size_t nCol, size_t nRow, float r,
 			const cocos2d::Rect& texRect = defaultRect);
 	private:
 
@@ -45,6 +45,6 @@ namespace lstg
 
 		void setIndex(size_t index, unsigned short value);
 
-		XTriangles* clone();
+		Triangles* clone();
 	};
 }

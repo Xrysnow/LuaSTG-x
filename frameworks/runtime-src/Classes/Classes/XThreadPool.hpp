@@ -6,11 +6,11 @@
 
 namespace lstg
 {
-	class XThreadPool
+	class ThreadPool
 	{
 		using _lock = std::unique_lock<std::mutex>;
 	public:
-		XThreadPool(size_t threads)
+		ThreadPool(size_t threads)
 			: _stop(false), _numTaskLeft(0)
 		{
 			for (size_t i = 0; i < threads; ++i)
@@ -82,7 +82,7 @@ namespace lstg
 			}
 		}
 
-		~XThreadPool()
+		~ThreadPool()
 		{
 			join();
 		}
@@ -118,7 +118,7 @@ namespace lstg
 		}
 
 		void add_worker() {
-			_workers.emplace_back(std::bind(&XThreadPool::thread_func, this));
+			_workers.emplace_back(std::bind(&ThreadPool::thread_func, this));
 		}
 
 		void join()

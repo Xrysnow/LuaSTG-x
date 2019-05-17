@@ -8,7 +8,7 @@ using namespace std;
 using namespace cocos2d;
 using namespace lstg;
 
-void ResTexture::setTriangles(XTriangles* tri)
+void ResTexture::setTriangles(Triangles* tri)
 {
 	CC_SAFE_RELEASE(xtri);
 	xtri = tri;
@@ -40,7 +40,7 @@ ResTexture::ResTexture(const std::string& name, Texture2D* tex)
 {
 	texture->retain();
 	const auto size = texture->getContentSize();
-	setTriangles(XTriangles::createQuad(Vec2(size)));
+	setTriangles(Triangles::createQuad(Vec2(size)));
 }
 
 ResTexture::~ResTexture()

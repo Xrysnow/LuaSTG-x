@@ -1,15 +1,15 @@
 ﻿#include "XTriangles.h"
 
-#define CREATE(_init) auto ret = new (std::nothrow) XTriangles(); \
+#define CREATE(_init) auto ret = new (std::nothrow) Triangles(); \
 if (ret&&ret->_init){ ret->autorelease(); return ret; } \
 CC_SAFE_DELETE(ret); return nullptr;
 
 using namespace lstg;
 using namespace cocos2d;
 
-const Rect XTriangles::defaultRect = Rect(0, 0, 1, 1);
+const Rect Triangles::defaultRect = Rect(0, 0, 1, 1);
 
-XTriangles::XTriangles()
+Triangles::Triangles()
 {
 	tri.verts = nullptr;
 	tri.indices = nullptr;
@@ -17,38 +17,38 @@ XTriangles::XTriangles()
 	tri.indexCount = 0;
 }
 
-XTriangles::~XTriangles()
+Triangles::~Triangles()
 {
 	clear();
 }
 
-XTriangles* XTriangles::create(size_t nVertex, size_t nIndex)
+Triangles* Triangles::create(size_t nVertex, size_t nIndex)
 {
 	CREATE(init(nVertex, nIndex));
 }
 
-XTriangles* XTriangles::createQuad(const Vec2& scale, const Rect& texRect)
+Triangles* Triangles::createQuad(const Vec2& scale, const Rect& texRect)
 {
 	CREATE(initQuad(scale, texRect));
 }
 
-XTriangles* XTriangles::createGrid(size_t nCol, size_t nRow, const Vec2& scale, const Rect& texRect)
+Triangles* Triangles::createGrid(size_t nCol, size_t nRow, const Vec2& scale, const Rect& texRect)
 {
 	CREATE(initGrid(nCol, nRow, scale, texRect));
 }
 
-XTriangles* XTriangles::createSector(size_t nCol, size_t nRow, float rOuter, float rInner, float angle,
+Triangles* Triangles::createSector(size_t nCol, size_t nRow, float rOuter, float rInner, float angle,
 	const Rect& texRect)
 {
 	CREATE(initSector(nCol, nRow, rOuter, rInner, angle, texRect));
 }
 
-XTriangles* XTriangles::createCircle(size_t nCol, size_t nRow, float r, const Rect& texRect)
+Triangles* Triangles::createCircle(size_t nCol, size_t nRow, float r, const Rect& texRect)
 {
 	return createSector(nCol, nRow, r, 0, M_PI * 2, texRect);
 }
 
-bool XTriangles::init(size_t nVertex, size_t nIndex)
+bool Triangles::init(size_t nVertex, size_t nIndex)
 {
 	clear();
 	if (nVertex == 0 || nIndex == 0)
@@ -60,12 +60,12 @@ bool XTriangles::init(size_t nVertex, size_t nIndex)
 	return tri.verts && tri.indices;
 }
 
-bool XTriangles::initQuad(const Vec2& scale, const Rect& texRect)
+bool Triangles::initQuad(const Vec2& scale, const Rect& texRect)
 {
 	return initGrid(1, 1, scale, texRect);
 }
 
-bool XTriangles::initGrid(size_t nCol, size_t nRow, const Vec2& scale, const Rect& texRect)
+bool Triangles::initGrid(size_t nCol, size_t nRow, const Vec2& scale, const Rect& texRect)
 {
 	if (nCol == 0 || nRow == 0)
 		return false;
@@ -88,7 +88,7 @@ bool XTriangles::initGrid(size_t nCol, size_t nRow, const Vec2& scale, const Rec
 	return true;
 }
 
-bool XTriangles::initSector(size_t nCol, size_t nRow, float rOuter, float rInner, float angle, const Rect& texRect)
+bool Triangles::initSector(size_t nCol, size_t nRow, float rOuter, float rInner, float angle, const Rect& texRect)
 {
 	if (nCol == 0 || nRow == 0)
 		return false;
@@ -113,7 +113,7 @@ bool XTriangles::initSector(size_t nCol, size_t nRow, float rOuter, float rInner
 	return true;
 }
 
-void XTriangles::setGridIndices(size_t nCol, size_t nRow)
+void Triangles::setGridIndices(size_t nCol, size_t nRow)
 {
 	if (!tri.indices)
 		return;
@@ -135,7 +135,7 @@ void XTriangles::setGridIndices(size_t nCol, size_t nRow)
 	}
 }
 
-void XTriangles::clear()
+void Triangles::clear()
 {
 	CC_SAFE_DELETE_ARRAY(tri.verts);
 	CC_SAFE_DELETE_ARRAY(tri.indices);
@@ -143,27 +143,27 @@ void XTriangles::clear()
 	tri.indexCount = 0;
 }
 
-size_t XTriangles::getVertexCount() const
+size_t Triangles::getVertexCount() const
 {
 	return tri.verts ? tri.vertCount : 0;
 }
 
-size_t XTriangles::getIndexCount() const
+size_t Triangles::getIndexCount() const
 {
 	return tri.indices ? tri.indexCount : 0;
 }
 
-V3F_C4B_T2F* XTriangles::getVertexData() const
+V3F_C4B_T2F* Triangles::getVertexData() const
 {
 	return tri.verts;
 }
 
-unsigned short* XTriangles::getIndexData() const
+unsigned short* Triangles::getIndexData() const
 {
 	return tri.indices;
 }
 
-void XTriangles::setVertex(size_t index, float x, float y, float z, float u, float v, const Color4B& color)
+void Triangles::setVertex(size_t index, float x, float y, float z, float u, float v, const Color4B& color)
 {
 	if (index > tri.vertCount)
 		return;
@@ -174,14 +174,14 @@ void XTriangles::setVertex(size_t index, float x, float y, float z, float u, flo
 	vert.colors = color;
 }
 
-void XTriangles::setVertexPosition(size_t index, float x, float y, float z)
+void Triangles::setVertexPosition(size_t index, float x, float y, float z)
 {
 	if (index > tri.vertCount)
 		return;
 	tri.verts[index].vertices.set(x, y, z);
 }
 
-void XTriangles::setVertexCoords(size_t index, float u, float v)
+void Triangles::setVertexCoords(size_t index, float u, float v)
 {
 	if (index > tri.vertCount)
 		return;
@@ -190,27 +190,27 @@ void XTriangles::setVertexCoords(size_t index, float u, float v)
 	vert.texCoords.v = v;
 }
 
-void XTriangles::setVertexColor(size_t index, const Color4B& color)
+void Triangles::setVertexColor(size_t index, const Color4B& color)
 {
 	if (index > tri.vertCount)
 		return;
 	tri.verts[index].colors = color;
 }
 
-void XTriangles::setAllVertexColor(const cocos2d::Color4B& color)
+void Triangles::setAllVertexColor(const cocos2d::Color4B& color)
 {
 	for (int i = 0; i < tri.vertCount; ++i)
 		tri.verts[i].colors = color;
 }
 
-void XTriangles::setIndex(size_t index, unsigned short value)
+void Triangles::setIndex(size_t index, unsigned short value)
 {
 	if (index > tri.indexCount)
 		return;
 	tri.indices[index] = value;
 }
 
-XTriangles* XTriangles::clone()
+Triangles* Triangles::clone()
 {
 	auto ret = create(tri.vertCount, tri.indexCount);
 	if (ret)
