@@ -1,7 +1,5 @@
 ﻿#include "WindowHelperWin32.h"
 #include "SimulatorWin.h"
-#include "../fcyLib/fcyType.h"
-#include "../fcyLib/fcyMath.h"
 #include <unordered_map>
 
 using namespace lstg;
@@ -33,10 +31,6 @@ void WindowHelperWin32::HandleIMELanguageChanged()
 	{
 		// 输入法关闭
 		m_CurIMEDesc.clear();
-
-#ifdef _IME_DEBUG
-		fcyDebug::Trace(L"[ @ WindowHelper::HandleIMELanguageChanged ] IME closed.\n");
-#endif
 	}
 	else
 	{
@@ -44,10 +38,6 @@ void WindowHelperWin32::HandleIMELanguageChanged()
 		m_CurIMEDesc.clear();
 		m_CurIMEDesc.resize(iSize);
 		ImmGetDescription(hKL, &m_CurIMEDesc[0], iSize);
-
-#ifdef _IME_DEBUG
-		fcyDebug::Trace(L"[ @ WindowHelper::HandleIMELanguageChanged ] IME changed as : %s.\n", m_CurIMEDesc.c_str());
-#endif
 	}
 }
 
@@ -64,11 +54,6 @@ void WindowHelperWin32::HandleIMEComposition()
 		m_CurIMEComposition.clear();
 		m_CurIMEComposition.resize(lSize);
 		ImmGetCompositionString(hIMC, GCS_COMPSTR, &m_CurIMEComposition[0], lSize);
-
-#ifdef _IME_DEBUG
-		fcyDebug::Trace(L"[ @ WindowHelper::HandleIMEComposition ] Current composition : %s.\n", m_CurIMEComposition.c_str());
-#endif
-
 		ImmReleaseContext(m_hWnd, hIMC);
 	}
 }
@@ -113,18 +98,6 @@ void WindowHelperWin32::HandleIMECandidate()
 
 		m_IMECandidateList.push_back(pStr);
 	}
-
-#ifdef _IME_DEBUG
-	wstring tDebugStr;
-	for (uint32_t i = 0; i<pList->dwCount; ++i)
-	{
-		tDebugStr += L"\t" + m_IMECandidateList[i] + L"\n";
-	}
-
-	fcyDebug::Trace(L"[ @ WindowHelper::HandleIMECandidate ] Candidate info.\n\tCandidate: %d/%d PageStart: %d PageSize: %d\nList :\n%s\n",
-		m_IMESelectedCandidate, m_IMETotalCandidate, m_IMEPageStartCandidate, m_IMEPageCandidateCount,
-		tDebugStr.c_str());
-#endif
 
 	// clean up
 	GlobalFree(pList);
@@ -189,7 +162,7 @@ F2DWINBORDERTYPE WindowHelperWin32::GetBorderType()
 
 int WindowHelperWin32::SetBorderType(F2DWINBORDERTYPE Type)
 {
-	if (!m_hWnd) return FCYERR_INTERNALERR;
+	if (!m_hWnd) return 0;
 	switch (Type)
 	{
 	case F2DWINBORDERTYPE_NONE:
@@ -202,11 +175,11 @@ int WindowHelperWin32::SetBorderType(F2DWINBORDERTYPE Type)
 		SetWindowLong(m_hWnd, GWL_STYLE, F2DWINDOWSTYLESIZEABLEBORDER);
 		break;
 	default:
-		return FCYERR_ILLEGAL;
+		return 0;
 	}
 
 	SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0, m_bShow ? SWP_SHOWWINDOW | SWP_NOZORDER | SWP_FRAMECHANGED | SWP_NOSIZE | SWP_NOMOVE : SWP_NOZORDER | SWP_FRAMECHANGED | SWP_NOSIZE | SWP_NOMOVE);
-	return FCYERR_OK;
+	return 1;
 }
 
 const wchar_t* WindowHelperWin32::GetCaption()
@@ -219,9 +192,9 @@ const wchar_t* WindowHelperWin32::GetCaption()
 
 int WindowHelperWin32::SetCaption(const wchar_t* Caption)
 {
-	if (!m_hWnd) return FCYERR_INTERNALERR;
+	if (!m_hWnd) return 0;
 	m_CaptionText = Caption;
-	return SetWindowText(m_hWnd, Caption) == TRUE ? FCYERR_OK : FCYERR_INTERNALERR;
+	return SetWindowText(m_hWnd, Caption) == TRUE;
 }
 
 bool WindowHelperWin32::GetVisiable()
@@ -231,44 +204,42 @@ bool WindowHelperWin32::GetVisiable()
 
 int WindowHelperWin32::SetVisiable(bool Visiable)
 {
-	if (!m_hWnd) return FCYERR_INTERNALERR;
+	if (!m_hWnd) return 0;
 	m_bShow = Visiable;
-	return ShowWindow(m_hWnd, m_bShow ? SW_SHOW : SW_HIDE) == TRUE ? FCYERR_OK : FCYERR_INTERNALERR;
+	return ShowWindow(m_hWnd, m_bShow ? SW_SHOW : SW_HIDE) == TRUE;
 }
 
-fcyRect WindowHelperWin32::GetRect()
+cocos2d::Rect WindowHelperWin32::GetRect()
 {
 	RECT tRect;
 	GetWindowRect(m_hWnd, &tRect);
-	fcyRect tRet((float)tRect.left, (float)tRect.top, (float)tRect.right, (float)tRect.bottom);
-	return tRet;
+	return { tRect.left ,tRect.bottom ,tRect.right - tRect.left ,tRect.top - tRect.bottom };
 }
 
-int WindowHelperWin32::SetRect(const fcyRect& Range)
+int WindowHelperWin32::SetRect(const cocos2d::Rect& Range)
 {
-	if (!m_hWnd) return FCYERR_INTERNALERR;
+	if (!m_hWnd) return 0;
 	return SetWindowPos(m_hWnd, 0,
-		(int)Range.a.x, (int)Range.a.y,
-		(int)Range.GetWidth(), (int)Range.GetHeight(),
-		SWP_NOZORDER) == TRUE ? FCYERR_OK : FCYERR_INTERNALERR;
+		(int)Range.getMinX(), (int)Range.getMaxY(),
+		(int)Range.size.width, (int)Range.size.height,
+		SWP_NOZORDER) == TRUE;
 }
 
-fcyRect WindowHelperWin32::GetClientRect()
+cocos2d::Rect WindowHelperWin32::GetClientRect()
 {
 	RECT tRect;
 	::GetClientRect(m_hWnd, &tRect);
-	fcyRect tRet((float)tRect.left, (float)tRect.top, (float)tRect.right, (float)tRect.bottom);
-	return tRet;
+	return { tRect.left ,tRect.bottom ,tRect.right - tRect.left ,tRect.top - tRect.bottom };
 }
 
-int WindowHelperWin32::SetClientRect(const fcyRect& Range)
+int WindowHelperWin32::SetClientRect(const cocos2d::Rect& Range)
 {
-	RECT tWinRect = { (int)Range.a.x , (int)Range.a.y , (int)Range.b.x , (int)Range.b.y };
+	RECT tWinRect = { (int)Range.getMinX() , (int)Range.getMaxY() , (int)Range.getMaxX() , (int)Range.getMinY() };
 	AdjustWindowRect(&tWinRect, GetWindowLong(m_hWnd, GWL_STYLE), FALSE);
 	return SetWindowPos(m_hWnd, 0,
 		tWinRect.left, tWinRect.top,
 		tWinRect.right - tWinRect.left, tWinRect.bottom - tWinRect.top,
-		SWP_NOZORDER) == TRUE ? FCYERR_OK : FCYERR_INTERNALERR;
+		SWP_NOZORDER) == TRUE;
 }
 
 bool WindowHelperWin32::IsTopMost()
@@ -278,17 +249,17 @@ bool WindowHelperWin32::IsTopMost()
 
 int WindowHelperWin32::SetTopMost(bool TopMost)
 {
-	if (!m_hWnd) return FCYERR_INTERNALERR;
+	if (!m_hWnd) return 0;
 	if (TopMost)
 		if (SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE) == FALSE)
-			return FCYERR_INTERNALERR;
+			return 0;
 		else
-			return FCYERR_OK;
+			return 1;
 	else
 		if (SetWindowPos(m_hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE) == FALSE)
-			return FCYERR_INTERNALERR;
+			return 0;
 		else
-			return FCYERR_OK;
+			return 1;
 }
 
 void WindowHelperWin32::HideMouse(bool bHide)
