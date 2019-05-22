@@ -108,6 +108,7 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/UtilLuaRes.h
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_BentLaser_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_BlendMode_auto.hpp
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Buffer_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_controller_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_controller_manual.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_FileDialog_auto.hpp
@@ -117,6 +118,7 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Random_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_ResourceMgr_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Resource_auto.hpp
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Stream_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Triangles_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_WindowHelper_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_ui_fix.h
@@ -298,6 +300,7 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/UtilShader.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_BentLaser_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_BlendMode_auto.cpp
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Buffer_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_controller_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_controller_manual.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_ui_fix.cpp
@@ -308,6 +311,7 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Random_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_ResourceMgr_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Resource_auto.cpp
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Stream_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Triangles_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_WindowHelper_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaExtensions/lfs/lfs.cpp
