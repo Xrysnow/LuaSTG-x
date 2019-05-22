@@ -27,6 +27,8 @@
 #include "../LuaBindings/lua_ParticlePool_auto.hpp"
 #include "../LuaBindings/lua_ResourceMgr_auto.hpp"
 #include "../LuaBindings/lua_Triangles_auto.hpp"
+#include "../LuaBindings/lua_Buffer_auto.hpp"
+#include "../LuaBindings/lua_Stream_auto.hpp"
 #include "../LuaBindings/lua_cc_ui_fix.h"
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_ANDROID) && (CC_TARGET_PLATFORM != CC_PLATFORM_IOS)
 #include "../LuaBindings/lua_cc_controller_auto.hpp"
@@ -142,6 +144,8 @@ bool AppFrame::applicationDidFinishLaunching()
 	register_all_x_FileDialog(L);
 	register_all_x_ResourceMgr(L);
 	register_all_x_Triangles(L);
+	register_all_x_Buffer(L);
+	register_all_x_Stream(L);
 	register_all_cocos2dx_ui_fix(L);
 
 	register_all_packages();
