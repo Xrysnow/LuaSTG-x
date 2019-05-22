@@ -310,7 +310,7 @@ int lua_x_ResourceMgr_ResourcePack_getStringFromFile(lua_State* tolua_S)
 
     return 0;
 }
-int lua_x_ResourceMgr_ResourcePack_setPriority(lua_State* tolua_S)
+int lua_x_ResourceMgr_ResourcePack_listFiles(lua_State* tolua_S)
 {
     int argc = 0;
     lstg::ResourcePack* cobj = nullptr;
@@ -330,57 +330,7 @@ int lua_x_ResourceMgr_ResourcePack_setPriority(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
     {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_ResourceMgr_ResourcePack_setPriority'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        double arg0;
-
-        ok &= luaval_to_number(tolua_S, 2,&arg0, "lstg.ResourcePack:setPriority");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_ResourceMgr_ResourcePack_setPriority'", nullptr);
-            return 0;
-        }
-        cobj->setPriority(arg0);
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResourcePack:setPriority",argc, 1);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_ResourceMgr_ResourcePack_setPriority'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_x_ResourceMgr_ResourcePack_listCachedFiles(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::ResourcePack* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.ResourcePack",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::ResourcePack*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_ResourceMgr_ResourcePack_listCachedFiles'", nullptr);
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_ResourceMgr_ResourcePack_listFiles'", nullptr);
         return 0;
     }
 #endif
@@ -390,19 +340,19 @@ int lua_x_ResourceMgr_ResourcePack_listCachedFiles(lua_State* tolua_S)
     {
         if(!ok)
         {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_ResourceMgr_ResourcePack_listCachedFiles'", nullptr);
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_ResourceMgr_ResourcePack_listFiles'", nullptr);
             return 0;
         }
-        std::vector<std::string> ret = cobj->listCachedFiles();
+        std::vector<std::string> ret = cobj->listFiles();
         ccvector_std_string_to_luaval(tolua_S, ret);
         return 1;
     }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResourcePack:listCachedFiles",argc, 0);
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResourcePack:listFiles",argc, 0);
     return 0;
 
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_ResourceMgr_ResourcePack_listCachedFiles'.",&tolua_err);
+    tolua_error(tolua_S,"#ferror in function 'lua_x_ResourceMgr_ResourcePack_listFiles'.",&tolua_err);
 #endif
 
     return 0;
@@ -604,7 +554,7 @@ int lua_x_ResourceMgr_ResourcePack_getUncompressedSize(lua_State* tolua_S)
 
     return 0;
 }
-int lua_x_ResourceMgr_ResourcePack_listFiles(lua_State* tolua_S)
+int lua_x_ResourceMgr_ResourcePack_loadAndCache(lua_State* tolua_S)
 {
     int argc = 0;
     lstg::ResourcePack* cobj = nullptr;
@@ -624,29 +574,82 @@ int lua_x_ResourceMgr_ResourcePack_listFiles(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
     {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_ResourceMgr_ResourcePack_listFiles'", nullptr);
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_ResourceMgr_ResourcePack_loadAndCache'", nullptr);
         return 0;
     }
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
+    if (argc == 1) 
     {
+        std::string arg0;
+
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResourcePack:loadAndCache");
         if(!ok)
         {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_ResourceMgr_ResourcePack_listFiles'", nullptr);
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_ResourceMgr_ResourcePack_loadAndCache'", nullptr);
             return 0;
         }
-        std::vector<std::string> ret = cobj->listFiles();
-        ccvector_std_string_to_luaval(tolua_S, ret);
+        lstg::Buffer* ret = cobj->loadAndCache(arg0);
+        object_to_luaval<lstg::Buffer>(tolua_S, "lstg.Buffer",(lstg::Buffer*)ret);
         return 1;
     }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResourcePack:listFiles",argc, 0);
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResourcePack:loadAndCache",argc, 1);
     return 0;
 
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_ResourceMgr_ResourcePack_listFiles'.",&tolua_err);
+    tolua_error(tolua_S,"#ferror in function 'lua_x_ResourceMgr_ResourcePack_loadAndCache'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_x_ResourceMgr_ResourcePack_isFileCached(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResourcePack* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResourcePack",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResourcePack*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_ResourceMgr_ResourcePack_isFileCached'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1) 
+    {
+        std::string arg0;
+
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResourcePack:isFileCached");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_ResourceMgr_ResourcePack_isFileCached'", nullptr);
+            return 0;
+        }
+        bool ret = cobj->isFileCached(arg0);
+        tolua_pushboolean(tolua_S,(bool)ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResourcePack:isFileCached",argc, 1);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_ResourceMgr_ResourcePack_isFileCached'.",&tolua_err);
 #endif
 
     return 0;
@@ -712,6 +715,56 @@ int lua_x_ResourceMgr_ResourcePack_cacheFileAsync(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
     tolua_error(tolua_S,"#ferror in function 'lua_x_ResourceMgr_ResourcePack_cacheFileAsync'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_x_ResourceMgr_ResourcePack_setPriority(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResourcePack* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResourcePack",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResourcePack*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_ResourceMgr_ResourcePack_setPriority'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1) 
+    {
+        double arg0;
+
+        ok &= luaval_to_number(tolua_S, 2,&arg0, "lstg.ResourcePack:setPriority");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_ResourceMgr_ResourcePack_setPriority'", nullptr);
+            return 0;
+        }
+        cobj->setPriority(arg0);
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResourcePack:setPriority",argc, 1);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_ResourceMgr_ResourcePack_setPriority'.",&tolua_err);
 #endif
 
     return 0;
@@ -860,7 +913,7 @@ int lua_x_ResourceMgr_ResourcePack_cacheAllFiles(lua_State* tolua_S)
 
     return 0;
 }
-int lua_x_ResourceMgr_ResourcePack_isFileCached(lua_State* tolua_S)
+int lua_x_ResourceMgr_ResourcePack_listCachedFiles(lua_State* tolua_S)
 {
     int argc = 0;
     lstg::ResourcePack* cobj = nullptr;
@@ -880,32 +933,29 @@ int lua_x_ResourceMgr_ResourcePack_isFileCached(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
     {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_ResourceMgr_ResourcePack_isFileCached'", nullptr);
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_ResourceMgr_ResourcePack_listCachedFiles'", nullptr);
         return 0;
     }
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 0) 
     {
-        std::string arg0;
-
-        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResourcePack:isFileCached");
         if(!ok)
         {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_ResourceMgr_ResourcePack_isFileCached'", nullptr);
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_ResourceMgr_ResourcePack_listCachedFiles'", nullptr);
             return 0;
         }
-        bool ret = cobj->isFileCached(arg0);
-        tolua_pushboolean(tolua_S,(bool)ret);
+        std::vector<std::string> ret = cobj->listCachedFiles();
+        ccvector_std_string_to_luaval(tolua_S, ret);
         return 1;
     }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResourcePack:isFileCached",argc, 1);
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResourcePack:listCachedFiles",argc, 0);
     return 0;
 
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_ResourceMgr_ResourcePack_isFileCached'.",&tolua_err);
+    tolua_error(tolua_S,"#ferror in function 'lua_x_ResourceMgr_ResourcePack_listCachedFiles'.",&tolua_err);
 #endif
 
     return 0;
@@ -966,18 +1016,19 @@ int lua_register_x_ResourceMgr_ResourcePack(lua_State* tolua_S)
         tolua_function(tolua_S,"clearFileCache",lua_x_ResourceMgr_ResourcePack_clearFileCache);
         tolua_function(tolua_S,"getPriority",lua_x_ResourceMgr_ResourcePack_getPriority);
         tolua_function(tolua_S,"getStringFromFile",lua_x_ResourceMgr_ResourcePack_getStringFromFile);
-        tolua_function(tolua_S,"setPriority",lua_x_ResourceMgr_ResourcePack_setPriority);
-        tolua_function(tolua_S,"listCachedFiles",lua_x_ResourceMgr_ResourcePack_listCachedFiles);
+        tolua_function(tolua_S,"listFiles",lua_x_ResourceMgr_ResourcePack_listFiles);
         tolua_function(tolua_S,"cacheFile",lua_x_ResourceMgr_ResourcePack_cacheFile);
         tolua_function(tolua_S,"getPath",lua_x_ResourceMgr_ResourcePack_getPath);
         tolua_function(tolua_S,"getCompressedSize",lua_x_ResourceMgr_ResourcePack_getCompressedSize);
         tolua_function(tolua_S,"getUncompressedSize",lua_x_ResourceMgr_ResourcePack_getUncompressedSize);
-        tolua_function(tolua_S,"listFiles",lua_x_ResourceMgr_ResourcePack_listFiles);
+        tolua_function(tolua_S,"loadAndCache",lua_x_ResourceMgr_ResourcePack_loadAndCache);
+        tolua_function(tolua_S,"isFileCached",lua_x_ResourceMgr_ResourcePack_isFileCached);
         tolua_function(tolua_S,"cacheFileAsync",lua_x_ResourceMgr_ResourcePack_cacheFileAsync);
+        tolua_function(tolua_S,"setPriority",lua_x_ResourceMgr_ResourcePack_setPriority);
         tolua_function(tolua_S,"getFileCount",lua_x_ResourceMgr_ResourcePack_getFileCount);
         tolua_function(tolua_S,"isFileOrDirectoryExist",lua_x_ResourceMgr_ResourcePack_isFileOrDirectoryExist);
         tolua_function(tolua_S,"cacheAllFiles",lua_x_ResourceMgr_ResourcePack_cacheAllFiles);
-        tolua_function(tolua_S,"isFileCached",lua_x_ResourceMgr_ResourcePack_isFileCached);
+        tolua_function(tolua_S,"listCachedFiles",lua_x_ResourceMgr_ResourcePack_listCachedFiles);
         tolua_function(tolua_S,"create", lua_x_ResourceMgr_ResourcePack_create);
     tolua_endmodule(tolua_S);
     std::string typeName = typeid(lstg::ResourcePack).name();
@@ -1235,6 +1286,106 @@ int lua_x_ResourceMgr_ResourceMgr_getGlobalImageScaleFactor(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
     tolua_error(tolua_S,"#ferror in function 'lua_x_ResourceMgr_ResourceMgr_getGlobalImageScaleFactor'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_x_ResourceMgr_ResourceMgr_loadLocalFileAndCache(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResourceMgr* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResourceMgr",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResourceMgr*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_ResourceMgr_ResourceMgr_loadLocalFileAndCache'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1) 
+    {
+        std::string arg0;
+
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResourceMgr:loadLocalFileAndCache");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_ResourceMgr_ResourceMgr_loadLocalFileAndCache'", nullptr);
+            return 0;
+        }
+        lstg::Buffer* ret = cobj->loadLocalFileAndCache(arg0);
+        object_to_luaval<lstg::Buffer>(tolua_S, "lstg.Buffer",(lstg::Buffer*)ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResourceMgr:loadLocalFileAndCache",argc, 1);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_ResourceMgr_ResourceMgr_loadLocalFileAndCache'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_x_ResourceMgr_ResourceMgr_getStringFromFile(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResourceMgr* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResourceMgr",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResourceMgr*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_ResourceMgr_ResourceMgr_getStringFromFile'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1) 
+    {
+        std::string arg0;
+
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResourceMgr:getStringFromFile");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_ResourceMgr_ResourceMgr_getStringFromFile'", nullptr);
+            return 0;
+        }
+        std::string ret = cobj->getStringFromFile(arg0);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResourceMgr:getStringFromFile",argc, 1);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_ResourceMgr_ResourceMgr_getStringFromFile'.",&tolua_err);
 #endif
 
     return 0;
@@ -1682,6 +1833,56 @@ int lua_x_ResourceMgr_ResourceMgr_isFileOrDirectoryExist(lua_State* tolua_S)
 
     return 0;
 }
+int lua_x_ResourceMgr_ResourceMgr_getBufferFromFile(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResourceMgr* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResourceMgr",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResourceMgr*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_ResourceMgr_ResourceMgr_getBufferFromFile'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1) 
+    {
+        std::string arg0;
+
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResourceMgr:getBufferFromFile");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_ResourceMgr_ResourceMgr_getBufferFromFile'", nullptr);
+            return 0;
+        }
+        lstg::Buffer* ret = cobj->getBufferFromFile(arg0);
+        object_to_luaval<lstg::Buffer>(tolua_S, "lstg.Buffer",(lstg::Buffer*)ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResourceMgr:getBufferFromFile",argc, 1);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_ResourceMgr_ResourceMgr_getBufferFromFile'.",&tolua_err);
+#endif
+
+    return 0;
+}
 int lua_x_ResourceMgr_ResourceMgr_cacheLocalFileAsync(lua_State* tolua_S)
 {
     int argc = 0;
@@ -1992,6 +2193,8 @@ int lua_register_x_ResourceMgr_ResourceMgr(lua_State* tolua_S)
         tolua_function(tolua_S,"loadResourcePack",lua_x_ResourceMgr_ResourceMgr_loadResourcePack);
         tolua_function(tolua_S,"setGlobalImageScaleFactor",lua_x_ResourceMgr_ResourceMgr_setGlobalImageScaleFactor);
         tolua_function(tolua_S,"getGlobalImageScaleFactor",lua_x_ResourceMgr_ResourceMgr_getGlobalImageScaleFactor);
+        tolua_function(tolua_S,"loadLocalFileAndCache",lua_x_ResourceMgr_ResourceMgr_loadLocalFileAndCache);
+        tolua_function(tolua_S,"getStringFromFile",lua_x_ResourceMgr_ResourceMgr_getStringFromFile);
         tolua_function(tolua_S,"getResourcePacks",lua_x_ResourceMgr_ResourceMgr_getResourcePacks);
         tolua_function(tolua_S,"cacheLocalFile",lua_x_ResourceMgr_ResourceMgr_cacheLocalFile);
         tolua_function(tolua_S,"listCachedLocalFiles",lua_x_ResourceMgr_ResourceMgr_listCachedLocalFiles);
@@ -2001,6 +2204,7 @@ int lua_register_x_ResourceMgr_ResourceMgr(lua_State* tolua_S)
         tolua_function(tolua_S,"getResourcePack",lua_x_ResourceMgr_ResourceMgr_getResourcePack);
         tolua_function(tolua_S,"extractFile",lua_x_ResourceMgr_ResourceMgr_extractFile);
         tolua_function(tolua_S,"isFileOrDirectoryExist",lua_x_ResourceMgr_ResourceMgr_isFileOrDirectoryExist);
+        tolua_function(tolua_S,"getBufferFromFile",lua_x_ResourceMgr_ResourceMgr_getBufferFromFile);
         tolua_function(tolua_S,"cacheLocalFileAsync",lua_x_ResourceMgr_ResourceMgr_cacheLocalFileAsync);
         tolua_function(tolua_S,"unloadAllResourcePacks",lua_x_ResourceMgr_ResourceMgr_unloadAllResourcePacks);
         tolua_function(tolua_S,"clear",lua_x_ResourceMgr_ResourceMgr_clear);

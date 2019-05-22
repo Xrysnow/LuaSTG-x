@@ -772,309 +772,308 @@ int lua_register_x_Resource_ResourceQuad(lua_State* tolua_S)
     return 1;
 }
 
-
 int lua_x_Resource_ResTexture_getTriangles(lua_State* tolua_S)
 {
-	int argc = 0;
-	lstg::ResTexture* cobj = nullptr;
-	bool ok = true;
+    int argc = 0;
+    lstg::ResTexture* cobj = nullptr;
+    bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
-	tolua_Error tolua_err;
+    tolua_Error tolua_err;
 #endif
 
 
 #if COCOS2D_DEBUG >= 1
-	if (!tolua_isusertype(tolua_S, 1, "lstg.ResTexture", 0, &tolua_err)) goto tolua_lerror;
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResTexture",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-	cobj = (lstg::ResTexture*)tolua_tousertype(tolua_S, 1, 0);
+    cobj = (lstg::ResTexture*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
-	if (!cobj)
-	{
-		tolua_error(tolua_S, "invalid 'cobj' in function 'lua_x_Resource_ResTexture_getTriangles'", nullptr);
-		return 0;
-}
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResTexture_getTriangles'", nullptr);
+        return 0;
+    }
 #endif
 
-	argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0)
-	{
-		if (!ok)
-		{
-			tolua_error(tolua_S, "invalid arguments in function 'lua_x_Resource_ResTexture_getTriangles'", nullptr);
-			return 0;
-		}
-		lstg::Triangles* ret = cobj->getTriangles();
-		object_to_luaval<lstg::Triangles>(tolua_S, "lstg.XTriangles", (lstg::Triangles*)ret);
-		return 1;
-	}
-	luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResTexture:getTriangles", argc, 0);
-	return 0;
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResTexture_getTriangles'", nullptr);
+            return 0;
+        }
+        lstg::Triangles* ret = cobj->getTriangles();
+        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.Triangles",(lstg::Triangles*)ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResTexture:getTriangles",argc, 0);
+    return 0;
 
 #if COCOS2D_DEBUG >= 1
-	tolua_lerror:
-				tolua_error(tolua_S, "#ferror in function 'lua_x_Resource_ResTexture_getTriangles'.", &tolua_err);
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResTexture_getTriangles'.",&tolua_err);
 #endif
 
-				return 0;
+    return 0;
 }
 int lua_x_Resource_ResTexture_setTriangles(lua_State* tolua_S)
 {
-	int argc = 0;
-	lstg::ResTexture* cobj = nullptr;
-	bool ok = true;
+    int argc = 0;
+    lstg::ResTexture* cobj = nullptr;
+    bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
-	tolua_Error tolua_err;
+    tolua_Error tolua_err;
 #endif
 
 
 #if COCOS2D_DEBUG >= 1
-	if (!tolua_isusertype(tolua_S, 1, "lstg.ResTexture", 0, &tolua_err)) goto tolua_lerror;
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResTexture",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-	cobj = (lstg::ResTexture*)tolua_tousertype(tolua_S, 1, 0);
+    cobj = (lstg::ResTexture*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
-	if (!cobj)
-	{
-		tolua_error(tolua_S, "invalid 'cobj' in function 'lua_x_Resource_ResTexture_setTriangles'", nullptr);
-		return 0;
-	}
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResTexture_setTriangles'", nullptr);
+        return 0;
+    }
 #endif
 
-	argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1)
-	{
-		lstg::Triangles* arg0;
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1) 
+    {
+        lstg::Triangles* arg0;
 
-		ok &= luaval_to_object<lstg::Triangles>(tolua_S, 2, "lstg.XTriangles", &arg0, "lstg.ResTexture:setTriangles");
-		if (!ok)
-		{
-			tolua_error(tolua_S, "invalid arguments in function 'lua_x_Resource_ResTexture_setTriangles'", nullptr);
-			return 0;
-		}
-		cobj->setTriangles(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResTexture:setTriangles", argc, 1);
-	return 0;
+        ok &= luaval_to_object<lstg::Triangles>(tolua_S, 2, "lstg.Triangles",&arg0, "lstg.ResTexture:setTriangles");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResTexture_setTriangles'", nullptr);
+            return 0;
+        }
+        cobj->setTriangles(arg0);
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResTexture:setTriangles",argc, 1);
+    return 0;
 
 #if COCOS2D_DEBUG >= 1
-	tolua_lerror:
-				tolua_error(tolua_S, "#ferror in function 'lua_x_Resource_ResTexture_setTriangles'.", &tolua_err);
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResTexture_setTriangles'.",&tolua_err);
 #endif
 
-				return 0;
+    return 0;
 }
 int lua_x_Resource_ResTexture_render(lua_State* tolua_S)
 {
-	int argc = 0;
-	lstg::ResTexture* cobj = nullptr;
-	bool ok = true;
+    int argc = 0;
+    lstg::ResTexture* cobj = nullptr;
+    bool ok  = true;
 #if COCOS2D_DEBUG >= 1
-	tolua_Error tolua_err;
+    tolua_Error tolua_err;
 #endif
 
 #if COCOS2D_DEBUG >= 1
-	if (!tolua_isusertype(tolua_S, 1, "lstg.ResTexture", 0, &tolua_err)) goto tolua_lerror;
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResTexture",0,&tolua_err)) goto tolua_lerror;
 #endif
-	cobj = (lstg::ResTexture*)tolua_tousertype(tolua_S, 1, 0);
+    cobj = (lstg::ResTexture*)tolua_tousertype(tolua_S,1,0);
 #if COCOS2D_DEBUG >= 1
-	if (!cobj)
-	{
-		tolua_error(tolua_S, "invalid 'cobj' in function 'lua_x_Resource_ResTexture_render'", nullptr);
-		return 0;
-	}
+    if (!cobj)
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResTexture_render'", nullptr);
+        return 0;
+    }
 #endif
-	argc = lua_gettop(tolua_S) - 1;
-	do {
-		if (argc == 2) {
-			lstg::BlendMode* arg0;
-			ok &= luaval_to_BlendMode(tolua_S, 2, &arg0, "lstg.ResTexture:render");
+    argc = lua_gettop(tolua_S)-1;
+    do{
+        if (argc == 2) {
+            lstg::BlendMode* arg0;
+            ok &= luaval_to_BlendMode(tolua_S, 2, &arg0, "lstg.ResTexture:render");
 
-			if (!ok) { break; }
-			cocos2d::V3F_C4B_T2F_Quad arg1;
-			ok &= luaval_to_V3F_C4B_T2F_Quad(tolua_S, 3, &arg1, "lstg.ResTexture:render");
+            if (!ok) { break; }
+            cocos2d::V3F_C4B_T2F_Quad arg1;
+            ok &= luaval_to_V3F_C4B_T2F_Quad(tolua_S, 3, &arg1, "lstg.ResTexture:render");
 
-			if (!ok) { break; }
-			bool ret = cobj->render(arg0, arg1);
-			tolua_pushboolean(tolua_S, (bool)ret);
-			return 1;
-		}
-	} while (0);
-	ok = true;
-	do {
-		if (argc == 1) {
-			cocos2d::V3F_C4B_T2F_Quad arg0;
-			ok &= luaval_to_V3F_C4B_T2F_Quad(tolua_S, 2, &arg0, "lstg.ResTexture:render");
+            if (!ok) { break; }
+            bool ret = cobj->render(arg0, arg1);
+            tolua_pushboolean(tolua_S,(bool)ret);
+            return 1;
+        }
+    }while(0);
+    ok  = true;
+    do{
+        if (argc == 1) {
+            cocos2d::V3F_C4B_T2F_Quad arg0;
+            ok &= luaval_to_V3F_C4B_T2F_Quad(tolua_S, 2, &arg0, "lstg.ResTexture:render");
 
-			if (!ok) { break; }
-			bool ret = cobj->render(arg0);
-			tolua_pushboolean(tolua_S, (bool)ret);
-			return 1;
-		}
-	} while (0);
-	ok = true;
-	luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResTexture:render", argc, 1);
-	return 0;
+            if (!ok) { break; }
+            bool ret = cobj->render(arg0);
+            tolua_pushboolean(tolua_S,(bool)ret);
+            return 1;
+        }
+    }while(0);
+    ok  = true;
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n",  "lstg.ResTexture:render",argc, 1);
+    return 0;
 
 #if COCOS2D_DEBUG >= 1
-	tolua_lerror:
-				tolua_error(tolua_S, "#ferror in function 'lua_x_Resource_ResTexture_render'.", &tolua_err);
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResTexture_render'.",&tolua_err);
 #endif
 
-				return 0;
-		}
+    return 0;
+}
 int lua_x_Resource_ResTexture_getTexture(lua_State* tolua_S)
 {
-	int argc = 0;
-	lstg::ResTexture* cobj = nullptr;
-	bool ok = true;
+    int argc = 0;
+    lstg::ResTexture* cobj = nullptr;
+    bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
-	tolua_Error tolua_err;
+    tolua_Error tolua_err;
 #endif
 
 
 #if COCOS2D_DEBUG >= 1
-	if (!tolua_isusertype(tolua_S, 1, "lstg.ResTexture", 0, &tolua_err)) goto tolua_lerror;
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResTexture",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-	cobj = (lstg::ResTexture*)tolua_tousertype(tolua_S, 1, 0);
+    cobj = (lstg::ResTexture*)tolua_tousertype(tolua_S,1,0);
 
 #if COCOS2D_DEBUG >= 1
-	if (!cobj)
-	{
-		tolua_error(tolua_S, "invalid 'cobj' in function 'lua_x_Resource_ResTexture_getTexture'", nullptr);
-		return 0;
-	}
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResTexture_getTexture'", nullptr);
+        return 0;
+    }
 #endif
 
-	argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0)
-	{
-		if (!ok)
-		{
-			tolua_error(tolua_S, "invalid arguments in function 'lua_x_Resource_ResTexture_getTexture'", nullptr);
-			return 0;
-		}
-		cocos2d::Texture2D* ret = cobj->getTexture();
-		object_to_luaval<cocos2d::Texture2D>(tolua_S, "cc.Texture2D", (cocos2d::Texture2D*)ret);
-		return 1;
-	}
-	luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResTexture:getTexture", argc, 0);
-	return 0;
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResTexture_getTexture'", nullptr);
+            return 0;
+        }
+        cocos2d::Texture2D* ret = cobj->getTexture();
+        object_to_luaval<cocos2d::Texture2D>(tolua_S, "cc.Texture2D",(cocos2d::Texture2D*)ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResTexture:getTexture",argc, 0);
+    return 0;
 
 #if COCOS2D_DEBUG >= 1
-	tolua_lerror:
-				tolua_error(tolua_S, "#ferror in function 'lua_x_Resource_ResTexture_getTexture'.", &tolua_err);
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResTexture_getTexture'.",&tolua_err);
 #endif
 
-				return 0;
+    return 0;
 }
 int lua_x_Resource_ResTexture_create(lua_State* tolua_S)
 {
-	int argc = 0;
-	bool ok = true;
+    int argc = 0;
+    bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
-	tolua_Error tolua_err;
+    tolua_Error tolua_err;
 #endif
 
 #if COCOS2D_DEBUG >= 1
-	if (!tolua_isusertable(tolua_S, 1, "lstg.ResTexture", 0, &tolua_err)) goto tolua_lerror;
+    if (!tolua_isusertable(tolua_S,1,"lstg.ResTexture",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-	argc = lua_gettop(tolua_S) - 1;
+    argc = lua_gettop(tolua_S) - 1;
 
-	if (argc == 2)
-	{
-		std::string arg0;
-		std::string arg1;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, "lstg.ResTexture:create");
-		ok &= luaval_to_std_string(tolua_S, 3, &arg1, "lstg.ResTexture:create");
-		if (!ok)
-		{
-			tolua_error(tolua_S, "invalid arguments in function 'lua_x_Resource_ResTexture_create'", nullptr);
-			return 0;
-	}
-		lstg::ResTexture* ret = lstg::ResTexture::create(arg0, arg1);
-		object_to_luaval<lstg::ResTexture>(tolua_S, "lstg.ResTexture", (lstg::ResTexture*)ret);
-		return 1;
-}
-	luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResTexture:create", argc, 2);
-	return 0;
+    if (argc == 2)
+    {
+        std::string arg0;
+        std::string arg1;
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResTexture:create");
+        ok &= luaval_to_std_string(tolua_S, 3,&arg1, "lstg.ResTexture:create");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResTexture_create'", nullptr);
+            return 0;
+        }
+        lstg::ResTexture* ret = lstg::ResTexture::create(arg0, arg1);
+        object_to_luaval<lstg::ResTexture>(tolua_S, "lstg.ResTexture",(lstg::ResTexture*)ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResTexture:create",argc, 2);
+    return 0;
 #if COCOS2D_DEBUG >= 1
-	tolua_lerror:
-				tolua_error(tolua_S, "#ferror in function 'lua_x_Resource_ResTexture_create'.", &tolua_err);
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResTexture_create'.",&tolua_err);
 #endif
-				return 0;
+    return 0;
 }
 int lua_x_Resource_ResTexture_createWithTexture(lua_State* tolua_S)
 {
-	int argc = 0;
-	bool ok = true;
+    int argc = 0;
+    bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
-	tolua_Error tolua_err;
+    tolua_Error tolua_err;
 #endif
 
 #if COCOS2D_DEBUG >= 1
-	if (!tolua_isusertable(tolua_S, 1, "lstg.ResTexture", 0, &tolua_err)) goto tolua_lerror;
+    if (!tolua_isusertable(tolua_S,1,"lstg.ResTexture",0,&tolua_err)) goto tolua_lerror;
 #endif
 
-	argc = lua_gettop(tolua_S) - 1;
+    argc = lua_gettop(tolua_S) - 1;
 
-	if (argc == 2)
-	{
-		std::string arg0;
-		cocos2d::Texture2D* arg1;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, "lstg.ResTexture:createWithTexture");
-		ok &= luaval_to_object<cocos2d::Texture2D>(tolua_S, 3, "cc.Texture2D", &arg1, "lstg.ResTexture:createWithTexture");
-		if (!ok)
-		{
-			tolua_error(tolua_S, "invalid arguments in function 'lua_x_Resource_ResTexture_createWithTexture'", nullptr);
-			return 0;
-	}
-		lstg::ResTexture* ret = lstg::ResTexture::createWithTexture(arg0, arg1);
-		object_to_luaval<lstg::ResTexture>(tolua_S, "lstg.ResTexture", (lstg::ResTexture*)ret);
-		return 1;
-	}
-	luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResTexture:createWithTexture", argc, 2);
-	return 0;
+    if (argc == 2)
+    {
+        std::string arg0;
+        cocos2d::Texture2D* arg1;
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResTexture:createWithTexture");
+        ok &= luaval_to_object<cocos2d::Texture2D>(tolua_S, 3, "cc.Texture2D",&arg1, "lstg.ResTexture:createWithTexture");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResTexture_createWithTexture'", nullptr);
+            return 0;
+        }
+        lstg::ResTexture* ret = lstg::ResTexture::createWithTexture(arg0, arg1);
+        object_to_luaval<lstg::ResTexture>(tolua_S, "lstg.ResTexture",(lstg::ResTexture*)ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResTexture:createWithTexture",argc, 2);
+    return 0;
 #if COCOS2D_DEBUG >= 1
-	tolua_lerror:
-				tolua_error(tolua_S, "#ferror in function 'lua_x_Resource_ResTexture_createWithTexture'.", &tolua_err);
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResTexture_createWithTexture'.",&tolua_err);
 #endif
-				return 0;
+    return 0;
 }
 static int lua_x_Resource_ResTexture_finalize(lua_State* tolua_S)
 {
-	printf("luabindings: finalizing LUA object (ResTexture)");
-	return 0;
+    printf("luabindings: finalizing LUA object (ResTexture)");
+    return 0;
 }
 
 int lua_register_x_Resource_ResTexture(lua_State* tolua_S)
 {
-	tolua_usertype(tolua_S, "lstg.ResTexture");
-	tolua_cclass(tolua_S, "ResTexture", "lstg.ResTexture", "lstg.Resource", nullptr);
+    tolua_usertype(tolua_S,"lstg.ResTexture");
+    tolua_cclass(tolua_S,"ResTexture","lstg.ResTexture","lstg.Resource",nullptr);
 
-	tolua_beginmodule(tolua_S, "ResTexture");
-	tolua_function(tolua_S, "getTriangles", lua_x_Resource_ResTexture_getTriangles);
-	tolua_function(tolua_S, "setTriangles", lua_x_Resource_ResTexture_setTriangles);
-	tolua_function(tolua_S, "render", lua_x_Resource_ResTexture_render);
-	tolua_function(tolua_S, "getTexture", lua_x_Resource_ResTexture_getTexture);
-	tolua_function(tolua_S, "create", lua_x_Resource_ResTexture_create);
-	tolua_function(tolua_S, "createWithTexture", lua_x_Resource_ResTexture_createWithTexture);
-	tolua_endmodule(tolua_S);
-	std::string typeName = typeid(lstg::ResTexture).name();
-	g_luaType[typeName] = "lstg.ResTexture";
-	g_typeCast["ResTexture"] = "lstg.ResTexture";
-	return 1;
+    tolua_beginmodule(tolua_S,"ResTexture");
+        tolua_function(tolua_S,"getTriangles",lua_x_Resource_ResTexture_getTriangles);
+        tolua_function(tolua_S,"setTriangles",lua_x_Resource_ResTexture_setTriangles);
+        tolua_function(tolua_S,"render",lua_x_Resource_ResTexture_render);
+        tolua_function(tolua_S,"getTexture",lua_x_Resource_ResTexture_getTexture);
+        tolua_function(tolua_S,"create", lua_x_Resource_ResTexture_create);
+        tolua_function(tolua_S,"createWithTexture", lua_x_Resource_ResTexture_createWithTexture);
+    tolua_endmodule(tolua_S);
+    std::string typeName = typeid(lstg::ResTexture).name();
+    g_luaType[typeName] = "lstg.ResTexture";
+    g_typeCast["ResTexture"] = "lstg.ResTexture";
+    return 1;
 }
 
 int lua_x_Resource_ResAnimation_setVertex(lua_State* tolua_S)

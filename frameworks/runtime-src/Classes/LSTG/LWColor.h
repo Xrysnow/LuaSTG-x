@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "LuaWrapper.h"
-#include "../fcyLib/fcyMath.h"
 
 namespace lstg
 {
