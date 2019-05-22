@@ -11,6 +11,7 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioMacros.h
 	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioParam.h
 	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioPlayer.h
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioStream.h
 	${RUNTIME_SRC_ROOT}/Classes/Audio/Common.h
 	${RUNTIME_SRC_ROOT}/Classes/Audio/Dither.h
 	${RUNTIME_SRC_ROOT}/Classes/Audio/IMA4Util.h
@@ -20,20 +21,18 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/Classes/ControllerHelper.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/LabelPool.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/MemPoolManager.h
-	${RUNTIME_SRC_ROOT}/Classes/Classes/Randomizer.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/WindowHelper.h
+	${RUNTIME_SRC_ROOT}/Classes/Classes/XBinaryHelper.h
+	${RUNTIME_SRC_ROOT}/Classes/Classes/XBuffer.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XFileDialog.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XFileUtils.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XLabel.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XProfiler.h
+	${RUNTIME_SRC_ROOT}/Classes/Classes/XRand.h
+	${RUNTIME_SRC_ROOT}/Classes/Classes/XStream.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XTriangles.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XTrianglesCommand.h
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib/f2dStruct.h
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyBinaryHelper.h
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMath.h
 	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMemPool.h
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyStream.h
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyType.h
 	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc/fcyHash.h
 	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc/fcyRandom.h
 	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc/fcyStopWatch.h
@@ -118,8 +117,8 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Random_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_ResourceMgr_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Resource_auto.hpp
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Triangles_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_WindowHelper_auto.hpp
-	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_XTriangles_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_ui_fix.h
 	${RUNTIME_SRC_ROOT}/Classes/LuaExtensions/lfs/lfs.h
 	${RUNTIME_SRC_ROOT}/Classes/Math/meow_fft.h
@@ -199,6 +198,7 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/Video/VideoDecoder.h
 	${RUNTIME_SRC_ROOT}/Classes/Video/VideoHeader.h
 	${RUNTIME_SRC_ROOT}/Classes/Video/VideoMacros.h
+	${RUNTIME_SRC_ROOT}/Classes/Video/VideoStream.h
 	${RUNTIME_SRC_ROOT}/Classes/Video/VideoStruct.h
 )
 set(GAME_SOURCE
@@ -217,16 +217,17 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/Classes/ControllerHelper.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/LabelPool.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/MemPoolManager.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Classes/Randomizer.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/WindowHelper.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Classes/XBinaryHelper.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Classes/XBuffer.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XFileDialog.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XFileUtils.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XLabel.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XProfiler.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Classes/XRand.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Classes/XStream.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XTriangles.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XTrianglesCommand.cpp
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyBinaryHelper.cpp
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyStream.cpp
 	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc/fcyHash.cpp
 	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc/fcyRandom.cpp
 	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc/fcyStopWatch.cpp
@@ -307,8 +308,8 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Random_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_ResourceMgr_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Resource_auto.cpp
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Triangles_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_WindowHelper_auto.cpp
-	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_XTriangles_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaExtensions/lfs/lfs.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Math/XCollision.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Math/XComplex.cpp
