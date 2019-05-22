@@ -1,5 +1,4 @@
 ﻿#pragma once
-
 #include <string>
 #include <vector>
 #include <fstream>
@@ -7,6 +6,7 @@
 #include "base/CCData.h"
 #include "base/CCRef.h"
 #include "../Audio/AudioStream.h"
+#include "XBuffer.h"
 
 namespace lstg
 {
@@ -79,6 +79,10 @@ namespace lstg
 		 * Unlock the stream.
 		 */
 		virtual void unlock();
+
+		/** Read from this and write to dst. */
+		virtual bool fill(Stream* dst, uint64_t length, Buffer* buffer);
+
 	protected:
 		uint64_t _size = 0;
 		uint64_t pos = 0;
@@ -86,11 +90,7 @@ namespace lstg
 		bool writable = false;
 	private:
 		std::mutex mut;
-
 	public:
-		/** Read from src and write to dst. */
-		static bool fill(Stream* src, Stream* dst, uint64_t length, size_t bufferSize);
-
 		Stream(const Stream &) = delete;
 		Stream &operator =(const Stream &) = delete;
 	};
@@ -109,8 +109,8 @@ namespace lstg
 
 		static StreamFile* create(const std::string& path, bool canWrite);
 	protected:
-
 		bool init(const std::string& path, bool canWrite);
+
 		StreamFile();
 		virtual ~StreamFile();
 	};
@@ -119,23 +119,25 @@ namespace lstg
 		public Stream
 	{
 	private:
-		cocos2d::Data* _data = nullptr;
-		bool isOwner;
+		Buffer* _buffer = nullptr;
 	public:
+		bool isWritable() override;
+		bool isResizable() override;
+
+		uint64_t size() override;
 		bool resize(uint64_t length) override;
 		uint64_t tell() override;
 		bool seek(SeekOrigin origin, int64_t offset) override;
 		bool read(uint8_t* dst, uint64_t length, uint64_t* bytesRead) override;
 		bool write(const uint8_t* src, uint64_t length, uint64_t* bytesWrite) override;
 
-		uint8_t* getInternalBuffer();
+		uint8_t* data();
+		Buffer* getBuffer() const { return _buffer; }
 
 		/** src can be NULL */
-		static StreamMemory* create(uint8_t* src, uint64_t size, bool copy = true, bool canWrite = false, bool canResize = false);
-		static StreamMemory* create(cocos2d::Data* src, uint64_t size = 0, bool copy = true, bool canWrite = false);
+		static StreamMemory* create(Buffer* src = nullptr, bool copy = false);
 	protected:
-		bool initWithBuffer(uint8_t* src, uint64_t length, bool copy, bool canWrite, bool canResize);
-		bool initWithData(cocos2d::Data* src, uint64_t length, bool copy, bool canWrite);
+		bool init(Buffer* src, bool copy);
 
 		StreamMemory();
 		~StreamMemory();

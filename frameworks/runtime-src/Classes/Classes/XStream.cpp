@@ -19,24 +19,26 @@ void Stream::unlock()
 	mut.unlock();
 }
 
-bool Stream::fill(Stream* src, Stream* dst, uint64_t length, size_t bufferSize)
+bool Stream::fill(Stream* dst, uint64_t length, Buffer* buffer)
 {
-	uint8_t* buffer = new uint8_t[bufferSize];
+	if (!buffer)
+		buffer = Buffer::create(4096);
+	if (!buffer || buffer->empty())
+		return false;
 	uint64_t read = 0;
 	uint64_t total = 0;
-	while (total != length && (src->read(buffer,
-		(length - total > bufferSize) ? bufferSize : length - total, &read)))
+	while (total != length && (this->read(buffer->data(),
+		(length - total > buffer->size()) ? buffer->size() : length - total, &read)))
 	{
 		total += read;
-		dst->write(buffer, read);
+		dst->write(buffer->data(), read);
 	}
-	delete[] buffer;
 	return total == length;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool StreamFile::resize(uint64_t /*Length*/)
+bool StreamFile::resize(uint64_t /*length*/)
 {
 	return false;
 }
@@ -150,33 +152,36 @@ StreamFile::~StreamFile()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-uint8_t* StreamMemory::getInternalBuffer()
+uint8_t* StreamMemory::data()
 {
-	return (uint8_t*)_data->getBytes();
+	return _buffer->data();
+}
+
+bool StreamMemory::isWritable()
+{
+	return _buffer->isWritable();
+}
+
+bool StreamMemory::isResizable()
+{
+	return _buffer->isResizable();
+}
+
+uint64_t StreamMemory::size()
+{
+	return _buffer->size();
 }
 
 bool StreamMemory::resize(uint64_t length)
 {
-	if(resizable)
-	{
-		if (length == _size) return true;
-		auto buf = malloc(length);
-		if (!buf)
-			return false;
-		auto new_data = new cocos2d::Data();
-		new_data->fastSet((unsigned char*)buf, length);
-		memcpy(new_data->getBytes(), _data->getBytes(), min(_size, length));
-		// resizable means isOwner
-		//if (!isOwner)
-		//	data->fastSet(nullptr, 0);
-		delete _data;
-		_data = new_data;
-		_size = length;
-		if(pos > _size)
-			pos = _size;
+	if(!isResizable())
+		return false;
+	if (length == size())
 		return true;
-	}
-	return false;
+	_buffer->resize(length);
+	if(pos > size())
+		pos = size();
+	return true;
 }
 
 uint64_t StreamMemory::tell()
@@ -194,19 +199,19 @@ bool StreamMemory::seek(SeekOrigin origin, int64_t offset)
 		pos = 0;
 		break;
 	case END:
-		pos = _size;
+		pos = size();
 		break;
 	default:
 		return false;
 	}
-	if (offset < 0 && uint64_t(-offset) > pos)
+	if (offset < 0 && -offset > pos)
 	{
 		pos = 0;
 		return false;
 	}
-	else if (offset > 0 && offset + pos >= _size)
+	else if (offset > 0 && offset + pos >= size())
 	{
-		pos = _size;
+		pos = size();
 		return false;
 	}
 	pos += offset;
@@ -215,60 +220,69 @@ bool StreamMemory::seek(SeekOrigin origin, int64_t offset)
 
 bool StreamMemory::read(uint8_t* dst, uint64_t length, uint64_t* bytesRead)
 {
-	if (bytesRead) *bytesRead = 0;
-	if(length == 0) return true;
-	if(!dst) return false;
+	if (bytesRead)
+		*bytesRead = 0;
+	if(length == 0)
+		return true;
+	if(!dst)
+		return false;
 
-	const uint64_t rest_size = _size - pos;
-	if(rest_size == 0) return false;
+	const uint64_t rest_size = size() - pos;
+	if(rest_size == 0)
+		return false;
 
 	const size_t real_read = min(length, rest_size);
-	memcpy(dst, getInternalBuffer() + pos, real_read);
+	memcpy(dst, data() + pos, real_read);
 	pos += real_read;
-	if (bytesRead) *bytesRead = real_read;
+	if (bytesRead)
+		*bytesRead = real_read;
 
 	return rest_size >= length;
 }
 
 bool StreamMemory::write(const uint8_t* src, uint64_t length, uint64_t* bytesWrite)
 {
-	if(!writable)
+	if(!isWritable())
 		return false;
 	
-	if(bytesWrite) *bytesWrite = 0;
-	if(length == 0) return true;
-	if(!src) return false;
+	if(bytesWrite)
+		*bytesWrite = 0;
+	if(length == 0)
+		return true;
+	if(!src)
+		return false;
 
-	uint64_t tRestSize = _size - pos;
+	const uint64_t rest_size = size() - pos;
 
-	if(tRestSize < length)
+	if(rest_size < length)
 	{
-		if(!resizable)
+		if(!isResizable())
 		{
-			if(tRestSize == 0)
+			if(rest_size == 0)
 				return false;
-			memcpy(getInternalBuffer() + pos, src, (size_t)tRestSize);
-			pos += tRestSize;
-			if (bytesWrite) *bytesWrite = tRestSize;
+			memcpy(data() + pos, src, (size_t)rest_size);
+			pos += rest_size;
+			if (bytesWrite)
+				*bytesWrite = rest_size;
 			return false;
 		}
 		else
 		{
-			auto ret = resize(max(uint64_t(_size*1.5f), _size + length - tRestSize));
-			if (!ret)
-				return ret;
+			if (!resize(size() + length - rest_size))
+				return false;
 		}
 	}
-	memcpy(getInternalBuffer() + pos, src, (size_t)length);
+	memcpy(data() + pos, src, (size_t)length);
 	pos += length;
-	if(bytesWrite) *bytesWrite = length;
+	if(bytesWrite)
+		*bytesWrite = length;
 	return true;
 }
 
-StreamMemory* StreamMemory::create(uint8_t* src, uint64_t size, bool copy, bool canWrite, bool canResize)
+StreamMemory* StreamMemory::create(Buffer* src, bool copy)
 {
 	auto ret = new (nothrow) StreamMemory();
-	if (ret&&ret->initWithBuffer(src, size, copy, canWrite, canResize))
+	if (ret&&ret->init(src, copy))
 	{
 		return ret;
 	}
@@ -276,51 +290,15 @@ StreamMemory* StreamMemory::create(uint8_t* src, uint64_t size, bool copy, bool 
 	return nullptr;
 }
 
-StreamMemory* StreamMemory::create(cocos2d::Data* src, uint64_t size, bool copy, bool canWrite)
+bool StreamMemory::init(Buffer* src, bool copy)
 {
-	auto ret = new (nothrow) StreamMemory();
-	if (ret&&ret->initWithData(src, size, copy, canWrite))
-	{
-		return ret;
-	}
-	delete ret;
-	return nullptr;
-}
-
-bool StreamMemory::initWithBuffer(uint8_t* src, uint64_t length, bool copy, bool canWrite, bool canResize)
-{
-	isOwner = copy;
-	resizable = canResize && copy;
-	writable = canWrite;
-	_data = new cocos2d::Data();
-	if (copy && src)
-		_data->copy(src, length);
-	else if (src)
-		_data->fastSet(src, length);
+	if (src)
+		_buffer = copy ? src->clone() : src;
 	else
-		_data->fastSet((unsigned char*)malloc(length), length);
-	if (!_data->getBytes())
+		_buffer = Buffer::create();
+	if (!_buffer)
 		return false;
-	_size = length;
-	return true;
-}
-
-bool StreamMemory::initWithData(cocos2d::Data* src, uint64_t length, bool copy, bool canWrite)
-{
-	isOwner = copy;
-	resizable = copy;
-	writable = canWrite;
-	_data = new cocos2d::Data();
-	if (length == 0) length = src->getSize();
-	if (copy&&src)
-		_data->copy(src->getBytes(), length);
-	else if (src)
-		_data->fastSet(src->getBytes(), length);
-	else
-		_data->fastSet((unsigned char*)malloc(length), length);
-	if (!_data->getBytes())
-		return false;
-	_size = length;
+	CC_SAFE_RETAIN(_buffer);
 	return true;
 }
 
@@ -330,11 +308,6 @@ StreamMemory::StreamMemory()
 
 StreamMemory::~StreamMemory()
 {
-	if (_data)
-	{
-		if (!isOwner)
-			_data->fastSet(nullptr, 0);
-		delete _data;
-	}
+	CC_SAFE_RELEASE(_buffer);
 }
 

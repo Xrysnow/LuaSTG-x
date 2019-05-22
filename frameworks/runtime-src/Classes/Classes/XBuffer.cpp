@@ -1,6 +1,5 @@
 ﻿#include "XBuffer.h"
 
-std::vector<uint8_t> vec;
 using namespace lstg;
 
 Buffer::Buffer()

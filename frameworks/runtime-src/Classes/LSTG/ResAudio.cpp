@@ -349,7 +349,7 @@ bool ResSound::initWithBuffer(Buffer* data)
 {
 	if (!data)
 		return false;
-	const auto memory = StreamMemory::create(data->data(), data->size(), true, false, false);
+	const auto memory = StreamMemory::create(data);
 	if(!memory)
 		return false;
 	if (!init(memory))
@@ -403,7 +403,7 @@ bool ResMusic::initWithBuffer(Buffer* data, double loopA, double loopB)
 {
 	if (!data)
 		return false;
-	const auto memory = StreamMemory::create(data->data(), data->size(), true, false, false);
+	const auto memory = StreamMemory::create(data);
 	if (!memory)
 		return false;
 	if (!init(memory))
