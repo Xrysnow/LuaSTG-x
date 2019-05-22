@@ -18,7 +18,7 @@ using namespace lstg;
 static int GetFFT(lua_State* L) noexcept
 {
 	GET_MUSIC;
-	lua::cptr_to_luaval(L, p->getFFT());
+	lua::cptr_to_luaval(L, p->getFFT(), "float*");
 	lua_pushnumber(L, p->getFFTSize());
 	return 2;
 }

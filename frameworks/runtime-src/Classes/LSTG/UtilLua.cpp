@@ -392,8 +392,9 @@ void lua::cptr_to_luaval(lua_State* L, void* ptr, const std::string& ptrType)
 	else
 	{
 		lua_pushstring(L, "ffi.cast_ptr");
+		lua_rawget(L, LUA_REGISTRYINDEX);
 		lua_pushlightuserdata(L, ptr);
-		lua_pushstring(L, ptrType.c_str());
+		lua_pushlstring(L, ptrType.c_str(), ptrType.size());
 		if (lua_pcall(L, 2, 1, 0) != 0)
 		{
 			LERROR("failed to call ffi.cast_ptr");

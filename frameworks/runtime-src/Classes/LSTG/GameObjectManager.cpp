@@ -2062,5 +2062,5 @@ size_t GameObjectManager::updateIDForLua()
 
 void GameObjectManager::pushIDForLua(lua_State* L)
 {
-	lua::cptr_to_luaval(L, idForLua.data());
+	lua::cptr_to_luaval(L, idForLua.data(), "uint32_t*");
 }
