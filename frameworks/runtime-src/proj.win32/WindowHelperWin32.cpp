@@ -213,7 +213,11 @@ cocos2d::Rect WindowHelperWin32::GetRect()
 {
 	RECT tRect;
 	GetWindowRect(m_hWnd, &tRect);
-	return { tRect.left ,tRect.bottom ,tRect.right - tRect.left ,tRect.top - tRect.bottom };
+	return {
+		(float)tRect.left,
+		(float)tRect.bottom,
+		(float)tRect.right - tRect.left,
+		(float)tRect.top - tRect.bottom };
 }
 
 int WindowHelperWin32::SetRect(const cocos2d::Rect& Range)
@@ -229,7 +233,11 @@ cocos2d::Rect WindowHelperWin32::GetClientRect()
 {
 	RECT tRect;
 	::GetClientRect(m_hWnd, &tRect);
-	return { tRect.left ,tRect.bottom ,tRect.right - tRect.left ,tRect.top - tRect.bottom };
+	return {
+		(float)tRect.left,
+		(float)tRect.bottom,
+		(float)tRect.right - tRect.left,
+		(float)tRect.top - tRect.bottom };
 }
 
 int WindowHelperWin32::SetClientRect(const cocos2d::Rect& Range)
