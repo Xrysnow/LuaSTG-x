@@ -18,9 +18,9 @@ set(EXTERNAL_LIBS "")
 # Live2D
 
 add_subdirectory(${RUNTIME_SRC_ROOT}/external/Cubism)
-set(EXTERNAL_LIBS ${CSM_CORE_LIBS})
 add_subdirectory(${RUNTIME_SRC_ROOT}/Classes/Live2D/Framework)
-list(APPEND EXTERNAL_LIBS CubismFramework)
+set(EXTERNAL_LIBS CubismFramework)
+list(APPEND EXTERNAL_LIBS ${CSM_CORE_LIBS})
 
 # reader
 
