@@ -207,7 +207,7 @@ ResFont::~ResFont()
 
 ResFont* ResFont::createHGE(const std::string& name, const std::string& path)
 {
-	if (!LRES.isFileOrDirectoryExist(path))
+	if (!FileUtils::getInstance()->isFileExist(path))
 		return nullptr;
 	try
 	{
