@@ -90,27 +90,27 @@ std::string FileDialog::getLastError()
 
 #else
 
-std::string XFileDialog::open(const std::string& filterList, const std::string& defaultPath)
+std::string FileDialog::open(const std::string& filterList, const std::string& defaultPath)
 {
 	return "";
 }
 
-std::vector<std::string> XFileDialog::openMultiple(const std::string& filterList, const std::string& defaultPath)
+std::vector<std::string> FileDialog::openMultiple(const std::string& filterList, const std::string& defaultPath)
 {
 	return { "" };
 }
 
-std::string XFileDialog::save(const std::string& filterList, const std::string& defaultPath)
+std::string FileDialog::save(const std::string& filterList, const std::string& defaultPath)
 {
 	return "";
 }
 
-std::string XFileDialog::pickFolder(const std::string& defaultPath)
+std::string FileDialog::pickFolder(const std::string& defaultPath)
 {
 	return "";
 }
 
-std::string XFileDialog::getLastError()
+std::string FileDialog::getLastError()
 {
 	return "unsupport platform";
 }
