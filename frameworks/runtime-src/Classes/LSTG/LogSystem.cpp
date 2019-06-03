@@ -129,6 +129,8 @@ bool LogSystem::write(const std::string& str) noexcept
 	lock_guard<mutex> lock(mut);
 	try
 	{
+		if (onWrite)
+			onWrite(str);
 		if (logFile.is_open())
 		{
 			logFile << str;
@@ -151,4 +153,9 @@ bool LogSystem::writeLine(const std::string& str) noexcept
 void LogSystem::setConsoleLevel(int level)
 {
 	consoleLevel = level;
+}
+
+void LogSystem::setOnWrite(const std::function<void(const std::string&)>& f)
+{
+	onWrite = f;
 }

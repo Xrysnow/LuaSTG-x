@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "cocos2d.h"
 #include <fstream>
+#include <functional>
 
 #define LLOGGER (*lstg::LogSystem::getInstance())
 #define LERROR(info, ...) LLOGGER.Log(lstg::LogType::Error, info, ##__VA_ARGS__)
@@ -36,11 +37,13 @@ namespace lstg
 		bool write(const std::string& str)noexcept;
 		bool writeLine(const std::string& str)noexcept;
 		void setConsoleLevel(int level);
+		void setOnWrite(const std::function<void(const std::string&)>& f);
 
 	private:
 		std::string logFileName;
 		std::fstream logFile;
 		std::mutex mut;
+		std::function<void(const std::string&)> onWrite = nullptr;
 		int consoleLevel = 0;
 	public:
 		LogSystem();

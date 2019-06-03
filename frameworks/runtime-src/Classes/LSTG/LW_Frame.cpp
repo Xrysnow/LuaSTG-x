@@ -1,6 +1,8 @@
 ﻿#include "LW_Frame.h"
 #include "AppFrame.h"
 #include "Renderer.h"
+#include "tolua_fix.h"
+#include "CCLuaEngine.h"
 
 using namespace std;
 using namespace lstg;
@@ -104,6 +106,21 @@ static int FrameReset(lua_State* L) noexcept
 	return 0;
 }
 
+static int SetOnWriteLog(lua_State* L) noexcept
+{
+	const auto handler = toluafix_ref_function(L, 1, 0);
+	if (handler == 0)
+		return luaL_error(L, "invalid argument");
+	LLOGGER.setOnWrite([=](const std::string& str)
+	{
+		auto stack = cocos2d::LuaEngine::getInstance()->getLuaStack();
+		stack->pushString(str.c_str(), str.size());
+		stack->executeFunctionByHandler(handler, 1);
+		stack->clean();
+	});
+	return 0;
+}
+
 vector<luaL_Reg> lstg::LW_Frame()
 {
 	vector<luaL_Reg> ret = {
@@ -120,6 +137,7 @@ vector<luaL_Reg> lstg::LW_Frame()
 
 		{ "FrameInit", &FrameInit },
 		{ "FrameReset", &FrameReset },
+		{ "SetOnWriteLog", &SetOnWriteLog },
 	};
 	return ret;
 }
