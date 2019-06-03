@@ -352,8 +352,11 @@ ResParticle* ResParticle::create(const std::string& name, const std::string& pat
 		}
 		if (!blend)
 			return nullptr;
-		return new (nothrow) ResParticle(name, tInfo, clone,
+		auto ret = new (nothrow) ResParticle(name, tInfo, clone,
 			blend, a, b, colliType);
+		if (ret)
+			ret->resPath = path;
+		return ret;
 	}
 	catch (const bad_alloc&)
 	{

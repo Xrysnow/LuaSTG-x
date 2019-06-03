@@ -83,7 +83,10 @@ ResSprite* ResSprite::create(const std::string& name, ResTexture* texture,
 		texture->getTexture(), Rect(x, y, w, h));
 	if (!sp)
 		return nullptr;
-	return new (nothrow) ResSprite(name, sp, colliType, a, b);
+	auto ret = new (nothrow) ResSprite(name, sp, colliType, a, b);
+	if (ret)
+		ret->resPath = texture->getPath();
+	return ret;
 }
 
 ResSprite* ResSprite::createWithSprite(const std::string& name, Sprite* sprite, double a, double b,

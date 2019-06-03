@@ -65,6 +65,8 @@ ResTexture* ResTexture::create(const std::string& name, const std::string& path)
 			if (tex->initWithImage(image))
 			{
 				const auto ret = new (nothrow) ResTexture(name, tex);
+				if (ret)
+					ret->resPath = path;
 				// delete
 				delete image;
 				return ret;

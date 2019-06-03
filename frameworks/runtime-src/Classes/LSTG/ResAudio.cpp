@@ -322,6 +322,7 @@ ResAudio::ResAudio(const std::string& name, ResourceType type, const std::string
 	Resource(type, name), audioID(XAudioEngine::INVALID_AUDIO_ID)
 {
 	path = _path;
+	resPath = _path;
 }
 
 ResAudio::~ResAudio()

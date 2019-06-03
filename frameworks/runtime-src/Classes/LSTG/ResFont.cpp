@@ -234,6 +234,7 @@ ResFont* ResFont::createHGE(const std::string& name, const std::string& path)
 		if (!res)
 			return nullptr;
 		res->getTTFConfig().fontFilePath = font_path;
+		res->resPath = font_path;
 		return res;
 	}
 	catch (...){}
@@ -252,6 +253,7 @@ ResFont* ResFont::createBMF(const std::string& name, const std::string& path)
 		if (!res)
 			return nullptr;
 		res->getTTFConfig().fontFilePath = font_path;
+		res->resPath = font_path;
 		return res;
 	}
 	catch (...){}

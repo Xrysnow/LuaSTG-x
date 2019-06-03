@@ -125,7 +125,10 @@ ResFX* ResFX::create(const std::string& name, const std::string& vsPath, const s
 	const auto glProgram = util::CreateGLProgramFromString(vs, fs);
 	if (!glProgram)
 		return nullptr;
-	return createWithGLProgram(name, glProgram);
+	auto ret = createWithGLProgram(name, glProgram);
+	if (ret)
+		ret->resPath = fsPath;
+	return ret;
 }
 
 ResFX* ResFX::createWithGLProgram(const std::string& name, cocos2d::GLProgram* glProgram)

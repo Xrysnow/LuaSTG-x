@@ -115,6 +115,7 @@ interval(intv), w(w), h(h), m(m), n(n)
 			verts.push_back(s->getQuad());
 		}
 	}
+	resPath = tex->getPath();
 }
 
 ResAnimation::~ResAnimation()
