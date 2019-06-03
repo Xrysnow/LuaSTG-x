@@ -1,6 +1,7 @@
 ﻿#include "ResRenderTarget.h"
 #include "LogSystem.h"
 #include "Renderer.h"
+#include "Utility.h"
 
 using namespace std;
 using namespace cocos2d;
@@ -115,11 +116,20 @@ bool ResRenderTarget::render(ResFX* shader, BlendMode* blend)
 
 string ResRenderTarget::getInfo() const
 {
-	return Resource::getInfo() + " | Info = " + target->getDescription();
+	string info = Resource::getInfo() + cocos2d::StringUtils::format(
+		" | autoResize = %s | blendFix = %s | clearColor = %s",
+		autoResize ? "true" : "false",
+		blendFix ? "true" : "false",
+		tostring(clearColor).c_str()
+	);
+	if (target)
+		return info + " | TextureInfo = " + target->getDescription();
+	else
+		return info;
 }
 
 ResRenderTarget::ResRenderTarget(const std::string& name, RenderTexture* tex, bool autoResize_)
-	:Resource(ResourceType::Texture, name), target(tex), autoResize(autoResize_)
+	:Resource(ResourceType::RenderTarget, name), target(tex), autoResize(autoResize_)
 {
 	if (target)
 		target->retain();
