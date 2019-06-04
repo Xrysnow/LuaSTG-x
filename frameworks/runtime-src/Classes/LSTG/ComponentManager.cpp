@@ -273,6 +273,7 @@ void ComponentManager::releaseComponentsForGameObject()
 	setDataParticle(nullptr);
 	setDataVertex(nullptr);
 	setBindNode(nullptr);
+	setDataBlend(nullptr); // cannot reuse, should be released
 	const auto tri = xtcmd.getTri();
 	tri->vertCount = 4;
 	tri->verts = nullptr;
