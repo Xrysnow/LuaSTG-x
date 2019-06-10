@@ -49,6 +49,7 @@ namespace lstg
 		cocos2d::RenderTexture* frameBuffer = nullptr;
 		cocos2d::Mat4 _FBProjection;
 		cocos2d::Size _lastFBSize;
+		bool bOffscreen = false;
 
 		cocos2d::Size _lastFrameSize;
 
@@ -82,6 +83,8 @@ namespace lstg
 		void setUseFrameBuffer(bool v)noexcept { bUseFrameBuffer = v; }
 		bool isUseFrameBuffer() const noexcept { return bUseFrameBuffer; }
 		cocos2d::RenderTexture* getFrameBuffer() const noexcept { return frameBuffer; }
+		void setOffscreen(bool b) noexcept;
+		bool isOffscreen() const noexcept { return bOffscreen; }
 
 		void pushCustomCommend(std::function<void()> f)noexcept;
 		void pushCustomCommend(

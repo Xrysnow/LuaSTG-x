@@ -195,6 +195,13 @@ void XRenderer::setVsync(bool v)noexcept
 	}
 }
 
+void XRenderer::setOffscreen(bool b) noexcept
+{
+	bOffscreen = b;
+	if (b)
+		bUseFrameBuffer = true;
+}
+
 void XRenderer::pushCustomCommend(function<void()> f)noexcept
 {
 	auto cmd = LMP.getCustomCommand();
@@ -1082,9 +1089,12 @@ void XRenderer::frameBufferEnd()
 		Director::getInstance()->loadProjectionMatrix(_FBProjection, 0);
 	});
 
-	const auto tsize = frameBuffer->getSprite()->getTexture()->getContentSizeInPixels();
-	const auto scale = min(size.width / tsize.width, size.height / tsize.height);
-	renderFrameBuffer(scale);
+	if (!bOffscreen)
+	{
+		const auto tsize = frameBuffer->getSprite()->getTexture()->getContentSizeInPixels();
+		const auto scale = min(size.width / tsize.width, size.height / tsize.height);
+		renderFrameBuffer(scale);
+	}
 }
 
 void XRenderer::renderFrameBuffer(float scale, bool copy)

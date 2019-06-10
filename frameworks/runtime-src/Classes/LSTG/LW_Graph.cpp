@@ -158,12 +158,20 @@ static int CreateGLProgramFromString(lua_State* L) noexcept
 static int CopyFrameBuffer(lua_State* L) noexcept
 {
 	const auto p = LRR.copyFrameBuffer();
-	if (!p)
-		return luaL_error(L, "can't create GLProgram from string");
 	object_to_luaval<cocos2d::RenderTexture>(L, "cc.RenderTexture", p);
 	return 1;
 }
-
+static int SetOffscreen(lua_State* L) noexcept
+{
+	LRR.setOffscreen(lua_toboolean(L, 1));
+	return 0;
+}
+static int GetFrameBuffer(lua_State* L) noexcept
+{
+	const auto p = LRR.getFrameBuffer();
+	object_to_luaval<cocos2d::RenderTexture>(L, "cc.RenderTexture", p);
+	return 1;
+}
 
 vector<luaL_Reg> lstg::LW_Graph()
 {
@@ -182,6 +190,8 @@ vector<luaL_Reg> lstg::LW_Graph()
 		{ "CreateGLProgramFromPath", &CreateGLProgramFromPath },
 		{ "CreateGLProgramFromString", &CreateGLProgramFromString },
 		{ "CopyFrameBuffer", &CopyFrameBuffer },
+		{ "SetOffscreen", &SetOffscreen },
+		{ "GetFrameBuffer", &GetFrameBuffer },
 	};
 	return ret;
 }
