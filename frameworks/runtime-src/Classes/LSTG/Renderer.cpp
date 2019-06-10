@@ -1132,7 +1132,7 @@ RenderTexture* XRenderer::copyFrameBuffer(bool transparent)
 	if (!frameBuffer)
 		return nullptr;
 	auto tmpRT = RenderTexture::create(
-		_lastFBSize.width, _lastFBSize.height,
+		(int)_lastFBSize.width, (int)_lastFBSize.height,
 		Texture2D::PixelFormat::RGBA8888, GL_DEPTH24_STENCIL8);
 	tmpRT->retain();
 	tmpRT->beginWithClear(0, 0, 0, transparent ? 0 : 1);
