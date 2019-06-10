@@ -53,7 +53,6 @@ namespace lstg
 		cocos2d::Size _lastFrameSize;
 
 		// PostEffect/RenderTarget
-		bool bPECaptureStarted = false;
 		std::vector<ResRenderTarget*> renderTargetStack;
 		cocos2d::RenderTexture* tempRenderTexture = nullptr;
 
