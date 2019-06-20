@@ -31,6 +31,17 @@ list(APPEND EXTERNAL_LIBS ${CSM_CORE_LIBS})
 
 add_subdirectory(${RUNTIME_SRC_ROOT}/external/ffmpeg)
 list(APPEND EXTERNAL_LIBS ext_ffmpeg)
+if(MACOSX OR IOS)
+	include_directories(/System/Library/Frameworks)
+	find_library(COREMEDIA_LIBRARY CoreMedia)
+	find_library(SECURITY_LIBRARY Security)
+	find_library(VIDEOTOOLBOX_LIBRARY VideoToolbox)
+	list(APPEND EXTERNAL_LIBS ${COREMEDIA_LIBRARY})
+	list(APPEND EXTERNAL_LIBS ${SECURITY_LIBRARY})
+	list(APPEND EXTERNAL_LIBS ${VIDEOTOOLBOX_LIBRARY})
+
+	list(APPEND EXTERNAL_LIBS bz2)
+endif()
 
 # nfd
 
@@ -52,7 +63,7 @@ endif()
 
 if(WINDOWS)
 	include_directories(${RUNTIME_SRC_ROOT}/external/OpenalSoft/include)
-else()
+elseif(ANDROID OR LINUX)
 	add_subdirectory(${RUNTIME_SRC_ROOT}/external/OpenalSoft)
 	list(APPEND EXTERNAL_LIBS ext_al)
 endif()
