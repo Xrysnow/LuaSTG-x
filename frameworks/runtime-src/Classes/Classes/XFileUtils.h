@@ -7,7 +7,12 @@
 using _FileUtilsBase = cocos2d::FileUtilsAndroid;
 
 #elif (CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
+
+#ifdef CC_FILEUTILS_APPLE_ENABLE_OBJC
+#undef CC_FILEUTILS_APPLE_ENABLE_OBJC
+#endif
 #include "platform/apple/CCFileUtils-apple.h"
+#define CC_FILEUTILS_APPLE_ENABLE_OBJC
 using _FileUtilsBase = cocos2d::FileUtilsApple;
 
 #elif (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
