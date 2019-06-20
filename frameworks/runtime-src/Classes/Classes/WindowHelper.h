@@ -56,9 +56,8 @@ namespace lstg
 	//TODO: Mac & Linux
 	class WindowHelperDesktop : public WindowHelper
 	{
-	protected:
-		explicit WindowHelperDesktop(cocos2d::GLViewImpl* view);
 	public:
+		explicit WindowHelperDesktop(cocos2d::GLViewImpl* view);
 		struct VideoMode
 		{
 			int width = 0;
