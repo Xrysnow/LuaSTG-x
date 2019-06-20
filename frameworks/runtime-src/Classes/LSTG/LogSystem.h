@@ -53,7 +53,7 @@ namespace lstg
 		LogSystem &operator =(const LogSystem &) = delete;
 	};
 
-	constexpr const char* __cut_ns(const char* s)
+	inline const char* __cut_ns(const char* s)
 	{
 		bool eq = true;
 		//const char* ns = "lstg::";
