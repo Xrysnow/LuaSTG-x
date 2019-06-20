@@ -64,7 +64,6 @@ BlendMode::BlendMode(GLuint equation, BlendFunc func)
 
 BlendMode::~BlendMode()
 {
-	XINFO("BlendMode named '%s' destructed", _name.c_str());
 }
 
 GLProgram* BlendMode::getGLProgram(FogMode mode)
