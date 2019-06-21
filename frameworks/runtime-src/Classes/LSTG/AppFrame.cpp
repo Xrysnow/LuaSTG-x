@@ -153,6 +153,9 @@ bool AppFrame::applicationDidFinishLaunching()
 	register_all_x_Buffer(L);
 	register_all_x_Stream(L);
 	register_all_cocos2dx_ui_fix(L);
+#ifdef CC_PLATFORM_PC
+	luaopen_imgui(L);
+#endif // CC_PLATFORM_PC
 
 	register_all_packages();
 	stack->setXXTEAKeyAndSign("2dxLua", strlen("2dxLua"), "XXTEA", strlen("XXTEA"));
