@@ -7,6 +7,9 @@
 [submodule "frameworks/runtime-src/Classes/fcyLib"]
 	path = frameworks/runtime-src/Classes/fcyLib
 	url = https://github.com/Xrysnow/lstgx_fcylib.git
+[submodule "frameworks/runtime-src/Classes/imgui"]
+	path = frameworks/runtime-src/Classes/imgui
+	url = https://github.com/Xrysnow/cocos2d-x-imgui.git
 [submodule "frameworks/runtime-src/Classes/Math"]
 	path = frameworks/runtime-src/Classes/Math
 	url = https://github.com/Xrysnow/lstgx_Math.git
