@@ -68,6 +68,18 @@ elseif(ANDROID OR LINUX)
 	list(APPEND EXTERNAL_LIBS ext_al)
 endif()
 
+# imgui
+
+add_subdirectory(${RUNTIME_SRC_ROOT}/Classes/imgui)
+list(APPEND EXTERNAL_LIBS cc_imgui)
+
+# lua
+
+add_subdirectory(${RUNTIME_SRC_ROOT}/external/LuaExtensions/lfs)
+list(APPEND EXTERNAL_LIBS ext_lfs)
+add_subdirectory(${RUNTIME_SRC_ROOT}/external/LuaExtensions/lpeg)
+list(APPEND EXTERNAL_LIBS ext_lpeg)
+
 #
 if(WINDOWS)
 	list(APPEND EXTERNAL_LIBS imm32.lib)

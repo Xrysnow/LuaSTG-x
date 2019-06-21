@@ -29,6 +29,7 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XLabel.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XProfiler.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XRand.h
+	${RUNTIME_SRC_ROOT}/Classes/Classes/XRefAdapter.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XStream.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XTriangles.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XTrianglesCommand.h
@@ -122,7 +123,6 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Triangles_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_WindowHelper_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_ui_fix.h
-	${RUNTIME_SRC_ROOT}/Classes/LuaExtensions/lfs/lfs.h
 	${RUNTIME_SRC_ROOT}/Classes/Math/meow_fft.h
 	${RUNTIME_SRC_ROOT}/Classes/Math/XCollision.h
 	${RUNTIME_SRC_ROOT}/Classes/Math/XComplex.h
@@ -227,6 +227,7 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XLabel.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XProfiler.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XRand.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Classes/XRefAdapter.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XStream.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XTriangles.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XTrianglesCommand.cpp
@@ -314,7 +315,6 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Stream_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Triangles_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_WindowHelper_auto.cpp
-	${RUNTIME_SRC_ROOT}/Classes/LuaExtensions/lfs/lfs.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Math/XCollision.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Math/XComplex.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Math/XDistance.cpp
@@ -380,6 +380,7 @@ include_directories(
 	${RUNTIME_SRC_ROOT}/Classes/Video
 	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc
 	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyParser
+	${RUNTIME_SRC_ROOT}/Classes/imgui
 	${RUNTIME_SRC_ROOT}/Classes/Live2D/Framework
 	${RUNTIME_SRC_ROOT}/Classes/Live2D/Framework/src
 	${RUNTIME_SRC_ROOT}/Classes/Live2D/Framework/src/Effect
@@ -393,6 +394,7 @@ include_directories(
 	${RUNTIME_SRC_ROOT}/Classes/Live2D/Framework/src/Utils
 	${RUNTIME_SRC_ROOT}/Classes/Live2D/Framework/src/Rendering/OpenGL
 	${RUNTIME_SRC_ROOT}/Classes/LuaExtensions/lfs
+	${RUNTIME_SRC_ROOT}/Classes/LuaExtensions/lpeg
 	${RUNTIME_SRC_ROOT}/Classes/reader/animation
 	${RUNTIME_SRC_ROOT}/Classes/reader/collider
 	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones
