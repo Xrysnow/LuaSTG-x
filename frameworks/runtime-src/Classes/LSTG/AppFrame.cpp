@@ -46,6 +46,15 @@
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 #include "../../proj.win32/SimulatorWin.h"
 #include "../../proj.win32/WindowHelperWin32.h"
+extern "C"
+{
+	// Prefer the higher performance GPU on Windows systems that use nvidia Optimus.
+	// http://developer.download.nvidia.com/devzone/devcenter/gamegraphics/files/OptimusRenderingPolicies.pdf
+	_declspec(dllexport) DWORD NvOptimusEnablement = 1;
+	// Same with AMD GPUs.
+	// https://community.amd.com/thread/169965
+	_declspec(dllexport) DWORD AmdPowerXpressRequestHighPerformance = 1;
+}
 #endif
 
 #ifdef max
