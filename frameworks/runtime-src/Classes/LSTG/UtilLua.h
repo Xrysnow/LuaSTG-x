@@ -127,41 +127,96 @@ namespace lstg
 		const char* checkstring(lua_State* L, int lo, size_t* strlen, uint32_t* hash);
 		const char* tostring(lua_State* L, int lo, size_t* strlen, uint32_t* hash);
 
-		inline cocos2d::LuaValue LuaVal(const float& v)
+		template<typename T>
+		typename std::enable_if<
+			std::is_arithmetic<T>::value || std::is_same<T, std::string>::value || std::is_same<T, const char*>::value,
+			cocos2d::LuaValue>::type
+			LuaVal(T v)
 		{
-			return cocos2d::LuaValue::floatValue(v);
+			if(std::is_same<T, bool>::value)
+				return cocos2d::LuaValue::booleanValue(v);
+			if(std::is_floating_point<T>::value)
+				return cocos2d::LuaValue::floatValue(v);
+			if(std::is_integral<T>::value)
+				return cocos2d::LuaValue::intValue(v);
+			if(std::is_same<T, std::string>::value || std::is_same<T, const char*>::value)
+				return cocos2d::LuaValue::stringValue(v);
+			return cocos2d::LuaValue::booleanValue(false);
 		}
-		inline cocos2d::LuaValue LuaVal(const double& v)
+
+		template<typename T>
+		typename std::enable_if<
+			std::is_arithmetic<T>::value || std::is_same<T, std::string>::value,
+			T>::type ccvalue_to_type(const cocos2d::Value& v)
 		{
-			return cocos2d::LuaValue::floatValue(v);
+			if (std::is_same_v<T, bool>)
+				return v.asBool();
+			if (std::is_same_v<T, float>)
+				return v.asFloat();
+			if (std::is_same_v<T, double>)
+				return v.asDouble();
+			if (std::is_same_v<T, uint8_t>)
+				return v.asByte();
+			if (std::is_signed_v<T>)
+				return v.asInt();
+			if (std::is_unsigned_v<T>)
+				return v.asUnsignedInt();
+			return T();
 		}
-		inline cocos2d::LuaValue LuaVal(const int32_t& v)
+
+		template<typename T>
+		cocos2d::ValueVector std_vector_to_ccvaluevector(const std::vector<T>& v)
 		{
-			return cocos2d::LuaValue::intValue(v);
+			cocos2d::ValueVector ret;
+			for (auto& it : v)
+				ret.push_back(cocos2d::Value(*it));
+			return ret;
 		}
-		inline cocos2d::LuaValue LuaVal(const uint32_t& v)
+
+		template<typename T>
+		std::vector<T> ccvaluevector_to_std_vector(const cocos2d::ValueVector& v)
 		{
-			return cocos2d::LuaValue::intValue(v);
+			std::vector<T> ret;
+			for (auto& it : v)
+				ret.push_back(ccvalue_to_type<T>(it));
+			return ret;
 		}
-		inline cocos2d::LuaValue LuaVal(const int64_t& v)
+
+		template<typename T>
+		cocos2d::ValueMap std_map_to_ccvaluemap(const std::unordered_map<std::string, T>& v)
 		{
-			return cocos2d::LuaValue::intValue(v);
+			cocos2d::ValueMap ret;
+			for (auto& it : v)
+				ret[it.first] = it.second;
+			return ret;
 		}
-		inline cocos2d::LuaValue LuaVal(const uint64_t& v)
+
+		template<typename T>
+		std::unordered_map<std::string, T> ccvaluemap_to_std_map(const cocos2d::ValueMap& v)
 		{
-			return cocos2d::LuaValue::intValue(v);
+			std::unordered_map<std::string, T> ret;
+			for (auto& it : v)
+				ret[it.first] = ccvalue_to_type<T>(it.second);
+			return ret;
 		}
-		inline cocos2d::LuaValue LuaVal(const std::string& v)
+
+		template<typename K, typename T>
+		cocos2d::ValueMapIntKey std_map_to_ccvaluemapintkey(const std::unordered_map<K, T>& v)
 		{
-			return cocos2d::LuaValue::stringValue(v);
+			cocos2d::ValueMapIntKey ret;
+			for (auto& it : v)
+				ret[(int)it.first] = it.second;
+			return ret;
 		}
-		inline cocos2d::LuaValue LuaVal(const char* v)
+
+		template<typename K, typename T>
+		std::unordered_map<K, T> ccvaluemapintkey_to_std_map(const cocos2d::ValueMapIntKey& v)
 		{
-			return cocos2d::LuaValue::stringValue(v);
+			std::unordered_map<K, T> ret;
+			for (auto& it : v)
+				ret[(K)it.first] = ccvalue_to_type<T>(it.second);
+			return ret;
 		}
-		inline cocos2d::LuaValue LuaVal(const bool v)
-		{
-			return cocos2d::LuaValue::booleanValue(v);
-		}
+
 	}
 }
