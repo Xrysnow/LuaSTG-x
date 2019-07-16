@@ -5,6 +5,7 @@
 #include "BlendMode.h"
 #include "GameObjectBentLaser.h"
 #include "../Math/XCollision.h"
+#include <forward_list>
 
 #define luaL_checkfloat(L, n) ((float)luaL_checknumber(L, n))
 #define luaL_newcolor(L) (static_cast<cocos2d::Color4B*>(lua_newuserdata(L, sizeof(cocos2d::Color4B))))
@@ -18,174 +19,101 @@ namespace lstg
 {
 	namespace lua
 	{
-		template<typename T> struct _is_vector : std::false_type {};
-		template<typename T> struct _is_vector<std::vector<T>> : std::true_type {};
-		template<typename T> constexpr bool _is_vector_v = _is_vector<T>::value;
+		constexpr int LUA_TPROTO = LUA_TTHREAD + 1;
+		constexpr int LUA_TCDATA = LUA_TTHREAD + 2;
 
-		template<typename T> struct _is_string_map : std::false_type {};
-		template<typename T> struct _is_string_map<std::unordered_map<std::string, T>> : std::true_type {};
-		template<typename T> constexpr bool _is_string_map_v = _is_string_map<T>::value;
-
-		template<typename T, class Enable = void> struct _is_integer_map : std::false_type {};
-		template<typename T, class U> struct _is_integer_map<std::unordered_map<U, T>,
-			typename std::enable_if<std::is_integral_v<U> || std::is_enum_v<U> >::type> : std::true_type {};
-		template<typename T> constexpr bool _is_integer_map_v = _is_integer_map<T>::value;
-
-		template<typename T, class Enable = void> struct _is_table : std::false_type {};
-		template<typename T> struct _is_table<T,
-			typename std::enable_if<_is_vector_v<T> || _is_string_map_v<T> || _is_integer_map_v<T> >::type>
-		: std::false_type {};
-		template<typename T> constexpr bool _is_table_v = _is_table<T>::value;
+		// support cdata
+		bool _luaval_to_integer(lua_State* L, int lo,
+			int64_t* outValue, size_t targetSize, const char* funcName);
+		bool _luaval_to_unsigned_integer(lua_State* L, int lo,
+			uint64_t* outValue, size_t targetSize, const char* funcName);
 
 		//
 
+		template<typename T, class Enable = void> struct to_native {};
+
+#define CHECK_TO_NATIVE const auto top = lua_gettop(L); if (nullptr == L || nullptr == outValue || top < lo) return false;
+
+#define LUAVAL_TO_NATIVE_BASIC(_F, _T) template<>\
+		struct to_native<_T> {\
+			static bool F(lua_State* L, int lo, _T* outValue, const char* fName = "") {\
+				return lua::_F(L, lo, outValue, fName); } };
+
+#define TO_NATIVE_VECTOR(_Ty, _Setter) template<typename T>\
+		struct to_native<_Ty<T>> {\
+			static bool F(lua_State* L, int lo, _Ty<T>* outValue, const char* fName = "") {\
+				CHECK_TO_NATIVE;\
+				const auto type = lua_type(L, lo);\
+				if (!(type == LUA_TTABLE || type == LUA_TUSERDATA || type == LUA_TCDATA))\
+					return false;\
+				const size_t len = lua_objlen(L, lo);\
+				T value;\
+				bool ok = true;\
+				for (size_t i = 0; i < len; i++) {\
+					lua_pushnumber(L, i + 1);\
+					lua_gettable(L, lo);\
+					ok &= to_native<T>::F(L, top, &value, fName);\
+					lua_pop(L, 1);\
+					if (ok)\
+						outValue->##_Setter(value);\
+					else\
+						break;\
+				}\
+				return true; } };
+
+#define TO_NATIVE_MAP(_Ty, _Setter) template<typename K, typename V>\
+		struct to_native<_Ty<K, V>> {\
+			static bool F(lua_State* L, int lo, _Ty<K, V>* outValue, const char* fName = "") {\
+				CHECK_TO_NATIVE;\
+				const auto type = lua_type(L, lo);\
+				if (!(type == LUA_TTABLE || type == LUA_TUSERDATA || type == LUA_TCDATA))\
+					return false;\
+				K key; V value;\
+				lua_pushnil(L);\
+				while (lua_next(L, lo) != 0) {\
+					if(!to_native<K>::F(L, top - 1, &key, fName)) {\
+						lua_pop(L, 1); /* removes 'value'; keep 'key' for next iteration*/\
+						continue;\
+					}\
+					if (to_native<V>::F(L, top, &value, fName))\
+						(*outValue)_Setter;\
+					lua_pop(L, 1);\
+				}\
+				return true; } };\
+
 		template<typename T>
-		bool luaval_to_native(lua_State* L, int lo, T* outValue, const char* funcName = "")
-		{
-			const auto top = lua_gettop(L);
-			if (nullptr == L || nullptr == outValue || top < lo)
-				return false;
-			bool ok = true;
-			if (std::is_enum_v<T>) {
+		struct to_native<T, std::enable_if_t<std::is_enum_v<T>>> {
+			static bool F(lua_State* L, int lo, T* outValue, const char* fName = "") {
+				CHECK_TO_NATIVE;
 				using type = std::underlying_type_t<T>;
 				type value;
-				ok = luaval_to_native<type>(L, lo, &value, funcName);
+				auto ok = to_native<type>(L, lo, &value, fName);
 				if (ok) *outValue = (T)value;
 				return ok;
 			}
-			tolua_Error tolua_err;
-			if (_is_table_v<T> && !tolua_istable(L, lo, 0, &tolua_err))
-				return false;
-			if(_is_vector_v<T>) {
-				using value_type = typename T::value_type;
-				const size_t len = lua_objlen(L, lo);
-				value_type value;
-				for (size_t i = 0; i < len; i++)
-				{
-					lua_pushnumber(L, i + 1);
-					lua_gettable(L, lo);
-					ok &= luaval_to_native<value_type>(L, top, &value);
-					lua_pop(L, 1);
-					if (ok)
-						outValue->push_back(value);
-					else
-						break;
-				}
-				return true;
-			}
-			if (_is_string_map_v<T>) {
-				using value_type = typename T::value_type::second_type;
-				std::string key;
-				value_type value;
-				lua_pushnil(L);
-				while (lua_next(L, lo) != 0)
-				{
-					if (lua_isstring(L, top - 1))
-					{
-						if (luaval_to_native(L, top - 1, &key)
-							&& luaval_to_native<value_type>(L, top, &value))
-							(*outValue)[key] = value;
-					}
-					lua_pop(L, 1);
-				}
-				return true;
-			}
-			if (_is_integer_map_v<T>) {
-				using key_type = typename T::key_type;
-				using value_type = typename T::value_type::second_type;
-				key_type key;
-				value_type value;
-				lua_pushnil(L);
-				while (lua_next(L, lo) != 0)
-				{
-					if (lua_isstring(L, top - 1))
-					{
-						if (luaval_to_native<key_type>(L, top - 1, &key)
-							&& luaval_to_native<value_type>(L, top, &value))
-							(*outValue)[key] = value;
-					}
-					lua_pop(L, 1);
-				}
-				return true;
-			}
-			return false;
-		}
+		};
 
-		template<typename T, class Enable = std::enable_if_t<!std::is_pointer_v<T>>>
-		void native_to_luaval(lua_State* L, const T& inValue)
-		{
-			if (!L)
-				return;
-			if(std::is_same_v<T, bool>) {
-				lua_pushboolean(L, (int)inValue);
-				return;
-			}
-			if(std::is_arithmetic_v<T>) {
-				lua_pushnumber(L, (lua_Number)inValue);
-				return;
-			}
-			if (std::is_enum_v<T>) {
-				using type = std::underlying_type_t<T>;
-				type value = (type)inValue;
-				native_to_luaval(L, &value);
-				return;
-			}
-			if (_is_vector_v<T>) {
-				lua_createtable(L, inValue.size(), 0);
-				int index = 1;
-				for (auto& value : inValue)
-				{
-					lua_pushnumber(L, (lua_Number)index);
-					native_to_luaval(L, value);
-					lua_rawset(L, -3);
-					++index;
-				}
-				return;
-			}
-			if (_is_string_map_v<T>) {
-				lua_createtable(L, 0, inValue.size());
-				for (auto& it : inValue)
-				{
-					lua_pushlstring(L, it.first.c_str(), it.first.size());
-					native_to_luaval(L, it.second);
-					lua_rawset(L, -3);
-				}
-				return;
-			}
-			if (_is_integer_map_v<T>) {
-				lua_createtable(L, 0, inValue.size());
-				for (auto& it : inValue)
-				{
-					native_to_luaval(L, it.first);
-					native_to_luaval(L, it.second);
-					lua_rawset(L, -3);
-				}
-				return;
-			}
-			lua_pushnil(L);
-		}
+#define LUAVAL_TO_SIGNED(_T) template<>\
+		struct to_native<_T> {\
+			static bool F(lua_State* L, int lo, _T* outValue, const char* funcName){\
+				int64_t i; bool ret = _luaval_to_integer(L, lo, &i, sizeof(_T), funcName);\
+				if (ret) *outValue = (_T)(i); return ret; } }
+#define LUAVAL_TO_UNSIGNED(_T) template<>\
+		struct to_native<_T> {\
+			static bool F(lua_State* L, int lo, _T* outValue, const char* funcName){\
+				uint64_t i; bool ret = _luaval_to_unsigned_integer(L, lo, &i, sizeof(_T), funcName);\
+				if (ret) *outValue = (_T)(i); return ret; } }
 
-		template<typename T>
-		void native_to_luaval(lua_State* L, T* inValue)
-		{
-			if (!L)
-				return;
-			if (!inValue) {
-				lua_pushnil(L);
-				return;
-			}
-			lua_pushnil(L);
-		}
-
-#define LUAVAL_TO_NATIVE_BASIC(_F, _T) template<>\
-		inline bool luaval_to_native<_T>(lua_State* L, int lo, _T* outValue, const char* funcName){\
-		return lua::_F(L, lo, outValue, funcName); }
-#define LUAVAL_FROM_NATIVE_BASIC(_F, _T) template<>\
-		inline void native_to_luaval<_T>(lua_State* L, const _T& inValue){\
-		lua::_F(L, inValue); }
-#define LUAVAL_FROM_NATIVE_BASIC_P(_F, _T) template<>\
-		inline void native_to_luaval<_T>(lua_State* L, _T* inValue){\
-		lua::_F(L, inValue); }
+		LUAVAL_TO_SIGNED(int8_t);
+		LUAVAL_TO_SIGNED(int16_t);
+		LUAVAL_TO_SIGNED(int32_t);
+		LUAVAL_TO_SIGNED(int64_t);
+		LUAVAL_TO_UNSIGNED(uint8_t);
+		LUAVAL_TO_UNSIGNED(uint16_t);
+		LUAVAL_TO_UNSIGNED(uint32_t);
+		LUAVAL_TO_UNSIGNED(uint64_t);
+#undef LUAVAL_TO_SIGNED
+#undef LUAVAL_TO_UNSIGNED
 
 #define DECL_BASIC_TO_NATIVE(_F, _T) bool _F(lua_State* L, int lo, _T* outValue, const char* funcName = "");\
 	LUAVAL_TO_NATIVE_BASIC(_F, _T);
@@ -207,23 +135,111 @@ namespace lstg
 		DECL_BASIC_TO_NATIVE(luaval_to_ttfconfig, cocos2d::TTFConfig);
 		DECL_BASIC_TO_NATIVE(luaval_to_uniform, cocos2d::Uniform);
 		DECL_BASIC_TO_NATIVE(luaval_to_vertexattrib, cocos2d::VertexAttrib);
-		DECL_BASIC_TO_NATIVE(luaval_to_std_vector_string, std::vector<std::string>);
-		DECL_BASIC_TO_NATIVE(luaval_to_std_vector_int, std::vector<int>);
 		DECL_BASIC_TO_NATIVE(luaval_to_ccvalue, cocos2d::Value);
-		DECL_BASIC_TO_NATIVE(luaval_to_ccvaluemap, cocos2d::ValueMap);
-		DECL_BASIC_TO_NATIVE(luaval_to_ccvaluemapintkey, cocos2d::ValueMapIntKey);
-		DECL_BASIC_TO_NATIVE(luaval_to_ccvaluevector, cocos2d::ValueVector);
 		DECL_BASIC_TO_NATIVE(luaval_to_mesh_vertex_attrib, cocos2d::MeshVertexAttrib);
-		//DECL_BASIC_TO_NATIVE(luaval_to_std_vector_float, std::vector<float>);
-		//DECL_BASIC_TO_NATIVE(luaval_to_std_vector_ushort, std::vector<unsigned short>);
 		DECL_BASIC_TO_NATIVE(luaval_to_quaternion, cocos2d::Quaternion);
 		DECL_BASIC_TO_NATIVE(luaval_to_texparams, cocos2d::Texture2D::TexParams);
 		DECL_BASIC_TO_NATIVE(luaval_to_v3f_c4b_t2f, cocos2d::V3F_C4B_T2F);
 		DECL_BASIC_TO_NATIVE(luaval_to_tex2f, cocos2d::Tex2F);
-		//DECL_BASIC_TO_NATIVE(luaval_to_std_vector_v3f_c4b_t2f, std::vector<cocos2d::V3F_C4B_T2F>);
-		//DECL_BASIC_TO_NATIVE(luaval_to_std_vector_vec2, std::vector<cocos2d::Vec2>);
-		//DECL_BASIC_TO_NATIVE(luaval_to_std_vector_vec3, std::vector<cocos2d::Vec3>);
 #undef DECL_BASIC_TO_NATIVE
+
+		template<>
+		struct to_native<float> {
+			static bool F(lua_State* L, int lo, float* outValue, const char* fName = "") {
+				CHECK_TO_NATIVE;
+				double v;
+				const auto ok = to_native<double>::F(L, lo, &v, fName);
+				if (ok) *outValue = (float)v;
+				return ok;
+			}
+		};
+
+		TO_NATIVE_VECTOR(cocos2d::Vector, pushBack);
+		TO_NATIVE_VECTOR(std::vector, push_back);
+		TO_NATIVE_VECTOR(std::deque, push_back);
+		TO_NATIVE_VECTOR(std::forward_list, push_front);
+		TO_NATIVE_VECTOR(std::list, push_back);
+		TO_NATIVE_VECTOR(std::set, insert);
+		TO_NATIVE_VECTOR(std::multiset, insert);
+		TO_NATIVE_VECTOR(std::unordered_set, insert);
+		TO_NATIVE_VECTOR(std::unordered_multiset, insert);
+		TO_NATIVE_VECTOR(std::stack, push);
+		TO_NATIVE_VECTOR(std::queue, push);
+		TO_NATIVE_VECTOR(std::priority_queue, push);
+
+		TO_NATIVE_MAP(std::map, [key] = value);
+		TO_NATIVE_MAP(std::unordered_map, [key] = value);
+		TO_NATIVE_MAP(std::multimap, .emplace(key, value));
+		TO_NATIVE_MAP(std::unordered_multimap, .emplace(key, value));
+
+		template<typename T, class Enable = void>
+		bool luaval_to_native(lua_State* L, int lo, T* outValue, const char* fName = "") {
+			return to_native<T>::F(L, lo, outValue, fName);
+		}
+
+		////////////////////////////////////////////////////////////////////////////////
+
+		template<typename T, class Enable = void> struct to_lua {};
+
+#define LUAVAL_FROM_NATIVE_BASIC(_F, _T) template<>\
+		struct to_lua<_T> {\
+			static bool F(lua_State* L, const _T& inValue) {\
+				lua::_F(L, inValue); } };
+
+#define LUAVAL_FROM_NATIVE_BASIC_P(_F, _T) template<>\
+		struct to_lua<_T*> {\
+			static bool F(lua_State* L, _T* inValue) {\
+				lua::_F(L, inValue); } };
+
+#define TO_LUA_VECTOR(_Ty) template<typename T>\
+		struct to_lua<_Ty<T>> {\
+			static void F(lua_State* L, const _Ty<T>& inValue) {\
+				if (!L) return;\
+				lua_createtable(L, (int)inValue.size(), 0);\
+				int index = 1;\
+				for (auto& value : inValue) {\
+					lua_pushnumber(L, (lua_Number)index);\
+					to_lua<T>::F(L, value);\
+					lua_rawset(L, -3);\
+					++index;\
+				} } };
+
+#define TO_LUA_MAP(_Ty) template<typename K, typename V>\
+		struct to_lua<_Ty<K, V>> {\
+			static void F(lua_State* L, const _Ty<K, V>& inValue) {\
+				if (!L) return;\
+				lua_createtable(L, 0, 0);\
+				for (auto& it : inValue) {\
+					to_lua<K>::F(L, it.first);\
+					to_lua<V>::F(L, it.second);\
+					lua_rawset(L, -3);\
+				} } };
+
+		template<>
+		struct to_lua<bool> {
+			static void F(lua_State* L, bool inValue) {
+				if (!L) return;
+				lua_pushboolean(L, inValue);
+			}
+		};
+
+		template<typename T>
+		struct to_lua<T, std::enable_if_t<std::is_arithmetic_v<T>>> {
+			static void F(lua_State* L, T inValue) {
+				if (!L) return;
+				lua_pushnumber(L, (lua_Number)inValue);
+			}
+		};
+
+		template<typename T>
+		struct to_lua<T, std::enable_if_t<std::is_enum_v<T>>> {
+			static void F(lua_State* L, T inValue) {
+				if (!L) return;
+				using type = std::underlying_type_t<T>;
+				lua_pushnumber(L, (lua_Number)(type)inValue);
+			}
+		};
+
 #define DECL_BASIC_FROM_NATIVE(_F, _T) void _F(lua_State* L, const _T& inValue);\
 	LUAVAL_FROM_NATIVE_BASIC(_F, _T);
 		DECL_BASIC_FROM_NATIVE(vec2_to_luaval, cocos2d::Vec2);
@@ -242,21 +258,32 @@ namespace lstg
 		DECL_BASIC_FROM_NATIVE(uniform_to_luaval, cocos2d::Uniform);
 		DECL_BASIC_FROM_NATIVE(vertexattrib_to_luaval, cocos2d::VertexAttrib);
 		DECL_BASIC_FROM_NATIVE(ccvalue_to_luaval, cocos2d::Value);
-		DECL_BASIC_FROM_NATIVE(ccvaluemap_to_luaval, cocos2d::ValueMap);
-		DECL_BASIC_FROM_NATIVE(ccvaluemapintkey_to_luaval, cocos2d::ValueMapIntKey);
-		DECL_BASIC_FROM_NATIVE(ccvaluevector_to_luaval, cocos2d::ValueVector);
 		DECL_BASIC_FROM_NATIVE(mesh_vertex_attrib_to_luaval, cocos2d::MeshVertexAttrib);
-		//DECL_BASIC_FROM_NATIVE(ccvector_std_string_to_luaval, std::vector<std::string>);
-		//DECL_BASIC_FROM_NATIVE(ccvector_int_to_luaval, std::vector<int>);
-		//DECL_BASIC_FROM_NATIVE(ccvector_float_to_luaval, std::vector<float>);
-		//DECL_BASIC_FROM_NATIVE(ccvector_ushort_to_luaval, std::vector<unsigned short>);
 		DECL_BASIC_FROM_NATIVE(quaternion_to_luaval, cocos2d::Quaternion);
 		DECL_BASIC_FROM_NATIVE(texParams_to_luaval, cocos2d::Texture2D::TexParams);
-		//DECL_BASIC_FROM_NATIVE(std_vector_vec3_to_luaval, std::vector<cocos2d::Vec3>);
 #undef DECL_BASIC_FROM_NATIVE
 
-		constexpr int LUA_TPROTO = LUA_TTHREAD + 1;
-		constexpr int LUA_TCDATA = LUA_TTHREAD + 2;
+		TO_LUA_VECTOR(cocos2d::Vector);
+		TO_LUA_VECTOR(std::vector);
+		TO_LUA_VECTOR(std::deque);
+		TO_LUA_VECTOR(std::forward_list);
+		TO_LUA_VECTOR(std::list);
+		TO_LUA_VECTOR(std::set);
+		TO_LUA_VECTOR(std::multiset);
+		TO_LUA_VECTOR(std::unordered_set);
+		TO_LUA_VECTOR(std::unordered_multiset);
+
+		TO_LUA_MAP(std::map);
+		TO_LUA_MAP(std::unordered_map);
+		TO_LUA_MAP(std::multimap);
+		TO_LUA_MAP(std::unordered_multimap);
+
+		template<typename T>
+		void native_to_luaval(lua_State* L, T inValue) {
+			to_lua<T>::F(L, inValue);
+		}
+
+		////////////////////////////////////////////////////////////////////////////////
 
 		cocos2d::LuaStack* stack();
 		int StackTraceback(lua_State *L);
@@ -369,42 +396,6 @@ namespace lstg
 
 		const char* checkstring(lua_State* L, int lo, size_t* strlen, uint32_t* hash);
 		const char* tostring(lua_State* L, int lo, size_t* strlen, uint32_t* hash);
-
-		// support cdata
-		bool _luaval_to_integer(lua_State* L, int lo,
-			int64_t* outValue, size_t targetSize, const char* funcName);
-		bool _luaval_to_unsigned_integer(lua_State* L, int lo,
-			uint64_t* outValue, size_t targetSize, const char* funcName);
-
-#define LUAVAL_TO_SIGNED(_T) template<>\
-		inline bool luaval_to_native<_T>(lua_State* L, int lo, _T* outValue, const char* funcName){\
-		int64_t i; bool ret = _luaval_to_integer(L, lo, &i, sizeof(_T), funcName);\
-		if (ret) *outValue = (_T)(i); return ret;}
-#define LUAVAL_TO_UNSIGNED(_T) template<>\
-		inline bool luaval_to_native<_T>(lua_State* L, int lo, _T* outValue, const char* funcName){\
-		uint64_t i; bool ret = _luaval_to_unsigned_integer(L, lo, &i, sizeof(_T), funcName);\
-		if (ret) *outValue = (_T)(i); return ret;}
-
-		LUAVAL_TO_SIGNED(int8_t);
-		LUAVAL_TO_SIGNED(int16_t);
-		LUAVAL_TO_SIGNED(int32_t);
-		LUAVAL_TO_SIGNED(int64_t);
-		LUAVAL_TO_UNSIGNED(uint8_t);
-		LUAVAL_TO_UNSIGNED(uint16_t);
-		LUAVAL_TO_UNSIGNED(uint32_t);
-		LUAVAL_TO_UNSIGNED(uint64_t);
-#undef LUAVAL_TO_SIGNED
-#undef LUAVAL_TO_UNSIGNED
-
-#define LUAVAL_TO_NATIVE_BASIC_CVT(_F, _T, _Tmid) template<>\
-		inline bool luaval_to_native<_T>(lua_State* L, int lo, _T* outValue, const char* funcName){\
-		_Tmid tmp; auto ret = lua::_F(L, lo ,&tmp, funcName);\
-		if(ret) *outValue = tmp; return ret; }
-
-		LUAVAL_TO_NATIVE_BASIC_CVT(luaval_to_number, float, double);
-
-#undef LUAVAL_TO_NATIVE_BASIC
-#undef LUAVAL_TO_NATIVE_BASIC_CVT
 
 		template<typename T>
 		typename std::enable_if<

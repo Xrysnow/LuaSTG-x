@@ -10,42 +10,32 @@ using namespace std;
 using namespace lstg;
 using namespace cocos2d;
 
-#define IMPL_BASIC_TO_NATIVE(_F, _T) bool lua::_F(lua_State* L, int lo, _T outValue, const char* funcName){\
+#define IMPL_BASIC_TO_NATIVE(_F, _T) bool lua::_F(lua_State* L, int lo, _T* outValue, const char* funcName){\
 	return ::_F(L, lo, outValue, funcName); }
-IMPL_BASIC_TO_NATIVE(luaval_to_boolean, bool*);
-IMPL_BASIC_TO_NATIVE(luaval_to_number, double*);
-IMPL_BASIC_TO_NATIVE(luaval_to_std_string, std::string*);
-IMPL_BASIC_TO_NATIVE(luaval_to_rect, Rect*);
-IMPL_BASIC_TO_NATIVE(luaval_to_color3b, Color3B*);
-IMPL_BASIC_TO_NATIVE(luaval_to_color4b, Color4B*);
-IMPL_BASIC_TO_NATIVE(luaval_to_color4f, Color4F*);
-IMPL_BASIC_TO_NATIVE(luaval_to_physics_material, cocos2d::PhysicsMaterial*);
-IMPL_BASIC_TO_NATIVE(luaval_to_affinetransform, AffineTransform*);
-IMPL_BASIC_TO_NATIVE(luaval_to_fontdefinition, FontDefinition*);
-IMPL_BASIC_TO_NATIVE(luaval_to_mat4, cocos2d::Mat4*);
-IMPL_BASIC_TO_NATIVE(luaval_to_vec2, cocos2d::Vec2*);
-IMPL_BASIC_TO_NATIVE(luaval_to_vec3, cocos2d::Vec3*);
-IMPL_BASIC_TO_NATIVE(luaval_to_vec4, cocos2d::Vec4*);
-IMPL_BASIC_TO_NATIVE(luaval_to_blendfunc, cocos2d::BlendFunc*);
-IMPL_BASIC_TO_NATIVE(luaval_to_ttfconfig, cocos2d::TTFConfig*);
-IMPL_BASIC_TO_NATIVE(luaval_to_uniform, cocos2d::Uniform*);
-IMPL_BASIC_TO_NATIVE(luaval_to_vertexattrib, cocos2d::VertexAttrib*);
-IMPL_BASIC_TO_NATIVE(luaval_to_std_vector_string, std::vector<std::string>*);
-IMPL_BASIC_TO_NATIVE(luaval_to_std_vector_int, std::vector<int>*);
-IMPL_BASIC_TO_NATIVE(luaval_to_ccvalue, cocos2d::Value*);
-IMPL_BASIC_TO_NATIVE(luaval_to_ccvaluemap, cocos2d::ValueMap*);
-IMPL_BASIC_TO_NATIVE(luaval_to_ccvaluemapintkey, cocos2d::ValueMapIntKey*);
-IMPL_BASIC_TO_NATIVE(luaval_to_ccvaluevector, cocos2d::ValueVector*);
-IMPL_BASIC_TO_NATIVE(luaval_to_mesh_vertex_attrib, cocos2d::MeshVertexAttrib*);
-//IMPL_BASIC_TO_NATIVE(luaval_to_std_vector_float, std::vector<float>*);
-//IMPL_BASIC_TO_NATIVE(luaval_to_std_vector_ushort, std::vector<unsigned short>*);
-IMPL_BASIC_TO_NATIVE(luaval_to_quaternion, cocos2d::Quaternion*);
-IMPL_BASIC_TO_NATIVE(luaval_to_texparams, cocos2d::Texture2D::TexParams*);
-IMPL_BASIC_TO_NATIVE(luaval_to_v3f_c4b_t2f, cocos2d::V3F_C4B_T2F*);
-IMPL_BASIC_TO_NATIVE(luaval_to_tex2f, cocos2d::Tex2F*);
-//IMPL_BASIC_TO_NATIVE(luaval_to_std_vector_v3f_c4b_t2f, std::vector<cocos2d::V3F_C4B_T2F>*);
-//IMPL_BASIC_TO_NATIVE(luaval_to_std_vector_vec2, std::vector<cocos2d::Vec2>*);
-//IMPL_BASIC_TO_NATIVE(luaval_to_std_vector_vec3, std::vector<cocos2d::Vec3>*);
+IMPL_BASIC_TO_NATIVE(luaval_to_boolean, bool);
+IMPL_BASIC_TO_NATIVE(luaval_to_number, double);
+IMPL_BASIC_TO_NATIVE(luaval_to_std_string, std::string);
+IMPL_BASIC_TO_NATIVE(luaval_to_rect, Rect);
+IMPL_BASIC_TO_NATIVE(luaval_to_color3b, Color3B);
+IMPL_BASIC_TO_NATIVE(luaval_to_color4b, Color4B);
+IMPL_BASIC_TO_NATIVE(luaval_to_color4f, Color4F);
+IMPL_BASIC_TO_NATIVE(luaval_to_physics_material, cocos2d::PhysicsMaterial);
+IMPL_BASIC_TO_NATIVE(luaval_to_affinetransform, AffineTransform);
+IMPL_BASIC_TO_NATIVE(luaval_to_fontdefinition, FontDefinition);
+IMPL_BASIC_TO_NATIVE(luaval_to_mat4, cocos2d::Mat4);
+IMPL_BASIC_TO_NATIVE(luaval_to_vec2, cocos2d::Vec2);
+IMPL_BASIC_TO_NATIVE(luaval_to_vec3, cocos2d::Vec3);
+IMPL_BASIC_TO_NATIVE(luaval_to_vec4, cocos2d::Vec4);
+IMPL_BASIC_TO_NATIVE(luaval_to_blendfunc, cocos2d::BlendFunc);
+IMPL_BASIC_TO_NATIVE(luaval_to_ttfconfig, cocos2d::TTFConfig);
+IMPL_BASIC_TO_NATIVE(luaval_to_uniform, cocos2d::Uniform);
+IMPL_BASIC_TO_NATIVE(luaval_to_vertexattrib, cocos2d::VertexAttrib);
+IMPL_BASIC_TO_NATIVE(luaval_to_ccvalue, cocos2d::Value);
+IMPL_BASIC_TO_NATIVE(luaval_to_mesh_vertex_attrib, cocos2d::MeshVertexAttrib);
+IMPL_BASIC_TO_NATIVE(luaval_to_quaternion, cocos2d::Quaternion);
+IMPL_BASIC_TO_NATIVE(luaval_to_texparams, cocos2d::Texture2D::TexParams);
+IMPL_BASIC_TO_NATIVE(luaval_to_v3f_c4b_t2f, cocos2d::V3F_C4B_T2F);
+IMPL_BASIC_TO_NATIVE(luaval_to_tex2f, cocos2d::Tex2F);
 
 #define IMPL_BASIC_FROM_NATIVE(_F, _T) void lua::_F(lua_State* L, const _T& inValue){\
 	::_F(L, inValue); }
@@ -65,17 +55,79 @@ IMPL_BASIC_FROM_NATIVE(ttfconfig_to_luaval, cocos2d::TTFConfig);
 IMPL_BASIC_FROM_NATIVE(uniform_to_luaval, cocos2d::Uniform);
 IMPL_BASIC_FROM_NATIVE(vertexattrib_to_luaval, cocos2d::VertexAttrib);
 IMPL_BASIC_FROM_NATIVE(ccvalue_to_luaval, cocos2d::Value);
-IMPL_BASIC_FROM_NATIVE(ccvaluemap_to_luaval, cocos2d::ValueMap);
-IMPL_BASIC_FROM_NATIVE(ccvaluemapintkey_to_luaval, cocos2d::ValueMapIntKey);
-IMPL_BASIC_FROM_NATIVE(ccvaluevector_to_luaval, cocos2d::ValueVector);
 IMPL_BASIC_FROM_NATIVE(mesh_vertex_attrib_to_luaval, cocos2d::MeshVertexAttrib);
-//IMPL_BASIC_FROM_NATIVE(ccvector_std_string_to_luaval, std::vector<std::string>);
-//IMPL_BASIC_FROM_NATIVE(ccvector_int_to_luaval, std::vector<int>);
-//IMPL_BASIC_FROM_NATIVE(ccvector_float_to_luaval, std::vector<float>);
-//IMPL_BASIC_FROM_NATIVE(ccvector_ushort_to_luaval, std::vector<unsigned short>);
 IMPL_BASIC_FROM_NATIVE(quaternion_to_luaval, cocos2d::Quaternion);
 IMPL_BASIC_FROM_NATIVE(texParams_to_luaval, cocos2d::Texture2D::TexParams);
-//IMPL_BASIC_FROM_NATIVE(std_vector_vec3_to_luaval, std::vector<cocos2d::Vec3>);
+
+template<typename T>
+bool __luaval_to_integer(lua_State* L, int lo,
+	typename std::enable_if<std::is_same_v<T, int64_t> || std::is_same_v<T, uint64_t>, T>::type* outValue,
+	size_t targetSize, const char* funcName)
+{
+	if (nullptr == L || nullptr == outValue)
+		return false;
+	const auto type = lua_type(L, lo);
+	if (type == lua::LUA_TCDATA)
+	{
+		if(std::is_same_v<T, int64_t>)
+			lua_pushstring(L, "ffi.cast_int64");
+		else
+			lua_pushstring(L, "ffi.cast_uint64");
+		lua_rawget(L, LUA_REGISTRYINDEX);
+		const auto tfunc = lua_type(L, -1);
+		if (tfunc == LUA_TFUNCTION)
+		{
+			void* ret = nullptr;
+			lua_pushvalue(L, lo);
+			lua_pushlightuserdata(L, &ret);
+			if (lua_pcall(L, 1, 1, 0) == 0)
+			{
+				lua::luaval_to_cptr(L, -1, &ret);
+				if (ret)
+				{
+					*outValue = *(T*)ret;
+					return true;
+				}
+			}
+		}
+		else
+		{
+			lua_pop(L, 1);
+		}
+	}
+	tolua_Error tolua_err;
+	bool is_number = type == LUA_TNUMBER;
+	if (!is_number)
+	{
+		tolua_err.index = lo; tolua_err.array = 0; tolua_err.type = "number";
+#if COCOS2D_DEBUG >=1
+		luaval_to_native_err(L, "#ferror:", &tolua_err, funcName);
+#endif
+		return false;
+	}
+	if (std::is_same_v<T, int64_t> && targetSize == 4)
+	{
+		// see luaval_to_int32
+		const uint32_t estimateValue = (uint32_t)lua_tonumber(L, lo);
+		if (estimateValue == (uint32_t)std::numeric_limits<int32_t>::min())
+			*outValue = (int32_t)estimateValue;
+		else
+			*outValue = (int64_t)(int32_t)lua_tonumber(L, lo);
+	}
+	else
+		*outValue = (T)tolua_tonumber(L, lo, 0);
+	return true;
+}
+
+bool lua::_luaval_to_integer(lua_State* L, int lo, int64_t* outValue, size_t targetSize, const char* funcName)
+{
+	return __luaval_to_integer<int64_t>(L, lo, outValue, targetSize, funcName);
+}
+
+bool lua::_luaval_to_unsigned_integer(lua_State* L, int lo, uint64_t* outValue, size_t targetSize, const char* funcName)
+{
+	return __luaval_to_integer<uint64_t>(L, lo, outValue, targetSize, funcName);
+}
 
 LuaStack* lua::stack()
 {
@@ -192,7 +244,6 @@ void lua::_color4b_to_luaval(lua_State* L, const Color4B& cc)
 {
 	const auto p = ColorWrapper::CreateAndPush(L);
 	*p = cc;
-	Label::LabelType t;
 }
 
 bool lua::_luaarray_to_numbers(lua_State* L, int lo, const std::function<void(double)>& callBack)
@@ -643,74 +694,4 @@ const char* lua::tostring(lua_State* L, int lo, size_t* strlen, uint32_t* hash)
 	if (hash)
 		*hash = ((uint32_t*)ret)[HASH_OFFSET];
 	return ret;
-}
-
-template<typename T>
-bool __luaval_to_integer(lua_State* L, int lo,
-	typename std::enable_if<std::is_same_v<T, int64_t> || std::is_same_v<T, uint64_t>, T>::type* outValue,
-	size_t targetSize, const char* funcName)
-{
-	if (nullptr == L || nullptr == outValue)
-		return false;
-	const auto type = lua_type(L, lo);
-	if (type == lua::LUA_TCDATA)
-	{
-		if(std::is_same_v<T, int64_t>)
-			lua_pushstring(L, "ffi.cast_int64");
-		else
-			lua_pushstring(L, "ffi.cast_uint64");
-		lua_rawget(L, LUA_REGISTRYINDEX);
-		const auto tfunc = lua_type(L, -1);
-		if (tfunc == LUA_TFUNCTION)
-		{
-			void* ret = nullptr;
-			lua_pushvalue(L, lo);
-			lua_pushlightuserdata(L, &ret);
-			if (lua_pcall(L, 1, 1, 0) == 0)
-			{
-				lua::luaval_to_cptr(L, -1, &ret);
-				if (ret)
-				{
-					*outValue = *(T*)ret;
-					return true;
-				}
-			}
-		}
-		else
-		{
-			lua_pop(L, 1);
-		}
-	}
-	tolua_Error tolua_err;
-	bool is_number = type == LUA_TNUMBER;
-	if (!is_number)
-	{
-		tolua_err.index = lo; tolua_err.array = 0; tolua_err.type = "number";
-#if COCOS2D_DEBUG >=1
-		luaval_to_native_err(L, "#ferror:", &tolua_err, funcName);
-#endif
-		return false;
-	}
-	if (std::is_same_v<T, int64_t> && targetSize == 4)
-	{
-		// see luaval_to_int32
-		const uint32_t estimateValue = (uint32_t)lua_tonumber(L, lo);
-		if (estimateValue == (uint32_t)std::numeric_limits<int32_t>::min())
-			*outValue = (int32_t)estimateValue;
-		else
-			*outValue = (int64_t)(int32_t)lua_tonumber(L, lo);
-	}
-	else
-		*outValue = (T)tolua_tonumber(L, lo, 0);
-	return true;
-}
-
-bool lua::_luaval_to_integer(lua_State* L, int lo, int64_t* outValue, size_t targetSize, const char* funcName)
-{
-	return __luaval_to_integer<int64_t>(L, lo, outValue, targetSize, funcName);
-}
-
-bool lua::_luaval_to_unsigned_integer(lua_State* L, int lo, uint64_t* outValue, size_t targetSize, const char* funcName)
-{
-	return __luaval_to_integer<uint64_t>(L, lo, outValue, targetSize, funcName);
 }
