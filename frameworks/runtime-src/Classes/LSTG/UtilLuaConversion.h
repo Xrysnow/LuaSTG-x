@@ -52,7 +52,7 @@ namespace lstg
 				K key; V value;\
 				lua_pushnil(L);\
 				while (lua_next(L, lo) != 0) {\
-					if(!to_native<K>::F(L, top - 1, &key, fName)) {\
+					if(!to_native<K>::F(L, top + 1, &key, fName)) {\
 						lua_pop(L, 1); /* removes 'value'; keep 'key' for next iteration*/\
 						continue;\
 					}\
@@ -79,7 +79,7 @@ namespace lstg
 				CHECK_TO_NATIVE;
 				using type = std::underlying_type_t<T>;
 				type value;
-				auto ok = to_native<type>(L, lo, &value, fName);
+				auto ok = to_native<type>::F(L, lo, &value, fName);
 				if (ok) *outValue = (T)value;
 				return ok;
 			}
@@ -187,7 +187,7 @@ namespace lstg
 					ok &= to_native<T>::F(L, top, &value, fName);
 					lua_pop(L, 1);
 					if (ok)
-						outValue[i] = value;
+						outValue->operator[](i) = value;
 					else
 						break;
 				}
@@ -222,28 +222,36 @@ namespace lstg
 			}
 		};
 
-		template<typename... Types>
-		struct to_native<std::tuple<Types...>> {
-			template<size_t Index, typename... Targs>
-			static bool _Helper(lua_State* L, int idx, std::tuple<Targs...>* outValue, const char* fName) {
-				using type = typename std::tuple_element<Index, std::tuple<Targs...>>::type;
-				lua_pushnumber(L, Index + 1);
+		template<size_t Index, typename ...Targs>
+		struct _to_native_tuple_helper {
+			static bool F(lua_State* L, int idx, std::tuple<Targs...>* outValue, const char* fName) {
+				using type = typename std::tuple_element<Index - 1, std::tuple<Targs...>>::type;
+				lua_pushnumber(L, Index);
 				lua_gettable(L, idx);
-				const auto ok = to_native<type>::F(L, lua_gettop(L), &std::get<Index>(*outValue), fName);
+				const auto ok = to_native<type>::F(L, lua_gettop(L), &std::get<Index - 1>(*outValue), fName);
 				lua_pop(L, 1);
-				if(!ok)
-					return false;
-				if(Index > 0)
-					return _Helper<Index - 1, Targs>(L, idx, outValue, fName);
+				if (!ok) return false;
+				return _to_native_tuple_helper<Index - 1, Targs...>::F(L, idx, outValue, fName);
+			}
+		};
+
+		template<typename ...Targs>
+		struct _to_native_tuple_helper<0, Targs...> {
+			static bool F(lua_State* L, int idx, std::tuple<Targs...>* outValue, const char* fName) {
 				return true;
 			}
+		};
+
+		template<typename... Types>
+		struct to_native<std::tuple<Types...>> {
 			using tuple_type = std::tuple<Types...>;
 			static bool F(lua_State* L, int lo, tuple_type* outValue, const char* fName = "") {
 				CHECK_TO_NATIVE;
 				const auto type = lua_type(L, lo);
 				if (!(type == LUA_TTABLE || type == LUA_TUSERDATA || type == LUA_TCDATA))
 					return false;
-				return to_native<tuple_type>::template _Helper<std::tuple_size_v<tuple_type>, Types>(L, lo, outValue, fName);
+				constexpr size_t size = std::tuple_size_v<tuple_type>;
+				return _to_native_tuple_helper<size, Types...>::F(L, lo, outValue, fName);
 			}
 		};
 
@@ -308,12 +316,12 @@ namespace lstg
 
 #define TO_LUA_BASIC(_F, _T) template<>\
 		struct to_lua<_T> {\
-			static bool F(lua_State* L, const _T& inValue) {\
+			static void F(lua_State* L, const _T& inValue) {\
 				lua::_F(L, inValue); } };
 
 #define TO_LUA_BASIC_P(_F, _T) template<>\
 		struct to_lua<_T*> {\
-			static bool F(lua_State* L, _T* inValue) {\
+			static void F(lua_State* L, _T* inValue) {\
 				lua::_F(L, inValue); } };
 
 #define TO_LUA_VECTOR(_Ty) template<typename T>\
@@ -448,22 +456,31 @@ namespace lstg
 			}
 		};
 
+		template<size_t Index, typename... Targs>
+		struct _to_lua_tuple_helper {
+			static void F(lua_State* L, int idx, const std::tuple<Targs...>& inValue) {
+				using type = typename std::tuple_element<Index - 1, std::tuple<Targs...>>::type;
+				lua_pushnumber(L, Index);
+				to_lua<type>::F(L, std::get<Index - 1>(inValue));
+				lua_settable(L, idx);
+				_to_lua_tuple_helper<Index - 1, Targs...>::F(L, idx, inValue);
+			}
+		};
+
+		template<typename... Targs>
+		struct _to_lua_tuple_helper<0, Targs...> {
+			static void F(lua_State* L, int idx, const std::tuple<Targs...>& inValue) {
+			}
+		};
+
 		template<typename... Types>
 		struct to_lua<std::tuple<Types...>> {
-			template<size_t Index, typename... Targs>
-			static void _Helper(lua_State* L, int idx, const std::tuple<Targs...>& inValue) {
-				using type = typename std::tuple_element<Index, std::tuple<Targs...>>::type;
-				lua_pushnumber(L, Index + 1);
-				to_lua<type>::F(L, std::get<Index>(inValue));
-				lua_settable(L, idx);
-				if (Index > 0)
-					_Helper<Index - 1, Targs>(L, idx, inValue);
-			}
 			using tuple_type = std::tuple<Types...>;
 			static void F(lua_State* L, const tuple_type& inValue) {
 				if (!L) return;
-				lua_createtable(L, (int)std::tuple_size_v<tuple_type>, 0);
-				to_lua<tuple_type>::template _Helper<std::tuple_size_v<tuple_type>, Types>(L, lua_gettop(L), inValue);
+				constexpr size_t size = std::tuple_size_v<tuple_type>;
+				lua_createtable(L, (int)size, 0);
+				_to_lua_tuple_helper<size, Types...>::F(L, lua_gettop(L), inValue);
 			}
 		};
 
