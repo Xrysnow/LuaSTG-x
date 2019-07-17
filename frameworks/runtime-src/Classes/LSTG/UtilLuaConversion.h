@@ -56,7 +56,7 @@ namespace lstg
 						lua_pop(L, 1); /* removes 'value'; keep 'key' for next iteration*/\
 						continue;\
 					}\
-					if (to_native<V>::F(L, top, &value, fName))\
+					if (to_native<V>::F(L, top + 2, &value, fName))\
 						(*outValue)_Setter;\
 					lua_pop(L, 1);\
 				}\
