@@ -3,6 +3,7 @@
 #include "../Math/XMath.h"
 #include "CollisionDetect.h"
 #include "MemPoolManager.h"
+#include "UtilLuaConversion.h"
 
 using namespace std;
 using namespace lstg;
@@ -72,9 +73,13 @@ static int SampleBezierA1_(lua_State* L) noexcept
 		out_y.push_back(p.y);
 	}
 
-	lua::pushArray(L,out_x);
-	lua::pushArray(L,out_y);
-	lua::pushArray(L,out_rot);
+	//lua::pushArray(L,out_x);
+	//lua::pushArray(L,out_y);
+	//lua::pushArray(L,out_rot);
+
+	lua::native_to_luaval(L, out_x);
+	lua::native_to_luaval(L, out_y);
+	lua::native_to_luaval(L, out_rot);
 	return 3;
 }
 

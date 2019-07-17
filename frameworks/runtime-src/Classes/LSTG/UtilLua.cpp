@@ -16,6 +16,7 @@ IMPL_BASIC_TO_NATIVE(luaval_to_boolean, bool);
 IMPL_BASIC_TO_NATIVE(luaval_to_number, double);
 IMPL_BASIC_TO_NATIVE(luaval_to_std_string, std::string);
 IMPL_BASIC_TO_NATIVE(luaval_to_rect, Rect);
+IMPL_BASIC_TO_NATIVE(luaval_to_size, Size);
 IMPL_BASIC_TO_NATIVE(luaval_to_color3b, Color3B);
 IMPL_BASIC_TO_NATIVE(luaval_to_color4b, Color4B);
 IMPL_BASIC_TO_NATIVE(luaval_to_color4f, Color4F);
@@ -48,6 +49,7 @@ IMPL_BASIC_FROM_NATIVE(color3b_to_luaval, cocos2d::Color3B);
 IMPL_BASIC_FROM_NATIVE(color4b_to_luaval, cocos2d::Color4B);
 IMPL_BASIC_FROM_NATIVE(color4f_to_luaval, cocos2d::Color4F);
 IMPL_BASIC_FROM_NATIVE(affinetransform_to_luaval, cocos2d::AffineTransform);
+IMPL_BASIC_FROM_NATIVE(physics_material_to_luaval, cocos2d::PhysicsMaterial);
 IMPL_BASIC_FROM_NATIVE(fontdefinition_to_luaval, cocos2d::FontDefinition);
 IMPL_BASIC_FROM_NATIVE(mat4_to_luaval, cocos2d::Mat4);
 IMPL_BASIC_FROM_NATIVE(blendfunc_to_luaval, cocos2d::BlendFunc);
@@ -572,23 +574,23 @@ void lua::ref_type_to_luaval(lua_State* L, cocos2d::Ref* ref)
 	}
 }
 
-int lua::pushArray(lua_State* L, const std::vector<float>& arr)
-{
-	return pushArray(L, arr.data(), arr.size());
-}
+//int lua::pushArray(lua_State* L, const std::vector<float>& arr)
+//{
+//	return pushArray(L, arr.data(), arr.size());
+//}
 
-std::vector<float> lua::getArray(lua_State* L, int lo)
-{
-	const auto len = lua_objlen(L, lo);
-	std::vector<float> ret;
-	ret.reserve(len);
-	for (size_t i = 1; i <= len; i++)
-	{
-		lua_rawgeti(L, lo, i);
-		ret.push_back(luaL_checknumber(L, -1));
-	}
-	return ret;
-}
+//std::vector<float> lua::getArray(lua_State* L, int lo)
+//{
+//	const auto len = lua_objlen(L, lo);
+//	std::vector<float> ret;
+//	ret.reserve(len);
+//	for (size_t i = 1; i <= len; i++)
+//	{
+//		lua_rawgeti(L, lo, i);
+//		ret.push_back(luaL_checknumber(L, -1));
+//	}
+//	return ret;
+//}
 
 std::vector<float> lua::getArray(lua_State* L, int lo, const char* field)
 {
@@ -694,4 +696,13 @@ const char* lua::tostring(lua_State* L, int lo, size_t* strlen, uint32_t* hash)
 	if (hash)
 		*hash = ((uint32_t*)ret)[HASH_OFFSET];
 	return ret;
+}
+
+std::string lua::getClassNameByTypeID(const std::string& typeID)
+{
+	luaval_to_size
+	const auto it = g_luaType.find(typeID);
+	if (it != g_luaType.end())
+		return it->second;
+	return "";
 }
