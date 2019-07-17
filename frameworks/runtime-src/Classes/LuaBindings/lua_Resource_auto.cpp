@@ -6,7 +6,10 @@
 #define printf(...)
 #define color4b_to_luaval lstg::lua::_color4b_to_luaval
 #define luaval_to_color4b lstg::lua::_luaval_to_color4b
-using namespace lstg::lua;
+using lstg::lua::luaval_to_BlendMode;
+using lstg::lua::BlendMode_to_luaval;
+using lstg::lua::luaval_to_V3F_C4B_T2F_Quad;
+using lstg::lua::V3F_C4B_T2F_Quad_to_luaval;
 
 int lua_x_Resource_Resource_getInfo(lua_State* tolua_S)
 {

@@ -4,7 +4,8 @@
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
 #include "UtilLua.h"
 #define printf(...)
-using namespace lstg::lua;
+using lstg::lua::luaval_to_async_callback;
+using lstg::lua::ref_vector_to_luaval;
 
 int lua_x_ResourceMgr_ResourcePack_getCRC32(lua_State* tolua_S)
 {

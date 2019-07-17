@@ -5,7 +5,7 @@
 #include "UtilLua.h"
 #define color4b_to_luaval lstg::lua::_color4b_to_luaval
 #define luaval_to_color4b lstg::lua::_luaval_to_color4b
-using namespace lstg::lua;
+//using namespace lstg::lua;
 
 int lua_x_ParticlePool_ParticlePool_getSpread(lua_State* tolua_S)
 {
@@ -2274,7 +2274,7 @@ int lua_x_ParticlePool_ParticlePool_setBlendMode(lua_State* tolua_S)
     {
         lstg::BlendMode* arg0;
 
-        ok &= luaval_to_BlendMode(tolua_S, 2, &arg0, "lstg.ResParticle::ParticlePool:setBlendMode");
+        ok &= lstg::lua::luaval_to_BlendMode(tolua_S, 2, &arg0, "lstg.ResParticle::ParticlePool:setBlendMode");
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_ParticlePool_ParticlePool_setBlendMode'", nullptr);
@@ -2754,7 +2754,7 @@ int lua_x_ParticlePool_ParticlePool_getBlendMode(lua_State* tolua_S)
             return 0;
         }
         lstg::BlendMode* ret = cobj->getBlendMode();
-        BlendMode_to_luaval(tolua_S, ret);
+        lstg::lua::BlendMode_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResParticle::ParticlePool:getBlendMode",argc, 0);

@@ -6,7 +6,6 @@
 #define printf(...)
 #define color4b_to_luaval lstg::lua::_color4b_to_luaval
 #define luaval_to_color4b lstg::lua::_luaval_to_color4b
-using namespace lstg::lua;
 
 int lua_x_Triangles_Triangles_setVertex(lua_State* tolua_S)
 {
