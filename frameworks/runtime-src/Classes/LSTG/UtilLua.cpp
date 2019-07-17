@@ -700,7 +700,6 @@ const char* lua::tostring(lua_State* L, int lo, size_t* strlen, uint32_t* hash)
 
 std::string lua::getClassNameByTypeID(const std::string& typeID)
 {
-	luaval_to_size
 	const auto it = g_luaType.find(typeID);
 	if (it != g_luaType.end())
 		return it->second;

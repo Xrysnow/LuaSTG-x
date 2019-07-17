@@ -143,11 +143,30 @@ namespace lstg
 					*outValue = nullptr;
 					return true;
 				}
-				const auto className = getClassNameByTypeID(typeid(T).name());
+				auto className = getClassNameByTypeID(typeid(T).name());
+				if (className.empty()) className = "cc.Ref";
 				if (!isusertype(L, lo, className.c_str()))
 					return false;
 				const auto u = lua_touserdata(L, lo);
-				*outValue = static_cast<T*>(u ? *(void**)u : nullptr);
+				if (!u)
+					return false; //note: return false when userdata is null
+				*outValue = static_cast<T*>(*(void**)u);
+				return true;
+			}
+		};
+
+		template<typename T>
+		struct to_native<T*, std::enable_if_t<!std::is_base_of_v<cocos2d::Ref, T>>> {
+			static bool F(lua_State* L, int lo, T** outValue, const char* fName = "") {
+				CHECK_TO_NATIVE;
+				if(lua_isnil(L, lo)) {
+					*outValue = nullptr;
+					return true;
+				}
+				auto p = (T*)_tousertype(L, lo); //note: return false when userdata is null
+				if (!p)
+					return false;
+				*outValue = p;
 				return true;
 			}
 		};
@@ -218,12 +237,13 @@ namespace lstg
 					return _Helper<Index - 1, Targs>(L, idx, outValue, fName);
 				return true;
 			}
-			static bool F(lua_State* L, int lo, std::tuple<Types...>* outValue, const char* fName = "") {
+			using tuple_type = std::tuple<Types...>;
+			static bool F(lua_State* L, int lo, tuple_type* outValue, const char* fName = "") {
 				CHECK_TO_NATIVE;
 				const auto type = lua_type(L, lo);
 				if (!(type == LUA_TTABLE || type == LUA_TUSERDATA || type == LUA_TCDATA))
 					return false;
-				return _Helper<std::tuple_size_v<std::tuple<Types...>>, Types>(L, lo, outValue, fName);
+				return to_native<tuple_type>::template _Helper<std::tuple_size_v<tuple_type>, Types>(L, lo, outValue, fName);
 			}
 		};
 
@@ -385,6 +405,20 @@ namespace lstg
 			}
 		};
 
+		template<typename T>
+		struct to_lua<T*, std::enable_if_t<!std::is_base_of_v<cocos2d::Ref, T>>> {
+			static void F(lua_State* L, T* inValue) {
+				if (!L) return;
+				if(!inValue) { lua_pushnil(L); return; }
+				const auto className = getClassNameByTypeID(typeid(T).name());
+				if(className.empty()) { lua_pushnil(L); return; }
+				lua_getfield(L, LUA_REGISTRYINDEX, className.c_str());
+				if (lua_isnil(L, -1)) // leave nil on stack
+					return;
+;				tolua_pushusertype(L, (void*)inValue, className.c_str());
+			}
+		};
+
 		template<typename T, size_t Size>
 		struct to_lua<std::array<T, Size>> {
 			static void F(lua_State* L, const std::array<T, Size>& inValue) {
@@ -425,10 +459,11 @@ namespace lstg
 				if (Index > 0)
 					_Helper<Index - 1, Targs>(L, idx, inValue);
 			}
-			static void F(lua_State* L, const std::tuple<Types...>& inValue) {
+			using tuple_type = std::tuple<Types...>;
+			static void F(lua_State* L, const tuple_type& inValue) {
 				if (!L) return;
-				lua_createtable(L, (int)std::tuple_size_v<std::tuple<Types...>>, 0);
-				_Helper(L, lua_gettop(L), inValue);
+				lua_createtable(L, (int)std::tuple_size_v<tuple_type>, 0);
+				to_lua<tuple_type>::template _Helper<std::tuple_size_v<tuple_type>, Types>(L, lua_gettop(L), inValue);
 			}
 		};
 
