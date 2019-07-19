@@ -96,7 +96,6 @@ namespace lstg
 
 		TO_NATIVE_BASIC(luaval_to_boolean, bool);
 		TO_NATIVE_BASIC(luaval_to_number, double);
-		TO_NATIVE_BASIC(luaval_to_std_string, std::string);
 		//
 		TO_NATIVE_BASIC(luaval_to_vec2, cocos2d::Vec2);
 		TO_NATIVE_BASIC(luaval_to_vec3, cocos2d::Vec3);
@@ -132,6 +131,19 @@ namespace lstg
 				const auto ok = to_native<double>::F(L, lo, &v, fName);
 				if (ok) *outValue = (float)v;
 				return ok;
+			}
+		};
+		
+		template<>
+		struct to_native<std::string> {
+			static bool F(lua_State* L, int lo, std::string* outValue, const char* fName = "") {
+				CHECK_TO_NATIVE;
+				if (!lua_isstring(L, lo))
+					return false;
+				size_t size;
+				const auto str = lua_tolstring(L, lo, &size);
+				outValue->assign(str, size);
+				return true;
 			}
 		};
 
