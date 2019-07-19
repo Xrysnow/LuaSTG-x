@@ -106,6 +106,7 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/UtilGLDefinition.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/Utility.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/UtilLua.h
+	${RUNTIME_SRC_ROOT}/Classes/LSTG/UtilLuaConversion.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/UtilLuaRes.h
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_BentLaser_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_BlendMode_auto.hpp
@@ -297,6 +298,7 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/UtilGLDefinition.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/Utility.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/UtilLua.cpp
+	${RUNTIME_SRC_ROOT}/Classes/LSTG/UtilLuaConversion.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/UtilLuaRes.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/UtilShader.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_BentLaser_auto.cpp
