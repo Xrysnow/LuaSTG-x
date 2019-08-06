@@ -1,19 +1,26 @@
 # sources, headers
 set(GAME_HEADER
+	${RUNTIME_SRC_ROOT}/Classes/Audio/lua_Audio_auto.hpp
+	${RUNTIME_SRC_ROOT}/Classes/Audio/ALHeader.h
 	${RUNTIME_SRC_ROOT}/Classes/Audio/ALSupport.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioCache.h
 	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoder.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoderManager.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoderOgg.h
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoderFlac.h
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoderMp3.h
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoderVorbis.h
 	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoderWav.h
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioEffect.h
 	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioEngine.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioEngineImpl.h
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioFilter.h
 	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioMacros.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioParam.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioPlayer.h
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioPool.h
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioRecordingDevice.h
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioSoundData.h
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioSource.h
 	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioStream.h
 	${RUNTIME_SRC_ROOT}/Classes/Audio/Common.h
 	${RUNTIME_SRC_ROOT}/Classes/Audio/Dither.h
+	${RUNTIME_SRC_ROOT}/Classes/Audio/dr_flac.h
+	${RUNTIME_SRC_ROOT}/Classes/Audio/dr_mp3.h
 	${RUNTIME_SRC_ROOT}/Classes/Audio/IMA4Util.h
 	${RUNTIME_SRC_ROOT}/Classes/Audio/RiffUtils.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/ArrayObjectPool.hpp
@@ -206,16 +213,22 @@ set(GAME_HEADER
 )
 set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/Audio/ALSupport.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioCache.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoder.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoderManager.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoderOgg.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoderFlac.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoderMp3.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoderVorbis.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoderWav.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioEffect.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioEngine.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioEngineImpl.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioParam.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioPlayer.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioFilter.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioMacros.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioPool.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioRecordingDevice.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioSoundData.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioSource.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioStream.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Audio/Common.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Audio/lua_Audio_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Audio/RiffUtils.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/ControllerHelper.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/LabelPool.cpp

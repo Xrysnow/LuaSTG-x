@@ -79,6 +79,8 @@ add_subdirectory(${RUNTIME_SRC_ROOT}/external/LuaExtensions/lfs)
 list(APPEND EXTERNAL_LIBS ext_lfs)
 add_subdirectory(${RUNTIME_SRC_ROOT}/external/LuaExtensions/lpeg)
 list(APPEND EXTERNAL_LIBS ext_lpeg)
+add_subdirectory(${RUNTIME_SRC_ROOT}/external/LuaExtensions/lua53)
+list(APPEND EXTERNAL_LIBS ext_lua53)
 
 #
 if(WINDOWS)
