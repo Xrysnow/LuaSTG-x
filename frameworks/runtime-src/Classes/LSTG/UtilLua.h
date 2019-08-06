@@ -137,7 +137,7 @@ namespace lstg
 
 		bool luaval_to_async_callback(lua_State* L, int lo, std::function<void()>* outValue);
 		/** Push Ref object with its real type (needs RTTI). */
-		void ref_type_to_luaval(lua_State* L, cocos2d::Ref* ref);
+		void ref_type_to_luaval(lua_State* L, cocos2d::Ref* ref, const char* typeID = nullptr);
 
 		template <class T>
 		void ref_vector_to_luaval(lua_State* L, const std::vector<T*>& inValue) {

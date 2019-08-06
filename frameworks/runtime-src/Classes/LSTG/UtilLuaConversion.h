@@ -421,7 +421,7 @@ namespace lstg
 		struct to_lua<T*, std::enable_if_t<std::is_base_of_v<cocos2d::Ref, T>>> {
 			static void F(lua_State* L, T* inValue) {
 				if (!L) return;
-				ref_type_to_luaval(L, (cocos2d::Ref*)inValue);
+				ref_type_to_luaval(L, (cocos2d::Ref*)inValue, typeid(T).name());
 			}
 		};
 

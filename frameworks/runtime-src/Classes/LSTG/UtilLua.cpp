@@ -556,11 +556,15 @@ bool lua::luaval_to_async_callback(lua_State* L, int lo, std::function<void()>* 
 	return true;
 }
 
-void lua::ref_type_to_luaval(lua_State* L, cocos2d::Ref* ref)
+void lua::ref_type_to_luaval(lua_State* L, cocos2d::Ref* ref, const char* typeID)
 {
 	if (ref)
 	{
-		const std::string typeName = typeid(*ref).name();
+		std::string typeName;
+		if (typeID)
+			typeName = typeID;
+		else
+			typeName = typeid(*ref).name();
 		const auto iter = g_luaType.find(typeName);
 		auto type = "cc.Ref";
 		if (g_luaType.end() != iter)
