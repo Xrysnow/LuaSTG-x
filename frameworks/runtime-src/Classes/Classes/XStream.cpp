@@ -227,11 +227,11 @@ bool StreamMemory::read(uint8_t* dst, uint64_t length, uint64_t* bytesRead)
 	if(!dst)
 		return false;
 
-	const uint64_t rest_size = size() - pos;
-	if(rest_size == 0)
+	const int64_t rest_size = (int64_t)size() - (int64_t)pos;
+	if(rest_size <= 0)
 		return false;
 
-	const size_t real_read = min(length, rest_size);
+	const size_t real_read = std::min(length, (uint64_t)rest_size);
 	memcpy(dst, data() + pos, real_read);
 	pos += real_read;
 	if (bytesRead)

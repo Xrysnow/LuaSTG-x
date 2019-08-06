@@ -2,6 +2,7 @@
 #include "platform/CCFileUtils.h"
 #include "../LSTG/AppFrame.h"
 #include "Utility.h"
+#include "ResourceMgr.h"
 
 using namespace std;
 using namespace cocos2d;
