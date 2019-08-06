@@ -2,7 +2,7 @@
 #include "../LSTG/GameResources.h"
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
-#include "UtilLua.h"
+#include "UtilLuaConversion.h"
 #define printf(...)
 #define color4b_to_luaval lstg::lua::_color4b_to_luaval
 #define luaval_to_color4b lstg::lua::_luaval_to_color4b
@@ -809,7 +809,7 @@ int lua_x_Resource_ResTexture_getTriangles(lua_State* tolua_S)
             return 0;
         }
         lstg::Triangles* ret = cobj->getTriangles();
-        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.Triangles",(lstg::Triangles*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResTexture:getTriangles",argc, 0);
@@ -852,7 +852,7 @@ int lua_x_Resource_ResTexture_setTriangles(lua_State* tolua_S)
     {
         lstg::Triangles* arg0;
 
-        ok &= luaval_to_object<lstg::Triangles>(tolua_S, 2, "lstg.Triangles",&arg0, "lstg.ResTexture:setTriangles");
+        ok &= lstg::lua::luaval_to_native(tolua_S, 2, &arg0, "lstg.ResTexture:setTriangles");
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResTexture_setTriangles'", nullptr);
@@ -965,7 +965,7 @@ int lua_x_Resource_ResTexture_getTexture(lua_State* tolua_S)
             return 0;
         }
         cocos2d::Texture2D* ret = cobj->getTexture();
-        object_to_luaval<cocos2d::Texture2D>(tolua_S, "cc.Texture2D",(cocos2d::Texture2D*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResTexture:getTexture",argc, 0);
@@ -1005,7 +1005,7 @@ int lua_x_Resource_ResTexture_create(lua_State* tolua_S)
             return 0;
         }
         lstg::ResTexture* ret = lstg::ResTexture::create(arg0, arg1);
-        object_to_luaval<lstg::ResTexture>(tolua_S, "lstg.ResTexture",(lstg::ResTexture*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResTexture:create",argc, 2);
@@ -1036,14 +1036,14 @@ int lua_x_Resource_ResTexture_createWithTexture(lua_State* tolua_S)
         std::string arg0;
         cocos2d::Texture2D* arg1;
         ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResTexture:createWithTexture");
-        ok &= luaval_to_object<cocos2d::Texture2D>(tolua_S, 3, "cc.Texture2D",&arg1, "lstg.ResTexture:createWithTexture");
+        ok &= lstg::lua::luaval_to_native(tolua_S, 3, &arg1, "lstg.ResTexture:createWithTexture");
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResTexture_createWithTexture'", nullptr);
             return 0;
         }
         lstg::ResTexture* ret = lstg::ResTexture::createWithTexture(arg0, arg1);
-        object_to_luaval<lstg::ResTexture>(tolua_S, "lstg.ResTexture",(lstg::ResTexture*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResTexture:createWithTexture",argc, 2);
@@ -1400,7 +1400,7 @@ int lua_x_Resource_ResAnimation_getSprite(lua_State* tolua_S)
             return 0;
         }
         cocos2d::Sprite* ret = cobj->getSprite(arg0);
-        object_to_luaval<cocos2d::Sprite>(tolua_S, "cc.Sprite",(cocos2d::Sprite*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResAnimation:getSprite",argc, 1);
@@ -1540,7 +1540,7 @@ int lua_x_Resource_ResAnimation_create(lua_State* tolua_S)
         double arg10;
         xmath::collision::ColliderType arg11;
         ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResAnimation:create");
-        ok &= luaval_to_object<lstg::ResTexture>(tolua_S, 3, "lstg.ResTexture",&arg1, "lstg.ResAnimation:create");
+        ok &= lstg::lua::luaval_to_native(tolua_S, 3, &arg1, "lstg.ResAnimation:create");
         ok &= luaval_to_number(tolua_S, 4,&arg2, "lstg.ResAnimation:create");
         ok &= luaval_to_number(tolua_S, 5,&arg3, "lstg.ResAnimation:create");
         ok &= luaval_to_number(tolua_S, 6,&arg4, "lstg.ResAnimation:create");
@@ -1557,7 +1557,7 @@ int lua_x_Resource_ResAnimation_create(lua_State* tolua_S)
             return 0;
         }
         lstg::ResAnimation* ret = lstg::ResAnimation::create(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
-        object_to_luaval<lstg::ResAnimation>(tolua_S, "lstg.ResAnimation",(lstg::ResAnimation*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResAnimation:create",argc, 12);
@@ -1863,7 +1863,7 @@ int lua_x_Resource_ResSprite_getTexture(lua_State* tolua_S)
             return 0;
         }
         cocos2d::Texture2D* ret = cobj->getTexture();
-        object_to_luaval<cocos2d::Texture2D>(tolua_S, "cc.Texture2D",(cocos2d::Texture2D*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResSprite:getTexture",argc, 0);
@@ -1910,7 +1910,7 @@ int lua_x_Resource_ResSprite_getNormalMap(lua_State* tolua_S)
             return 0;
         }
         cocos2d::Texture2D* ret = cobj->getNormalMap();
-        object_to_luaval<cocos2d::Texture2D>(tolua_S, "cc.Texture2D",(cocos2d::Texture2D*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResSprite:getNormalMap",argc, 0);
@@ -1960,7 +1960,7 @@ int lua_x_Resource_ResSprite_clone(lua_State* tolua_S)
             return 0;
         }
         lstg::ResSprite* ret = cobj->clone(arg0);
-        object_to_luaval<lstg::ResSprite>(tolua_S, "lstg.ResSprite",(lstg::ResSprite*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResSprite:clone",argc, 1);
@@ -2007,7 +2007,7 @@ int lua_x_Resource_ResSprite_getSprite(lua_State* tolua_S)
             return 0;
         }
         cocos2d::Sprite* ret = cobj->getSprite();
-        object_to_luaval<cocos2d::Sprite>(tolua_S, "cc.Sprite",(cocos2d::Sprite*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResSprite:getSprite",argc, 0);
@@ -2109,7 +2109,7 @@ int lua_x_Resource_ResSprite_setNormalMap(lua_State* tolua_S)
     {
         cocos2d::Texture2D* arg0;
 
-        ok &= luaval_to_object<cocos2d::Texture2D>(tolua_S, 2, "cc.Texture2D",&arg0, "lstg.ResSprite:setNormalMap");
+        ok &= lstg::lua::luaval_to_native(tolua_S, 2, &arg0, "lstg.ResSprite:setNormalMap");
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResSprite_setNormalMap'", nullptr);
@@ -2156,7 +2156,7 @@ int lua_x_Resource_ResSprite_create(lua_State* tolua_S)
         double arg7;
         xmath::collision::ColliderType arg8;
         ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResSprite:create");
-        ok &= luaval_to_object<lstg::ResTexture>(tolua_S, 3, "lstg.ResTexture",&arg1, "lstg.ResSprite:create");
+        ok &= lstg::lua::luaval_to_native(tolua_S, 3, &arg1, "lstg.ResSprite:create");
         ok &= luaval_to_number(tolua_S, 4,&arg2, "lstg.ResSprite:create");
         ok &= luaval_to_number(tolua_S, 5,&arg3, "lstg.ResSprite:create");
         ok &= luaval_to_number(tolua_S, 6,&arg4, "lstg.ResSprite:create");
@@ -2170,7 +2170,7 @@ int lua_x_Resource_ResSprite_create(lua_State* tolua_S)
             return 0;
         }
         lstg::ResSprite* ret = lstg::ResSprite::create(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
-        object_to_luaval<lstg::ResSprite>(tolua_S, "lstg.ResSprite",(lstg::ResSprite*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResSprite:create",argc, 9);
@@ -2204,7 +2204,7 @@ int lua_x_Resource_ResSprite_createWithSprite(lua_State* tolua_S)
         double arg3;
         xmath::collision::ColliderType arg4;
         ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResSprite:createWithSprite");
-        ok &= luaval_to_object<cocos2d::Sprite>(tolua_S, 3, "cc.Sprite",&arg1, "lstg.ResSprite:createWithSprite");
+        ok &= lstg::lua::luaval_to_native(tolua_S, 3, &arg1, "lstg.ResSprite:createWithSprite");
         ok &= luaval_to_number(tolua_S, 4,&arg2, "lstg.ResSprite:createWithSprite");
         ok &= luaval_to_number(tolua_S, 5,&arg3, "lstg.ResSprite:createWithSprite");
         ok &= luaval_to_int32(tolua_S, 6,(int *)&arg4, "lstg.ResSprite:createWithSprite");
@@ -2214,7 +2214,7 @@ int lua_x_Resource_ResSprite_createWithSprite(lua_State* tolua_S)
             return 0;
         }
         lstg::ResSprite* ret = lstg::ResSprite::createWithSprite(arg0, arg1, arg2, arg3, arg4);
-        object_to_luaval<lstg::ResSprite>(tolua_S, "lstg.ResSprite",(lstg::ResSprite*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResSprite:createWithSprite",argc, 5);
@@ -2288,7 +2288,7 @@ int lua_x_Resource_ResParticle_getBindSprite(lua_State* tolua_S)
             return 0;
         }
         cocos2d::Sprite* ret = cobj->getBindSprite();
-        object_to_luaval<cocos2d::Sprite>(tolua_S, "cc.Sprite",(cocos2d::Sprite*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResParticle:getBindSprite",argc, 0);
@@ -2373,7 +2373,7 @@ int lua_x_Resource_ResParticle_create(lua_State* tolua_S)
         xmath::collision::ColliderType arg5;
         ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResParticle:create");
         ok &= luaval_to_std_string(tolua_S, 3,&arg1, "lstg.ResParticle:create");
-        ok &= luaval_to_object<lstg::ResSprite>(tolua_S, 4, "lstg.ResSprite",&arg2, "lstg.ResParticle:create");
+        ok &= lstg::lua::luaval_to_native(tolua_S, 4, &arg2, "lstg.ResParticle:create");
         ok &= luaval_to_number(tolua_S, 5,&arg3, "lstg.ResParticle:create");
         ok &= luaval_to_number(tolua_S, 6,&arg4, "lstg.ResParticle:create");
         ok &= luaval_to_int32(tolua_S, 7,(int *)&arg5, "lstg.ResParticle:create");
@@ -2383,7 +2383,7 @@ int lua_x_Resource_ResParticle_create(lua_State* tolua_S)
             return 0;
         }
         lstg::ResParticle* ret = lstg::ResParticle::create(arg0, arg1, arg2, arg3, arg4, arg5);
-        object_to_luaval<lstg::ResParticle>(tolua_S, "lstg.ResParticle",(lstg::ResParticle*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResParticle:create",argc, 6);
@@ -3447,7 +3447,7 @@ int lua_x_Resource_ResFont_createLabel(lua_State* tolua_S)
             return 0;
         }
         cocos2d::Label* ret = cobj->createLabel();
-        object_to_luaval<cocos2d::Label>(tolua_S, "cc.Label",(cocos2d::Label*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResFont:createLabel",argc, 0);
@@ -4517,7 +4517,7 @@ int lua_x_Resource_ResFont_createTTF(lua_State* tolua_S)
             return 0;
         }
         lstg::ResFont* ret = lstg::ResFont::createTTF(arg0, arg1, arg2);
-        object_to_luaval<lstg::ResFont>(tolua_S, "lstg.ResFont",(lstg::ResFont*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResFont:createTTF",argc, 3);
@@ -4555,7 +4555,7 @@ int lua_x_Resource_ResFont_createHGE(lua_State* tolua_S)
             return 0;
         }
         lstg::ResFont* ret = lstg::ResFont::createHGE(arg0, arg1);
-        object_to_luaval<lstg::ResFont>(tolua_S, "lstg.ResFont",(lstg::ResFont*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResFont:createHGE",argc, 2);
@@ -4593,7 +4593,7 @@ int lua_x_Resource_ResFont_createBMF(lua_State* tolua_S)
             return 0;
         }
         lstg::ResFont* ret = lstg::ResFont::createBMF(arg0, arg1);
-        object_to_luaval<lstg::ResFont>(tolua_S, "lstg.ResFont",(lstg::ResFont*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResFont:createBMF",argc, 2);
@@ -4623,8 +4623,8 @@ int lua_x_Resource_ResFont_syncLabelSetting(lua_State* tolua_S)
     {
         XLabel* arg0;
         cocos2d::Label* arg1;
-        ok &= luaval_to_object<XLabel>(tolua_S, 2, "XLabel",&arg0, "lstg.ResFont:syncLabelSetting");
-        ok &= luaval_to_object<cocos2d::Label>(tolua_S, 3, "cc.Label",&arg1, "lstg.ResFont:syncLabelSetting");
+        ok &= lstg::lua::luaval_to_native(tolua_S, 2, &arg0, "lstg.ResFont:syncLabelSetting");
+        ok &= lstg::lua::luaval_to_native(tolua_S, 3, &arg1, "lstg.ResFont:syncLabelSetting");
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFont_syncLabelSetting'", nullptr);
@@ -4860,53 +4860,6 @@ int lua_x_Resource_ResAudio_pause(lua_State* tolua_S)
 
     return 0;
 }
-int lua_x_Resource_ResAudio_getFFTSize(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::ResAudio* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.ResAudio",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::ResAudio*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResAudio_getFFTSize'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
-    {
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResAudio_getFFTSize'", nullptr);
-            return 0;
-        }
-        unsigned int ret = cobj->getFFTSize();
-        tolua_pushnumber(tolua_S,(lua_Number)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResAudio:getFFTSize",argc, 0);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResAudio_getFFTSize'.",&tolua_err);
-#endif
-
-    return 0;
-}
 int lua_x_Resource_ResAudio_resume(lua_State* tolua_S)
 {
     int argc = 0;
@@ -4950,53 +4903,6 @@ int lua_x_Resource_ResAudio_resume(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
     tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResAudio_resume'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_x_Resource_ResAudio_getTime(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::ResAudio* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.ResAudio",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::ResAudio*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResAudio_getTime'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
-    {
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResAudio_getTime'", nullptr);
-            return 0;
-        }
-        double ret = cobj->getTime();
-        tolua_pushnumber(tolua_S,(lua_Number)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResAudio:getTime",argc, 0);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResAudio_getTime'.",&tolua_err);
 #endif
 
     return 0;
@@ -5048,100 +4954,6 @@ int lua_x_Resource_ResAudio_stop(lua_State* tolua_S)
 
     return 0;
 }
-int lua_x_Resource_ResAudio_getFFT(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::ResAudio* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.ResAudio",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::ResAudio*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResAudio_getFFT'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
-    {
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResAudio_getFFT'", nullptr);
-            return 0;
-        }
-        float* ret = cobj->getFFT();
-        #pragma warning NO CONVERSION FROM NATIVE FOR float*;
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResAudio:getFFT",argc, 0);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResAudio_getFFT'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_x_Resource_ResAudio_getTotalTime(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::ResAudio* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.ResAudio",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::ResAudio*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResAudio_getTotalTime'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
-    {
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResAudio_getTotalTime'", nullptr);
-            return 0;
-        }
-        double ret = cobj->getTotalTime();
-        tolua_pushnumber(tolua_S,(lua_Number)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResAudio:getTotalTime",argc, 0);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResAudio_getTotalTime'.",&tolua_err);
-#endif
-
-    return 0;
-}
 int lua_x_Resource_ResAudio_isStopped(lua_State* tolua_S)
 {
     int argc = 0;
@@ -5189,7 +5001,7 @@ int lua_x_Resource_ResAudio_isStopped(lua_State* tolua_S)
 
     return 0;
 }
-int lua_x_Resource_ResAudio_setTime(lua_State* tolua_S)
+int lua_x_Resource_ResAudio_getStream(lua_State* tolua_S)
 {
     int argc = 0;
     lstg::ResAudio* cobj = nullptr;
@@ -5209,37 +5021,34 @@ int lua_x_Resource_ResAudio_setTime(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
     {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResAudio_setTime'", nullptr);
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResAudio_getStream'", nullptr);
         return 0;
     }
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 0) 
     {
-        double arg0;
-
-        ok &= luaval_to_number(tolua_S, 2,&arg0, "lstg.ResAudio:setTime");
         if(!ok)
         {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResAudio_setTime'", nullptr);
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResAudio_getStream'", nullptr);
             return 0;
         }
-        cobj->setTime(arg0);
-        lua_settop(tolua_S, 1);
+        lstg::StreamMemory* ret = cobj->getStream();
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResAudio:setTime",argc, 1);
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResAudio:getStream",argc, 0);
     return 0;
 
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResAudio_setTime'.",&tolua_err);
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResAudio_getStream'.",&tolua_err);
 #endif
 
     return 0;
 }
-int lua_x_Resource_ResAudio_setVelocity(lua_State* tolua_S)
+int lua_x_Resource_ResAudio_getSource(lua_State* tolua_S)
 {
     int argc = 0;
     lstg::ResAudio* cobj = nullptr;
@@ -5259,82 +5068,29 @@ int lua_x_Resource_ResAudio_setVelocity(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
     {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResAudio_setVelocity'", nullptr);
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResAudio_getSource'", nullptr);
         return 0;
     }
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 0) 
     {
-        cocos2d::Vec3 arg0;
-
-        ok &= luaval_to_vec3(tolua_S, 2, &arg0, "lstg.ResAudio:setVelocity");
         if(!ok)
         {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResAudio_setVelocity'", nullptr);
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResAudio_getSource'", nullptr);
             return 0;
         }
-        cobj->setVelocity(arg0);
-        lua_settop(tolua_S, 1);
+        audio::Source* ret = cobj->getSource();
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResAudio:setVelocity",argc, 1);
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResAudio:getSource",argc, 0);
     return 0;
 
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResAudio_setVelocity'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_x_Resource_ResAudio_setPitch(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::ResAudio* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.ResAudio",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::ResAudio*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResAudio_setPitch'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        double arg0;
-
-        ok &= luaval_to_number(tolua_S, 2,&arg0, "lstg.ResAudio:setPitch");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResAudio_setPitch'", nullptr);
-            return 0;
-        }
-        cobj->setPitch(arg0);
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResAudio:setPitch",argc, 1);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResAudio_setPitch'.",&tolua_err);
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResAudio_getSource'.",&tolua_err);
 #endif
 
     return 0;
@@ -5386,106 +5142,6 @@ int lua_x_Resource_ResAudio_isPlaying(lua_State* tolua_S)
 
     return 0;
 }
-int lua_x_Resource_ResAudio_setPosition(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::ResAudio* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.ResAudio",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::ResAudio*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResAudio_setPosition'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        cocos2d::Vec3 arg0;
-
-        ok &= luaval_to_vec3(tolua_S, 2, &arg0, "lstg.ResAudio:setPosition");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResAudio_setPosition'", nullptr);
-            return 0;
-        }
-        cobj->setPosition(arg0);
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResAudio:setPosition",argc, 1);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResAudio_setPosition'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_x_Resource_ResAudio_setVolume(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::ResAudio* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.ResAudio",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::ResAudio*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResAudio_setVolume'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        double arg0;
-
-        ok &= luaval_to_number(tolua_S, 2,&arg0, "lstg.ResAudio:setVolume");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResAudio_setVolume'", nullptr);
-            return 0;
-        }
-        cobj->setVolume(arg0);
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResAudio:setVolume",argc, 1);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResAudio_setVolume'.",&tolua_err);
-#endif
-
-    return 0;
-}
 static int lua_x_Resource_ResAudio_finalize(lua_State* tolua_S)
 {
     printf("luabindings: finalizing LUA object (ResAudio)");
@@ -5500,19 +5156,12 @@ int lua_register_x_Resource_ResAudio(lua_State* tolua_S)
     tolua_beginmodule(tolua_S,"ResAudio");
         tolua_function(tolua_S,"play",lua_x_Resource_ResAudio_play);
         tolua_function(tolua_S,"pause",lua_x_Resource_ResAudio_pause);
-        tolua_function(tolua_S,"getFFTSize",lua_x_Resource_ResAudio_getFFTSize);
         tolua_function(tolua_S,"resume",lua_x_Resource_ResAudio_resume);
-        tolua_function(tolua_S,"getTime",lua_x_Resource_ResAudio_getTime);
         tolua_function(tolua_S,"stop",lua_x_Resource_ResAudio_stop);
-        tolua_function(tolua_S,"getFFT",lua_x_Resource_ResAudio_getFFT);
-        tolua_function(tolua_S,"getTotalTime",lua_x_Resource_ResAudio_getTotalTime);
         tolua_function(tolua_S,"isStopped",lua_x_Resource_ResAudio_isStopped);
-        tolua_function(tolua_S,"setTime",lua_x_Resource_ResAudio_setTime);
-        tolua_function(tolua_S,"setVelocity",lua_x_Resource_ResAudio_setVelocity);
-        tolua_function(tolua_S,"setPitch",lua_x_Resource_ResAudio_setPitch);
+        tolua_function(tolua_S,"getStream",lua_x_Resource_ResAudio_getStream);
+        tolua_function(tolua_S,"getSource",lua_x_Resource_ResAudio_getSource);
         tolua_function(tolua_S,"isPlaying",lua_x_Resource_ResAudio_isPlaying);
-        tolua_function(tolua_S,"setPosition",lua_x_Resource_ResAudio_setPosition);
-        tolua_function(tolua_S,"setVolume",lua_x_Resource_ResAudio_setVolume);
     tolua_endmodule(tolua_S);
     std::string typeName = typeid(lstg::ResAudio).name();
     g_luaType[typeName] = "lstg.ResAudio";
@@ -5547,7 +5196,7 @@ int lua_x_Resource_ResSound_create(lua_State* tolua_S)
             return 0;
         }
         lstg::ResSound* ret = lstg::ResSound::create(arg0, arg1);
-        object_to_luaval<lstg::ResSound>(tolua_S, "lstg.ResSound",(lstg::ResSound*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResSound:create",argc, 2);
@@ -5609,7 +5258,7 @@ int lua_x_Resource_ResMusic_create(lua_State* tolua_S)
             return 0;
         }
         lstg::ResMusic* ret = lstg::ResMusic::create(arg0, arg1, arg2, arg3);
-        object_to_luaval<lstg::ResMusic>(tolua_S, "lstg.ResMusic",(lstg::ResMusic*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResMusic:create",argc, 4);
@@ -5830,7 +5479,7 @@ int lua_x_Resource_ResFX_getProgramState(lua_State* tolua_S)
             return 0;
         }
         cocos2d::GLProgramState* ret = cobj->getProgramState();
-        object_to_luaval<cocos2d::GLProgramState>(tolua_S, "cc.GLProgramState",(cocos2d::GLProgramState*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResFX:getProgramState",argc, 0);
@@ -5877,7 +5526,7 @@ int lua_x_Resource_ResFX_getProgram(lua_State* tolua_S)
             return 0;
         }
         cocos2d::GLProgram* ret = cobj->getProgram();
-        object_to_luaval<cocos2d::GLProgram>(tolua_S, "cc.GLProgram",(cocos2d::GLProgram*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResFX:getProgram",argc, 0);
@@ -5923,7 +5572,7 @@ int lua_x_Resource_ResFX_setTexture(lua_State* tolua_S)
 
         std::string arg0_tmp; ok &= luaval_to_std_string(tolua_S, 2, &arg0_tmp, "lstg.ResFX:setTexture"); arg0 = arg0_tmp.c_str();
 
-        ok &= luaval_to_object<cocos2d::Texture2D>(tolua_S, 3, "cc.Texture2D",&arg1, "lstg.ResFX:setTexture");
+        ok &= lstg::lua::luaval_to_native(tolua_S, 3, &arg1, "lstg.ResFX:setTexture");
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFX_setTexture'", nullptr);
@@ -6013,14 +5662,14 @@ int lua_x_Resource_ResFX_createWithGLProgram(lua_State* tolua_S)
         std::string arg0;
         cocos2d::GLProgram* arg1;
         ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResFX:createWithGLProgram");
-        ok &= luaval_to_object<cocos2d::GLProgram>(tolua_S, 3, "cc.GLProgram",&arg1, "lstg.ResFX:createWithGLProgram");
+        ok &= lstg::lua::luaval_to_native(tolua_S, 3, &arg1, "lstg.ResFX:createWithGLProgram");
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFX_createWithGLProgram'", nullptr);
             return 0;
         }
         lstg::ResFX* ret = lstg::ResFX::createWithGLProgram(arg0, arg1);
-        object_to_luaval<lstg::ResFX>(tolua_S, "lstg.ResFX",(lstg::ResFX*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResFX:createWithGLProgram",argc, 2);
@@ -6060,7 +5709,7 @@ int lua_x_Resource_ResFX_create(lua_State* tolua_S)
             return 0;
         }
         lstg::ResFX* ret = lstg::ResFX::create(arg0, arg1, arg2);
-        object_to_luaval<lstg::ResFX>(tolua_S, "lstg.ResFX",(lstg::ResFX*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResFX:create",argc, 3);
@@ -6100,7 +5749,7 @@ int lua_x_Resource_ResFX_createWithString(lua_State* tolua_S)
             return 0;
         }
         lstg::ResFX* ret = lstg::ResFX::createWithString(arg0, arg1, arg2);
-        object_to_luaval<lstg::ResFX>(tolua_S, "lstg.ResFX",(lstg::ResFX*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResFX:createWithString",argc, 3);
@@ -6218,7 +5867,7 @@ int lua_x_Resource_ResRenderTarget_render(lua_State* tolua_S)
         lstg::ResFX* arg0;
         lstg::BlendMode* arg1;
 
-        ok &= luaval_to_object<lstg::ResFX>(tolua_S, 2, "lstg.ResFX",&arg0, "lstg.ResRenderTarget:render");
+        ok &= lstg::lua::luaval_to_native(tolua_S, 2, &arg0, "lstg.ResRenderTarget:render");
 
         ok &= luaval_to_BlendMode(tolua_S, 3, &arg1, "lstg.ResRenderTarget:render");
         if(!ok)
@@ -6274,7 +5923,7 @@ int lua_x_Resource_ResRenderTarget_getTexture(lua_State* tolua_S)
             return 0;
         }
         cocos2d::Texture2D* ret = cobj->getTexture();
-        object_to_luaval<cocos2d::Texture2D>(tolua_S, "cc.Texture2D",(cocos2d::Texture2D*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResRenderTarget:getTexture",argc, 0);
@@ -6421,7 +6070,7 @@ int lua_x_Resource_ResRenderTarget_getTarget(lua_State* tolua_S)
             return 0;
         }
         cocos2d::RenderTexture* ret = cobj->getTarget();
-        object_to_luaval<cocos2d::RenderTexture>(tolua_S, "cc.RenderTexture",(cocos2d::RenderTexture*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResRenderTarget:getTarget",argc, 0);
@@ -6609,7 +6258,7 @@ int lua_x_Resource_ResRenderTarget_copyTexture(lua_State* tolua_S)
             return 0;
         }
         cocos2d::Texture2D* ret = cobj->copyTexture();
-        object_to_luaval<cocos2d::Texture2D>(tolua_S, "cc.Texture2D",(cocos2d::Texture2D*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResRenderTarget:copyTexture",argc, 0);
@@ -6647,7 +6296,7 @@ int lua_x_Resource_ResRenderTarget_create(lua_State* tolua_S)
             return 0;
         }
         lstg::ResRenderTarget* ret = lstg::ResRenderTarget::create(arg0);
-        object_to_luaval<lstg::ResRenderTarget>(tolua_S, "lstg.ResRenderTarget",(lstg::ResRenderTarget*)ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResRenderTarget:create",argc, 1);

@@ -7,6 +7,7 @@
 #include "LuaWrapper.h"
 #include "LuaWrapperEx.h"
 #include "../Audio/AudioEngine.h"
+#include "../Audio/lua_Audio_auto.hpp"
 #include "../Classes/XProfiler.h"
 #include "platform/CCGL.h"
 #include "reader/lua-bindings/creator_reader_bindings.hpp"
@@ -102,7 +103,7 @@ AppFrame* AppFrame::getInstance()
 
 void AppFrame::destroyInstance()
 {
-	if(sharedInstance)
+	if (sharedInstance)
 		CC_SAFE_DELETE(sharedInstance);
 }
 
@@ -161,6 +162,7 @@ bool AppFrame::applicationDidFinishLaunching()
 	register_all_x_Triangles(L);
 	register_all_x_Buffer(L);
 	register_all_x_Stream(L);
+	register_all_x_Audio(L);
 	register_all_cocos2dx_ui_fix(L);
 #ifdef CC_PLATFORM_PC
 	luaopen_imgui(L);
@@ -189,9 +191,9 @@ bool AppFrame::applicationDidFinishLaunching()
 	auto FU = FileUtils::getInstance();
 	FU->addSearchPath("src");
 	FU->addSearchPath("res");
-//#if CC_64BITS
-//	FU->addSearchPath("src/64bit");
-//#endif
+	//#if CC_64BITS
+	//	FU->addSearchPath("src/64bit");
+	//#endif
 	engine->executeScriptFile("main.lua");
 	return true;
 }
@@ -200,7 +202,8 @@ void AppFrame::applicationDidEnterBackground()
 {
 	//TODO: should be mutex to framefunc
 	LuaEngine::getInstance()->executeGlobalFunction(LFUNC_LOSEFOCUS);
-	XAudioEngine::pauseTemp();
+	audio::Engine::getInstance()->onEnterBackground();
+
 	Director::getInstance()->stopAnimation();
 
 	// note: clear keys
@@ -210,9 +213,9 @@ void AppFrame::applicationDidEnterBackground()
 void AppFrame::applicationWillEnterForeground()
 {
 	LuaEngine::getInstance()->executeGlobalFunction(LFUNC_GAINFOCUS);
-	XAudioEngine::resumeTemp();
+	audio::Engine::getInstance()->onEnterForeground();
 	Director::getInstance()->startAnimation();
-	// note: pop message here will cause forever loop
+	// note: pop message here will cause dead loop
 	//if (!SafeCallGlobalFunction(LFUNC_GAINFOCUS))
 	//	LERROR("AppFrame: call LFUNC_GAINFOCUS failed");
 }
@@ -309,7 +312,7 @@ bool AppFrame::Init()noexcept
 	LINFO("initializing GameObjectPool (%u)", LGOBJ_MAXCNT);
 	try
 	{
-        gameObjectPool = std::unique_ptr<GameObjectManager>(new GameObjectManager(L));
+		gameObjectPool = std::unique_ptr<GameObjectManager>(new GameObjectManager(L));
 	}
 	catch (const bad_alloc&)
 	{
@@ -334,9 +337,9 @@ bool AppFrame::Init()noexcept
 	//LINFO("Cocos2dx Configuration Info:%s", Configuration::getInstance()->getInfo().c_str());
 
 	// audio engine
-	if (!XAudioEngine::lazyInit())
+	if (!audio::Engine::getInstance())
 	{
-		LERROR("AudioEngine initialization failed");
+		LERROR("Audio engine initialization failed");
 		return false;
 	}
 
@@ -410,7 +413,7 @@ void AppFrame::Shutdown()noexcept
 {
 	if (status == Status::NotInitialized || status == Status::Destroyed)
 		return;
-	
+
 	XRenderer::end();
 
 	gameObjectPool = nullptr;
@@ -424,8 +427,8 @@ void AppFrame::Shutdown()noexcept
 
 	l2d::XLive2D::end();
 
-	// note: XAudioEngine::end must be called after ClearAllResource
-	XAudioEngine::end();
+	// note: must be called after ClearAllResource
+	audio::Engine::destroyInstance();
 
 	InputManager::end();
 
@@ -442,7 +445,7 @@ bool AppFrame::Reset()noexcept
 
 	L = LuaEngine::getInstance()->getLuaStack()->getLuaState();
 	gameObjectPool->ResetLua(L);
-	XAudioEngine::stopAll();
+	audio::Engine::getInstance()->stop();
 	InputManager::getInstance()->clearState();
 
 	LRES.clearLocalFileCache();

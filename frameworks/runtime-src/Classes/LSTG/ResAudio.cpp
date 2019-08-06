@@ -1,158 +1,60 @@
 ﻿#include "ResAudio.h"
-#include "../Audio/AudioEngine.h"
-//#include "../Audio/AudioDecoderManager.h"
-//#include "../Audio/AudioDecoder.h"
 #include "LogSystem.h"
 #include "AppFrame.h"
 #include "Utility.h"
-#include "Math/XFFT.h"
+#include "ResourceMgr.h"
+#include "../Math/XFFT.h"
+#include "../Audio/AudioDecoder.h"
 
 using namespace std;
 using namespace lstg;
-using AudioState = XAudioEngine::AudioState;
 //TODO: add start time
 void ResAudio::play()
 {
-	if (isStopped())
+	if (!isPlaying())
 	{
-		//fcyStopWatch sw;
-		audioID = XAudioEngine::play2d(path, &param, true);
-		if (audioID == XAudioEngine::INVALID_AUDIO_ID)
-		{
-			XINFO("failed to play [%s]", resName.c_str());
-			return;
-		}
-		if (XAudioEngine::getState(audioID) == AudioState::INITIALIZING)
-		{
-			XINFO("[%s] still initializing", resName.c_str());
-		}
-		//XINFO("audio [%s] load cost %fms", resName.c_str(), sw.GetElapsed() * 1000);
+		source->play();
 	}
 	else
-	{		
-		auto state = XAudioEngine::getState(audioID);
-		if (state == AudioState::INITIALIZING)
-		{
-			XAudioEngine::setSourceParam(audioID, param);
-			XINFO("[%s] is still initializing", resName.c_str());
-		}
-		else
-		{
-			XAudioEngine::pause(audioID);
-			XAudioEngine::setSourceParam(audioID, param);
-			XAudioEngine::setCurrentTime(audioID, 0.f);
-			XAudioEngine::resume(audioID);		
-			//XINFO("audio [%s] is playing, reset", resName.c_str());
-		}
+	{
+		source->setTime(0);
 	}
 }
 
 void ResAudio::play(float vol, float pan)
 {
-	param.position.x = pan;
-	param.volume = vol;
+	source->setVolume(vol);
+	source->setPosition({ pan,0,0 });
 	play();
 }
 
 void ResAudio::resume()
 {
-	if (isPlaying())
-		return;
-	if (isStopped())
-	{
-		play();
-		return;
-	}
-	XAudioEngine::resume(audioID);
+	//if (isPlaying())
+	//	return;
+	//if (isStopped())
+	//	play();
+	play();
 }
 
 void ResAudio::pause()
 {
-	auto state = XAudioEngine::getState(audioID);
-	if (state == AudioState::INITIALIZING)
-	{
-		cache->addPlayCallback([this]() { XAudioEngine::pause(audioID); });
-		XINFO("[%s] is still initializing", resName.c_str());
-	}
-	else
-		XAudioEngine::pause(audioID);
-	_sinceLastCurrentTime = 0;
+	source->pause();
 }
 
 void ResAudio::stop()
 {
-	XAudioEngine::stop(audioID);
-	_sinceLastCurrentTime = 0;
+	source->stop();
 }
 
 bool ResAudio::isPlaying()
 {
-	auto state = XAudioEngine::getState(audioID);
-	return state == AudioState::PLAYING || state == AudioState::INITIALIZING;
+	return source->isPlaying();
 }
 
 bool ResAudio::isStopped()
 {
-	auto state = XAudioEngine::getState(audioID);
-	return state == AudioState::ERROR;
-}
-
-float ResAudio::getTime()
-{
-	return XAudioEngine::getCurrentTime(audioID);
-}
-
-void ResAudio::setTime(float time)
-{
-	auto state = XAudioEngine::getState(audioID);
-	if (state == AudioState::INITIALIZING)
-	{
-		cache->addPlayCallback([this, time]() { XAudioEngine::setCurrentTime(audioID, time); });
-		XINFO("[%s] is still initializing", resName.c_str());
-	}
-	else
-	{
-		XAudioEngine::setCurrentTime(audioID, time);
-		//XINFO("audio [%s] set time to %f", resName.c_str(), time);
-	}
-}
-
-float ResAudio::getTotalTime()
-{
-	const auto t = XAudioEngine::getDuration(audioID);
-	if (t == XAudioEngine::TIME_UNKNOWN && cache)
-		return cache->getDuration();
-	return t;
-}
-
-void ResAudio::setVolume(float v)
-{
-	param.volume = v;
-	XAudioEngine::setVolume(audioID, v);
-}
-
-void ResAudio::setParam(const xAudio::SourceParam& _param)
-{
-	param = _param;
-	XAudioEngine::setSourceParam(audioID, param);
-}
-
-void ResAudio::setPosition(const cocos2d::Vec3& pos)
-{
-	param.position = pos;
-	XAudioEngine::setSourceParam(audioID, param);
-}
-
-void ResAudio::setVelocity(const cocos2d::Vec3& v)
-{
-	param.velocity = v;
-	XAudioEngine::setSourceParam(audioID, param);
-}
-
-void ResAudio::setPitch(float pitch)
-{
-	param.pitch = pitch;
-	XAudioEngine::setSourceParam(audioID, param);
+	return source->isFinished();
 }
 
 size_t ResAudio::getFFTSize() const
@@ -173,19 +75,17 @@ float* ResAudio::getFFT()
 string ResAudio::getInfo() const
 {
 	auto ret = Resource::getInfo() + " | ";
-	if(cache)
+	if(source)
 	{
-		if (cache->isLoopAB())
+		if (source->isLooping())
 		{
-			double a, b;
-			cache->getLoopAB(a, b);
-			ret += StringFormat("loop = %f, %f | ", a, b);
+			ret += StringFormat("loop = %f, %f | ", source->getLoopingStart(), source->getLoopingEnd());
 		}
-		ret += StringFormat("%u Hz, %u ch, %u frames, %f s",
-			cache->getSampleRate(),
-			cache->getChannelCount(),
-			cache->getTotalFrames(),
-			cache->getDuration()
+		ret += StringFormat("%d Hz, %d ch, %d frames, %.3f s",
+			int((double)source->getTotalFrames() / source->getTotalTime()),
+			source->getChannelCount(),
+			source->getTotalFrames(),
+			source->getTotalTime()
 		);
 	}
 	else
@@ -195,35 +95,14 @@ string ResAudio::getInfo() const
 
 size_t ResAudio::fillBufferCopy()
 {
-	if (!isPlaying())return 0;
-	auto player = XAudioEngine::getPlayer(audioID);
-	if(!player)return 0;
+	if (!isPlaying())
+		return 0;
 	size_t offset = 0;
-	const auto curr = XAudioEngine::getCurrentTime(audioID);
-	if (player->isStreamingSource())
-	{
-		if (curr != _lastCurrentTime)
-		{
-			_lastCurrentTime = curr;
-			_sinceLastCurrentTime = 0;
-		}
-		else
-		{
-			_sinceLastCurrentTime++;
-		}
-		if (_sinceLastCurrentTime > 0)
-		{
-			const auto dt = cocos2d::Director::getInstance()->getAnimationInterval();
-			offset = (dt * _sinceLastCurrentTime)*cache->getSampleRate()*cache->getBytesPerFrame();
-		}
-		else
-			offset = 0;
-	}
-	else
-	{
-		offset = curr * cache->getSampleRate()*cache->getBytesPerFrame();
-	}
-	return player->copyBuffer((char*)bufferCopy.data(), bufferCopy.size(), offset);
+	const auto off = source->getBufferOffset();
+	const auto curr = source->tell();
+	if (curr > off)
+		offset = (curr - off)*source->getBytesPerFrame();
+	return source->copyBuffer((char*)bufferCopy.data(), bufferCopy.size(), offset);
 }
 
 size_t ResAudio::fillWavValue()
@@ -231,8 +110,8 @@ size_t ResAudio::fillWavValue()
 	wavValue.fill(0.f);
 	const auto size = fillBufferCopy();
 	if (size == 0)return 0;
-	const auto nBA = cache->getBytesPerFrame();
-	const auto nCh = cache->getChannelCount();
+	const auto nBA = source->getBytesPerFrame();
+	const auto nCh = source->getChannelCount();
 	const auto factor = 1u << (nBA / nCh * 8 - 1);
 	size_t filled = 0;
 	if (nCh == 1)
@@ -314,12 +193,28 @@ bool ResAudio::init(StreamMemory* _data)
 		return false;
 	stream = _data;
 	stream->retain();
-	param.position.z = -1.f;// note: set this
+	//param.position.z = -1.f;// note: set this
+	auto s = XAudioStream::create(stream);
+	if (!s)
+		return false;
+	auto d = audio::Decoder::createFromStream(s, 4096, audio::Decoder::getDecoderTypeFromPath(path));
+	if (!d)
+	{
+		XINFO("failed Decoder");
+		return false;
+	}
+	source = audio::Source::createFromDecoder(d);
+	if (!source)
+	{
+		XINFO("failed Source");
+		return false;
+	}
+	source->retain();
 	return true;
 }
 
 ResAudio::ResAudio(const std::string& name, ResourceType type, const std::string& _path):
-	Resource(type, name), audioID(XAudioEngine::INVALID_AUDIO_ID)
+	Resource(type, name)//, audioID(XAudioEngine::INVALID_AUDIO_ID)
 {
 	path = _path;
 	resPath = _path;
@@ -328,22 +223,12 @@ ResAudio::ResAudio(const std::string& name, ResourceType type, const std::string
 ResAudio::~ResAudio()
 {
 	CC_SAFE_RELEASE_NULL(stream);
-	XAudioEngine::uncache(path);
+	CC_SAFE_RELEASE_NULL(source);
 	if (fftWorkset)
 	{
 		free(fftWorkset);
 		free(fftOutComplex);
 	}
-}
-
-void ResSound::play(float vol, float pan)
-{
-	ResAudio::play(vol, pan);
-}
-
-void ResSound::setVolume(float v)
-{
-	ResAudio::setVolume(v);
 }
 
 bool ResSound::initWithBuffer(Buffer* data)
@@ -352,22 +237,15 @@ bool ResSound::initWithBuffer(Buffer* data)
 		return false;
 	const auto memory = StreamMemory::create(data);
 	if(!memory)
-		return false;
-	if (!init(memory))
-		return false;
-	XAudioEngine::preload(path, XAudioStream::create(memory), nullptr, &cache);
-	if (cache)
-		cache->blockToReady();
-	else
 	{
-		XINFO("failed to load cache of '%s' at [%s]", getName().c_str(), path.c_str());
+		XINFO("failed StreamMemory");
 		return false;
 	}
-	return true;
+	return init(memory);
 }
 
-ResSound::ResSound(const std::string& name, const std::string& path) :
-	ResAudio(name, ResourceType::SoundEffect, path)
+ResSound::ResSound(const std::string& name, const std::string& path)
+	:ResAudio(name, ResourceType::SoundEffect, path)
 {
 }
 
@@ -390,16 +268,6 @@ ResSound* ResSound::create(const std::string& name, const std::string& path)
 	return nullptr;
 }
 
-void ResMusic::play(float vol, float pan)
-{
-	ResAudio::play(vol, pan);
-}
-
-void ResMusic::setVolume(float v)
-{
-	ResAudio::setVolume(v);
-}
-
 bool ResMusic::initWithBuffer(Buffer* data, double loopA, double loopB)
 {
 	if (!data)
@@ -409,19 +277,13 @@ bool ResMusic::initWithBuffer(Buffer* data, double loopA, double loopB)
 		return false;
 	if (!init(memory))
 		return false;
-	XAudioEngine::preload(path, XAudioStream::create(memory), loopA, loopB, nullptr, &cache);
-	if (cache)
-		cache->blockToReady();
-	else
-	{
-		XINFO("failed to load cache of '%s' at [%s]", getName().c_str(), path.c_str());
-		return false;
-	}
+	source->setLooping(true);
+	source->setLoopingPoint(loopA, loopB);
 	return true;
 }
 
-ResMusic::ResMusic(const std::string& name, const std::string& path) :
-	ResAudio(name, ResourceType::Music, path)
+ResMusic::ResMusic(const std::string& name, const std::string& path)
+	:ResAudio(name, ResourceType::Music, path)
 {
 }
 
