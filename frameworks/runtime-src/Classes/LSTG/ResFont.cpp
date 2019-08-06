@@ -3,6 +3,8 @@
 #include "Utility.h"
 #include "XFileUtils.h"
 #include "AppFrame.h"
+#include "LogSystem.h"
+#include "ResourceMgr.h"
 #include "../fcyLib/fcyMisc/fcyStringHelper.h"
 
 using namespace std;

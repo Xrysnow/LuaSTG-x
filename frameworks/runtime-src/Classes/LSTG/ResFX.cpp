@@ -2,6 +2,7 @@
 #include "AppFrame.h"
 #include "UtilLua.h"
 #include "Utility.h"
+#include "ResourceMgr.h"
 
 using namespace std;
 using namespace cocos2d;

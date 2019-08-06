@@ -13,7 +13,6 @@
 #include "Renderer.h"
 #include "InputManager.h"
 #include "WindowHelper.h"
-#include <memory>
 #include "XLive2D.h"
 #include "lua_x_L2D_auto.hpp"
 #include "../LuaBindings/lua_Resource_auto.hpp"
@@ -41,6 +40,7 @@
 #endif // CC_PLATFORM_PC
 
 #include "UtilLua.h"
+#include <memory>
 #include <iostream>
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32

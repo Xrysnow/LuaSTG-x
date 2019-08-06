@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "Global.h"
-#include "ResourceMgr.h"
 #include "GameObjectManager.h"
 #include "MemPoolManager.h"
 #include "XThreadPool.hpp"

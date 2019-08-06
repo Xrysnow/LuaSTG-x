@@ -4,6 +4,7 @@
 #include "Utility.h"
 #include "LuaWrapper.h"
 #include "AppFrame.h"
+#include "LogSystem.h"
 #include "LWColor.h"
 
 using namespace std;

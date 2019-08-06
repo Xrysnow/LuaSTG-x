@@ -6,6 +6,7 @@
 #include "LuaWrapperEx.h"
 #include "LWProfiler.h"
 #include "UtilLua.h"
+#include "LogSystem.h"
 
 
 using namespace std;

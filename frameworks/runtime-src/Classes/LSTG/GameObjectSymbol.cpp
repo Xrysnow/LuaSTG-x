@@ -6,6 +6,7 @@
 #include "xxhash/xxhash.h"
 #include "GOSymbolNumber.h"
 #include "GOSymbolBoolean.h"
+#include "LogSystem.h"
 #include <cmath>
 
 using namespace lstg;
