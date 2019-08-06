@@ -5,8 +5,8 @@
 #include <mutex>
 #include "base/CCData.h"
 #include "base/CCRef.h"
-#include "../Audio/AudioStream.h"
 #include "XBuffer.h"
+#include "../Audio/AudioStream.h"
 
 namespace lstg
 {
@@ -145,16 +145,15 @@ namespace lstg
 
 	//TODO: StreamZip, StreamNetwork
 
-	class XAudioStream : public xAudio::AudioStream
+	class XAudioStream : public audio::Stream
 	{
-		Stream* _src = nullptr;
+		lstg::Stream* _src = nullptr;
 	public:
-		static XAudioStream* create(Stream* src) {
+		static XAudioStream* create(lstg::Stream* src) {
 			if (!src)
 				return nullptr;
 			auto ret = new (std::nothrow) XAudioStream();
-			if (ret)
-			{
+			if (ret) {
 				ret->_src = src;
 				ret->_src->retain();
 				ret->autorelease();
@@ -162,16 +161,16 @@ namespace lstg
 			}
 			return nullptr;
 		}
-		virtual ~XAudioStream() { if (_src)_src->release(); }
+		virtual ~XAudioStream() { if (_src) _src->release(); }
 
 		uint64_t size() override { return _src->size(); }
 		uint64_t tell() override { return _src->tell(); }
-		bool seek(SeekOrigin origin, int64_t offset) override {
-			auto ori = Stream::BEG;
+		bool seek(audio::Stream::SeekOrigin origin, int64_t offset) override {
+			auto ori = lstg::Stream::BEG;
 			switch (origin) {
 			case SeekOrigin::BEGINNING: break;
-			case SeekOrigin::CURRENT: ori = Stream::CUR; break;
-			case SeekOrigin::END: ori = Stream::END; break;
+			case SeekOrigin::CURRENT: ori = lstg::Stream::CUR; break;
+			case SeekOrigin::END: ori = lstg::Stream::END; break;
 			default: return false;
 			}
 			return _src->seek(ori, offset);
@@ -182,4 +181,5 @@ namespace lstg
 		void lock() override { _src->lock(); }
 		void unlock() override { _src->unlock(); }
 	};
+
 }
