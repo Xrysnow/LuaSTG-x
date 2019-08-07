@@ -35,7 +35,6 @@
 #include "../LuaBindings/lua_cc_controller_manual.hpp"
 #endif
 #include "lptree.h"
-#include "lutf8lib.h"
 
 #ifdef CC_PLATFORM_PC
 #include "../imgui/lua-bindings/imgui_lua.hpp"
@@ -173,7 +172,6 @@ bool AppFrame::applicationDidFinishLaunching()
 	stack->setXXTEAKeyAndSign("2dxLua", strlen("2dxLua"), "XXTEA", strlen("XXTEA"));
 	luaopen_lfs(L);
 	luaopen_lpeg(L);
-	luaopen_luautf8(L);
 	RegistWrapper(L);
 
 	InitGameObjectPropertyHash();

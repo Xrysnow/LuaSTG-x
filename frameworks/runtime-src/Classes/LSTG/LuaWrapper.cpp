@@ -7,7 +7,8 @@
 #include "LWProfiler.h"
 #include "UtilLua.h"
 #include "LogSystem.h"
-
+#include "lstrlib.h"
+#include "lutf8lib.h"
 
 using namespace std;
 using namespace lstg;
@@ -57,6 +58,22 @@ void lstg::TranslateAlignMode(lua_State* L, int argnum, TextHAlignment& halign, 
 		luaL_error(L, "invalid align mode.");
 		return;
 	}
+}
+
+static int str_pack(lua_State* L)
+{
+	const char* fmt = luaL_checkstring(L, 1);
+	luaL_Buffer_53 b;
+	lua53_str_pack(L, fmt, 2, &b);
+	lua53_pushresult(&b);
+	return 1;
+}
+static int str_unpack(lua_State* L)
+{
+	const char *fmt = luaL_checkstring(L, 1);
+	size_t datasize = 0;
+	const char* data = luaL_checklstring(L, 2, &datasize);
+	return lua53_str_unpack(L, fmt, data, datasize, 2, 3);
 }
 
 void lstg::RegistWrapper(lua_State* L)
@@ -187,5 +204,18 @@ end
 			XERROR("error when loading function '%s'", it.first.c_str());
 		}
 	}
+	lua_settop(L, 0);
+
+	lua_getglobal(L, "string");
+	if (lua_istable(L, -1))
+	{
+		tolua_function(L, "pack", str_pack);
+		tolua_function(L, "unpack", str_unpack);
+		tolua_function(L, "packsize", lua53_str_packsize);		
+	}
+	lua_settop(L, 0);
+
+	luaopen_luautf8(L);
+	lua_setglobal(L, "utf8");
 	lua_settop(L, 0);
 }
