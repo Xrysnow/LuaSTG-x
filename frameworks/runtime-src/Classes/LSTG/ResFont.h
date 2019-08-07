@@ -66,7 +66,7 @@ namespace lstg {
 		void disableShadow();
 		cocos2d::Color4B getShadowColor() const { return cocos2d::Color4B(label->getShadowColor()); }
 		cocos2d::Size getShadowOffset() const { return label->getShadowOffset(); }
-		int getShadowBlurRadius() const { return label->getShadowBlurRadius(); }
+		float getShadowBlurRadius() const { return label->getShadowBlurRadius(); }
 	// italics
 
 		void enableItalics();

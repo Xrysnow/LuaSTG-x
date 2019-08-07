@@ -3161,7 +3161,7 @@ int lua_x_Resource_ResFont_getShadowBlurRadius(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFont_getShadowBlurRadius'", nullptr);
             return 0;
         }
-        int ret = cobj->getShadowBlurRadius();
+        float ret = cobj->getShadowBlurRadius();
         tolua_pushnumber(tolua_S,(lua_Number)ret);
         return 1;
     }
