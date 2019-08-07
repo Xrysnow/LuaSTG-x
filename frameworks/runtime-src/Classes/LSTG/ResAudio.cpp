@@ -5,12 +5,15 @@
 #include "ResourceMgr.h"
 #include "../Math/XFFT.h"
 #include "../Audio/AudioDecoder.h"
+#include "../Audio/AudioEngine.h"
 
 using namespace std;
 using namespace lstg;
-//TODO: add start time
+
 void ResAudio::play()
 {
+	if (!source)
+		return;
 	if (!isPlaying())
 	{
 		source->play();
@@ -23,6 +26,8 @@ void ResAudio::play()
 
 void ResAudio::play(float vol, float pan)
 {
+	if (!source)
+		return;
 	source->setVolume(vol);
 	source->setPosition({ pan,0,0 });
 	play();
@@ -30,31 +35,30 @@ void ResAudio::play(float vol, float pan)
 
 void ResAudio::resume()
 {
-	//if (isPlaying())
-	//	return;
-	//if (isStopped())
-	//	play();
-	play();
+	if (source)
+		play();
 }
 
 void ResAudio::pause()
 {
-	source->pause();
+	if (source)
+		source->pause();
 }
 
 void ResAudio::stop()
 {
-	source->stop();
+	if(source)
+		source->stop();
 }
 
 bool ResAudio::isPlaying()
 {
-	return source->isPlaying();
+	return source ? source->isPlaying() : false;
 }
 
 bool ResAudio::isStopped()
 {
-	return source->isFinished();
+	return source ? source->isFinished() : true;
 }
 
 size_t ResAudio::getFFTSize() const
@@ -89,13 +93,13 @@ string ResAudio::getInfo() const
 		);
 	}
 	else
-		ret += "no cache";
+		ret += "no source";
 	return ret;
 }
 
 size_t ResAudio::fillBufferCopy()
 {
-	if (!isPlaying())
+	if (!isPlaying() || !source)
 		return 0;
 	size_t offset = 0;
 	const auto off = source->getBufferOffset();
@@ -107,6 +111,8 @@ size_t ResAudio::fillBufferCopy()
 
 size_t ResAudio::fillWavValue()
 {
+	if (!source)
+		return 0;
 	wavValue.fill(0.f);
 	const auto size = fillBufferCopy();
 	if (size == 0)return 0;
@@ -193,20 +199,21 @@ bool ResAudio::init(StreamMemory* _data)
 		return false;
 	stream = _data;
 	stream->retain();
-	//param.position.z = -1.f;// note: set this
+	if (!audio::Engine::isValid())
+		return true;
 	auto s = XAudioStream::create(stream);
 	if (!s)
 		return false;
 	auto d = audio::Decoder::createFromStream(s, 4096, audio::Decoder::getDecoderTypeFromPath(path));
 	if (!d)
 	{
-		XINFO("failed Decoder");
+		XINFO("failed to create Decoder");
 		return false;
 	}
 	source = audio::Source::createFromDecoder(d);
 	if (!source)
 	{
-		XINFO("failed Source");
+		XINFO("failed to create Source");
 		return false;
 	}
 	source->retain();
@@ -214,7 +221,7 @@ bool ResAudio::init(StreamMemory* _data)
 }
 
 ResAudio::ResAudio(const std::string& name, ResourceType type, const std::string& _path):
-	Resource(type, name)//, audioID(XAudioEngine::INVALID_AUDIO_ID)
+	Resource(type, name)
 {
 	path = _path;
 	resPath = _path;
@@ -238,7 +245,7 @@ bool ResSound::initWithBuffer(Buffer* data)
 	const auto memory = StreamMemory::create(data);
 	if(!memory)
 	{
-		XINFO("failed StreamMemory");
+		XINFO("failed to create StreamMemory");
 		return false;
 	}
 	return init(memory);
@@ -277,8 +284,11 @@ bool ResMusic::initWithBuffer(Buffer* data, double loopA, double loopB)
 		return false;
 	if (!init(memory))
 		return false;
-	source->setLooping(true);
-	source->setLoopingPoint(loopA, loopB);
+	if (source)
+	{
+		source->setLooping(true);
+		source->setLoopingPoint(loopA, loopB);		
+	}
 	return true;
 }
 

@@ -204,7 +204,7 @@ void AppFrame::applicationDidEnterBackground()
 {
 	//TODO: should be mutex to framefunc
 	LuaEngine::getInstance()->executeGlobalFunction(LFUNC_LOSEFOCUS);
-	audio::Engine::getInstance()->onEnterBackground();
+	audio::Engine::onEnterBackground();
 
 	Director::getInstance()->stopAnimation();
 
@@ -215,7 +215,7 @@ void AppFrame::applicationDidEnterBackground()
 void AppFrame::applicationWillEnterForeground()
 {
 	LuaEngine::getInstance()->executeGlobalFunction(LFUNC_GAINFOCUS);
-	audio::Engine::getInstance()->onEnterForeground();
+	audio::Engine::onEnterForeground();
 	Director::getInstance()->startAnimation();
 	// note: pop message here will cause dead loop
 	//if (!SafeCallGlobalFunction(LFUNC_GAINFOCUS))
@@ -339,10 +339,10 @@ bool AppFrame::Init()noexcept
 	//LINFO("Cocos2dx Configuration Info:%s", Configuration::getInstance()->getInfo().c_str());
 
 	// audio engine
-	if (!audio::Engine::getInstance())
+	if (!audio::Engine::init())
 	{
-		LERROR("Audio engine initialization failed");
-		return false;
+		LERROR("Audio engine initialization failed: %s", audio::Engine::getLastError().c_str());
+		//return false;
 	}
 
 	auto director = Director::getInstance();
@@ -430,7 +430,7 @@ void AppFrame::Shutdown()noexcept
 	l2d::XLive2D::end();
 
 	// note: must be called after ClearAllResource
-	audio::Engine::destroyInstance();
+	audio::Engine::end();
 
 	InputManager::end();
 
@@ -447,7 +447,7 @@ bool AppFrame::Reset()noexcept
 
 	L = LuaEngine::getInstance()->getLuaStack()->getLuaState();
 	gameObjectPool->ResetLua(L);
-	audio::Engine::getInstance()->stop();
+	audio::Engine::stop();
 	InputManager::getInstance()->clearState();
 
 	LRES.clearLocalFileCache();
