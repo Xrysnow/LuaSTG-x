@@ -64,7 +64,7 @@ IMPL_BASIC_FROM_NATIVE(texParams_to_luaval, cocos2d::Texture2D::TexParams);
 
 template<typename T>
 bool __luaval_to_integer(lua_State* L, int lo,
-	typename std::enable_if<std::is_same_v<T, int64_t> || std::is_same_v<T, uint64_t>, T>::type* outValue,
+	typename std::enable_if<std::is_same<T, int64_t>::value || std::is_same<T, uint64_t>::value, T>::type* outValue,
 	size_t targetSize, const char* funcName)
 {
 	if (nullptr == L || nullptr == outValue)
@@ -72,7 +72,7 @@ bool __luaval_to_integer(lua_State* L, int lo,
 	const auto type = lua_type(L, lo);
 	if (type == lua::LUA_TCDATA)
 	{
-		if(std::is_same_v<T, int64_t>)
+		if(std::is_same<T, int64_t>::value)
 			lua_pushstring(L, "ffi.cast_int64");
 		else
 			lua_pushstring(L, "ffi.cast_uint64");
@@ -108,7 +108,7 @@ bool __luaval_to_integer(lua_State* L, int lo,
 #endif
 		return false;
 	}
-	if (std::is_same_v<T, int64_t> && targetSize == 4)
+	if (std::is_same<T, int64_t>::value && targetSize == 4)
 	{
 		// see luaval_to_int32
 		const uint32_t estimateValue = (uint32_t)lua_tonumber(L, lo);

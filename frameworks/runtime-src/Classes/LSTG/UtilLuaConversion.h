@@ -6,6 +6,7 @@
 #include <forward_list>
 #include <tuple>
 #include <bitset>
+#include <type_traits>
 
 namespace lstg
 {
@@ -36,7 +37,7 @@ namespace lstg
 					ok &= to_native<T>::F(L, top, &value, fName);\
 					lua_pop(L, 1);\
 					if (ok)\
-						outValue->##_Setter(value);\
+						outValue->_Setter(value);\
 					else\
 						break;\
 				}\
@@ -74,7 +75,7 @@ namespace lstg
 				if (ret) *outValue = (_T)(i); return ret; } }
 
 		template<typename T>
-		struct to_native<T, std::enable_if_t<std::is_enum_v<T>>> {
+		struct to_native<T, typename std::enable_if<std::is_enum<T>::value>::type> {
 			static bool F(lua_State* L, int lo, T* outValue, const char* fName = "") {
 				CHECK_TO_NATIVE;
 				using type = std::underlying_type_t<T>;
@@ -133,7 +134,7 @@ namespace lstg
 				return ok;
 			}
 		};
-		
+
 		template<>
 		struct to_native<std::string> {
 			static bool F(lua_State* L, int lo, std::string* outValue, const char* fName = "") {
@@ -148,7 +149,7 @@ namespace lstg
 		};
 
 		template<typename T>
-		struct to_native<T*, std::enable_if_t<std::is_base_of_v<cocos2d::Ref, T>>> {
+		struct to_native<T*, typename std::enable_if<std::is_base_of<cocos2d::Ref, T>::value>::type> {
 			static bool F(lua_State* L, int lo, T** outValue, const char* fName = "") {
 				CHECK_TO_NATIVE;
 				if(lua_isnil(L, lo)) {
@@ -168,7 +169,7 @@ namespace lstg
 		};
 
 		template<typename T>
-		struct to_native<T*, std::enable_if_t<!std::is_base_of_v<cocos2d::Ref, T>>> {
+		struct to_native<T*, typename std::enable_if<!std::is_base_of<cocos2d::Ref, T>::value>::type> {
 			static bool F(lua_State* L, int lo, T** outValue, const char* fName = "") {
 				CHECK_TO_NATIVE;
 				if(lua_isnil(L, lo)) {
@@ -262,7 +263,7 @@ namespace lstg
 				const auto type = lua_type(L, lo);
 				if (!(type == LUA_TTABLE || type == LUA_TUSERDATA || type == LUA_TCDATA))
 					return false;
-				constexpr size_t size = std::tuple_size_v<tuple_type>;
+				constexpr size_t size = std::tuple_size<tuple_type>::value;
 				return _to_native_tuple_helper<size, Types...>::F(L, lo, outValue, fName);
 			}
 		};
@@ -393,7 +394,7 @@ namespace lstg
 		};
 
 		template<typename T>
-		struct to_lua<T, std::enable_if_t<std::is_arithmetic_v<T>>> {
+		struct to_lua<T, typename std::enable_if<std::is_arithmetic<T>::value>::type> {
 			static void F(lua_State* L, T inValue) {
 				if (!L) return;
 				lua_pushnumber(L, (lua_Number)inValue);
@@ -401,7 +402,7 @@ namespace lstg
 		};
 
 		template<typename T>
-		struct to_lua<T, std::enable_if_t<std::is_enum_v<T>>> {
+		struct to_lua<T, typename std::enable_if<std::is_enum<T>::value>::type> {
 			static void F(lua_State* L, T inValue) {
 				if (!L) return;
 				using type = std::underlying_type_t<T>;
@@ -418,7 +419,7 @@ namespace lstg
 		};
 
 		template<typename T>
-		struct to_lua<T*, std::enable_if_t<std::is_base_of_v<cocos2d::Ref, T>>> {
+		struct to_lua<T*, typename std::enable_if<std::is_base_of<cocos2d::Ref, T>::value>::type> {
 			static void F(lua_State* L, T* inValue) {
 				if (!L) return;
 				ref_type_to_luaval(L, (cocos2d::Ref*)inValue, typeid(T).name());
@@ -426,7 +427,7 @@ namespace lstg
 		};
 
 		template<typename T>
-		struct to_lua<T*, std::enable_if_t<!std::is_base_of_v<cocos2d::Ref, T>>> {
+		struct to_lua<T*, typename std::enable_if<!std::is_base_of<cocos2d::Ref, T>::value>::type> {
 			static void F(lua_State* L, T* inValue) {
 				if (!L) return;
 				if(!inValue) { lua_pushnil(L); return; }
@@ -490,7 +491,7 @@ namespace lstg
 			using tuple_type = std::tuple<Types...>;
 			static void F(lua_State* L, const tuple_type& inValue) {
 				if (!L) return;
-				constexpr size_t size = std::tuple_size_v<tuple_type>;
+				constexpr size_t size = std::tuple_size<tuple_type>::value;
 				lua_createtable(L, (int)size, 0);
 				_to_lua_tuple_helper<size, Types...>::F(L, lua_gettop(L), inValue);
 			}
