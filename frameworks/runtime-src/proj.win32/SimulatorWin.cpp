@@ -56,6 +56,7 @@
 #include "platform/win32/PlayerMenuServiceWin.h"
 
 #include "../LSTG/AppFrame.h"
+#include "../LSTG/LogSystem.h"
 #include "XProfiler.h"
 #include "WindowHelperWin32.h"
 #include "../fcyLib/fcyMisc/fcyStringHelper.h"
