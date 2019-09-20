@@ -111,6 +111,8 @@ bool XFileUtils::isFileExist(const string& filename) const
 		return false;
 	if (LRES.isFileOrDirectoryExist(filename))
 		return true;
+	if (_FileUtilsBase::isDirectoryExist(filename))
+		return false;
 	// todo: may fail on linux
 	return _FileUtilsBase::isFileExist(filename);
 }
