@@ -81,7 +81,8 @@ Data XFileUtils::getDataFromFile(const string& filename) const
 	else
 	{
 		const auto data = LRES.getBufferFromFile(filename);
-		d.copy(data->data(), data->size());
+		if(data)
+			d.copy(data->data(), data->size());
 	}
 	return d;
 }
