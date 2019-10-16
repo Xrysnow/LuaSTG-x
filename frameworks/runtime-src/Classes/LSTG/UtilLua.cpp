@@ -487,7 +487,6 @@ bool lua::luaval_to_cptr(lua_State* L, int lo, void** outValue)
 			*outValue = ret;
 			return true;
 		}
-		LERROR("failed to call ffi.convert_ptr");
 		*outValue = nullptr;
 		return false;
 	}
@@ -519,7 +518,8 @@ void lua::cptr_to_luaval(lua_State* L, void* ptr, const std::string& ptrType)
 		lua_pushlstring(L, ptrType.c_str(), ptrType.size());
 		if (lua_pcall(L, 2, 1, 0) != 0)
 		{
-			LERROR("failed to call ffi.cast_ptr");
+			lua_pop(L, 1);
+			lua_pushnil(L);
 		}
 	}
 }
