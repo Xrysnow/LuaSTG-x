@@ -19,6 +19,12 @@ void test(lua_State* L)
 	TEST(bool);
 	TEST(float);
 	TEST(double);
+
+	TEST(bool*);
+	TEST(char*);
+	TEST(float*);
+
+	TEST(const char*);
 	TEST(std::string);
 
 	TEST(cocos2d::Vec2);

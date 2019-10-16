@@ -21,6 +21,11 @@ namespace lstg
 			static bool F(lua_State* L, int lo, _T* outValue, const char* fName = "") {\
 				return lua::_F(L, lo, outValue, fName); } };
 
+#define TO_NATIVE_BASIC_PTR(_T) template<>\
+		struct to_native<_T*> {\
+			static bool F(lua_State* L, int lo, _T** outValue, const char* fName = "") {\
+				return lua::luaval_to_cptr(L, lo, (void**)outValue); } };
+
 #define TO_NATIVE_VECTOR(_Ty, _Setter) template<typename T>\
 		struct to_native<_Ty<T>> {\
 			static bool F(lua_State* L, int lo, _Ty<T>* outValue, const char* fName = "") {\
@@ -97,6 +102,19 @@ namespace lstg
 
 		TO_NATIVE_BASIC(luaval_to_boolean, bool);
 		TO_NATIVE_BASIC(luaval_to_number, double);
+
+		TO_NATIVE_BASIC_PTR(bool);
+		TO_NATIVE_BASIC_PTR(char);
+		TO_NATIVE_BASIC_PTR(int8_t);
+		TO_NATIVE_BASIC_PTR(int16_t);
+		TO_NATIVE_BASIC_PTR(int32_t);
+		TO_NATIVE_BASIC_PTR(int64_t);
+		TO_NATIVE_BASIC_PTR(uint8_t);
+		TO_NATIVE_BASIC_PTR(uint16_t);
+		TO_NATIVE_BASIC_PTR(uint32_t);
+		TO_NATIVE_BASIC_PTR(uint64_t);
+		TO_NATIVE_BASIC_PTR(float);
+		TO_NATIVE_BASIC_PTR(double);
 		//
 		TO_NATIVE_BASIC(luaval_to_vec2, cocos2d::Vec2);
 		TO_NATIVE_BASIC(luaval_to_vec3, cocos2d::Vec3);
@@ -132,6 +150,17 @@ namespace lstg
 				const auto ok = to_native<double>::F(L, lo, &v, fName);
 				if (ok) *outValue = (float)v;
 				return ok;
+			}
+		};
+
+		template<>
+		struct to_native<const char*> {
+			static bool F(lua_State* L, int lo, const char** outValue, const char* fName = "") {
+				CHECK_TO_NATIVE;
+				if (!lua_isstring(L, lo))
+					return false;
+				*outValue = lua_tolstring(L, lo, nullptr);
+				return true;
 			}
 		};
 
@@ -318,6 +347,7 @@ namespace lstg
 
 #undef CHECK_TO_NATIVE
 #undef TO_NATIVE_BASIC
+#undef TO_NATIVE_BASIC_PTR
 #undef TO_NATIVE_VECTOR
 #undef TO_NATIVE_MAP
 #undef TO_NATIVE_SIGNED
@@ -336,6 +366,11 @@ namespace lstg
 		struct to_lua<_T*> {\
 			static void F(lua_State* L, _T* inValue) {\
 				lua::_F(L, inValue); } };
+
+#define TO_LUA_BASIC_PTR(_T) template<>\
+		struct to_lua<_T*> {\
+			static void F(lua_State* L, _T* inValue) {\
+				lua::cptr_to_luaval(L, (void*)inValue, #_T "*"); } };
 
 #define TO_LUA_VECTOR(_Ty) template<typename T>\
 		struct to_lua<_Ty<T>> {\
@@ -360,6 +395,19 @@ namespace lstg
 					to_lua<V>::F(L, it.second);\
 					lua_rawset(L, -3);\
 				} } };
+
+		TO_LUA_BASIC_PTR(bool);
+		TO_LUA_BASIC_PTR(char);
+		TO_LUA_BASIC_PTR(int8_t);
+		TO_LUA_BASIC_PTR(int16_t);
+		TO_LUA_BASIC_PTR(int32_t);
+		TO_LUA_BASIC_PTR(int64_t);
+		TO_LUA_BASIC_PTR(uint8_t);
+		TO_LUA_BASIC_PTR(uint16_t);
+		TO_LUA_BASIC_PTR(uint32_t);
+		TO_LUA_BASIC_PTR(uint64_t);
+		TO_LUA_BASIC_PTR(float);
+		TO_LUA_BASIC_PTR(double);
 
 		TO_LUA_BASIC(vec2_to_luaval, cocos2d::Vec2);
 		TO_LUA_BASIC(vec3_to_luaval, cocos2d::Vec3);
@@ -407,6 +455,14 @@ namespace lstg
 				if (!L) return;
 				using type = std::underlying_type_t<T>;
 				lua_pushnumber(L, (lua_Number)(type)inValue);
+			}
+		};
+
+		template<>
+		struct to_lua<const char*> {
+			static void F(lua_State* L, const char* inValue) {
+				if (!L) return;
+				lua_pushstring(L, inValue);
 			}
 		};
 
@@ -533,6 +589,7 @@ namespace lstg
 
 #undef TO_LUA_BASIC
 #undef TO_LUA_BASIC_P
+#undef TO_LUA_BASIC_PTR
 #undef TO_LUA_VECTOR
 #undef TO_LUA_MAP
 	}
