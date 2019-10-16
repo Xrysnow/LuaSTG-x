@@ -4604,44 +4604,6 @@ int lua_x_Resource_ResFont_createBMF(lua_State* tolua_S)
 #endif
     return 0;
 }
-int lua_x_Resource_ResFont_syncLabelSetting(lua_State* tolua_S)
-{
-    int argc = 0;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertable(tolua_S,1,"lstg.ResFont",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    argc = lua_gettop(tolua_S) - 1;
-
-    if (argc == 2)
-    {
-        XLabel* arg0;
-        cocos2d::Label* arg1;
-        ok &= lstg::lua::luaval_to_native(tolua_S, 2, &arg0, "lstg.ResFont:syncLabelSetting");
-        ok &= lstg::lua::luaval_to_native(tolua_S, 3, &arg1, "lstg.ResFont:syncLabelSetting");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFont_syncLabelSetting'", nullptr);
-            return 0;
-        }
-        lstg::ResFont::syncLabelSetting(arg0, arg1);
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResFont:syncLabelSetting",argc, 2);
-    return 0;
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFont_syncLabelSetting'.",&tolua_err);
-#endif
-    return 0;
-}
 int lua_x_Resource_ResFont_HGE2BMF(lua_State* tolua_S)
 {
     int argc = 0;
@@ -4737,7 +4699,6 @@ int lua_register_x_Resource_ResFont(lua_State* tolua_S)
         tolua_function(tolua_S,"createTTF", lua_x_Resource_ResFont_createTTF);
         tolua_function(tolua_S,"createHGE", lua_x_Resource_ResFont_createHGE);
         tolua_function(tolua_S,"createBMF", lua_x_Resource_ResFont_createBMF);
-        tolua_function(tolua_S,"syncLabelSetting", lua_x_Resource_ResFont_syncLabelSetting);
         tolua_function(tolua_S,"HGE2BMF", lua_x_Resource_ResFont_HGE2BMF);
     tolua_endmodule(tolua_S);
     std::string typeName = typeid(lstg::ResFont).name();
@@ -4856,6 +4817,53 @@ int lua_x_Resource_ResAudio_pause(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
     tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResAudio_pause'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_x_Resource_ResAudio_getFFTSize(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResAudio* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResAudio",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResAudio*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResAudio_getFFTSize'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResAudio_getFFTSize'", nullptr);
+            return 0;
+        }
+        unsigned int ret = cobj->getFFTSize();
+        tolua_pushnumber(tolua_S,(lua_Number)ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResAudio:getFFTSize",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResAudio_getFFTSize'.",&tolua_err);
 #endif
 
     return 0;
@@ -5142,6 +5150,53 @@ int lua_x_Resource_ResAudio_isPlaying(lua_State* tolua_S)
 
     return 0;
 }
+int lua_x_Resource_ResAudio_getFFT(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResAudio* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResAudio",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResAudio*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResAudio_getFFT'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResAudio_getFFT'", nullptr);
+            return 0;
+        }
+        float* ret = cobj->getFFT();
+        lstg::lua::native_to_luaval(tolua_S, ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResAudio:getFFT",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResAudio_getFFT'.",&tolua_err);
+#endif
+
+    return 0;
+}
 static int lua_x_Resource_ResAudio_finalize(lua_State* tolua_S)
 {
     printf("luabindings: finalizing LUA object (ResAudio)");
@@ -5156,12 +5211,14 @@ int lua_register_x_Resource_ResAudio(lua_State* tolua_S)
     tolua_beginmodule(tolua_S,"ResAudio");
         tolua_function(tolua_S,"play",lua_x_Resource_ResAudio_play);
         tolua_function(tolua_S,"pause",lua_x_Resource_ResAudio_pause);
+        tolua_function(tolua_S,"getFFTSize",lua_x_Resource_ResAudio_getFFTSize);
         tolua_function(tolua_S,"resume",lua_x_Resource_ResAudio_resume);
         tolua_function(tolua_S,"stop",lua_x_Resource_ResAudio_stop);
         tolua_function(tolua_S,"isStopped",lua_x_Resource_ResAudio_isStopped);
         tolua_function(tolua_S,"getStream",lua_x_Resource_ResAudio_getStream);
         tolua_function(tolua_S,"getSource",lua_x_Resource_ResAudio_getSource);
         tolua_function(tolua_S,"isPlaying",lua_x_Resource_ResAudio_isPlaying);
+        tolua_function(tolua_S,"getFFT",lua_x_Resource_ResAudio_getFFT);
     tolua_endmodule(tolua_S);
     std::string typeName = typeid(lstg::ResAudio).name();
     g_luaType[typeName] = "lstg.ResAudio";
