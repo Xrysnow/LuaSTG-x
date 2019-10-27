@@ -1,6 +1,7 @@
 ﻿#include "LWProfiler.h"
 #include "AppFrame.h"
 #include "../Classes/XProfiler.h"
+#include "../Classes/XLuaModuleRegistry.h"
 
 using namespace std;
 using namespace lstg;
@@ -19,7 +20,7 @@ bool CheckName(const string& name)
 	return internalName.find(name) == internalName.end();
 }
 
-void ProfilerWrapper::Register(lua_State* L) noexcept
+LUA_REGISTER_MODULE_DEF(lstg_Profiler)
 {
 	struct WrapperImpl
 	{
@@ -123,4 +124,5 @@ void ProfilerWrapper::Register(lua_State* L) noexcept
 	};
 	luaL_register(L, "profiler", tFunctions);
 	lua_pop(L, 1);
+	return 0;
 }

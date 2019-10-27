@@ -1,33 +1,38 @@
 ﻿#include "LW_Object.h"
 #include "AppFrame.h"
 #include "LuaWrapper.h"
-#include <vector>
 #include "UtilLua.h"
+#include "../Classes/XLuaModuleRegistry.h"
+#include <vector>
+
+#ifdef RegisterClass
+#undef RegisterClass
+#endif // RegisterClass
 
 using namespace std;
 using namespace lstg;
 
-static int GetnObj(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, GetnObj)
 {
 	lua_pushinteger(L, (lua_Integer)LPOOL.GetObjectCount());
 	return 1;
 }
-static int ObjFrame(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, ObjFrame)
 {
 	LPOOL.DoFrame();
 	return 0;
 }
-static int ObjRender(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, ObjRender)
 {
 	LPOOL.DoRender();
 	return 0;
 }
-static int BoundCheck(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, BoundCheck)
 {
 	LPOOL.BoundCheck();
 	return 0;
 }
-static int SetBound(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SetBound)
 {
 	LPOOL.SetBound(
 		luaL_checkinteger(L, 1),
@@ -37,7 +42,7 @@ static int SetBound(lua_State* L) noexcept
 	);
 	return 0;
 }
-static int CollisionCheck_(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, CollisionCheck)
 {
 	const auto t1 = lua_type(L, 1);
 	const auto t2 = lua_type(L, 2);
@@ -71,13 +76,13 @@ static int CollisionCheck_(lua_State* L) noexcept
 	}
 	return 0;
 }
-static int CollisionCheck3D(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, CollisionCheck3D)
 {
 	LPOOL.CollisionCheck3D(luaL_checkinteger(L, 1), luaL_checkinteger(L, 2));
 	return 0;
 }
 
-static int UpdateXY(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, UpdateXY)
 {
 	const int nArg = lua_gettop(L);
 	if (nArg == 0)
@@ -100,28 +105,28 @@ static int UpdateXY(lua_State* L) noexcept
 	}
 	return 0;
 }
-static int AfterFrame(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, AfterFrame)
 {
 	LPOOL.AfterFrame();
 	return 0;
 }
-static int New(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, New)
 {
 	return LPOOL.New(L);
 }
-static int Del(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, Del)
 {
 	return LPOOL.Del(L);
 }
-static int Kill(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, Kill)
 {
 	return LPOOL.Kill(L);
 }
-static int IsValid(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, IsValid)
 {
 	return LPOOL.IsValid(L);
 }
-static int Angle(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, Angle)
 {
 	if (lua_gettop(L) == 2)
 	{
@@ -148,7 +153,7 @@ static int Angle(lua_State* L) noexcept
 		return 1;
 	}
 }
-static int Dist(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, Dist)
 {
 	if (lua_gettop(L) == 2)
 	{
@@ -176,7 +181,7 @@ static int Dist(lua_State* L) noexcept
 		return 1;
 	}
 }
-static int GetV(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, GetV)
 {
 	do
 	{
@@ -192,7 +197,7 @@ static int GetV(lua_State* L) noexcept
 	while (false);
 	return luaL_objerror(L);
 }
-static int SetV(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SetV)
 {
 	if (!lua_istable(L, 1))
 		return luaL_objerror(L);
@@ -215,7 +220,7 @@ static int SetV(lua_State* L) noexcept
 		return luaL_objerror(L);
 	return 0;
 }
-static int SetImgState(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SetImgState)
 {
 	if (!lua_istable(L, 1))
 		return luaL_objerror(L);
@@ -234,7 +239,7 @@ static int SetImgState(lua_State* L) noexcept
 		return luaL_objerror(L);
 	return 0;
 }
-static int BoxCheck(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, BoxCheck)
 {
 	if (!lua_istable(L, 1))
 		return luaL_objerror(L);
@@ -253,12 +258,12 @@ static int BoxCheck(lua_State* L) noexcept
 	lua_pushboolean(L, tRet);
 	return 1;
 }
-static int ResetPool(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, ResetPool)
 {
 	LPOOL.ResetPool();
 	return 0;
 }
-static int DefaultRenderFunc(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, DefaultRenderFunc)
 {
 	do
 	{
@@ -270,44 +275,44 @@ static int DefaultRenderFunc(lua_State* L) noexcept
 	while (false);
 	return luaL_objerror(L);
 }
-static int NextObject(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, NextObject)
 {
 	return LPOOL.NextObject(L);
 }
-static int ObjList(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, ObjList)
 {
 	int g = luaL_checkinteger(L, 1);  // i(groupId)
-	lua_pushcfunction(L, NextObject);
+	lua_pushcfunction(L, LuaFunc_lstg_NextObject);
 	lua_pushinteger(L, g);
 	lua_pushinteger(L, LPOOL.FirstObject(g));
 	return 3;
 }
-static int ObjMetaIndex(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, GetAttr)
 {
 	return LPOOL.GetAttr(L);
 }
-static int ObjMetaNewIndex(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SetAttr)
 {
 	return LPOOL.SetAttr(L);
 }
 
-static int GetParticlePool(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, GetParticlePool)
 {
 	return LPOOL.GetParticlePool(L);
 }
 
-static int RegistClass(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, RegisterClass)
 {
 	return LPOOL.RegistClass(L);
 }
 
-static int GetGroupTable(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, GetGroupTable)
 {
 	LPOOL.pushGroup(L, luaL_checkinteger(L, 1));
 	return 1;
 }
 
-static int GetLastXY(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, GetLastXY)
 {
 	do
 	{
@@ -322,7 +327,7 @@ static int GetLastXY(lua_State* L) noexcept
 	while (false);
 	return luaL_objerror(L);
 }
-static int SetLastXY(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SetLastXY)
 {
 	do
 	{
@@ -336,7 +341,7 @@ static int SetLastXY(lua_State* L) noexcept
 	while (false);
 	return luaL_objerror(L);
 }
-static int UpdateParticle(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, UpdateParticle)
 {
 	do
 	{
@@ -347,7 +352,7 @@ static int UpdateParticle(lua_State* L) noexcept
 	} while (false);
 	return luaL_objerror(L);
 }
-static int FreeObject(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, FreeObject)
 {
 	do
 	{
@@ -371,22 +376,22 @@ static int FreeObject(lua_State* L) noexcept
 	} while (false);
 	return luaL_objerror(L);
 }
-//static int Clone(lua_State* L) noexcept
+//LUA_REGISTER_FUNC_DEF(lstg, Clone)
 //{
 //	return LPOOL.Clone(L, 1);
 //}
-static int RawNew(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, RawNew)
 {
 	return LPOOL.RawNew(L);
 }
 
-static int AllocateObject(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, AllocateObject)
 {
 	lua::GameObject_to_luaval(L, LPOOL.allocateObject());
 	return 1;
 }
 
-static int GetObjID(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, GetObjID)
 {
 	const auto size = LPOOL.updateIDForLua();
 	LPOOL.pushIDForLua(L);
@@ -394,7 +399,7 @@ static int GetObjID(lua_State* L) noexcept
 	return 2;
 }
 
-static int ObjOnFrame(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, ObjOnFrame)
 {
 	lua_rawgeti(L, 1, 2);
 	const auto id = size_t(lua_tonumber(L, -1));
@@ -405,56 +410,7 @@ static int ObjOnFrame(lua_State* L) noexcept
 	p->OnDoFrame();
 	return 0;
 }
-static int BindNode(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, BindNode)
 {
 	return LPOOL.BindNode(L);
-}
-
-vector<luaL_Reg> lstg::LW_Object()
-{
-	vector<luaL_Reg> ret = {
-		{ "GetnObj", &GetnObj },
-		{ "ObjFrame", &ObjFrame },
-		{ "ObjRender", &ObjRender },
-		{ "BoundCheck", &BoundCheck },
-		{ "SetBound", &SetBound },
-		{ "BoxCheck", &BoxCheck },
-		{ "CollisionCheck", &CollisionCheck_ },
-		{ "CollisionCheck3D", &CollisionCheck3D },// new
-		{ "UpdateXY", &UpdateXY },
-		{ "AfterFrame", &AfterFrame },
-		{ "New", &New },
-		{ "Del", &Del },
-		{ "Kill", &Kill },
-		{ "IsValid", &IsValid },
-		{ "Angle", &Angle },
-		{ "Dist", &Dist },
-		{ "GetV", &GetV },
-		{ "SetV", &SetV },
-		{ "SetImgState", &SetImgState },
-		{ "ResetPool", &ResetPool },
-		{ "DefaultRenderFunc", &DefaultRenderFunc },
-		{ "NextObject", &NextObject },
-		{ "ObjList", &ObjList },
-		{ "GetAttr", &ObjMetaIndex },
-		{ "SetAttr", &ObjMetaNewIndex },
-		{ "GetParticlePool", &GetParticlePool },
-
-		{ "RegisterClass", &RegistClass },
-		{ "GetGroupTable", &GetGroupTable },
-
-		{ "GetLastXY", &GetLastXY },
-		{ "SetLastXY", &SetLastXY },
-		{ "UpdateParticle", &UpdateParticle },
-		{ "FreeObject", &FreeObject },
-		//{ "Clone", &Clone },
-		{ "RawNew", &RawNew },
-
-		{ "AllocateObject", &AllocateObject },
-		{ "GetObjID", &GetObjID },
-		{ "ObjOnFrame", &ObjOnFrame },
-
-		{ "BindNode", &BindNode },
-	};
-	return ret;
 }

@@ -2,6 +2,7 @@
 #include "Global.h"
 #include "UtilLua.h"
 #include "UtilColor.h"
+#include "../Classes/XLuaModuleRegistry.h"
 
 using namespace std;
 using namespace lstg;
@@ -147,15 +148,15 @@ static int SetAttr(lua_State* L)noexcept
 	if (strcmp(k, "argb") == 0)
 	{
 		const uint32_t val = luaL_checknumber(L, 3);
-		p->a = val >> 24;
 		p->r = val >> 16;
 		p->g = val >> 8;
 		p->b = val;
+		p->a = val >> 24;
 	}
 	return 0;
 }
 
-void _Register(lua_State* L)noexcept
+LUA_REGISTER_MODULE_DEF(lstg_Color)
 {
 	luaL_Reg tMethods[] =
 	{
@@ -183,10 +184,7 @@ void _Register(lua_State* L)noexcept
 	lua_pushvalue(L, -3);  // t mt s t
 	lua_rawset(L, -3);  // t mt (mt["__metatable"] = t)  protect metatable
 	lua_pop(L, 2);
-}
-void ColorWrapper::Register(lua_State* L)noexcept
-{
-	_Register(L);
+	return 0;
 }
 
 Color4B* ColorWrapper::CreateAndPush(lua_State* L)
@@ -196,4 +194,36 @@ Color4B* ColorWrapper::CreateAndPush(lua_State* L)
 	luaL_getmetatable(L, TYPENAME_COLOR);
 	lua_setmetatable(L, -2);
 	return p;
+}
+
+LUA_REGISTER_FUNC_DEF(lstg, Color)
+{
+	const auto top = lua_gettop(L);
+	if (top == 0)
+	{
+		ColorWrapper::CreateAndPush(L);
+		return 1;
+	}
+	Color4B c;
+	if (top == 1)
+	{
+		// note: luaL_checkinteger return signed int
+		const uint32_t val = luaL_checknumber(L, 1);
+		c.r = val >> 16;
+		c.g = val >> 8;
+		c.b = val;
+		c.a = val >> 24;
+	}
+	else
+	{
+		// a r g b -> r g b a
+		c.set(
+			int32_t(luaL_checkinteger(L, 2)),
+			int32_t(luaL_checkinteger(L, 3)),
+			int32_t(luaL_checkinteger(L, 4)),
+			int32_t(luaL_checkinteger(L, 1))
+		);
+	}
+	*ColorWrapper::CreateAndPush(L) = c;
+	return 1;
 }

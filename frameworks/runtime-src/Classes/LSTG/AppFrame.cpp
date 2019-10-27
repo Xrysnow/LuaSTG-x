@@ -5,42 +5,14 @@
 #include "XFileUtils.h"
 #include "Utility.h"
 #include "LuaWrapper.h"
-#include "LuaWrapperEx.h"
 #include "../Audio/AudioEngine.h"
-#include "../Audio/lua_Audio_auto.hpp"
 #include "../Classes/XProfiler.h"
-#include "platform/CCGL.h"
-#include "reader/lua-bindings/creator_reader_bindings.hpp"
 #include "Renderer.h"
 #include "InputManager.h"
 #include "WindowHelper.h"
 #include "XLive2D.h"
-#include "lua_x_L2D_auto.hpp"
-#include "../LuaBindings/lua_Resource_auto.hpp"
-#include "../LuaBindings/lua_BlendMode_auto.hpp"
-#include "../LuaBindings/lua_LogSystem_auto.hpp"
-#include "../LuaBindings/lua_BentLaser_auto.hpp"
-#include "../LuaBindings/lua_Random_auto.hpp"
-#include "../LuaBindings/lua_ObjSym_auto.hpp"
-#include "../LuaBindings/lua_WindowHelper_auto.hpp"
-#include "../LuaBindings/lua_FileDialog_auto.hpp"
-#include "../LuaBindings/lua_ParticlePool_auto.hpp"
-#include "../LuaBindings/lua_ResourceMgr_auto.hpp"
-#include "../LuaBindings/lua_Triangles_auto.hpp"
-#include "../LuaBindings/lua_Buffer_auto.hpp"
-#include "../LuaBindings/lua_Stream_auto.hpp"
-#include "../LuaBindings/lua_cc_ui_fix.h"
-#if (CC_TARGET_PLATFORM != CC_PLATFORM_ANDROID) && (CC_TARGET_PLATFORM != CC_PLATFORM_IOS)
-#include "../LuaBindings/lua_cc_controller_auto.hpp"
-#include "../LuaBindings/lua_cc_controller_manual.hpp"
-#endif
-#include "lptree.h"
-
-#ifdef CC_PLATFORM_PC
-#include "../imgui/lua-bindings/imgui_lua.hpp"
-#endif // CC_PLATFORM_PC
-
 #include "UtilLua.h"
+#include "../Classes/XLuaModuleRegistry.h"
 #include <memory>
 #include <iostream>
 
@@ -77,9 +49,6 @@ extern "C"
 #undef LINFO
 #define LINFO(info, ...) LLOGGER.Log(lstg::LogType::Information, "[APP] " info, ##__VA_ARGS__)
 #endif
-
-// 内置lua扩展
-extern "C" int luaopen_lfs(lua_State *L);
 
 using namespace std;
 using namespace lstg;
@@ -141,38 +110,10 @@ bool AppFrame::applicationDidFinishLaunching()
 	}
 	LINFO("Lua VM version: %s", LVERSION_LUA);
 	lua_module_register(L);
-
-#if (CC_TARGET_PLATFORM != CC_PLATFORM_ANDROID) && (CC_TARGET_PLATFORM != CC_PLATFORM_IOS)
-	register_all_cocos2dx_controller(L);
-	register_all_cocos2dx_controller_manual(L);
-#endif
-
-	register_creator_reader_module(L);
-	register_all_x_BlendMode(L);
-	register_all_x_LogSystem(L);
-	register_all_x_Resource(L);
-	register_all_x_ParticlePool(L);
-	register_all_x_L2D(L);
-	register_all_x_BentLaser(L);
-	register_all_x_Random(L);
-	register_all_x_ObjSym(L);
-	register_all_x_WindowHelper(L);
-	register_all_x_FileDialog(L);
-	register_all_x_ResourceMgr(L);
-	register_all_x_Triangles(L);
-	register_all_x_Buffer(L);
-	register_all_x_Stream(L);
-	register_all_x_Audio(L);
-	register_all_cocos2dx_ui_fix(L);
-#ifdef CC_PLATFORM_PC
-	luaopen_imgui(L);
-#endif // CC_PLATFORM_PC
-
+	LuaModuleRegistry::registerModules(L);
+	LuaModuleRegistry::registerFunctions(L);
 	register_all_packages();
 	stack->setXXTEAKeyAndSign("2dxLua", strlen("2dxLua"), "XXTEA", strlen("XXTEA"));
-	luaopen_lfs(L);
-	luaopen_lpeg(L);
-	RegistWrapper(L);
 
 	InitGameObjectPropertyHash();
 	CC_SAFE_DELETE(threadPool);
@@ -380,9 +321,11 @@ bool AppFrame::Init()noexcept
 	});
 	e->addCustomEventListener(Director::EVENT_AFTER_UPDATE, [](EventCustom*) {
 		XProfiler::getInstance()->toc(PF_Schedule);
-		XProfiler::getInstance()->tic(PF_Visit);
 	});
 	e->addCustomEventListener(Director::EVENT_BEFORE_DRAW, [](EventCustom*) {
+		XProfiler::getInstance()->tic(PF_Visit);
+	});
+	e->addCustomEventListener(Director::EVENT_AFTER_VISIT, [](EventCustom*) {
 		XProfiler::getInstance()->toc(PF_Visit);
 		XProfiler::getInstance()->tic(PF_Render);
 	});

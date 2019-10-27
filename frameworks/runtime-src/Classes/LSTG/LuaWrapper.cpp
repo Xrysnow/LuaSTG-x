@@ -1,14 +1,10 @@
 ﻿#include "LuaWrapper.h"
 #include "AppFrame.h"
-#include "LWColor.h"
-#include "LWRandomizer.h"
-#include "LWBuiltInFunction.h"
-#include "LuaWrapperEx.h"
-#include "LWProfiler.h"
 #include "UtilLua.h"
 #include "LogSystem.h"
 #include "lstrlib.h"
 #include "lutf8lib.h"
+#include "../Classes/XLuaModuleRegistry.h"
 
 using namespace std;
 using namespace lstg;
@@ -76,15 +72,9 @@ static int str_unpack(lua_State* L)
 	return lua53_str_unpack(L, fmt, data, datasize, 2, 3);
 }
 
-void lstg::RegistWrapper(lua_State* L)
+LUA_REGISTER_MODULE_DEF(lstg_misc)
 {
-	ColorWrapper::Register(L);
-	RandomizerWrapper::Register(L);
-	BuiltInFunctionWrapper::Register(L);
-
-	EXWrapper::Register(L);
-
-	ProfilerWrapper::Register(L);
+	const auto top = lua_gettop(L);
 
 	vector<string> cdef = {
 		"require('ffi').cdef[[void* memcpy(void *p1, void *p2, size_t n);]]",
@@ -204,7 +194,7 @@ end
 			XERROR("error when loading function '%s'", it.first.c_str());
 		}
 	}
-	lua_settop(L, 0);
+	lua_settop(L, top);
 
 	lua_getglobal(L, "string");
 	if (lua_istable(L, -1))
@@ -213,9 +203,26 @@ end
 		tolua_function(L, "unpack", str_unpack);
 		tolua_function(L, "packsize", lua53_str_packsize);		
 	}
-	lua_settop(L, 0);
+	lua_settop(L, top);
 
 	luaopen_luautf8(L);
 	lua_setglobal(L, "utf8");
-	lua_settop(L, 0);
+	lua_settop(L, top);
+	return 0;
 }
+
+#include "lua_x_L2D_auto.hpp"
+LUA_REGISTER_MODULE(x_L2D, register_all_x_L2D);
+#include "../Audio/lua_Audio_auto.hpp"
+LUA_REGISTER_MODULE(x_Audio, register_all_x_Audio);
+#include "reader/lua-bindings/creator_reader_bindings.hpp"
+LUA_REGISTER_MODULE(cc_creator_reader, register_creator_reader_module);
+extern "C" int luaopen_lfs(lua_State *L);
+LUA_REGISTER_MODULE_DEF(lfs) { luaopen_lfs(L); lua_pop(L, 3); return 0; }
+#include "lptree.h"
+LUA_REGISTER_MODULE_DEF(lpeg) { luaopen_lpeg(L); lua_pop(L, 2); return 0; }
+
+#ifdef CC_PLATFORM_PC
+#include "../imgui/lua-bindings/imgui_lua.hpp"
+LUA_REGISTER_MODULE(imgui, luaopen_imgui);
+#endif // CC_PLATFORM_PC

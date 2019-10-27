@@ -3,11 +3,12 @@
 #include "Renderer.h"
 #include "tolua_fix.h"
 #include "CCLuaEngine.h"
+#include "../Classes/XLuaModuleRegistry.h"
 
 using namespace std;
 using namespace lstg;
 
-static int SetFPS(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SetFPS)
 {
 	int v = luaL_checkinteger(L, 1);
 	if (v <= 0)
@@ -16,25 +17,25 @@ static int SetFPS(lua_State* L) noexcept
 	return 0;
 }
 
-static int GetFPS(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, GetFPS)
 {
 	lua_pushnumber(L, LAPP.getFPS());
 	return 1;
 }
 
-static int SetVsync(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SetVsync)
 {
 	LRR.setVsync(lua_toboolean(L, 1) != 0);
 	return 0;
 }
 
-static int SystemLog(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SystemLog)
 {
 	LLOGGER.writeLine(string("[LOG] ") + luaL_checkstring(L, 1));
 	return 0;
 }
 
-static int Print(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, Print)
 {
 	int n = lua_gettop(L);
 	lua_getglobal(L, "tostring"); // ... f
@@ -58,13 +59,13 @@ static int Print(lua_State* L) noexcept
 	return 0;
 }
 
-static int DoFile(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, DoFile)
 {
 	LAPP.loadScript(luaL_checkstring(L, 1));
 	return 0;
 }
 
-static int ShowSplashWindow(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, ShowSplashWindow)
 {
 	if (lua_gettop(L) == 0)
 		LAPP.ShowSplashWindow();
@@ -73,7 +74,7 @@ static int ShowSplashWindow(lua_State* L) noexcept
 	return 0;
 }
 
-static int SetThreadPoolSize(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SetThreadPoolSize)
 {
 	const auto val = luaL_checkinteger(L, 1);
 	if (val < 0)
@@ -82,13 +83,13 @@ static int SetThreadPoolSize(lua_State* L) noexcept
 	return 0;
 }
 
-static int GetThreadPoolSize(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, GetThreadPoolSize)
 {
 	lua_pushinteger(L, LTHP.size());
 	return 1;
 }
 
-static int FrameInit(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, FrameInit)
 {
 	if (!LAPP.Init())
 	{
@@ -97,7 +98,7 @@ static int FrameInit(lua_State* L) noexcept
 	return 0;
 }
 
-static int FrameReset(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, FrameReset)
 {
 	if (!LAPP.Reset())
 	{
@@ -106,7 +107,7 @@ static int FrameReset(lua_State* L) noexcept
 	return 0;
 }
 
-static int SetOnWriteLog(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SetOnWriteLog)
 {
 	const auto handler = toluafix_ref_function(L, 1, 0);
 	if (handler == 0)
@@ -119,25 +120,4 @@ static int SetOnWriteLog(lua_State* L) noexcept
 		stack->clean();
 	});
 	return 0;
-}
-
-vector<luaL_Reg> lstg::LW_Frame()
-{
-	vector<luaL_Reg> ret = {
-		{ "SetFPS", &SetFPS },
-		{ "GetFPS", &GetFPS },
-		{ "SetVsync", &SetVsync },
-		{ "SystemLog", &SystemLog },
-		{ "Print", &Print },
-		{ "DoFile", &DoFile },
-		{ "ShowSplashWindow", &ShowSplashWindow },
-
-		{ "SetThreadPoolSize", &SetThreadPoolSize },
-		{ "GetThreadPoolSize", &GetThreadPoolSize },
-
-		{ "FrameInit", &FrameInit },
-		{ "FrameReset", &FrameReset },
-		{ "SetOnWriteLog", &SetOnWriteLog },
-	};
-	return ret;
 }

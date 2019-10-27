@@ -6,6 +6,7 @@
 #include "Renderer.h"
 #include "UtilLuaRes.h"
 #include "../fcyLib/fcyMisc/fcyStringHelper.h"
+#include "../Classes/XLuaModuleRegistry.h"
 
 using namespace std;
 using namespace lstg;
@@ -20,7 +21,7 @@ inline int error_render(lua_State* L, int lo)
 	return luaL_error(L, "can't render font '%s'", lua_tostring(L, lo));
 }
 
-static int RenderText(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, RenderText)
 {
 	auto halign = TextHAlignment::LEFT;
 	auto valign = TextVAlignment::TOP;
@@ -44,7 +45,7 @@ static int RenderText(lua_State* L) noexcept
 	return 0;
 }
 //TODO:
-static int RenderTTF(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, RenderTTF)
 {
 	auto left = float(luaL_checknumber(L, 3));
 	auto right = float(luaL_checknumber(L, 4));
@@ -97,8 +98,7 @@ static int RenderTTF(lua_State* L) noexcept
 	}
 	return 0;
 }
-
-static int CalcTextSize(lua_State* L)
+LUA_REGISTER_FUNC_DEF(lstg, CalcTextSize)
 {
 	auto p = lua::toResFont(L, 1);
 	if (!p)
@@ -120,14 +120,4 @@ static int CalcTextSize(lua_State* L)
 	lua_pushnumber(L, size.x * 0.5);
 	lua_pushnumber(L, size.y * 0.5);
 	return 2;
-}
-
-vector<luaL_Reg> lstg::LW_Text()
-{
-	vector<luaL_Reg> ret = {
-		{ "RenderText", &RenderText },
-		{ "RenderTTF", &RenderTTF },		//extended
-		{ "CalcTextSize", &CalcTextSize },	//new
-	};
-	return ret;
 }

@@ -7,6 +7,7 @@
 #include "Renderer.h"
 #include "UtilLuaRes.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
+#include "../Classes/XLuaModuleRegistry.h"
 
 using namespace std;
 using namespace lstg;
@@ -14,19 +15,19 @@ using namespace cocos2d;
 using lua::_luaval_to_color4b;
 using lua::luaval_to_c4b;
 
-static int BeginScene(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, BeginScene)
 {
 	if (!LRR.beginScene())
 		return luaL_error(L, "can't invoke 'BeginScene'.");
 	return 0;
 }
-static int EndScene(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, EndScene)
 {
 	if (!LRR.endScene())
 		return luaL_error(L, "can't invoke 'EndScene'.");
 	return 0;
 }
-static int RenderClear(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, RenderClear)
 {
 	auto color = Color4B(0, 0, 0, 0);
 	if (lua_gettop(L) > 0)
@@ -36,7 +37,7 @@ static int RenderClear(lua_State* L) noexcept
 	LRR.renderClear(Color4F(color));
 	return 0;
 }
-static int SetViewport(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SetViewport)
 {
 	if (!LRR.setViewport(
 		luaL_checknumber(L, 1),
@@ -49,7 +50,7 @@ static int SetViewport(lua_State* L) noexcept
 	}
 	return 0;
 }
-static int SetOrtho(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SetOrtho)
 {
 	LRR.setOrtho(
 		luaL_checknumber(L, 1),
@@ -59,7 +60,7 @@ static int SetOrtho(lua_State* L) noexcept
 	);
 	return 0;
 }
-static int SetPerspective(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SetPerspective)
 {
 	LRR.setPerspective(
 		luaL_checknumber(L, 1),
@@ -78,7 +79,7 @@ static int SetPerspective(lua_State* L) noexcept
 	);
 	return 0;
 }
-static int SetFog(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SetFog)
 {
 	if (lua_gettop(L) == 3)
 	{
@@ -103,7 +104,7 @@ static int SetFog(lua_State* L) noexcept
 	}
 	return 0;
 }
-static int PushRenderTarget(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, PushRenderTarget)
 {
 	auto p = lua::toResRenderTarget(L, 1);
 	if (!p || !p->checkTarget())
@@ -112,13 +113,13 @@ static int PushRenderTarget(lua_State* L) noexcept
 		return luaL_error(L, "push rendertarget failed");
 	return 0;
 }
-static int PopRenderTarget(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, PopRenderTarget)
 {
 	if (!LRR.popRenderTarget())
 		return luaL_error(L, "pop rendertarget failed");
 	return 0;
 }
-static int PostEffect(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, PostEffect)
 {
 	auto rt = lua::toResRenderTarget(L, 1);
 	if (!rt)
@@ -134,7 +135,7 @@ static int PostEffect(lua_State* L) noexcept
 	return 0;
 }
 
-static int CreateGLProgramFromPath(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, CreateGLProgramFromPath)
 {
 	const auto s1 = luaL_checkstring(L, 1);
 	const auto s2 = luaL_checkstring(L, 2);
@@ -144,7 +145,7 @@ static int CreateGLProgramFromPath(lua_State* L) noexcept
 	object_to_luaval<cocos2d::GLProgram>(L, "cc.GLProgram", p);
 	return 1;
 }
-static int CreateGLProgramFromString(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, CreateGLProgramFromString)
 {
 	const auto s1 = luaL_checkstring(L, 1);
 	const auto s2 = luaL_checkstring(L, 2);
@@ -155,43 +156,20 @@ static int CreateGLProgramFromString(lua_State* L) noexcept
 	return 1;
 }
 
-static int CopyFrameBuffer(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, CopyFrameBuffer)
 {
 	const auto p = LRR.copyFrameBuffer();
 	object_to_luaval<cocos2d::RenderTexture>(L, "cc.RenderTexture", p);
 	return 1;
 }
-static int SetOffscreen(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SetOffscreen)
 {
 	LRR.setOffscreen(lua_toboolean(L, 1));
 	return 0;
 }
-static int GetFrameBuffer(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, GetFrameBuffer)
 {
 	const auto p = LRR.getFrameBuffer();
 	object_to_luaval<cocos2d::RenderTexture>(L, "cc.RenderTexture", p);
 	return 1;
-}
-
-vector<luaL_Reg> lstg::LW_Graph()
-{
-	vector<luaL_Reg> ret = {
-		{ "BeginScene", &BeginScene },
-		{ "EndScene", &EndScene },
-		{ "RenderClear", &RenderClear },
-		{ "SetViewport", &SetViewport },
-		{ "SetOrtho", &SetOrtho },
-		{ "SetPerspective", &SetPerspective },
-		{ "SetFog", &SetFog },
-		{ "PushRenderTarget", &PushRenderTarget },
-		{ "PopRenderTarget", &PopRenderTarget },
-		{ "PostEffect", &PostEffect },
-
-		{ "CreateGLProgramFromPath", &CreateGLProgramFromPath },
-		{ "CreateGLProgramFromString", &CreateGLProgramFromString },
-		{ "CopyFrameBuffer", &CopyFrameBuffer },
-		{ "SetOffscreen", &SetOffscreen },
-		{ "GetFrameBuffer", &GetFrameBuffer },
-	};
-	return ret;
 }

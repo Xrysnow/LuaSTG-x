@@ -11,13 +11,14 @@
 #include "../Video/SpriteVideo.h"
 #include "Renderer.h"
 #include "../fcyLib/fcyMisc/fcyStopWatch.h"
+#include "../Classes/XLuaModuleRegistry.h"
 
 using namespace std;
 using namespace lstg;
 
 #pragma warning( disable : 4244 )
 
-void EXWrapper::Register(lua_State* L)noexcept
+LUA_REGISTER_MODULE_DEF(lstg_ex)
 {
 	static fcyStopWatch sw0;
 	static fcyStopWatch sw;
@@ -132,5 +133,5 @@ void EXWrapper::Register(lua_State* L)noexcept
 	};
 	luaL_register(L, "ex", tFunctions);
 	lua_pop(L, 1);
+	return 0;
 }
-

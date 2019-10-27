@@ -4,6 +4,7 @@
 #include "Renderer.h"
 #include "UtilLua.h"
 #include "UtilLuaRes.h"
+#include "../Classes/XLuaModuleRegistry.h"
 
 using namespace std;
 using namespace lstg;
@@ -15,7 +16,7 @@ inline int error_render(lua_State* L, int lo)
 	return luaL_error(L, "can't render '%s'", lua_tostring(L, lo));
 }
 
-static int RenderTexture_(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, RenderTexture)
 {
 	auto tex = lua::toTexture2D(L, 1);
 	if (!tex)
@@ -56,7 +57,7 @@ static int RenderTexture_(lua_State* L) noexcept
 		return error_render(L, 1);
 	return 0;
 }
-static int RenderSector(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, RenderSector)
 {
 	auto p = lua::toResSprite(L, 1);
 	if (!p)
@@ -120,7 +121,7 @@ static int RenderSector(lua_State* L) noexcept
 	}
 	return 0;
 }
-static int DrawGroupCollider(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, DrawGroupCollider)
 {
 	const int group_id = luaL_checkinteger(L, 1);
 	const auto color = luaval_to_c4b(L, 2);
@@ -128,15 +129,4 @@ static int DrawGroupCollider(lua_State* L) noexcept
 	const auto off_y = luaL_checknumber(L, 4);
 	LAPP.getGameObjectPool().DrawGroupCollider(group_id, color, cocos2d::Vec2(off_x, off_y));
 	return 0;
-}
-
-vector<luaL_Reg> lstg::LW_Render()
-{
-	vector<luaL_Reg> ret = {
-		{ "RenderTexture", &RenderTexture_ },
-
-		{ "RenderSector", &RenderSector },
-		{ "DrawGroupCollider", &DrawGroupCollider },
-	};
-	return ret;
 }

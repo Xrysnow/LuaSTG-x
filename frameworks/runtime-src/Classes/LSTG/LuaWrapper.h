@@ -8,6 +8,4 @@ namespace lstg
 {
 	BlendMode* TranslateBlendMode(lua_State* L, int argnum);
 	void TranslateAlignMode(lua_State* L, int argnum, cocos2d::TextHAlignment& halign, cocos2d::TextVAlignment& valign);
-	void RegistWrapper(lua_State* L);
 }
-

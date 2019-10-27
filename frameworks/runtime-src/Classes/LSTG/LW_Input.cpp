@@ -4,30 +4,32 @@
 #include "UtilLua.h"
 #include "InputManager.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
+#include "../Classes/XLuaModuleRegistry.h"
 
 using namespace std;
 using namespace lstg;
 using namespace cocos2d;
 
-static int GetKeyState(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, GetKeyState)
 {
 	lua_pushboolean(L, LIM.getKeyState(luaL_checkinteger(L, 1)));
 	return 1;
 }
-static int GetLastKey(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, GetLastKey)
 {
 	lua_pushinteger(L, LIM.getLastKey());
 	return 1;
 }
-static int GetLastChar(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, GetLastChar)
 {
 	return LIM.getLastChar(L);
 }
+
 /*******************************************************************************
  * controller
  *******************************************************************************/
 
-static int GetAllControllers(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, GetAllControllers)
 {
 	int idx = 1;
 	lua_newtable(L);
@@ -62,28 +64,28 @@ ControllerHelper::ConnectCallBack getConnectCallBack(LUA_FUNCTION handler)
 		LuaEngine::getInstance()->getLuaStack()->executeFunctionByHandler(handler, 1);
 	};
 }
-static int SetOnControllerKeyDown(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SetOnControllerKeyDown)
 {
 	const LUA_FUNCTION handler = toluafix_ref_function(L, 1, 0);
 	ControllerHelper::getInstance()->setOnKeyDown(
 		(handler == 0) ? nullptr : getKeyCallBack(handler));
 	return 0;
 }
-static int SetOnControllerKeyUp(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SetOnControllerKeyUp)
 {
 	const LUA_FUNCTION handler = toluafix_ref_function(L, 1, 0);
 	ControllerHelper::getInstance()->setOnKeyUp(
 		(handler == 0) ? nullptr : getKeyCallBack(handler));
 	return 0;
 }
-static int SetOnControllerAxisEvent(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SetOnControllerAxisEvent)
 {
 	const LUA_FUNCTION handler = toluafix_ref_function(L, 1, 0);
 	ControllerHelper::getInstance()->setOnAxisEvent(
 		(handler == 0) ? nullptr : getKeyCallBack(handler));
 	return 0;
 }
-static int SetOnControllerConnect(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SetOnControllerConnect)
 {
 	const LUA_FUNCTION handler = toluafix_ref_function(L, 1, 0);
 	ControllerHelper::getInstance()->setOnConnect(
@@ -91,7 +93,7 @@ static int SetOnControllerConnect(lua_State* L) noexcept
 	return 0;
 }
 
-static int SetOnControllerDisconnect(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SetOnControllerDisconnect)
 {
 	const LUA_FUNCTION handler = toluafix_ref_function(L, 1, 0);
 	ControllerHelper::getInstance()->setOnDisconnect(
@@ -102,42 +104,21 @@ static int SetOnControllerDisconnect(lua_State* L) noexcept
 /*******************************************************************************
 * mouse
 *******************************************************************************/
-static int GetMousePosition(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, GetMousePosition)
 {
 	const auto pos = LIM.getMousePosition();
 	lua_pushnumber(L, pos.x);
 	lua_pushnumber(L, pos.y);
 	return 2;
 }
-static int GetMouseState(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, GetMouseState)
 {
 	lua_pushboolean(L, LIM.getMouseState(luaL_checkinteger(L, 1) - 1));
 	return 1;
 }
 
-//static int UpdateInput(lua_State* L) noexcept
+//LUA_REGISTER_FUNC_DEF(lstg, UpdateInput)
 //{
 //	//LAPP.UpdateInput();
 //	return 0;
 //}
-
-vector<luaL_Reg> lstg::LW_Input()
-{
-	vector<luaL_Reg> ret = {
-		{ "GetKeyState", &GetKeyState },
-		{ "GetLastKey", &GetLastKey },
-		{ "GetLastChar", &GetLastChar },
-
-		{ "GetAllControllers", &GetAllControllers },
-		{ "SetOnControllerKeyDown", &SetOnControllerKeyDown },
-		{ "SetOnControllerKeyUp", &SetOnControllerKeyUp },
-		{ "SetOnControllerAxisEvent", &SetOnControllerAxisEvent },
-		{ "SetOnControllerConnect", &SetOnControllerConnect },
-		{ "SetOnControllerDisconnect", &SetOnControllerDisconnect },
-
-		{ "GetMousePosition", &GetMousePosition },
-		{ "GetMouseState", &GetMouseState },
-		//{ "UpdateInput", &UpdateInput },  //new
-	};
-	return ret;
-}

@@ -2,48 +2,49 @@
 #include "UtilLua.h"
 #include "../Math/XMath.h"
 #include "CollisionDetect.h"
-#include "MemPoolManager.h"
+//#include "MemPoolManager.h"
 #include "UtilLuaConversion.h"
+#include "../Classes/XLuaModuleRegistry.h"
 
 using namespace std;
 using namespace lstg;
 
-static int Sin(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, sin)
 {
 	lua_pushnumber(L, sin(luaL_checknumber(L, 1) * LDEGREE2RAD));
 	return 1;
 }
-static int Cos(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, cos)
 {
 	lua_pushnumber(L, cos(luaL_checknumber(L, 1) * LDEGREE2RAD));
 	return 1;
 }
-static int ASin(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, asin)
 {
 	lua_pushnumber(L, asin(luaL_checknumber(L, 1)) * LRAD2DEGREE);
 	return 1;
 }
-static int ACos(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, acos)
 {
 	lua_pushnumber(L, acos(luaL_checknumber(L, 1)) * LRAD2DEGREE);
 	return 1;
 }
-static int Tan(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, tan)
 {
 	lua_pushnumber(L, tan(luaL_checknumber(L, 1) * LDEGREE2RAD));
 	return 1;
 }
-static int ATan(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, atan)
 {
 	lua_pushnumber(L, atan(luaL_checknumber(L, 1)) * LRAD2DEGREE);
 	return 1;
 }
-static int ATan2(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, atan2)
 {
 	lua_pushnumber(L, atan2(luaL_checknumber(L, 1), luaL_checknumber(L, 2)) * LRAD2DEGREE);
 	return 1;
 }
-static int SinCos(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, sincos)
 {
 	const auto angle = luaL_checknumber(L, 1) * LDEGREE2RAD;
 	const auto s = std::sin(angle);
@@ -52,7 +53,7 @@ static int SinCos(lua_State* L) noexcept
 	lua_pushnumber(L, c);
 	return 2;
 }
-static int SampleBezierA1_(lua_State* L) noexcept
+LUA_REGISTER_FUNC_DEF(lstg, SampleBezierA1)
 {
 	auto in_pos = lua::getVec2Array(L, 1, "x", "y");
 	auto i = luaL_checkinteger(L, 2);
@@ -81,22 +82,4 @@ static int SampleBezierA1_(lua_State* L) noexcept
 	lua::native_to_luaval(L, out_y);
 	lua::native_to_luaval(L, out_rot);
 	return 3;
-}
-
-vector<luaL_Reg> lstg::LW_Math()
-{
-	vector<luaL_Reg> ret = {
-		{ "sin", &Sin },
-		{ "cos", &Cos },
-		{ "asin", &ASin },
-		{ "acos", &ACos },
-		{ "tan", &Tan },
-		{ "atan", &ATan },
-		{ "atan2", &ATan2 },
-
-		{ "sincos", &SinCos },
-
-		{ "SampleBezierA1", &SampleBezierA1_ },
-	};
-	return ret;
 }

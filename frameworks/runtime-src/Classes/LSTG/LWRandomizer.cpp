@@ -1,11 +1,12 @@
 ﻿#include "LWRandomizer.h"
-#include "LuaWrapper.h"
+#include "../Classes/XLuaModuleRegistry.h"
+
 using namespace std;
 using namespace lstg;
 
 #define check_rng(L, idx) (static_cast<fcyRandomWELL512*>(luaL_checkudata(L, idx, TYPENAME_RANDGEN)))
 
-void RandomizerWrapper::Register(lua_State* L)noexcept
+LUA_REGISTER_MODULE_DEF(lstg_Random)
 {
 	struct WrapperImplement
 	{
@@ -74,6 +75,7 @@ void RandomizerWrapper::Register(lua_State* L)noexcept
 	lua_pushvalue(L, -3);  // t mt s t
 	lua_rawset(L, -3);  // t mt (mt["__metatable"] = t) // make metatable readonly
 	lua_pop(L, 2);
+	return 0;
 }
 
 fcyRandomWELL512* RandomizerWrapper::CreateAndPush(lua_State* L)
@@ -83,4 +85,10 @@ fcyRandomWELL512* RandomizerWrapper::CreateAndPush(lua_State* L)
 	luaL_getmetatable(L, TYPENAME_RANDGEN);
 	lua_setmetatable(L, -2);
 	return p;
+}
+
+LUA_REGISTER_FUNC_DEF(lstg, Rand)
+{
+	RandomizerWrapper::CreateAndPush(L);
+	return 1;
 }
