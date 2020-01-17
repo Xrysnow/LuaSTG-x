@@ -4,7 +4,7 @@
 #include <unordered_map>
 
 #include "platform/CCPlatformMacros.h"
-#if CC_64BITS
+#if CC_64BITS && CC_TARGET_PLATFORM != CC_PLATFORM_WIN32
 #define HASH_OFFSET -3
 #else
 #define HASH_OFFSET -2
