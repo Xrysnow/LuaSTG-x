@@ -8,14 +8,19 @@ using namespace std;
 using namespace lstg;
 using cocos2d::Color4B;
 
+constexpr int COLOR_IDX_METHOD = 1;
+constexpr int COLOR_IDX_GETTER = 2;
+constexpr int COLOR_IDX_SETTER = 3;
+constexpr int COLOR_IDX_CTOR = 4;
+
 Color4B* checkcolor(lua_State* L, int lo)
 {
 	return luaL_checkcolor(L, lo);
 }
 
-static int ARGB(lua_State* L)noexcept
+static int color_ARGB(lua_State* L)noexcept
 {
-	const Color4B* p = checkcolor(L, 1);
+	const auto p = checkcolor(L, 1);
 	lua_pushnumber(L, p->a);
 	lua_pushnumber(L, p->r);
 	lua_pushnumber(L, p->g);
@@ -23,33 +28,41 @@ static int ARGB(lua_State* L)noexcept
 	return 4;
 }
 
-static int Meta_Eq(lua_State* L)noexcept
+static int color_clone(lua_State* L)noexcept
 {
-	const Color4B* pA = checkcolor(L, 1);
-	const Color4B* pB = checkcolor(L, 2);
+	const auto p = checkcolor(L, 1);
+	const auto c = ColorWrapper::CreateAndPush(L);
+	*c = *p;
+	return 1;
+}
+
+static int color_meta_eq(lua_State* L)noexcept
+{
+	const auto pA = checkcolor(L, 1);
+	const auto pB = checkcolor(L, 2);
 	lua_pushboolean(L, memcmp(pA, pB, sizeof(Color4B)) == 0);
 	return 1;
 }
 
-static int Meta_Add(lua_State* L)noexcept
+static int color_meta_add(lua_State* L)noexcept
 {
-	const Color4B* pA = checkcolor(L, 1);
-	const Color4B* pB = checkcolor(L, 2);
+	const auto pA = checkcolor(L, 1);
+	const auto pB = checkcolor(L, 2);
 	const auto pResult = ColorWrapper::CreateAndPush(L);
 	*pResult = *pA + *pB;
 	return 1;
 }
 
-static int Meta_Sub(lua_State* L)noexcept
+static int color_meta_sub(lua_State* L)noexcept
 {
-	const Color4B* pA = checkcolor(L, 1);
-	const Color4B* pB = checkcolor(L, 2);
+	const auto pA = checkcolor(L, 1);
+	const auto pB = checkcolor(L, 2);
 	const auto pResult = ColorWrapper::CreateAndPush(L);
 	*pResult = *pA - *pB;
 	return 1;
 }
 
-static int Meta_Mul(lua_State* L)noexcept
+static int color_meta_mul(lua_State* L)noexcept
 {
 	lua_Number tFactor;
 	Color4B *p = nullptr, *pResult = nullptr;
@@ -76,14 +89,32 @@ static int Meta_Mul(lua_State* L)noexcept
 	return 1;
 }
 
-static int Meta_ToString(lua_State* L)noexcept
+static int color_meta_tostring(lua_State* L)noexcept
 {
 	const auto p = checkcolor(L, 1);
 	lua_pushfstring(L, "lstg.Color(a:%d, r:%d, g:%d, b:%d)", p->a, p->r, p->g, p->b);
 	return 1;
 }
 
-static int GetAttr(lua_State* L)noexcept
+static int color_getter_argb(lua_State* L)noexcept
+{
+	const auto p = checkcolor(L, 1);
+	lua_pushinteger(L, (p->a << 24) + (p->r << 16) + (p->g << 8) + p->b);
+	return 1;
+}
+
+static int color_setter_argb(lua_State* L)noexcept
+{
+	const auto p = checkcolor(L, 1);
+	const uint32_t val = luaL_checknumber(L, 2);
+	p->r = val >> 16;
+	p->g = val >> 8;
+	p->b = val;
+	p->a = val >> 24;
+	return 0;
+}
+
+static int color_meta_index(lua_State* L)noexcept
 {
 	const auto p = checkcolor(L, 1);
 	const auto k = luaL_checkstring(L, 2);
@@ -107,20 +138,28 @@ static int GetAttr(lua_State* L)noexcept
 		default:;
 		}
 	}
-	if (strcmp(k, "argb") == 0)
-	{
-		lua_pushinteger(L, (p->a << 24) + (p->r << 16) + (p->g << 8) + p->b);
+
+	//luaL_getmetatable(L, TYPENAME_COLOR); // t k mt
+	lua_getmetatable(L, 1); // t k mt
+	lua_rawgeti(L, -1, COLOR_IDX_METHOD); // t k mt methods
+	lua_pushvalue(L, 2); // t k mt methods k
+	lua_rawget(L, -2); // t k mt methods k f
+	if (!lua_isnil(L, -1))
 		return 1;
-	}
-	if (strcmp(k, "ARGB") == 0)
+	lua_pop(L, 3); // t k mt
+	lua_rawgeti(L, -1, COLOR_IDX_GETTER); // t k mt getters
+	lua_pushvalue(L, 2); // t k mt getters k
+	lua_rawget(L, -2); // t k mt getters k f
+	if (!lua_isnil(L, -1))
 	{
-		lua_pushcfunction(L, &ARGB);
+		lua_pushvalue(L, 1); // t k mt getters k f t
+		lua_call(L, 1, 1);
 		return 1;
 	}
 	return 0;
 }
 
-static int SetAttr(lua_State* L)noexcept
+static int color_meta_newindex(lua_State* L)noexcept
 {
 	const auto p = checkcolor(L, 1);
 	const auto k = luaL_checkstring(L, 2);
@@ -145,13 +184,18 @@ static int SetAttr(lua_State* L)noexcept
 		default:;
 		}
 	}
-	if (strcmp(k, "argb") == 0)
+
+	//luaL_getmetatable(L, TYPENAME_COLOR); // t k v mt
+	lua_getmetatable(L, 1);
+	lua_rawgeti(L, -1, COLOR_IDX_SETTER); // t k v mt setters
+	lua_pushvalue(L, 2); // t k v mt setters k
+	lua_rawget(L, -2); // t k v mt setters k f
+	if (!lua_isnil(L, -1))
 	{
-		const uint32_t val = luaL_checknumber(L, 3);
-		p->r = val >> 16;
-		p->g = val >> 8;
-		p->b = val;
-		p->a = val >> 24;
+		lua_pushvalue(L, 1); // t k v mt setters k f t
+		lua_pushvalue(L, 3); // t k v mt setters k f t v
+		lua_call(L, 2, 0);
+		return 0;
 	}
 	return 0;
 }
@@ -165,24 +209,40 @@ LUA_REGISTER_MODULE_DEF(lstg_Color)
 	};
 	luaL_Reg tMetaTable[] =
 	{
-		{ "__eq", &Meta_Eq },
-		{ "__add", &Meta_Add },
-		{ "__sub", &Meta_Sub },
-		{ "__mul", &Meta_Mul },
-		{ "__tostring", &Meta_ToString },
-		{ "__index", &GetAttr },
-		{ "__newindex", &SetAttr },
+		{ "__eq", &color_meta_eq },
+		{ "__add", &color_meta_add },
+		{ "__sub", &color_meta_sub },
+		{ "__mul", &color_meta_mul },
+		{ "__tostring", &color_meta_tostring },
+		{ "__index", &color_meta_index },
+		{ "__newindex", &color_meta_newindex },
 		{ nullptr, nullptr }
 	};
-	luaL_openlib(L, TYPENAME_COLOR, tMethods, 0);  // t
-	luaL_newmetatable(L, TYPENAME_COLOR);  // t mt
-	luaL_openlib(L, nullptr, tMetaTable, 0);  // t mt
-	//lua_pushliteral(L, "__index");  // t mt s
-	//lua_pushvalue(L, -3);  // t mt s t
-	//lua_rawset(L, -3);  // t mt (mt["__index"] = t)
-	lua_pushliteral(L, "__metatable");  // t mt s
-	lua_pushvalue(L, -3);  // t mt s t
-	lua_rawset(L, -3);  // t mt (mt["__metatable"] = t)  protect metatable
+	luaL_openlib(L, TYPENAME_COLOR, tMethods, 0); // t
+	luaL_newmetatable(L, TYPENAME_COLOR); // t mt
+	luaL_openlib(L, nullptr, tMetaTable, 0); // t mt
+
+	// methods, getters, setters
+	for (auto s : { COLOR_IDX_METHOD,COLOR_IDX_GETTER,COLOR_IDX_SETTER })
+	{
+		lua_pushinteger(L, s);
+		lua_newtable(L);
+		lua_rawset(L, -3);
+	}
+
+	lua_rawgeti(L, -1, COLOR_IDX_METHOD); // t mt methods
+	tolua_function(L, "ARGB", color_ARGB);
+	tolua_function(L, "clone", color_clone);
+	lua_pop(L, 1); // t mt
+
+	lua_rawgeti(L, -1, COLOR_IDX_GETTER); // t mt getters
+	tolua_function(L, "argb", color_getter_argb);
+	lua_pop(L, 1); // t mt
+
+	lua_rawgeti(L, -1, COLOR_IDX_SETTER); // t mt setters
+	tolua_function(L, "argb", color_setter_argb);
+	lua_pop(L, 1); // t mt
+
 	lua_pop(L, 2);
 	return 0;
 }
@@ -190,7 +250,7 @@ LUA_REGISTER_MODULE_DEF(lstg_Color)
 Color4B* ColorWrapper::CreateAndPush(lua_State* L)
 {
 	const auto p = static_cast<Color4B*>(lua_newuserdata(L, sizeof(Color4B)));
-	new(p) Color4B();  // construct inplace
+	*p = Color4B();
 	luaL_getmetatable(L, TYPENAME_COLOR);
 	lua_setmetatable(L, -2);
 	return p;
@@ -199,31 +259,51 @@ Color4B* ColorWrapper::CreateAndPush(lua_State* L)
 LUA_REGISTER_FUNC_DEF(lstg, Color)
 {
 	const auto top = lua_gettop(L);
+	const auto p = ColorWrapper::CreateAndPush(L); // ... o
 	if (top == 0)
-	{
-		ColorWrapper::CreateAndPush(L);
 		return 1;
-	}
-	Color4B c;
-	if (top == 1)
+	const auto isnum = lua_isnumber(L, 1);
+	if ((top == 1 || top == 4) && isnum)
 	{
-		// note: luaL_checkinteger return signed int
-		const uint32_t val = luaL_checknumber(L, 1);
-		c.r = val >> 16;
-		c.g = val >> 8;
-		c.b = val;
-		c.a = val >> 24;
+		Color4B c;
+		if (top == 1)
+		{
+			// note: luaL_checkinteger return signed int
+			const uint32_t val = luaL_checknumber(L, 1);
+			c.r = val >> 16;
+			c.g = val >> 8;
+			c.b = val;
+			c.a = val >> 24;			
+		}
+		else
+		{
+			// a r g b -> r g b a
+			c.set(
+				int32_t(luaL_checkinteger(L, 2)),
+				int32_t(luaL_checkinteger(L, 3)),
+				int32_t(luaL_checkinteger(L, 4)),
+				int32_t(luaL_checkinteger(L, 1))
+			);
+		}
+		*p = c;
 	}
 	else
 	{
-		// a r g b -> r g b a
-		c.set(
-			int32_t(luaL_checkinteger(L, 2)),
-			int32_t(luaL_checkinteger(L, 3)),
-			int32_t(luaL_checkinteger(L, 4)),
-			int32_t(luaL_checkinteger(L, 1))
-		);
+		lua_getmetatable(L, -1); // ... o mt
+		lua_rawgeti(L, -1, COLOR_IDX_CTOR); // ... o mt f
+		if (!lua_isnil(L, -1))
+		{
+			lua_insert(L, 1); // f ... o mt
+			lua_pop(L, 1); // f ... o
+			lua_pushvalue(L, -1); // f ... o o
+			lua_insert(L, 1); // o f ...
+			lua_insert(L, 3); // o f o ...
+			lua_call(L, top + 1, 0); // o
+		}
+		else
+		{
+			lua_pop(L, 2); // ... o
+		}
 	}
-	*ColorWrapper::CreateAndPush(L) = c;
 	return 1;
 }
