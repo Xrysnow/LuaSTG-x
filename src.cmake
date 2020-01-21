@@ -34,6 +34,7 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XFileDialog.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XFileUtils.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XLabel.h
+	${RUNTIME_SRC_ROOT}/Classes/Classes/XLuaModuleRegistry.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XProfiler.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XRand.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XRefAdapter.h
@@ -239,6 +240,7 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XFileDialog.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XFileUtils.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XLabel.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Classes/XLuaModuleRegistry.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XProfiler.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XRand.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XRefAdapter.cpp
