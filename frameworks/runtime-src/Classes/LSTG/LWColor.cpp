@@ -18,6 +18,16 @@ Color4B* checkcolor(lua_State* L, int lo)
 	return luaL_checkcolor(L, lo);
 }
 
+uint8_t check_byte(lua_State* L, int lo)
+{
+	return std::max(0.0, std::min(luaL_checknumber(L, lo), 255.0));
+}
+
+uint8_t check_float(lua_State* L, int lo)
+{
+	return std::max(0.0, std::min(luaL_checknumber(L, lo)*255.0, 255.0));
+}
+
 static int color_ARGB(lua_State* L)noexcept
 {
 	const auto p = checkcolor(L, 1);
@@ -28,11 +38,56 @@ static int color_ARGB(lua_State* L)noexcept
 	return 4;
 }
 
+static int color_unpack(lua_State* L)noexcept
+{
+	const auto p = checkcolor(L, 1);
+	lua_pushnumber(L, p->r);
+	lua_pushnumber(L, p->g);
+	lua_pushnumber(L, p->b);
+	lua_pushnumber(L, p->a);
+	return 4;
+}
+static int color_unpackFloat(lua_State* L)noexcept
+{
+	const auto p = checkcolor(L, 1);
+	lua_pushnumber(L, p->r / 255.0);
+	lua_pushnumber(L, p->g / 255.0);
+	lua_pushnumber(L, p->b / 255.0);
+	lua_pushnumber(L, p->a / 255.0);
+	return 4;
+}
+
 static int color_clone(lua_State* L)noexcept
 {
 	const auto p = checkcolor(L, 1);
 	const auto c = ColorWrapper::CreateAndPush(L);
 	*c = *p;
+	return 1;
+}
+
+static int color_set(lua_State* L)noexcept
+{
+	const auto p = checkcolor(L, 1);
+	const auto narg = lua_gettop(L) - 1;
+	p->r = check_byte(L, 2);
+	p->g = check_byte(L, 3);
+	p->b = check_byte(L, 4);
+	if (narg >= 4)
+		p->a = check_byte(L, 5);
+	lua_settop(L, 1);
+	return 1;
+}
+
+static int color_setFloat(lua_State* L)noexcept
+{
+	const auto p = checkcolor(L, 1);
+	const auto narg = lua_gettop(L) - 1;
+	p->r = check_float(L, 2);
+	p->g = check_float(L, 3);
+	p->b = check_float(L, 4);
+	if (narg >= 4)
+		p->a = check_float(L, 5);
+	lua_settop(L, 1);
 	return 1;
 }
 
@@ -232,7 +287,11 @@ LUA_REGISTER_MODULE_DEF(lstg_Color)
 
 	lua_rawgeti(L, -1, COLOR_IDX_METHOD); // t mt methods
 	tolua_function(L, "ARGB", color_ARGB);
+	tolua_function(L, "unpack", color_unpack);
+	tolua_function(L, "unpackFloat", color_unpackFloat);
 	tolua_function(L, "clone", color_clone);
+	tolua_function(L, "set", color_set);
+	tolua_function(L, "setFloat", color_setFloat);
 	lua_pop(L, 1); // t mt
 
 	lua_rawgeti(L, -1, COLOR_IDX_GETTER); // t mt getters
@@ -268,7 +327,7 @@ LUA_REGISTER_FUNC_DEF(lstg, Color)
 		Color4B c;
 		if (top == 1)
 		{
-			// note: luaL_checkinteger return signed int
+			// note: luaL_checkinteger return signed int, should use luaL_checknumber
 			const uint32_t val = luaL_checknumber(L, 1);
 			c.r = val >> 16;
 			c.g = val >> 8;
