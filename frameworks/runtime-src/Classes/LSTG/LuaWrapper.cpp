@@ -226,3 +226,138 @@ LUA_REGISTER_MODULE_DEF(lpeg) { luaopen_lpeg(L); lua_pop(L, 2); return 0; }
 #include "../imgui/lua-bindings/imgui_lua.hpp"
 LUA_REGISTER_MODULE(imgui, luaopen_imgui);
 #endif // CC_PLATFORM_PC
+
+#if defined(CC_PLATFORM_PC)
+#include "glfw3.h"
+LUA_REGISTER_MODULE_DEF(lstg_glfw)
+{
+	tolua_open(L);
+	tolua_module(L, "lstg", 0);
+	tolua_beginmodule(L, "lstg");
+	tolua_module(L, "glfw", 0);
+	tolua_beginmodule(L, "glfw");
+
+#define SET(F) lua_pushlightuserdata(L, (void*)(F)); lua_setfield(L, -2, #F);
+	SET(glfwInit);
+	SET(glfwTerminate);
+	SET(glfwInitHint);
+	SET(glfwGetVersion);
+	SET(glfwGetVersionString);
+	SET(glfwGetError);
+	SET(glfwSetErrorCallback);
+	SET(glfwGetMonitors);
+	SET(glfwGetPrimaryMonitor);
+	SET(glfwGetMonitorPos);
+	SET(glfwGetMonitorWorkarea);
+	SET(glfwGetMonitorPhysicalSize);
+	SET(glfwGetMonitorContentScale);
+	SET(glfwGetMonitorName);
+	SET(glfwSetMonitorUserPointer);
+	SET(glfwGetMonitorUserPointer);
+	SET(glfwSetMonitorCallback);
+	SET(glfwGetVideoModes);
+	SET(glfwGetVideoMode);
+	SET(glfwSetGamma);
+	SET(glfwGetGammaRamp);
+	SET(glfwSetGammaRamp);
+	SET(glfwDefaultWindowHints);
+	SET(glfwWindowHint);
+	SET(glfwWindowHintString);
+	SET(glfwCreateWindow);
+	SET(glfwDestroyWindow);
+	SET(glfwWindowShouldClose);
+	SET(glfwSetWindowShouldClose);
+	SET(glfwSetWindowTitle);
+	SET(glfwSetWindowIcon);
+	SET(glfwGetWindowPos);
+	SET(glfwSetWindowPos);
+	SET(glfwGetWindowSize);
+	SET(glfwSetWindowSizeLimits);
+	SET(glfwSetWindowAspectRatio);
+	SET(glfwSetWindowSize);
+	SET(glfwGetFramebufferSize);
+	SET(glfwGetWindowFrameSize);
+	SET(glfwGetWindowContentScale);
+	SET(glfwGetWindowOpacity);
+	SET(glfwSetWindowOpacity);
+	SET(glfwIconifyWindow);
+	SET(glfwRestoreWindow);
+	SET(glfwMaximizeWindow);
+	SET(glfwShowWindow);
+	SET(glfwHideWindow);
+	SET(glfwFocusWindow);
+	SET(glfwRequestWindowAttention);
+	SET(glfwGetWindowMonitor);
+	SET(glfwSetWindowMonitor);
+	SET(glfwGetWindowAttrib);
+	SET(glfwSetWindowAttrib);
+	SET(glfwSetWindowUserPointer);
+	SET(glfwGetWindowUserPointer);
+	SET(glfwSetWindowPosCallback);
+	SET(glfwSetWindowSizeCallback);
+	SET(glfwSetWindowCloseCallback);
+	SET(glfwSetWindowRefreshCallback);
+	SET(glfwSetWindowFocusCallback);
+	SET(glfwSetWindowIconifyCallback);
+	SET(glfwSetWindowMaximizeCallback);
+	SET(glfwSetFramebufferSizeCallback);
+	SET(glfwSetWindowContentScaleCallback);
+	SET(glfwPollEvents);
+	SET(glfwWaitEvents);
+	SET(glfwWaitEventsTimeout);
+	SET(glfwPostEmptyEvent);
+	SET(glfwGetInputMode);
+	SET(glfwSetInputMode);
+	SET(glfwRawMouseMotionSupported);
+	SET(glfwGetKeyName);
+	SET(glfwGetKeyScancode);
+	SET(glfwGetKey);
+	SET(glfwGetMouseButton);
+	SET(glfwGetCursorPos);
+	SET(glfwSetCursorPos);
+	SET(glfwCreateCursor);
+	SET(glfwCreateStandardCursor);
+	SET(glfwDestroyCursor);
+	SET(glfwSetCursor);
+	SET(glfwSetKeyCallback);
+	SET(glfwSetCharCallback);
+	SET(glfwSetCharModsCallback);
+	SET(glfwSetMouseButtonCallback);
+	SET(glfwSetCursorPosCallback);
+	SET(glfwSetCursorEnterCallback);
+	SET(glfwSetScrollCallback);
+	SET(glfwSetDropCallback);
+	SET(glfwJoystickPresent);
+	SET(glfwGetJoystickAxes);
+	SET(glfwGetJoystickButtons);
+	SET(glfwGetJoystickHats);
+	SET(glfwGetJoystickName);
+	SET(glfwGetJoystickGUID);
+	SET(glfwSetJoystickUserPointer);
+	SET(glfwGetJoystickUserPointer);
+	SET(glfwJoystickIsGamepad);
+	SET(glfwSetJoystickCallback);
+	SET(glfwUpdateGamepadMappings);
+	SET(glfwGetGamepadName);
+	SET(glfwGetGamepadState);
+	SET(glfwSetClipboardString);
+	SET(glfwGetClipboardString);
+	SET(glfwGetTime);
+	SET(glfwSetTime);
+	SET(glfwGetTimerValue);
+	SET(glfwGetTimerFrequency);
+	SET(glfwMakeContextCurrent);
+	SET(glfwGetCurrentContext);
+	SET(glfwSwapBuffers);
+	SET(glfwSwapInterval);
+	SET(glfwExtensionSupported);
+	SET(glfwGetProcAddress);
+	SET(glfwVulkanSupported);
+	SET(glfwGetRequiredInstanceExtensions);
+#undef SET
+
+	tolua_endmodule(L);
+	tolua_endmodule(L);
+	return 0;
+}
+#endif
