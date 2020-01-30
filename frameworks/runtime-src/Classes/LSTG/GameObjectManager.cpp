@@ -171,7 +171,10 @@ GameObject* GameObjectManager::freeObjectInternal(GameObject* p) noexcept
 GameObject* GameObjectManager::freeObject(GameObject* p)noexcept
 {
 	const auto it = objList.find(p);
-	GameObject* pRet = *std::next(it);
+	GameObject* pRet = nullptr;
+	const auto next = std::next(it);
+	if (next != objList.end())
+		pRet = *next;
 	objList.erase(it);
 	renderList.erase(p);
 	colliList[p->cm->getDataColli()->group].erase(p);
