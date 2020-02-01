@@ -134,11 +134,11 @@ string ResFont::getInfo() const
 Label* ResFont::createLabel()
 {
 	Label* ret;
-	const auto isExit = FileUtils::getInstance()->isFileExist(config.fontFilePath);
+	const auto exist = FileUtils::getInstance()->isFileExist(config.fontFilePath);
 	switch (getLabelType())
 	{
 	case LabelType::TTF:
-		if (isExit)
+		if (exist)
 			ret = Label::createWithTTF(config, "");
 		else
 			ret = Label::createWithSystemFont("", config.fontFilePath, config.fontSize);
