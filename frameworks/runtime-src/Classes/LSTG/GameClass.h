@@ -1,8 +1,6 @@
 ﻿#pragma once
-#include <vector>
-#include <array>
-#include "tolua++.h"
 #include "GameObjectSymbol.h"
+#include <array>
 
 namespace lstg
 {

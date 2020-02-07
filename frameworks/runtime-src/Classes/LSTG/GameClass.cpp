@@ -1,5 +1,4 @@
 ﻿#include "GameClass.h"
-#include "Global.h"
 #include "UtilLua.h"
 
 #define KEY_FRAME_FUNC(_P) (void*)((size_t)(_P) + 1)
