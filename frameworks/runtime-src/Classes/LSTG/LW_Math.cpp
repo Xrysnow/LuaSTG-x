@@ -2,7 +2,6 @@
 #include "UtilLua.h"
 #include "../Math/XMath.h"
 #include "CollisionDetect.h"
-//#include "MemPoolManager.h"
 #include "UtilLuaConversion.h"
 #include "../Classes/XLuaModuleRegistry.h"
 
@@ -73,10 +72,6 @@ LUA_REGISTER_FUNC_DEF(lstg, SampleBezierA1)
 		out_x.push_back(p.x);
 		out_y.push_back(p.y);
 	}
-
-	//lua::pushArray(L,out_x);
-	//lua::pushArray(L,out_y);
-	//lua::pushArray(L,out_rot);
 
 	lua::native_to_luaval(L, out_x);
 	lua::native_to_luaval(L, out_y);

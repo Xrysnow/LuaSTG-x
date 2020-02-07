@@ -35,7 +35,7 @@ public:
 
 	void beginDraw();
 	void endDraw();
-	// 强制设置纹理字体的颜色，设置为白色则不会起作用
+	//
 	void setBlendColor(const cocos2d::Color4B& color) { blendColor = color; }
 	cocos2d::Color4B& getBlendColor() { return blendColor; }
 
