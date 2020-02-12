@@ -147,10 +147,9 @@ bool GameObjectManager::isExtProperty3D(GameObject* p)
 }
 
 // will not erase from objList, expect ot on lua stack
-GameObject* GameObjectManager::freeObjectInternal(GameObject* p) noexcept
+void GameObjectManager::freeObjectInternal(GameObject* p) noexcept
 {
 	const auto it = objList.find(p);
-	GameObject* pRet = *std::next(it);
 	//objList.erase(it);
 	renderList.erase(p);
 	colliList[p->cm->getDataColli()->group].erase(p);
@@ -165,7 +164,6 @@ GameObject* GameObjectManager::freeObjectInternal(GameObject* p) noexcept
 	p->status = STATUS_FREE;
 	// delete from pool
 	pool.free(p);
-	return pRet;
 }
 
 GameObject* GameObjectManager::freeObject(GameObject* p)noexcept
@@ -955,7 +953,7 @@ bool GameObjectManager::SetLastXY(size_t id, double x, double y) noexcept
 	return true;
 }
 
-bool GameObjectManager::SetImgState(size_t id, BlendMode* m, const Color4B& c)noexcept
+bool GameObjectManager::SetImgState(size_t id, RenderMode* m, const Color4B& c)noexcept
 {
 	GameObject* p = pool.atLua(id);
 	if (!p)
@@ -967,14 +965,14 @@ bool GameObjectManager::SetImgState(size_t id, BlendMode* m, const Color4B& c)no
 		case ResourceType::Sprite:
 		{
 			auto s = static_cast<ResSprite*>(p->res);
-			s->setBlendMode(m);
+			s->setRenderMode(m);
 			s->setColor(c);
 		}
 		break;
 		case ResourceType::Animation:
 		{
 			auto ani = static_cast<ResAnimation*>(p->res);
-			ani->setBlendMode(m);
+			ani->setRenderMode(m);
 			ani->setColor(c);
 		}
 		break;
@@ -1071,41 +1069,42 @@ bool GameObjectManager::DoDefaultRender(GameObject* p) noexcept
 	if (p->cm->getBindNode())
 	{
 		LRR.flushTriangles();
-		LRR.updateBlendMode(BlendMode::Default);
-		LRR.pushDummyCommand();
+		LRR.updateRenderMode(RenderMode::Default);
+		//LRR.pushDummyCommand();
 		const auto node = p->cm->getBindNode();
 		const auto sp3d = dynamic_cast<Sprite3D*>(node);
 		const auto zorder = node->getGlobalZOrder();
 		if (zorder != 0.f || sp3d)
 		{
-			const auto vp_store = LMP.applyArray<GLint, 4>();
+			const auto vp_store = LMP.applyArray<Viewport, 1>();
 			const auto proj_store = LMP.getMat4();
 			auto vp = LRR.getCurrentViewport();
 			const auto mt = LRR.getCurrentProjection();
 			const auto f1 = [=]() {
-				glGetIntegerv(GL_VIEWPORT, vp_store->data());
-				*proj_store = Director::getInstance()->getProjectionMatrix(0);
+				vp_store->at(0) = Director::getInstance()->getRenderer()->getViewport();
+				*proj_store = Director::getInstance()->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
 
-				glViewport(vp._left, vp._bottom, vp._width, vp._height);
-				Director::getInstance()->loadProjectionMatrix(mt, 0);
+				Director::getInstance()->getRenderer()->setViewPort(vp.x, vp.y, vp.w, vp.h);
+				Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, mt);
 			};
 			const auto f2 = [=]() {
-				glViewport(vp_store->at(0), vp_store->at(1), vp_store->at(2), vp_store->at(3));
-				Director::getInstance()->loadProjectionMatrix(*proj_store, 0);
+				auto& v = vp_store->at(0);
+				Director::getInstance()->getRenderer()->setViewPort(v.x, v.y, v.w, v.h);
+				Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, *proj_store);
 			};
 			if (zorder != 0.f)
 			{
-				LRR.pushCustomCommend(QUEUE_GROUP::GLOBALZ_NEG, zorder, f1);
+				LRR.pushCallbackCommend(QUEUE_GROUP::GLOBALZ_NEG, zorder, f1);
 				node->visit();
-				LRR.pushCustomCommend(QUEUE_GROUP::GLOBALZ_NEG, zorder, f2);
+				LRR.pushCallbackCommend(QUEUE_GROUP::GLOBALZ_NEG, zorder, f2);
 			}
 			else
 			{
-				LRR.pushCustomCommend(QUEUE_GROUP::OPAQUE_3D, zorder, f1);
-				LRR.pushCustomCommend(QUEUE_GROUP::TRANSPARENT_3D, zorder, f1);
+				LRR.pushCallbackCommend(QUEUE_GROUP::OPAQUE_3D, zorder, f1);
+				LRR.pushCallbackCommend(QUEUE_GROUP::TRANSPARENT_3D, zorder, f1);
 				node->visit();
-				LRR.pushCustomCommend(QUEUE_GROUP::OPAQUE_3D, zorder, f2);
-				LRR.pushCustomCommend(QUEUE_GROUP::TRANSPARENT_3D, zorder, f2);
+				LRR.pushCallbackCommend(QUEUE_GROUP::OPAQUE_3D, zorder, f2);
+				LRR.pushCallbackCommend(QUEUE_GROUP::TRANSPARENT_3D, zorder, f2);
 			}
 		}
 		else
@@ -1328,13 +1327,12 @@ int GameObjectManager::GetAttr(lua_State* L)noexcept
 		else
 			lua_pushnil(L);
 		break;
-	case GameObjectProperty::BLEND:
+	case GameObjectProperty::FX:
 		if (isExtProperty(p))
 		{
 			const auto dat = p->cm->getDataBlend();
 			if (dat)
-				//lua::BlendMode_to_luaval(L, dat->blendMode);
-				lua_pushstring(L, dat->blendMode->getName().c_str());
+				object_to_luaval(L, "lstg.RenderMode", dat->renderMode);
 			else
 				lua_pushnil(L);
 		}
@@ -1410,15 +1408,18 @@ int GameObjectManager::GetAttr(lua_State* L)noexcept
 		else
 			lua_pushnil(L);
 		break;
-	case GameObjectProperty::SHADER:
-		if (isExtProperty(p))
-		{
-			const auto state = p->cm->getProgramStateCopy();
-			object_to_luaval(L, "cc.GLProgramState", state);
-		}
-		else
-			lua_pushnil(L);
-		break;
+	//case GameObjectProperty::SHADER:
+	//	if (isExtProperty(p))
+	//	{
+	//		const auto dat = p->cm->getDataBlend();
+	//		if (dat)
+	//			object_to_luaval(L, "lstg.RenderMode", dat->renderMode);
+	//		else
+	//			lua_pushnil(L);
+	//	}
+	//	else
+	//		lua_pushnil(L);
+	//	break;
 
 #define GET_3D_VALUE(_P) if (isExtProperty3D(p))\
 		lua_pushnumber(L, cm->getDataTrasform()->_P);\
@@ -1606,15 +1607,15 @@ int GameObjectManager::SetAttr(lua_State* L)noexcept
 		else
 			lua_rawset(L, 1);
 		break;
-	case GameObjectProperty::BLEND:
+	case GameObjectProperty::FX:
 		if (isExtProperty(p))
 		{
-			BlendMode* v = nullptr;
-			lua::luaval_to_BlendMode(L, 3, &v);
+			RenderMode* v = nullptr;
+			lua::luaval_to_RenderMode(L, 3, &v);
 			if (!v)
-				return error_prop(L, "blend");
+				return error_prop(L, "fx");
 			const auto blend = p->cm->getOrCreateBlend();
-			blend->blendMode = v;
+			blend->renderMode = v;
 		}
 		else
 			lua_rawset(L, 1);
@@ -1692,35 +1693,34 @@ int GameObjectManager::SetAttr(lua_State* L)noexcept
 		else
 			lua_rawset(L, 1);
 		break;
-	case GameObjectProperty::SHADER:
-		if (isExtProperty(p))
-		{
-			// 1.string 2.ResFX 3.GLProgramState 4.nil
-			const auto type = lua_type(L, 3);
-			GLProgramState* state = nullptr;
-			if (type == LUA_TSTRING)
-			{
-				state = GLProgramState::getOrCreateWithGLProgramName(lua_tostring(L, 3));
-			}
-			else if (type == LUA_TUSERDATA)
-			{
-				do
-				{
-					const auto fx = lua::tousertype<ResFX>(L, 3, "lstg.ResFX");
-					if (fx)
-						state = fx->getProgramState();
-					if (state) break;
-					state = lua::tousertype<GLProgramState>(L, 3, "cc.GLProgramState");
-				} while (false);
-			}
-			if (type == LUA_TNIL)
-				p->cm->setProgramStateCopy(nullptr);
-			else if (state)
-				p->cm->setProgramStateCopy(state->clone());
-		}
-		else
-			lua_rawset(L, 1);
-		break;
+	//case GameObjectProperty::SHADER:
+	//	if (isExtProperty(p))
+	//	{
+	//		// 1.string 2.ResFX 3.ProgramState 4.nil
+	//		const auto type = lua_type(L, 3);
+	//		backend::ProgramState* state = nullptr;
+	//		if (type == LUA_TSTRING)
+	//		{
+	//		}
+	//		else if (type == LUA_TUSERDATA)
+	//		{
+	//			do
+	//			{
+	//				const auto fx = lua::tousertype<ResFX>(L, 3, "lstg.ResFX");
+	//				if (fx)
+	//					state = fx->getProgramState();
+	//				if (state) break;
+	//				state = lua::tousertype<backend::ProgramState>(L, 3, "ccb.ProgramState");
+	//			} while (false);
+	//		}
+	//		if (type == LUA_TNIL)
+	//			p->cm->setProgramStateCopy(nullptr);
+	//		else if (state)
+	//			p->cm->setProgramStateCopy(state->clone());
+	//	}
+	//	else
+	//		lua_rawset(L, 1);
+	//	break;
 
 #define SET_3D_VALUE(_P) if (isExtProperty3D(p))\
 		cm->getDataTrasform()->_P = luaL_checknumber(L, 3);\

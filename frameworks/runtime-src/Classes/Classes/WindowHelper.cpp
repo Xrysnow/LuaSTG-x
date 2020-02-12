@@ -4,13 +4,12 @@
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 #include "../../proj.win32/WindowHelperWin32.h"
-#include "../../proj.win32/SimulatorWin.h"
 #endif
 
 using namespace std;
 using namespace lstg;
 using namespace cocos2d;
-
+ 
 WindowHelper* WindowHelper::getInstance()
 {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
@@ -18,7 +17,7 @@ WindowHelper* WindowHelper::getInstance()
 	assert_ptr(view);
 	static WindowHelperWin32 instance(
 		view,
-		SimulatorWin::getInstance()->GetMainWindow());
+		view->getWin32Window());
 #elif (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)||(CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
 	auto view = dynamic_cast<GLViewImpl*>(Director::getInstance()->getOpenGLView());
 	assert_ptr(view);
@@ -30,16 +29,15 @@ WindowHelper* WindowHelper::getInstance()
 }
 
 #ifdef CC_PLATFORM_PC
-// note: call glfw api here will take no effect
 
 WindowHelperDesktop::WindowHelperDesktop(GLViewImpl* view): view(view)
 {
-	cur_arrow = GLViewImpl::_glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-	cur_ibeam = GLViewImpl::_glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
-	cur_crosshair = GLViewImpl::_glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
-	cur_hand = GLViewImpl::_glfwCreateStandardCursor(GLFW_HAND_CURSOR);
-	cur_hresize = GLViewImpl::_glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
-	cur_vresize = GLViewImpl::_glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
+	cur_arrow = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+	cur_ibeam = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
+	cur_crosshair = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
+	cur_hand = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
+	cur_hresize = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
+	cur_vresize = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
 }
 
 WindowHelperDesktop* WindowHelperDesktop::getInstance()
@@ -50,7 +48,7 @@ WindowHelperDesktop* WindowHelperDesktop::getInstance()
 void WindowHelperDesktop::setTitle(const std::string& s)
 {
 	title = s;
-	GLViewImpl::_glfwSetWindowTitle(getWindow(), s.c_str());
+	glfwSetWindowTitle(getWindow(), s.c_str());
 }
 
 std::string WindowHelperDesktop::getTitle()
@@ -60,14 +58,14 @@ std::string WindowHelperDesktop::getTitle()
 
 void WindowHelperDesktop::setPosition(const Vec2& p)
 {
-	GLViewImpl::_glfwSetWindowPos(getWindow(), p.x, p.y);
+	glfwSetWindowPos(getWindow(), p.x, p.y);
 }
 
 Vec2 WindowHelperDesktop::getPosition()
 {
 	int x, y;
-	GLViewImpl::_glfwGetWindowPos(getWindow(), &x, &y);
-	return Vec2(x, y);
+	glfwGetWindowPos(getWindow(), &x, &y);
+	return {float(x), float(y)};
 }
 
 void WindowHelperDesktop::setVisible(bool b)
@@ -162,22 +160,22 @@ void WindowHelperDesktop::operate(Operation op)
 	switch (op)
 	{
 	case SHOW:
-		GLViewImpl::_glfwShowWindow(getWindow());
+		glfwShowWindow(getWindow());
 		break;
 	case HIDE:
-		GLViewImpl::_glfwHideWindow(getWindow());
+		glfwHideWindow(getWindow());
 		break;
 	case FOCUS:
-		GLViewImpl::_glfwFocusWindow(getWindow());
+		glfwFocusWindow(getWindow());
 		break;
 	case ICONIFY:
-		GLViewImpl::_glfwIconifyWindow(getWindow());
+		glfwIconifyWindow(getWindow());
 		break;
 	case RESTORE:
-		GLViewImpl::_glfwRestoreWindow(getWindow());
+		glfwRestoreWindow(getWindow());
 		break;
 	case MAXIMIZE:
-		GLViewImpl::_glfwMaximizeWindow(getWindow());
+		glfwMaximizeWindow(getWindow());
 		break;
 	default:;
 	}
@@ -185,7 +183,9 @@ void WindowHelperDesktop::operate(Operation op)
 
 void WindowHelperDesktop::setGamma(float v)
 {
-	GLViewImpl::_glfwSetGamma(view->getMonitor(), v);
+	const auto m = glfwGetWindowMonitor(view->getWindow());
+	if(m)
+		glfwSetGamma(m, v);
 	gamma = v;
 }
 
@@ -196,28 +196,28 @@ float WindowHelperDesktop::getGamma()
 
 void WindowHelperDesktop::setClipboardString(const std::string& s)
 {
-	GLViewImpl::_glfwSetClipboardString(getWindow(), s.c_str());
+	glfwSetClipboardString(getWindow(), s.c_str());
 }
 
 std::string WindowHelperDesktop::getClipboardString()
 {
-	return GLViewImpl::_glfwGetClipboardString(getWindow());
+	return glfwGetClipboardString(getWindow());
 }
 
 void WindowHelperDesktop::hint(int hint, int value)
 {
-	GLViewImpl::_glfwWindowHint(hint, value);
+	glfwWindowHint(hint, value);
 }
 
 void WindowHelperDesktop::resetHint()
 {
-	GLViewImpl::_glfwDefaultWindowHints();
+	glfwDefaultWindowHints();
 }
 
 void WindowHelperDesktop::setCustomCursor(const std::string& filename, const Vec2& hotspot)
 {
 	if (cur_cunstom) {
-		GLViewImpl::_glfwDestroyCursor(cur_cunstom);
+		glfwDestroyCursor(cur_cunstom);
 		cur_cunstom = nullptr;
 	}
 	Image* ccImage = new (std::nothrow) Image();
@@ -226,10 +226,10 @@ void WindowHelperDesktop::setCustomCursor(const std::string& filename, const Vec
 		image.width = ccImage->getWidth();
 		image.height = ccImage->getHeight();
 		image.pixels = ccImage->getData();
-		cur_cunstom = GLViewImpl::_glfwCreateCursor(
+		cur_cunstom = glfwCreateCursor(
 			&image, (int)(hotspot.x * image.width), (int)((1.0f - hotspot.y) * image.height));
 		if (cur_cunstom) {
-			GLViewImpl::_glfwSetCursor(getWindow(), cur_cunstom);
+			glfwSetCursor(getWindow(), cur_cunstom);
 			curType = CUSTOM;
 		}
 	}
@@ -247,12 +247,12 @@ void WindowHelperDesktop::setStandardCursor(CursorType type)
 		return;
 	curType = type;
 	switch (type) {
-	case ARROW: GLViewImpl::_glfwSetCursor(getWindow(), cur_arrow); break;
-	case IBEAM: GLViewImpl::_glfwSetCursor(getWindow(), cur_ibeam); break;
-	case CROSSHAIR: GLViewImpl::_glfwSetCursor(getWindow(), cur_crosshair); break;
-	case HAND: GLViewImpl::_glfwSetCursor(getWindow(), cur_hand); break;
-	case HRESIZE: GLViewImpl::_glfwSetCursor(getWindow(), cur_hresize); break;
-	case VRESIZE: GLViewImpl::_glfwSetCursor(getWindow(), cur_vresize); break;
+	case ARROW: glfwSetCursor(getWindow(), cur_arrow); break;
+	case IBEAM: glfwSetCursor(getWindow(), cur_ibeam); break;
+	case CROSSHAIR: glfwSetCursor(getWindow(), cur_crosshair); break;
+	case HAND: glfwSetCursor(getWindow(), cur_hand); break;
+	case HRESIZE: glfwSetCursor(getWindow(), cur_hresize); break;
+	case VRESIZE: glfwSetCursor(getWindow(), cur_vresize); break;
 	case CUSTOM: break;
 	default: ;
 	}

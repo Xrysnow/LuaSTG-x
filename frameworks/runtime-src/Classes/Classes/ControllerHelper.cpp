@@ -28,9 +28,10 @@ void ControllerHelper::init()
 			c->receiveExternalKeyEvent(82, true);
 #endif
 #if ( CC_TARGET_PLATFORM == CC_PLATFORM_LINUX || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32 )
+			//TODO:
 			// clear mapping
-			c->_buttonInputMap = {};
-			c->_axisInputMap = {};
+			//c->_buttonInputMap = {};
+			//c->_axisInputMap = {};
 #endif
 		}
 	}
@@ -112,9 +113,10 @@ void ControllerHelper::onConnectController(Controller* controller, Event* /*even
 	controller->receiveExternalKeyEvent(82, true);
 #endif
 #if ( CC_TARGET_PLATFORM == CC_PLATFORM_LINUX || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32 )
+	//TODO:
 	// clear mapping
-	controller->_buttonInputMap = {};
-	controller->_axisInputMap = {};
+	//controller->_buttonInputMap = {};
+	//controller->_axisInputMap = {};
 #endif
 	if (_onConnect)
 	{

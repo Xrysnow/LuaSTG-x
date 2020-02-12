@@ -48,12 +48,14 @@ ResSprite* ResSprite::clone(const std::string& newName)
 	return res;
 }
 
-std::string ResSprite::getInfo() const
+std::unordered_map<std::string, std::string> ResSprite::getInfo() const
 {
-	return ResourceQuad::getInfo() +
-		" | SpriteInfo=" + sprite->getDescription() +
-		StringUtils::format(" | A=%.3f | B=%.3f", halfSizeX, halfSizeY) +
-		" | Colli=" + xmath::collision::to_string(colliderType);
+	auto ret = ResourceQuad::getInfo();
+	ret["description"] = sprite->getDescription();
+	ret["ra"] = to_string(halfSizeX);
+	ret["rb"] = to_string(halfSizeY);
+	ret["collider"] = xmath::collision::to_string(colliderType);
+	return ret;
 }
 
 ResSprite::ResSprite(const std::string& name, Sprite* sprite,

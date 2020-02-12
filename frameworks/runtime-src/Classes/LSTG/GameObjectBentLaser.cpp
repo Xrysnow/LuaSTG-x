@@ -250,14 +250,14 @@ void GameObjectBentLaser::render(ResSprite* sprite)
 	const auto tex = sprite->getSprite()->getTexture();
 	const auto tw = tex->getPixelsWide();
 	const auto th = tex->getPixelsHigh();
-	renderWithTexture2D(tex, sprite->getBlendMode(), sprite->getColor(0),
+	renderWithTexture2D(tex, sprite->getRenderMode(), sprite->getColor(0),
 		quad.tl.texCoords.u*tw,
 		quad.tl.texCoords.v*th,
 		(quad.br.texCoords.u - quad.tl.texCoords.u)*tw,
 		(quad.br.texCoords.v - quad.tl.texCoords.v)*th);//todo: refactor this
 }
 
-void GameObjectBentLaser::render(ResTexture* texture, BlendMode* blend, const Color4B& color,
+void GameObjectBentLaser::render(ResTexture* texture, RenderMode* blend, const Color4B& color,
 	float tex_left, float tex_top, float tex_width, float tex_height)
 {
 	renderWithTexture2D(texture->getTexture(), blend, color,
@@ -372,12 +372,12 @@ GameObjectBentLaser::LaserNode* GameObjectBentLaser::getNodeByIndex(int32_t i)
 	return nullptr;
 }
 
-void GameObjectBentLaser::renderWithTexture2D(Texture2D* tex, BlendMode* blend, const Color4B& color,
+void GameObjectBentLaser::renderWithTexture2D(Texture2D* tex, RenderMode* blend, const Color4B& color,
 	float tex_left, float tex_top, float tex_width, float tex_height)
 {
 	if (queue.size() <= 1)
 		return;
-	LRR.updateBlendMode(blend);
+	LRR.updateRenderMode(blend);
 	const auto tw = tex->getPixelsWide();
 	const auto th = tex->getPixelsHigh();
 	auto quadsArr = LMP.getLaserQuads();

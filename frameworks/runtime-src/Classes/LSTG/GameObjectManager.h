@@ -70,7 +70,7 @@ namespace lstg
 		static bool isExtProperty3D(GameObject* p);
 	private:
 
-		GameObject* freeObjectInternal(GameObject* p)noexcept;
+		void freeObjectInternal(GameObject* p) noexcept;
 	public:
 
 		GameObject* freeObject(GameObject* p)noexcept;
@@ -162,8 +162,8 @@ namespace lstg
 		bool SetLastXY(size_t id, double x, double y)noexcept;
 
 		/* @deprecated (only for compatibility)
-		 * set BlendMode and color of the resource bind on object */
-		bool SetImgState(size_t id, BlendMode* m, const cocos2d::Color4B& c)noexcept;
+		 * set RenderMode and color of the resource bind on object */
+		bool SetImgState(size_t id, RenderMode* m, const cocos2d::Color4B& c)noexcept;
 
 		// check if object is in given bound
 		bool BoxCheck(size_t id, double left, double right, double bottom, double top, bool& ret)noexcept;

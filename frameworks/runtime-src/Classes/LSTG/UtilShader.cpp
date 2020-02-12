@@ -1,6 +1,11 @@
 #include "Utility.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
 #include "LogSystem.h"
+#ifndef CC_USE_METAL
+#include "renderer/backend/opengl/ProgramGL.h"
+#else
+#include "glsl_optimizer.h"
+#endif
 
 using namespace std;
 using namespace lstg;
@@ -23,6 +28,7 @@ static const char * COCOS2D_SHADER_UNIFORMS =
 "uniform sampler2D CC_Texture3;\n"
 "//CC INCLUDES END\n\n";
 
+#ifndef CC_USE_METAL
 static string logForOpenGLShader(GLuint shader)
 {
 	GLint logLength = 0;
@@ -38,9 +44,11 @@ static string logForOpenGLShader(GLuint shader)
 	free(logBytes);
 	return ret;
 }
+#endif
 
 bool CheckShader(const string& src, bool isVertexShader)
 {
+#ifndef CC_USE_METAL
 	if (src.empty())
 	{
 		XERROR("source is empty");
@@ -51,19 +59,11 @@ bool CheckShader(const string& src, bool isVertexShader)
 
 	GLuint shader;
 	GLint status;
-
-	string headersDef;
-	string convertedDefines;
-#if CC_TARGET_PLATFORM == CC_PLATFORM_WINRT
-	headersDef = (type == GL_VERTEX_SHADER ? "precision mediump float;\n precision mediump int;\n" : "precision mediump float;\n precision mediump int;\n");
-#elif (CC_TARGET_PLATFORM != CC_PLATFORM_WIN32 && CC_TARGET_PLATFORM != CC_PLATFORM_LINUX && CC_TARGET_PLATFORM != CC_PLATFORM_MAC)
-	headersDef = (type == GL_VERTEX_SHADER ? "precision highp float;\n precision highp int;\n" : "precision mediump float;\n precision mediump int;\n");
-#endif
+	//string convertedDefines;
 
 	const GLchar *sources[] = {
-		headersDef.c_str(),
 		COCOS2D_SHADER_UNIFORMS,
-		convertedDefines.c_str(),
+		//convertedDefines.c_str(),
 		src.c_str() };
 
 	shader = glCreateShader(type);
@@ -85,6 +85,25 @@ bool CheckShader(const string& src, bool isVertexShader)
 		return false;
 	}
 	return true;
+#else
+	auto source = src;
+	glslopt_ctx* ctx = glslopt_initialize(kGlslTargetMetal);
+	glslopt_shader_type shaderType = isVertexShader ? kGlslOptShaderVertex : kGlslOptShaderFragment;
+	glslopt_shader* glslShader = glslopt_optimize(ctx, shaderType, source.c_str(), 0);
+	if (!glslShader)
+	{
+		XERROR("failed to translate GLSL shader to metal shader:\n%s", source.c_str());
+		return false;
+	}
+	const char* metalShader = glslopt_get_output(glslShader);
+	if (!metalShader)
+	{
+		XERROR("can not get metal shader:\n%s", source.c_str());
+		glslopt_cleanup(ctx);
+		return false;
+	}
+	return true;
+#endif
 }
 
 bool util::CheckFragmentShader(const std::string& src)
@@ -97,40 +116,12 @@ bool util::CheckVertexShader(const std::string& src)
 	return CheckShader(src, true);
 }
 
-std::unordered_set<GLuint> _BlendEquation = {
-	GL_FUNC_ADD,
-	GL_FUNC_SUBTRACT,
-	GL_FUNC_REVERSE_SUBTRACT,
-#ifdef GL_MIN
-	GL_MIN,
-#endif
-#ifdef GL_MAX
-	GL_MAX
-#endif
-};
-bool util::CheckBlendEquation(GLuint equation)
+bool util::CheckBlendOperation(backend::BlendOperation equation)
 {
-	return _BlendEquation.find(equation) != _BlendEquation.end();
+	return equation <= backend::BlendOperation::RESERVE_SUBTRACT;
 }
 
-std::unordered_set<GLenum> _BlendFunc = {
-	GL_ZERO,
-	GL_ONE,
-	GL_SRC_COLOR,
-	GL_ONE_MINUS_SRC_COLOR,
-	GL_DST_COLOR,
-	GL_ONE_MINUS_DST_COLOR,
-	GL_SRC_ALPHA,
-	GL_ONE_MINUS_SRC_ALPHA,
-	GL_DST_ALPHA,
-	GL_ONE_MINUS_DST_ALPHA,
-	GL_CONSTANT_COLOR,
-	GL_ONE_MINUS_CONSTANT_COLOR,
-	GL_CONSTANT_ALPHA,
-	GL_ONE_MINUS_CONSTANT_ALPHA,
-	GL_SRC_ALPHA_SATURATE
-};
-bool util::CheckBlendFunc(GLenum func)
+bool util::CheckBlendFactor(backend::BlendFactor func)
 {
-	return _BlendFunc.find(func) != _BlendFunc.end();
+	return func <= backend::BlendFactor::BLEND_CLOLOR;
 }

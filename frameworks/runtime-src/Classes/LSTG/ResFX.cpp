@@ -8,140 +8,126 @@ using namespace std;
 using namespace cocos2d;
 using namespace lstg;
 
-class XGLProgramState : public GLProgramState
-{
-public:
-	static XGLProgramState* create(GLProgram* glprogram)
-	{
-		auto ret = new (std::nothrow) XGLProgramState();
-		if (ret && ret->init(glprogram))
-		{
-			ret->autorelease();
-			return ret;
-		}
-		CC_SAFE_DELETE(ret);
-		return nullptr;
-	}
-	unordered_map<string, GLint> getUniformsByName() const { return _uniformsByName; }
-};
+//static const std::string Uniform_PosteffectTexture = "POSTEFFECTTEXTURE";
+static const std::string Uniform_Viewport = "VIEWPORT";
+static const std::string Uniform_ScreenSize = "SCREENSIZE";
 
-vector<string> ResFX::predefined_uniform = {
-	"POSTEFFECTTEXTURE",
-	"VIEWPORT",
-	"SCREENSIZE"
-};
-
-ResFX::ResFX(const std::string& name, GLProgram* program_)
-	: Resource(ResourceType::FX, name), program(program_), state(nullptr)
+ResFX::ResFX(const std::string& name, RenderMode* m)
+	: Resource(ResourceType::FX, name)
 {
-	CC_ASSERT(program);
-	if (program)
-	{
-		program->retain();
-		// state is cached in GLProgramStateCache, no need to retain
-		state = GLProgramState::getOrCreateWithGLProgram(program);
-		uniforms = XGLProgramState::create(program)->getUniformsByName();
-	}
+	renderMode = m;
+	CC_SAFE_RETAIN(renderMode);
+	program = renderMode->getProgram();
+	auto infos = program->getAllActiveUniformInfo(backend::ShaderStage::VERTEX_AND_FRAGMENT);
+	for (auto& it : infos)
+		uniforms[it.first] = program->getUniformLocation(it.first);
+	state = renderMode->getDefaultProgramState();
 }
 
 ResFX::~ResFX()
 {
-	if (program)
-	{
-		program->release();
-	}
+	CC_SAFE_RELEASE(renderMode);
 }
 
-void ResFX::setViewport(Rect rect)noexcept
+void ResFX::setUniform(const std::string& name, const void* data, size_t size)
 {
-	auto i = uniforms.find("VIEWPORT");
-	if (i != uniforms.end() && state)
-		state->setUniformVec4(i->second,
-			Vec4(rect.origin.x, rect.origin.y, rect.getMaxX(), rect.getMaxY()));
+	const auto i = uniforms.find(name);
+	if (i != uniforms.end())
+		state->setUniform(i->second, data, size);
 }
 
-void ResFX::setScreenSize(Vec2 size)noexcept
+std::vector<std::string> ResFX::getUniformNames() const
 {
-	auto i = uniforms.find("SCREENSIZE");
-	if (i != uniforms.end() && state)
-		state->setUniformVec4(i->second,
-			Vec4(0, 0, size.x, size.y));
+	return renderMode->getUniformNames();
 }
 
-void ResFX::setValue(const char* key, float val)noexcept
+void ResFX::setViewport(const Viewport& vp)
 {
-	auto i = uniforms.find(key);
-	if (i != uniforms.end() && state)
-	{
-		state->setUniformFloat(i->second, val);
-	}
+	renderMode->setVec4(Uniform_Viewport,
+		{ float(vp.x), float(vp.y), float(vp.w + vp.x), float(vp.h + vp.y) });
 }
 
-void ResFX::setColor(const char* key, Color4B val)noexcept
+void ResFX::setScreenSize(const Vec2& size)
 {
-	auto i = uniforms.find(key);
-	if (i != uniforms.end() && state)
-	{
-		state->setUniformVec4(i->second,
-			Vec4(val.r / 255.f, val.g / 255.f, val.b / 255.f, val.a / 255.f));
-	}
+	renderMode->setVec4(Uniform_Viewport,
+		{ 0, 0, size.x, size.y });
 }
 
-void ResFX::setTexture(const char* key, Texture2D* val)noexcept
+void ResFX::setFloat(const std::string& uniform, float value)
 {
-	auto i = uniforms.find(key);
-	if (i != uniforms.end() && state && val)
-	{
-		//TODO: check
-		state->setUniformTexture(i->second, val);
-	}
+	renderMode->setFloat(uniform, value);
 }
 
-string ResFX::getInfo() const
+void ResFX::setVec2(const std::string& uniform, const Vec2& value)
+{
+	renderMode->setVec2(uniform, value);
+}
+
+void ResFX::setVec3(const std::string& uniform, const Vec3& value)
+{
+	renderMode->setVec3(uniform, value);
+}
+
+void ResFX::setVec4(const std::string& uniform, const Vec4& value)
+{
+	renderMode->setVec4(uniform, value);
+}
+
+void ResFX::setMat4(const std::string& uniform, const Mat4& value)
+{
+	renderMode->setMat4(uniform, value);
+}
+
+void ResFX::setColor(const std::string& uniform, const Color4B& value)
+{
+	renderMode->setColor(uniform, value);
+}
+
+void ResFX::setTexture(const std::string& uniform, Texture2D* value)
+{
+	renderMode->setTexture(uniform, value);
+}
+
+std::unordered_map<std::string, std::string> ResFX::getInfo() const
 {
 	auto ret = Resource::getInfo();
-	if (state)
-	{
-		ret += " | "+ StringUtils::format(
-			"UniformCount = %d, VertexAttribCount = %d",
-			state->getUniformCount(), state->getVertexAttribCount());
-		if (!uniforms.empty())
-		{
-			ret += " | Uniforms:";
-		}
-		for (auto u : uniforms)
-		{
-			ret += " [" + u.first + "]";
-		}
-	}
+	ret["n_uniform"] = to_string(uniforms.size());
+	ret["n_attribute"] = to_string(program->getActiveAttributes().size());
 	return ret;
 }
 
-ResFX* ResFX::create(const std::string& name, const std::string& vsPath, const std::string& fsPath)
+ResFX* ResFX::create(const std::string& name,
+	const std::string& vsPath, const std::string& fsPath)
 {
 	const auto vs = LRES.getStringFromFile(vsPath);
 	const auto fs = LRES.getStringFromFile(fsPath);
 	if (vs.empty() && fs.empty())
 		return nullptr;
-	const auto glProgram = util::CreateGLProgramFromString(vs, fs);
-	if (!glProgram)
+	const auto program = util::CreateProgramFromString(vs, fs);
+	if (!program)
 		return nullptr;
-	auto ret = createWithGLProgram(name, glProgram);
+	auto ret = createWithProgram(name, program);
 	if (ret)
 		ret->resPath = fsPath;
 	return ret;
 }
 
-ResFX* ResFX::createWithGLProgram(const std::string& name, cocos2d::GLProgram* glProgram)
+ResFX* ResFX::createWithString(const std::string& name,
+	const std::string& vShader, const std::string& fShader)
 {
-	return new (nothrow) ResFX(name, glProgram);
+	const auto program =
+		util::CreateProgramFromString(vShader, fShader);
+	if (!program)
+		return nullptr;
+	return createWithProgram(name, program);
 }
 
-ResFX* ResFX::createWithString(const std::string& name, const std::string& vShader, const std::string& fShader)
+ResFX* ResFX::createWithProgram(const std::string& name, backend::Program* program)
 {
-	const auto glProgram = util::CreateGLProgramFromString(
-		vShader, fShader);
-	if (!glProgram)
+	if (!program)
 		return nullptr;
-	return createWithGLProgram(name, glProgram);
+	const auto m = RenderMode::create(name, program);
+	if (!m)
+		return nullptr;
+	return new (nothrow) ResFX(name, m);
 }

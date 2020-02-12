@@ -29,6 +29,7 @@ LuaModuleRegistry& LuaModuleRegistry::registerModules(lua_State* L)
 {
 	std::vector<std::pair<std::string, lua_CFunction>> modules;
 	listModules(modules);
+	lua_pushvalue(L, LUA_GLOBALSINDEX);
 	auto top = lua_gettop(L);
 	for (auto& it : modules)
 	{
@@ -41,6 +42,7 @@ LuaModuleRegistry& LuaModuleRegistry::registerModules(lua_State* L)
 			top = new_top;
 		}
 	}
+	lua_pop(L, 1);
 	return *get();
 }
 
@@ -68,6 +70,7 @@ LuaModuleRegistry& LuaModuleRegistry::listFunctions(
 LuaModuleRegistry& LuaModuleRegistry::registerFunctions(lua_State* L)
 {
 	auto inst = get();
+	lua_pushvalue(L, LUA_GLOBALSINDEX);
 	for (auto& parent : inst->functions)
 	{
 		const auto pName = parent.first.c_str();
@@ -78,5 +81,6 @@ LuaModuleRegistry& LuaModuleRegistry::registerFunctions(lua_State* L)
 			tolua_function(L, it.first.c_str(), it.second);
 		tolua_endmodule(L);
 	}
+	lua_pop(L, 1);
 	return *inst;
 }

@@ -4,8 +4,8 @@
 #include "Utility.h"
 
 using namespace std;
-using namespace cocos2d;
 using namespace lstg;
+using namespace cocos2d;
 
 bool ResRenderTarget::isNeedBlendFix() const
 {
@@ -29,22 +29,30 @@ void ResRenderTarget::setClearColor(const Color4B& color)
 
 RenderTexture* ResRenderTarget::getTarget()
 {
-	checkTarget();
-	return target;
+	if (checkTarget())
+		return target;
+	return nullptr;
 }
 
 Texture2D* ResRenderTarget::getTexture()
 {
-	checkTarget();
-	return target->getSprite()->getTexture();
+	if (checkTarget())
+		return target->getSprite()->getTexture();
+	return nullptr;
 }
 
 Texture2D* ResRenderTarget::copyTexture()
 {
 	auto tex = new Texture2D();
-	tex->initWithImage(target->newImage(false), Texture2D::PixelFormat::RGBA8888);
 	tex->autorelease();
-	return tex;
+	Image* img = nullptr;
+	target->newImage([&](Image* i) { img = i; }, false);
+	if (img)
+	{
+		tex->initWithImage(img, backend::PixelFormat::RGBA8888);
+		return tex;
+	}
+	return nullptr;
 }
 
 bool ResRenderTarget::checkTarget()
@@ -69,7 +77,7 @@ bool ResRenderTarget::checkTarget()
 	{
 		LINFO("create posteffect buffer, size: (%d, %d)", w, h);
 		target = RenderTexture::create(w, h,
-			Texture2D::PixelFormat::RGBA8888, GL_DEPTH24_STENCIL8);
+			backend::PixelFormat::RGBA8888, backend::PixelFormat::D24S8);
 		if (!target)
 			return false;
 		target->retain();
@@ -102,7 +110,7 @@ bool ResRenderTarget::pop()
 	return !pushed;
 }
 
-bool ResRenderTarget::render(ResFX* shader, BlendMode* blend)
+bool ResRenderTarget::render(ResFX* shader, RenderMode* blend)
 {
 	// do not render if in use
 	if (pushed)
@@ -110,22 +118,18 @@ bool ResRenderTarget::render(ResFX* shader, BlendMode* blend)
 	if (!shader)
 		return false;
 	if (!blend)
-		blend = BlendMode::Default;
+		blend = RenderMode::Default;
 	return LRR.postEffect(this, shader, blend);
 }
 
-string ResRenderTarget::getInfo() const
+std::unordered_map<std::string, std::string> ResRenderTarget::getInfo() const
 {
-	string info = Resource::getInfo() + cocos2d::StringUtils::format(
-		" | autoResize = %s | blendFix = %s | clearColor = %s",
-		autoResize ? "true" : "false",
-		blendFix ? "true" : "false",
-		tostring(clearColor).c_str()
-	);
+	auto ret = Resource::getInfo();
+	ret["auto_resize"] = autoResize ? "true" : "false";
+	ret["clear_color"] = tostring(clearColor);
 	if (target)
-		return info + " | TextureInfo = " + target->getDescription();
-	else
-		return info;
+		ret["description"] = target->getDescription();
+	return ret;
 }
 
 ResRenderTarget::ResRenderTarget(const std::string& name, RenderTexture* tex, bool autoResize_)

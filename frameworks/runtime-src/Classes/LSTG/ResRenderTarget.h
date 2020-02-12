@@ -25,9 +25,9 @@ namespace lstg {
 		bool checkTarget();
 		bool push();
 		bool pop();
-		bool render(ResFX* shader, BlendMode* blend);
+		bool render(ResFX* shader, RenderMode* blend);
 
-		std::string getInfo() const override;
+		std::unordered_map<std::string, std::string> getInfo() const override;
 
 		ResRenderTarget(const std::string& name, cocos2d::RenderTexture* tex, bool autoResize = true);
 		~ResRenderTarget();

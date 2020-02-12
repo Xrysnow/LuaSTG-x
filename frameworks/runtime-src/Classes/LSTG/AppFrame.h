@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "Global.h"
 #include "GameObjectManager.h"
-#include "MemPoolManager.h"
 #include "XThreadPool.hpp"
 
 // LSTG AppFrame

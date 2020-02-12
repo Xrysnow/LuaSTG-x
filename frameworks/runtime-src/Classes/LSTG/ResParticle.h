@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include "ResBase.h"
-#include "BlendMode.h"
 #include "Global.h"
+#include "ResBase.h"
+#include "RenderMode.h"
 #include "ResSprite.h"
 #include "../fcyLib/fcyMisc/fcyRandom.h"
 
@@ -71,7 +71,7 @@ namespace lstg {
 			ParticleInfo particleInfo;
 			fcyRandomWELL512 _rand;
 
-			BlendMode* blendMode = BlendMode::Default;
+			RenderMode* renderMode = RenderMode::Default;
 			Status status = Status::Alive;  // 状态
 			cocos2d::Vec2 center;  // 中心
 			cocos2d::Vec2 prevCenter;  // 上一个中心
@@ -117,8 +117,8 @@ namespace lstg {
 
 			void setSeed(uint32_t seed)noexcept { _rand.SetSeed(seed); }
 			uint32_t getSeed()const noexcept { return _rand.GetRandSeed(); }
-			BlendMode* getBlendMode()const noexcept { return blendMode; }
-			void setBlendMode(BlendMode* m)noexcept { blendMode = m; }
+			RenderMode* getRenderMode()const noexcept { return renderMode; }
+			void setRenderMode(RenderMode* m) noexcept;
 			bool isActive()const noexcept { return status == Status::Alive; }
 			void setActive(bool b) noexcept;
 			void setCenter(const cocos2d::Vec2& pos) noexcept;
@@ -135,19 +135,19 @@ namespace lstg {
 	private:
 		cocos2d::Sprite* bindSprite;
 		ParticleInfo particleInfo;
-		BlendMode* blendMode;
+		RenderMode* renderMode;
 	public:
-		BlendMode* getBlendMode() const noexcept { return blendMode; }
+		RenderMode* getRenderMode() const noexcept { return renderMode; }
 		ParticlePool* AllocInstance()noexcept;
 		void FreeInstance(ParticlePool* p)noexcept;
 
 		cocos2d::Sprite* getBindSprite() const noexcept { return bindSprite; }
 		const ParticleInfo& getParticleInfo() const noexcept { return particleInfo; }
 
-		std::string getInfo() const override;
+		std::unordered_map<std::string, std::string> getInfo() const override;
 	public:
 		ResParticle(const std::string& name, const ParticleInfo& pinfo, cocos2d::Sprite* sprite,
-			BlendMode* bld, double a, double b, XColliderType colliType = XColliderType::Circle);
+			RenderMode* bld, double a, double b, XColliderType colliType = XColliderType::Circle);
 		~ResParticle();
 
 		static ResParticle* create(const std::string& name, const std::string& path, ResSprite* sprite,

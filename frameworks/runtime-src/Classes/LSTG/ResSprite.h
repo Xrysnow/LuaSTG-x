@@ -22,7 +22,7 @@ namespace lstg {
 			float x3, float y3, float z3, float x4, float y4, float z4);
 
 		ResSprite* clone(const std::string& newName);
-		std::string getInfo() const override;
+		std::unordered_map<std::string, std::string> getInfo() const override;
 
 	public:
 		ResSprite(const std::string& name, cocos2d::Sprite* sprite,

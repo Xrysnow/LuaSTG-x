@@ -2,7 +2,7 @@
 #include "Global.h"
 #include "scripting/lua-bindings/manual/CCLuaStack.h"
 #include "scripting/lua-bindings/manual/CCLuaEngine.h"
-#include "BlendMode.h"
+#include "RenderMode.h"
 #include "GameObjectBentLaser.h"
 #include "../Math/XCollision.h"
 
@@ -47,14 +47,13 @@ namespace lstg
 		DECL_BASIC_TO_NATIVE(luaval_to_vec4, cocos2d::Vec4);
 		DECL_BASIC_TO_NATIVE(luaval_to_blendfunc, cocos2d::BlendFunc);
 		DECL_BASIC_TO_NATIVE(luaval_to_ttfconfig, cocos2d::TTFConfig);
-		DECL_BASIC_TO_NATIVE(luaval_to_uniform, cocos2d::Uniform);
-		DECL_BASIC_TO_NATIVE(luaval_to_vertexattrib, cocos2d::VertexAttrib);
 		DECL_BASIC_TO_NATIVE(luaval_to_ccvalue, cocos2d::Value);
 		DECL_BASIC_TO_NATIVE(luaval_to_mesh_vertex_attrib, cocos2d::MeshVertexAttrib);
 		DECL_BASIC_TO_NATIVE(luaval_to_quaternion, cocos2d::Quaternion);
 		DECL_BASIC_TO_NATIVE(luaval_to_texparams, cocos2d::Texture2D::TexParams);
 		DECL_BASIC_TO_NATIVE(luaval_to_v3f_c4b_t2f, cocos2d::V3F_C4B_T2F);
 		DECL_BASIC_TO_NATIVE(luaval_to_tex2f, cocos2d::Tex2F);
+		DECL_BASIC_TO_NATIVE(luaval_to_uniformLocation, cocos2d::backend::UniformLocation);
 #undef DECL_BASIC_TO_NATIVE
 
 #define DECL_BASIC_FROM_NATIVE(_F, _T) void _F(lua_State* L, const _T& inValue);
@@ -72,8 +71,6 @@ namespace lstg
 		DECL_BASIC_FROM_NATIVE(mat4_to_luaval, cocos2d::Mat4);
 		DECL_BASIC_FROM_NATIVE(blendfunc_to_luaval, cocos2d::BlendFunc);
 		DECL_BASIC_FROM_NATIVE(ttfconfig_to_luaval, cocos2d::TTFConfig);
-		DECL_BASIC_FROM_NATIVE(uniform_to_luaval, cocos2d::Uniform);
-		DECL_BASIC_FROM_NATIVE(vertexattrib_to_luaval, cocos2d::VertexAttrib);
 		DECL_BASIC_FROM_NATIVE(ccvalue_to_luaval, cocos2d::Value);
 		DECL_BASIC_FROM_NATIVE(mesh_vertex_attrib_to_luaval, cocos2d::MeshVertexAttrib);
 		DECL_BASIC_FROM_NATIVE(quaternion_to_luaval, cocos2d::Quaternion);
@@ -115,12 +112,20 @@ namespace lstg
 			return _luaarray_to_numbers(L, lo, [=](double v) { outValue->push_back((T)v); });
 		}
 
-		bool luaval_to_V3F_C4B_T2F_Quad(lua_State* L, int lo,
-			cocos2d::V3F_C4B_T2F_Quad* outValue, const char* funcName = "");
-		void V3F_C4B_T2F_Quad_to_luaval(lua_State* L, cocos2d::V3F_C4B_T2F_Quad quad);
+#define DECL_NATIVE_CONV(F, T)\
+	bool luaval_to_##F(lua_State* L, int lo, T* outValue, const char* funcName = "");\
+	void F##_to_luaval(lua_State* L, const T& inValue);
 
-		bool luaval_to_BlendMode(lua_State* L, int lo, BlendMode** outValue, const char* funcName = "");
-		void BlendMode_to_luaval(lua_State* L, BlendMode* blendMode);
+		DECL_NATIVE_CONV(V3F_C4B_T2F_Quad, cocos2d::V3F_C4B_T2F_Quad);
+		DECL_NATIVE_CONV(UniformLocation, cocos2d::backend::UniformLocation);
+		DECL_NATIVE_CONV(SamplerDescriptor, cocos2d::backend::SamplerDescriptor);
+		DECL_NATIVE_CONV(AttributeBindInfo, cocos2d::backend::AttributeBindInfo);
+		DECL_NATIVE_CONV(Viewport, cocos2d::Viewport);
+		DECL_NATIVE_CONV(BlendDescriptor, cocos2d::backend::BlendDescriptor);
+#undef DECL_NATIVE_CONV
+
+		bool luaval_to_RenderMode(lua_State* L, int lo, RenderMode** outValue, const char* funcName = "");
+		void RenderMode_to_luaval(lua_State* L, RenderMode* renderMode);
 
 		bool luaval_to_ColliderType(lua_State* L, int lo, XColliderType* outValue, const char* funcName = "");
 		void ColliderType_to_luaval(lua_State* L, XColliderType colliderType);
@@ -163,11 +168,6 @@ namespace lstg
 			}
 			return 1;
 		}
-
-		//int pushArray(lua_State* L, const std::vector<float>& arr);
-
-		// get array from table like {1, 3, 5}
-		//std::vector<float> getArray(lua_State* L, int lo);
 
 		// get array from table like {{x=1}, {x=3}, {x=5}}
 		std::vector<float> getArray(lua_State* L, int lo, const char* field);

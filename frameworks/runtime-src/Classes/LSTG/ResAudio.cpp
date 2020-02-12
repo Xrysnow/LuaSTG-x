@@ -76,24 +76,23 @@ float* ResAudio::getFFT()
 	return fftOutNorm.data();
 }
 
-string ResAudio::getInfo() const
+std::unordered_map<std::string, std::string> ResAudio::getInfo() const
 {
-	auto ret = Resource::getInfo() + " | ";
-	if(source)
+	auto ret = Resource::getInfo();
+	if (source)
 	{
 		if (source->isLooping())
 		{
-			ret += StringFormat("loop = %f, %f | ", source->getLoopingStart(), source->getLoopingEnd());
+			ret["loop_start"] = to_string(source->getLoopingStart());
+			ret["loop_end"] = to_string(source->getLoopingEnd());
 		}
-		ret += StringFormat("%d Hz, %d ch, %d frames, %.3f s",
-			int((double)source->getTotalFrames() / source->getTotalTime()),
-			source->getChannelCount(),
-			source->getTotalFrames(),
-			source->getTotalTime()
-		);
+		ret["sample_rate"] = to_string(int((double)source->getTotalFrames() / source->getTotalTime()));
+		ret["channel"] = to_string(source->getChannelCount());
+		ret["frames"] = to_string(source->getTotalFrames());
+		ret["time"] = to_string(source->getTotalTime());
 	}
 	else
-		ret += "no source";
+		ret["no_source"] = "";
 	return ret;
 }
 

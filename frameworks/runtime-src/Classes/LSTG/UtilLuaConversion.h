@@ -129,17 +129,20 @@ namespace lstg
 		TO_NATIVE_BASIC(luaval_to_fontdefinition, cocos2d::FontDefinition);
 		TO_NATIVE_BASIC(luaval_to_blendfunc, cocos2d::BlendFunc);
 		TO_NATIVE_BASIC(luaval_to_ttfconfig, cocos2d::TTFConfig);
-		TO_NATIVE_BASIC(luaval_to_uniform, cocos2d::Uniform);
-		TO_NATIVE_BASIC(luaval_to_vertexattrib, cocos2d::VertexAttrib);
 		TO_NATIVE_BASIC(luaval_to_ccvalue, cocos2d::Value);
 		TO_NATIVE_BASIC(luaval_to_mesh_vertex_attrib, cocos2d::MeshVertexAttrib);
 		TO_NATIVE_BASIC(luaval_to_quaternion, cocos2d::Quaternion);
-		TO_NATIVE_BASIC(luaval_to_texparams, cocos2d::Texture2D::TexParams);
+		//TO_NATIVE_BASIC(luaval_to_texparams, cocos2d::Texture2D::TexParams); // use SamplerDescriptor
 		//TO_NATIVE_BASIC(luaval_to_v3f_c4b_t2f, cocos2d::V3F_C4B_T2F);
 		//TO_NATIVE_BASIC(luaval_to_tex2f, cocos2d::Tex2F);
 		//
 		TO_NATIVE_BASIC(luaval_to_V3F_C4B_T2F_Quad, cocos2d::V3F_C4B_T2F_Quad);
-		TO_NATIVE_BASIC(luaval_to_BlendMode, BlendMode*);
+		TO_NATIVE_BASIC(luaval_to_UniformLocation, cocos2d::backend::UniformLocation);
+		TO_NATIVE_BASIC(luaval_to_SamplerDescriptor, cocos2d::backend::SamplerDescriptor);
+		TO_NATIVE_BASIC(luaval_to_AttributeBindInfo, cocos2d::backend::AttributeBindInfo);
+		TO_NATIVE_BASIC(luaval_to_Viewport, cocos2d::Viewport);
+		TO_NATIVE_BASIC(luaval_to_BlendDescriptor, cocos2d::backend::BlendDescriptor);
+		TO_NATIVE_BASIC(luaval_to_RenderMode, RenderMode*);
 		TO_NATIVE_BASIC(luaval_to_ColliderType, XColliderType);
 
 		template<>
@@ -345,6 +348,34 @@ namespace lstg
 			return to_native<T>::F(L, lo, outValue, fName);
 		}
 
+		template<typename T>
+		bool luaval_field_to_native(lua_State* L, int lo, const char* field, T* outValue, const char* fName = "") {
+			if (!field) return false;
+			lua_pushstring(L, field);
+			lua_gettable(L, lo);
+			const bool ret = to_native<T>::F(L, -1, outValue, fName);
+			lua_pop(L, 1);
+			return ret;
+		}
+
+		template<typename T>
+		bool luaval_field_to_native(lua_State* L, int lo, const std::string& field, T* outValue, const char* fName = "") {
+			lua_pushlstring(L, field.c_str(), field.size());
+			lua_gettable(L, lo);
+			const bool ret = to_native<T>::F(L, -1, outValue, fName);
+			lua_pop(L, 1);
+			return ret;
+		}
+
+		template<typename T>
+		bool luaval_field_to_native(lua_State* L, int lo, int field, T* outValue, const char* fName = "") {
+			lua_pushinteger(L, field);
+			lua_gettable(L, lo);
+			const bool ret = to_native<T>::F(L, -1, outValue, fName);
+			lua_pop(L, 1);
+			return ret;
+		}
+
 #undef CHECK_TO_NATIVE
 #undef TO_NATIVE_BASIC
 #undef TO_NATIVE_BASIC_PTR
@@ -422,15 +453,18 @@ namespace lstg
 		TO_LUA_BASIC(fontdefinition_to_luaval, cocos2d::FontDefinition);
 		TO_LUA_BASIC(blendfunc_to_luaval, cocos2d::BlendFunc);
 		TO_LUA_BASIC(ttfconfig_to_luaval, cocos2d::TTFConfig);
-		TO_LUA_BASIC(uniform_to_luaval, cocos2d::Uniform);
-		TO_LUA_BASIC(vertexattrib_to_luaval, cocos2d::VertexAttrib);
 		TO_LUA_BASIC(ccvalue_to_luaval, cocos2d::Value);
 		TO_LUA_BASIC(mesh_vertex_attrib_to_luaval, cocos2d::MeshVertexAttrib);
 		TO_LUA_BASIC(quaternion_to_luaval, cocos2d::Quaternion);
-		TO_LUA_BASIC(texParams_to_luaval, cocos2d::Texture2D::TexParams);
+		//TO_LUA_BASIC(texParams_to_luaval, cocos2d::Texture2D::TexParams); // use SamplerDescriptor
 		//
 		TO_LUA_BASIC(V3F_C4B_T2F_Quad_to_luaval, cocos2d::V3F_C4B_T2F_Quad);
-		TO_LUA_BASIC_P(BlendMode_to_luaval, BlendMode);
+		TO_LUA_BASIC(UniformLocation_to_luaval, cocos2d::backend::UniformLocation);
+		TO_LUA_BASIC(SamplerDescriptor_to_luaval, cocos2d::backend::SamplerDescriptor);
+		TO_LUA_BASIC(AttributeBindInfo_to_luaval, cocos2d::backend::AttributeBindInfo);
+		TO_LUA_BASIC(Viewport_to_luaval, cocos2d::Viewport);
+		TO_LUA_BASIC(BlendDescriptor_to_luaval, cocos2d::backend::BlendDescriptor);
+		TO_LUA_BASIC_P(RenderMode_to_luaval, RenderMode);
 		TO_LUA_BASIC(ColliderType_to_luaval, XColliderType);
 
 		template<>
@@ -585,6 +619,28 @@ namespace lstg
 		template<typename T>
 		void native_to_luaval(lua_State* L, T inValue) {
 			to_lua<T>::F(L, inValue);
+		}
+
+		template<typename T>
+		void native_to_luaval_field(lua_State* L, int lo, const char* field, T inValue) {
+			if (!field) return;
+			lua_pushstring(L, field);
+			to_lua<T>::F(L, inValue);
+			lua_settable(L, lo);
+		}
+
+		template<typename T>
+		void native_to_luaval_field(lua_State* L, int lo, const std::string& field, T inValue) {
+			lua_pushlstring(L, field.c_str(), field.size());
+			to_lua<T>::F(L, inValue);
+			lua_settable(L, lo);
+		}
+
+		template<typename T>
+		void native_to_luaval_field(lua_State* L, int lo, int field, T inValue) {
+			lua_pushinteger(L, field);
+			to_lua<T>::F(L, inValue);
+			lua_settable(L, lo);
 		}
 
 #undef TO_LUA_BASIC

@@ -17,7 +17,7 @@
 #include <iostream>
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
-#include "../../proj.win32/SimulatorWin.h"
+//#include "../../proj.win32/SimulatorWin.h"
 #include "../../proj.win32/WindowHelperWin32.h"
 extern "C"
 {
@@ -93,7 +93,7 @@ bool AppFrame::applicationDidFinishLaunching()
 	auto t = ::time(nullptr);
 	char tmp[32];
 	::strftime(tmp, sizeof(tmp), "%H:%M:%S", ::localtime(&t));
-	LINFO("=== AppFrame start at: %s ===", tmp);
+	LINFO("=== Application start at: %s ===", tmp);
 	// default FPS is set in lua
 	//Director::getInstance()->setAnimationInterval(1.0 / 60.0f);
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
@@ -130,12 +130,34 @@ bool AppFrame::applicationDidFinishLaunching()
 	}
 
 	auto FU = FileUtils::getInstance();
+
+	const auto root = FU->getDefaultResourceRootPath();
+	const string postfix = "Resources/";
+	const auto pos = root.find(postfix);
+	if (pos == root.size() - postfix.size())
+		FU->setDefaultResourceRootPath(root.substr(0, pos));
+
 	FU->addSearchPath("src");
 	FU->addSearchPath("res");
 	//#if CC_64BITS
 	//	FU->addSearchPath("src/64bit");
 	//#endif
+
+	const auto fullPath = FU->fullPathForFilename("main.lua");
+	const auto data = FU->getDataFromFile(fullPath);
+	if(data.isNull())
+	{
+		XERROR("can't find main.lua");
+		return false;
+	}
+	XINFO("\n    execute %s", fullPath.c_str());
+
 	engine->executeScriptFile("main.lua");
+	if (!Director::getInstance()->getOpenGLView())
+	{
+		XERROR("no view created");
+		return false;
+	}
 	return true;
 }
 
@@ -472,7 +494,7 @@ int AppFrame::run()
 	const auto listener = EventListenerCustom::create(Director::EVENT_AFTER_DRAW, [&](EventCustom* event)
 	{
 		// there will be strange frame drop on screen without this, although frame time is steady
-		glFinish();
+		//glFinish();
 
 		//if (glview->windowShouldClose())
 		//	return;
@@ -531,9 +553,7 @@ int AppFrame::run()
 			nLast.QuadPart = nNow.QuadPart;
 		}
 
-		wglSwapLayerBuffers(hdc, WGL_SWAP_MAIN_PLANE);
-		// Sleep here to make swapbuffer steady?
-		//Sleep(1);
+		//wglSwapLayerBuffers(hdc, WGL_SWAP_MAIN_PLANE);
 	});
 	e->addEventListenerWithFixedPriority(listener, 9);
 	const auto listener2 = EventListenerCustom::create(
@@ -567,9 +587,4 @@ int AppFrame::run()
 	}
 	return 0;
 }
-//#else
-//int AppFrame::run()
-//{
-//	return Application::run();
-//}
 #endif

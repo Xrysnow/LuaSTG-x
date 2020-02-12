@@ -3,8 +3,6 @@
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
 #include "UtilLua.h"
-
-//using namespace lstg::lua;
 #define color4b_to_luaval lstg::lua::_color4b_to_luaval
 #define luaval_to_color4b lstg::lua::_luaval_to_color4b
 
@@ -35,8 +33,8 @@ int lua_x_BentLaser_GameObjectBentLaser_render(lua_State* tolua_S)
             ok &= luaval_to_object<lstg::ResTexture>(tolua_S, 2, "lstg.ResTexture",&arg0, "lstg.GameObjectBentLaser:render");
 
             if (!ok) { break; }
-            lstg::BlendMode* arg1;
-            ok &= lstg::lua::luaval_to_BlendMode(tolua_S, 3, &arg1, "lstg.GameObjectBentLaser:render");
+            lstg::RenderMode* arg1;
+            ok &= lstg::lua::luaval_to_RenderMode(tolua_S, 3, &arg1, "lstg.GameObjectBentLaser:render");
 
             if (!ok) { break; }
             cocos2d::Color4B arg2;

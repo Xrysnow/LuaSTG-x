@@ -3,6 +3,7 @@
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
 #include "UtilLua.h"
+#include "UtilLuaConversion.h"
 #define color4b_to_luaval lstg::lua::_color4b_to_luaval
 #define luaval_to_color4b lstg::lua::_luaval_to_color4b
 //using namespace lstg::lua;
@@ -2244,56 +2245,6 @@ int lua_x_ParticlePool_ParticlePool_getTangentialAccelMax(lua_State* tolua_S)
 
     return 0;
 }
-int lua_x_ParticlePool_ParticlePool_setBlendMode(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::ResParticle::ParticlePool* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.ResParticle::ParticlePool",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::ResParticle::ParticlePool*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_ParticlePool_ParticlePool_setBlendMode'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        lstg::BlendMode* arg0;
-
-        ok &= lstg::lua::luaval_to_BlendMode(tolua_S, 2, &arg0, "lstg.ResParticle::ParticlePool:setBlendMode");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_ParticlePool_ParticlePool_setBlendMode'", nullptr);
-            return 0;
-        }
-        cobj->setBlendMode(arg0);
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResParticle::ParticlePool:setBlendMode",argc, 1);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_ParticlePool_ParticlePool_setBlendMode'.",&tolua_err);
-#endif
-
-    return 0;
-}
 int lua_x_ParticlePool_ParticlePool_getColorVar(lua_State* tolua_S)
 {
     int argc = 0;
@@ -2478,6 +2429,53 @@ int lua_x_ParticlePool_ParticlePool_getGravityMin(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
     tolua_error(tolua_S,"#ferror in function 'lua_x_ParticlePool_ParticlePool_getGravityMin'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_x_ParticlePool_ParticlePool_getRenderMode(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResParticle::ParticlePool* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResParticle::ParticlePool",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResParticle::ParticlePool*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_ParticlePool_ParticlePool_getRenderMode'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_ParticlePool_ParticlePool_getRenderMode'", nullptr);
+            return 0;
+        }
+        lstg::RenderMode* ret = cobj->getRenderMode();
+        lstg::lua::native_to_luaval(tolua_S, ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResParticle::ParticlePool:getRenderMode",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_ParticlePool_ParticlePool_getRenderMode'.",&tolua_err);
 #endif
 
     return 0;
@@ -2720,53 +2718,6 @@ int lua_x_ParticlePool_ParticlePool_getDirection(lua_State* tolua_S)
 
     return 0;
 }
-int lua_x_ParticlePool_ParticlePool_getBlendMode(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::ResParticle::ParticlePool* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.ResParticle::ParticlePool",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::ResParticle::ParticlePool*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_ParticlePool_ParticlePool_getBlendMode'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
-    {
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_ParticlePool_ParticlePool_getBlendMode'", nullptr);
-            return 0;
-        }
-        lstg::BlendMode* ret = cobj->getBlendMode();
-        lstg::lua::BlendMode_to_luaval(tolua_S, ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResParticle::ParticlePool:getBlendMode",argc, 0);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_ParticlePool_ParticlePool_getBlendMode'.",&tolua_err);
-#endif
-
-    return 0;
-}
 int lua_x_ParticlePool_ParticlePool_setSizeEnd(lua_State* tolua_S)
 {
     int argc = 0;
@@ -2910,6 +2861,56 @@ int lua_x_ParticlePool_ParticlePool_setLifetime(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
     tolua_error(tolua_S,"#ferror in function 'lua_x_ParticlePool_ParticlePool_setLifetime'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_x_ParticlePool_ParticlePool_setRenderMode(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResParticle::ParticlePool* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResParticle::ParticlePool",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResParticle::ParticlePool*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_ParticlePool_ParticlePool_setRenderMode'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1) 
+    {
+        lstg::RenderMode* arg0;
+
+        ok &= lstg::lua::luaval_to_native(tolua_S, 2, &arg0, "lstg.ResParticle::ParticlePool:setRenderMode");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_ParticlePool_ParticlePool_setRenderMode'", nullptr);
+            return 0;
+        }
+        cobj->setRenderMode(arg0);
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResParticle::ParticlePool:setRenderMode",argc, 1);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_ParticlePool_ParticlePool_setRenderMode'.",&tolua_err);
 #endif
 
     return 0;
@@ -3069,20 +3070,20 @@ int lua_register_x_ParticlePool_ParticlePool(lua_State* tolua_S)
         tolua_function(tolua_S,"setSizeStart",lua_x_ParticlePool_ParticlePool_setSizeStart);
         tolua_function(tolua_S,"isActive",lua_x_ParticlePool_ParticlePool_isActive);
         tolua_function(tolua_S,"getTangentialAccelMax",lua_x_ParticlePool_ParticlePool_getTangentialAccelMax);
-        tolua_function(tolua_S,"setBlendMode",lua_x_ParticlePool_ParticlePool_setBlendMode);
         tolua_function(tolua_S,"getColorVar",lua_x_ParticlePool_ParticlePool_getColorVar);
         tolua_function(tolua_S,"getSizeEnd",lua_x_ParticlePool_ParticlePool_getSizeEnd);
         tolua_function(tolua_S,"getColorStart",lua_x_ParticlePool_ParticlePool_getColorStart);
         tolua_function(tolua_S,"getGravityMin",lua_x_ParticlePool_ParticlePool_getGravityMin);
+        tolua_function(tolua_S,"getRenderMode",lua_x_ParticlePool_ParticlePool_getRenderMode);
         tolua_function(tolua_S,"setSpinVar",lua_x_ParticlePool_ParticlePool_setSpinVar);
         tolua_function(tolua_S,"getSpinStart",lua_x_ParticlePool_ParticlePool_getSpinStart);
         tolua_function(tolua_S,"getLifetime",lua_x_ParticlePool_ParticlePool_getLifetime);
         tolua_function(tolua_S,"getSizeVar",lua_x_ParticlePool_ParticlePool_getSizeVar);
         tolua_function(tolua_S,"getDirection",lua_x_ParticlePool_ParticlePool_getDirection);
-        tolua_function(tolua_S,"getBlendMode",lua_x_ParticlePool_ParticlePool_getBlendMode);
         tolua_function(tolua_S,"setSizeEnd",lua_x_ParticlePool_ParticlePool_setSizeEnd);
         tolua_function(tolua_S,"getAliveCount",lua_x_ParticlePool_ParticlePool_getAliveCount);
         tolua_function(tolua_S,"setLifetime",lua_x_ParticlePool_ParticlePool_setLifetime);
+        tolua_function(tolua_S,"setRenderMode",lua_x_ParticlePool_ParticlePool_setRenderMode);
         tolua_function(tolua_S,"setGravityMax",lua_x_ParticlePool_ParticlePool_setGravityMax);
         tolua_function(tolua_S,"getSpinVar",lua_x_ParticlePool_ParticlePool_getSpinVar);
     tolua_endmodule(tolua_S);

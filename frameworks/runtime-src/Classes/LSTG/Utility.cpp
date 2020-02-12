@@ -1,8 +1,8 @@
 ﻿#include "Utility.h"
-#include "UtilGLDefinition.h"
 #include "AppFrame.h"
 #include "LogSystem.h"
 #include "../fcyLib/fcyMisc/fcyStringHelper.h"
+#include "renderer/backend/Device.h"
 
 using namespace std;
 using namespace lstg;
@@ -231,18 +231,24 @@ void lstg::pathUniform(wstring& path, bool forward_slash, bool lower, bool utf8_
 		_pathUniform(path.begin(), path.end(), forward_slash, lower);
 }
 
-string lstg::glBlend_tostring(GLenum blend)
+string lstg::BlendFactor_tostring(backend::BlendFactor factor)
 {
-	switch (blend)
+	switch (factor)
 	{
-	case GL_ZERO:return "GL_ZERO";
-	case GL_ONE:return "GL_ONE";
-	case GL_SRC_COLOR:return "GL_SRC_COLOR";
-	case GL_ONE_MINUS_SRC_COLOR:return "GL_ONE_MINUS_SRC_COLOR";
-	case GL_SRC_ALPHA:return "GL_SRC_ALPHA";
-	case GL_ONE_MINUS_SRC_ALPHA:return "GL_ONE_MINUS_SRC_ALPHA";
-	case GL_DST_COLOR:return "GL_DST_COLOR";
-	case GL_ONE_MINUS_DST_COLOR:return "GL_ONE_MINUS_DST_COLOR";
+	case backend::BlendFactor::ZERO:return "ZERO";
+	case backend::BlendFactor::ONE:return "ONE";
+	case backend::BlendFactor::SRC_COLOR:return "SRC_COLOR";
+	case backend::BlendFactor::ONE_MINUS_SRC_COLOR:return "ONE_MINUS_SRC_COLOR";
+	case backend::BlendFactor::SRC_ALPHA:return "SRC_ALPHA";
+	case backend::BlendFactor::ONE_MINUS_SRC_ALPHA:return "ONE_MINUS_SRC_ALPHA";
+	case backend::BlendFactor::DST_COLOR:return "DST_COLOR";
+	case backend::BlendFactor::ONE_MINUS_DST_COLOR:return "ONE_MINUS_DST_COLOR";
+	case backend::BlendFactor::DST_ALPHA:return "DST_ALPHA";
+	case backend::BlendFactor::ONE_MINUS_DST_ALPHA:return "ONE_MINUS_DST_ALPHA";
+	case backend::BlendFactor::CONSTANT_ALPHA:return "CONSTANT_ALPHA";
+	case backend::BlendFactor::SRC_ALPHA_SATURATE:return "SRC_ALPHA_SATURATE";
+	case backend::BlendFactor::ONE_MINUS_CONSTANT_ALPHA:return "ONE_MINUS_CONSTANT_ALPHA";
+	case backend::BlendFactor::BLEND_CLOLOR:return "BLEND_CLOLOR";
 	default: ;
 	}
 	return "UNKNOWN";
@@ -301,7 +307,7 @@ string lstg::tostring(const Color4F& c)
 
 string lstg::tostring(const BlendFunc& b)
 {
-	return "(src = " + glBlend_tostring(b.src) + ", dst = " + glBlend_tostring(b.dst) + ")";
+	return "(src = " + BlendFactor_tostring(b.src) + ", dst = " + BlendFactor_tostring(b.dst) + ")";
 }
 
 string lstg::tostring(const V3F_C4B_T2F& v)
@@ -592,57 +598,17 @@ Image* lstg::GetTextureImage(Texture2D* texture, bool flipImage)
 	// from RenderTexture::newImage
 	if (!texture)
 		return nullptr;
-	if (texture->getPixelFormat() != Texture2D::PixelFormat::RGBA8888)
+	if (texture->getPixelFormat() != backend::PixelFormat::RGBA8888)
 		return nullptr;
-	const Size& s = texture->getContentSizeInPixels();
-	const int buffer_width = (int)s.width;
-	const int buffer_height = (int)s.height;
-	const int buffer_size = buffer_width * buffer_height * 4;
-
-	GLubyte *buffer = nullptr;
-	GLubyte *tempData = nullptr;
-	Image *image = new (std::nothrow) Image();
-	do
-	{
-		CC_BREAK_IF(!((buffer = new (std::nothrow) GLubyte[buffer_size])));
-
-		if (!((tempData = new (std::nothrow) GLubyte[buffer_size])))
-		{
-			delete[] buffer;
-			buffer = nullptr;
-			break;
-		}
-
-		GLint lastTex = 0;
-		glGetIntegerv(GL_TEXTURE_BINDING_2D, &lastTex);
-		GL::bindTexture2D(texture);
-		glPixelStorei(GL_PACK_ALIGNMENT, 1);
-		glReadPixels(0, 0, buffer_width, buffer_height, GL_RGBA, GL_UNSIGNED_BYTE, tempData);
-		GL::bindTexture2D(lastTex);
-
-		if (flipImage) // -- flip is only required when saving image to file
-		{
-			// to get the actual texture data
-			// #640 the image read from rendertexture is dirty
-			for (int i = 0; i < buffer_height; ++i)
-			{
-				memcpy(&buffer[i * buffer_width * 4],
-					&tempData[(buffer_height - i - 1) * buffer_width * 4],
-					buffer_width * 4);
-			}
-
-			image->initWithRawData(buffer, buffer_size, buffer_width, buffer_height, 8);
-		}
-		else
-		{
-			image->initWithRawData(tempData, buffer_size, buffer_width, buffer_height, 8);
-		}
-
-	} while (false);
-
-	CC_SAFE_DELETE_ARRAY(buffer);
-	CC_SAFE_DELETE_ARRAY(tempData);
-
+	const auto s = texture->getContentSizeInPixels();
+	const auto savedBufferWidth = (size_t)s.width;
+	const auto savedBufferHeight = (size_t)s.height;
+	auto image = new (std::nothrow) Image();
+	auto callback = [=](const unsigned char* data, std::size_t width, std::size_t height) {
+		image->initWithRawData(data, width * height * 4,
+			width, height, 8, texture->hasPremultipliedAlpha());
+	};
+	texture->getBackendTexture()->getBytes(0, 0, savedBufferWidth, savedBufferHeight, flipImage, callback);
 	return image;
 }
 
@@ -745,57 +711,96 @@ RC4::RC4(const uint8_t* password, size_t len)
 	}
 }
 
-bool util::glMacroFromString(const std::string& str, GLuint& val)
+Viewport util::Viewport(float left, float right, float bottom, float top)
 {
-	const auto it = GLMacro.find(str);
-	if (it == GLMacro.end())
+	const auto x = std::min(left, right);
+	const auto y = std::min(bottom, top);
+	const auto w = std::max(left, right) - x;
+	const auto h = std::max(bottom, top) - y;
+	return { (int)x,(int)y,(unsigned int)w,(unsigned int)h };
+}
+
+#define MAP(K) { #K, backend::BlendOperation::K }
+static std::unordered_map<std::string, backend::BlendOperation> BlendOperationMap = {
+	MAP(ADD),
+	MAP(SUBTRACT),
+	MAP(RESERVE_SUBTRACT)
+};
+#undef MAP
+
+bool util::BlendOperationFromString(const std::string& str, backend::BlendOperation& val)
+{
+	const auto it = BlendOperationMap.find(str);
+	if (it == BlendOperationMap.end())
 		return false;
 	val = it->second;
 	return true;
 }
 
-GLProgram* util::CreateGLProgramFromPath(const std::string& v, const std::string& f)
+#define MAP(K) { #K, backend::BlendFactor::K }
+static std::unordered_map<std::string, backend::BlendFactor> BlendFactorMap = {
+	MAP(ZERO),
+	MAP(ONE),
+	MAP(SRC_COLOR),
+	MAP(ONE_MINUS_SRC_COLOR),
+	MAP(SRC_ALPHA),
+	MAP(ONE_MINUS_SRC_ALPHA),
+	MAP(DST_COLOR),
+	MAP(ONE_MINUS_DST_COLOR),
+	MAP(DST_ALPHA),
+	MAP(ONE_MINUS_DST_ALPHA),
+	MAP(CONSTANT_ALPHA),
+	MAP(SRC_ALPHA_SATURATE),
+	MAP(ONE_MINUS_CONSTANT_ALPHA),
+	MAP(BLEND_CLOLOR)
+};
+#undef MAP
+
+bool util::BlendFactorFromString(const std::string& str, backend::BlendFactor& val)
 {
-	const auto ret = GLProgram::createWithFilenames(v, f);
-	if (ret)return ret;
-	const auto __error = glGetError();
-	if (__error) { XERROR("OpenGL error %u", __error); }
-	XERROR("can't load shader from [%s] and [%s]", v.c_str(), f.c_str());
+	const auto it = BlendFactorMap.find(str);
+	if (it == BlendFactorMap.end())
+		return false;
+	val = it->second;
+	return true;
+}
+
+backend::Program* util::CreateProgramFromPath(const std::string& v, const std::string& f)
+{	
 	auto fu = FileUtils::getInstance();
 	const auto v_content = fu->getStringFromFile(fu->fullPathForFilename(v));
 	const auto f_content = fu->getStringFromFile(fu->fullPathForFilename(f));
+	const auto ret = backend::Device::getInstance()->newProgram(v_content, f_content);
+	if (ret)return ret;
 	CheckVertexShader(v_content);
 	CheckFragmentShader(f_content);
 	return nullptr;
 }
 
-GLProgram* util::CreateGLProgramFromString(const std::string& v, const std::string& f)
+backend::Program* util::CreateProgramFromString(const std::string& v, const std::string& f)
 {
-	const auto ret = GLProgram::createWithByteArrays(v.c_str(), f.c_str());
+	const auto ret = backend::Device::getInstance()->newProgram(v, f);
 	if (ret)return ret;
-	const auto __error = glGetError();
-	if (__error) { XERROR("OpenGL error %u", __error); }
-	XERROR("can't load shader from given string", v.c_str(), f.c_str());
 	CheckVertexShader(v);
 	CheckFragmentShader(f);
 	return nullptr;
 }
 
-GLProgram* util::CreateGLProgramFromData(Data* v, Data* f)
+backend::Program* util::CreateProgramFromData(Data* v, Data* f)
 {
 	if (!v || !f)
 	{
 		XERROR("invalid param");
 		return nullptr;
 	}
-	auto vdata = (GLchar*)v->getBytes();
-	auto fdata = (GLchar*)f->getBytes();
+	auto vdata = (char*)v->getBytes();
+	auto fdata = (char*)f->getBytes();
 	if (vdata[v->getSize() - 1] != '\0' || fdata[f->getSize() - 1] != '\0')
 	{
 		XERROR("invalid data");
 		return nullptr;
 	}
-	const auto ret = GLProgram::createWithByteArrays(vdata, fdata);
+	const auto ret = backend::Device::getInstance()->newProgram(vdata, fdata);
 	if (ret)return ret;
 	const auto __error = glGetError();
 	if (__error) { XERROR("OpenGL error %u", __error); }

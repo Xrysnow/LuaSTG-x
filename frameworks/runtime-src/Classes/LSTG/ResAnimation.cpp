@@ -83,11 +83,13 @@ bool ResAnimation::render(int ani_timer, float x, float y, float rot, float hsca
 	return LRR.render(this, ani_timer, x, y, rot, hscale, vscale);
 }
 
-string ResAnimation::getInfo() const
+std::unordered_map<std::string, std::string> ResAnimation::getInfo() const
 {
 	auto ret = ResourceQuad::getInfo();
-	ret += StringUtils::format(" | w = %d, h = %d, row = %d, col = %d", (int)w, (int)h, m, n);
-	ret += " | Sprite0 = { | " + images.at(0)->getDescription() + " | }";
+	ret["width"] = to_string((int)w);
+	ret["height"] = to_string((int)h);
+	ret["n_raw"] = to_string(m);
+	ret["n_col"] = to_string(n);
 	return ret;
 }
 

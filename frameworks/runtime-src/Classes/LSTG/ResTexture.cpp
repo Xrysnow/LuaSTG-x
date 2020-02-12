@@ -1,6 +1,5 @@
 #include "ResTexture.h"
 #include "cocos2d.h"
-//#include "LogSystem.h"
 #include "Renderer.h"
 #include "AppFrame.h"
 
@@ -22,17 +21,19 @@ bool ResTexture::render(const V3F_C4B_T2F_Quad& quad)
 	return LRR.renderTexture(this, q);
 }
 
-bool ResTexture::render(BlendMode* blend, const V3F_C4B_T2F_Quad& quad)
+bool ResTexture::render(RenderMode* blend, const V3F_C4B_T2F_Quad& quad)
 {
 	const auto q = LMP.getQuad();
 	*q = quad;
-	LRR.updateBlendMode(blend);
+	LRR.updateRenderMode(blend);
 	return LRR.renderTexture(this, q);
 }
 
-string ResTexture::getInfo() const
+std::unordered_map<std::string, std::string> ResTexture::getInfo() const
 {
-	return Resource::getInfo() + " | TexInfo = " + texture->getDescription();
+	auto ret = Resource::getInfo();
+	ret["format"] = texture->getStringForFormat();
+	return ret;
 }
 
 ResTexture::ResTexture(const std::string& name, Texture2D* tex)

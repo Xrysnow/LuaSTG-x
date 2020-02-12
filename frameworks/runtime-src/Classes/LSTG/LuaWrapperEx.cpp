@@ -13,6 +13,10 @@
 #include "../fcyLib/fcyMisc/fcyStopWatch.h"
 #include "../Classes/XLuaModuleRegistry.h"
 
+#ifdef MessageBox
+#undef MessageBox
+#endif
+
 using namespace std;
 using namespace lstg;
 
@@ -60,7 +64,7 @@ LUA_REGISTER_MODULE_DEF(lstg_ex)
 		}
 		static int MessageBox(lua_State* L)noexcept
 		{
-			cocos2d::MessageBox(luaL_checkstring(L, 1), luaL_checkstring(L, 2));
+			cocos2d::ccMessageBox(luaL_checkstring(L, 1), luaL_checkstring(L, 2));
 			return 0;
 		}
 		static int GetOSName(lua_State* L)noexcept

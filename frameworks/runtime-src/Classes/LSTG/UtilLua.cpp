@@ -6,6 +6,8 @@
 #include "AppFrame.h"
 #include "LogSystem.h"
 #include "LWColor.h"
+#include "UtilLuaConversion.h"
+#include "ResFX.h"
 
 using namespace std;
 using namespace lstg;
@@ -30,8 +32,6 @@ IMPL_BASIC_TO_NATIVE(luaval_to_vec3, cocos2d::Vec3);
 IMPL_BASIC_TO_NATIVE(luaval_to_vec4, cocos2d::Vec4);
 IMPL_BASIC_TO_NATIVE(luaval_to_blendfunc, cocos2d::BlendFunc);
 IMPL_BASIC_TO_NATIVE(luaval_to_ttfconfig, cocos2d::TTFConfig);
-IMPL_BASIC_TO_NATIVE(luaval_to_uniform, cocos2d::Uniform);
-IMPL_BASIC_TO_NATIVE(luaval_to_vertexattrib, cocos2d::VertexAttrib);
 IMPL_BASIC_TO_NATIVE(luaval_to_ccvalue, cocos2d::Value);
 IMPL_BASIC_TO_NATIVE(luaval_to_mesh_vertex_attrib, cocos2d::MeshVertexAttrib);
 IMPL_BASIC_TO_NATIVE(luaval_to_quaternion, cocos2d::Quaternion);
@@ -55,8 +55,6 @@ IMPL_BASIC_FROM_NATIVE(fontdefinition_to_luaval, cocos2d::FontDefinition);
 IMPL_BASIC_FROM_NATIVE(mat4_to_luaval, cocos2d::Mat4);
 IMPL_BASIC_FROM_NATIVE(blendfunc_to_luaval, cocos2d::BlendFunc);
 IMPL_BASIC_FROM_NATIVE(ttfconfig_to_luaval, cocos2d::TTFConfig);
-IMPL_BASIC_FROM_NATIVE(uniform_to_luaval, cocos2d::Uniform);
-IMPL_BASIC_FROM_NATIVE(vertexattrib_to_luaval, cocos2d::VertexAttrib);
 IMPL_BASIC_FROM_NATIVE(ccvalue_to_luaval, cocos2d::Value);
 IMPL_BASIC_FROM_NATIVE(mesh_vertex_attrib_to_luaval, cocos2d::MeshVertexAttrib);
 IMPL_BASIC_FROM_NATIVE(quaternion_to_luaval, cocos2d::Quaternion);
@@ -328,10 +326,10 @@ bool lua::luaval_to_V3F_C4B_T2F_Quad(lua_State* L, int lo, V3F_C4B_T2F_Quad* out
 	return true;
 }
 
-void lua::V3F_C4B_T2F_Quad_to_luaval(lua_State* L, V3F_C4B_T2F_Quad quad)
+void lua::V3F_C4B_T2F_Quad_to_luaval(lua_State* L, const V3F_C4B_T2F_Quad& inValue)
 {
 	lua_createtable(L, 0, 4);
-	const auto p = (V3F_C4B_T2F*)&quad;
+	const auto p = (V3F_C4B_T2F*)&inValue;
 	for (auto i = 0; i < 4; ++i)
 	{
 		const auto v = p[i];
@@ -352,26 +350,167 @@ void lua::V3F_C4B_T2F_Quad_to_luaval(lua_State* L, V3F_C4B_T2F_Quad quad)
 	}
 }
 
-bool lua::luaval_to_BlendMode(lua_State* L, int lo, BlendMode** outValue, const char* /*funcName*/)
+bool lua::luaval_to_UniformLocation(lua_State* L, int lo, backend::UniformLocation* outValue,
+	const char* funcName)
 {
-	if (!outValue)return false;
+	if (!lua_istable(L, lo))
+		return false;
+	std::vector<int> loc;
+	backend::ShaderStage stage;
+	if (!luaval_field_to_native(L, lo, "location", &loc, funcName) ||
+		!luaval_field_to_native(L, lo, "shaderStage", &stage, funcName))
+		return false;
+	for (auto i = 0u; i < std::min(2u, loc.size()); ++i)
+		outValue->location[i] = loc.at(i);
+	outValue->shaderStage = stage;
+	return true;
+}
+
+void lua::UniformLocation_to_luaval(lua_State* L, const backend::UniformLocation& inValue)
+{
+	lua_createtable(L, 0, 2);
+	const std::array<int, 2> arr = { inValue.location[0],inValue.location[1] };
+	native_to_luaval_field(L, -1, "location", arr);
+	native_to_luaval_field(L, -1, "shaderStage", inValue.shaderStage);
+}
+
+bool lua::luaval_to_SamplerDescriptor(lua_State* L, int lo, backend::SamplerDescriptor* outValue,
+	const char* funcName)
+{
+	if (!lua_istable(L, lo))
+		return false;
+	const auto old = *outValue;
+	if (!luaval_field_to_native(L, lo, "magFilter", &outValue->magFilter, funcName) ||
+		!luaval_field_to_native(L, lo, "minFilter", &outValue->minFilter, funcName) ||
+		!luaval_field_to_native(L, lo, "sAddressMode", &outValue->sAddressMode, funcName) ||
+		!luaval_field_to_native(L, lo, "tAddressMode", &outValue->tAddressMode, funcName))
+	{
+		*outValue = old;
+		return false;
+	}
+	return true;
+}
+
+void lua::SamplerDescriptor_to_luaval(lua_State* L, const backend::SamplerDescriptor& inValue)
+{
+	lua_createtable(L, 0, 4);
+	native_to_luaval_field(L, -1, "magFilter", inValue.magFilter);
+	native_to_luaval_field(L, -1, "minFilter", inValue.minFilter);
+	native_to_luaval_field(L, -1, "sAddressMode", inValue.sAddressMode);
+	native_to_luaval_field(L, -1, "tAddressMode", inValue.tAddressMode);
+}
+
+bool lua::luaval_to_AttributeBindInfo(lua_State* L, int lo, backend::AttributeBindInfo* outValue,
+	const char* funcName)
+{
+	if (!lua_istable(L, lo))
+		return false;
+	const auto old = *outValue;
+	if (!luaval_field_to_native(L, lo, "attributeName", &outValue->attributeName, funcName) ||
+		!luaval_field_to_native(L, lo, "location", &outValue->location, funcName) ||
+		!luaval_field_to_native(L, lo, "size", &outValue->size, funcName) ||
+		!luaval_field_to_native(L, lo, "type", &outValue->type, funcName))
+	{
+		*outValue = old;
+		return false;
+	}
+	return true;
+}
+
+void lua::AttributeBindInfo_to_luaval(lua_State* L, const backend::AttributeBindInfo& inValue)
+{
+	lua_createtable(L, 0, 4);
+	native_to_luaval_field(L, -1, "attributeName", inValue.attributeName);
+	native_to_luaval_field(L, -1, "location", inValue.location);
+	native_to_luaval_field(L, -1, "size", inValue.size);
+	native_to_luaval_field(L, -1, "type", inValue.type);
+}
+
+bool lua::luaval_to_Viewport(lua_State* L, int lo, Viewport* outValue, const char* funcName)
+{
+	if (!lua_istable(L, lo))
+		return false;
+	const auto old = *outValue;
+	if (!luaval_field_to_native(L, lo, "x", &outValue->x, funcName) ||
+		!luaval_field_to_native(L, lo, "y", &outValue->y, funcName) ||
+		!luaval_field_to_native(L, lo, "w", &outValue->w, funcName) ||
+		!luaval_field_to_native(L, lo, "h", &outValue->h, funcName))
+	{
+		*outValue = old;
+		return false;
+	}
+	return true;
+}
+
+void lua::Viewport_to_luaval(lua_State* L, const Viewport& inValue)
+{
+	lua_createtable(L, 0, 4);
+	native_to_luaval_field(L, -1, "x", inValue.x);
+	native_to_luaval_field(L, -1, "y", inValue.y);
+	native_to_luaval_field(L, -1, "w", inValue.w);
+	native_to_luaval_field(L, -1, "h", inValue.h);
+}
+
+bool lua::luaval_to_BlendDescriptor(lua_State* L, int lo, backend::BlendDescriptor* outValue,
+	const char* funcName)
+{
+	if (!lua_istable(L, lo))
+		return false;
+	const auto old = *outValue;
+	if (!luaval_field_to_native(L, lo, "src", &outValue->sourceRGBBlendFactor, funcName) ||
+		!luaval_field_to_native(L, lo, "srcAlpha", &outValue->sourceAlphaBlendFactor, funcName) ||
+		!luaval_field_to_native(L, lo, "dst", &outValue->destinationRGBBlendFactor, funcName) ||
+		!luaval_field_to_native(L, lo, "dstAlpha", &outValue->destinationAlphaBlendFactor, funcName))
+	{
+		*outValue = old;
+		return false;
+	}
+	return true;
+}
+
+void lua::BlendDescriptor_to_luaval(lua_State* L, const backend::BlendDescriptor& inValue)
+{
+	lua_createtable(L, 0, 4);
+	native_to_luaval_field(L, -1, "src", inValue.sourceRGBBlendFactor);
+	native_to_luaval_field(L, -1, "srcAlpha", inValue.sourceAlphaBlendFactor);
+	native_to_luaval_field(L, -1, "dst", inValue.destinationRGBBlendFactor);
+	native_to_luaval_field(L, -1, "dstAlpha", inValue.destinationAlphaBlendFactor);
+}
+
+bool lua::luaval_to_RenderMode(lua_State* L, int lo, RenderMode** outValue, const char* /*funcName*/)
+{
+	if (!outValue)
+		return false;
 	const auto type = lua_type(L, lo);
-	BlendMode* b = nullptr;
+	RenderMode* b = nullptr;
 	if (type == LUA_TNUMBER)
-		b = BlendMode::getByID(luaL_checkinteger(L, lo));
+		b = RenderMode::getByID(luaL_checkinteger(L, lo));
 	else if (type == LUA_TSTRING)
-		b = BlendMode::getByName(luaL_checkstring(L, lo));
+	{
+		size_t size;
+		const auto s = luaL_checklstring(L, lo, &size);
+		b = RenderMode::getByName({ s,size });
+	}
 	else
-		b = tousertype<BlendMode>(L, lo, "lstg.BlendMode");
-	if (!b)return false;
+	{
+		b = tousertype<RenderMode>(L, lo, "lstg.RenderMode");
+		if(!b)
+		{
+			const auto res = tousertype<ResFX>(L, lo, "lstg.ResFX");
+			if (res)
+				b = res->getRenderMode();
+		}
+	}
+	if (!b)
+		return false;
 	*outValue = b;
 	return true;
 }
 
-void lua::BlendMode_to_luaval(lua_State* L, BlendMode* blendMode)
+void lua::RenderMode_to_luaval(lua_State* L, RenderMode* renderMode)
 {
-	if(blendMode)
-		object_to_luaval<lstg::BlendMode>(L, "lstg.BlendMode", blendMode);
+	if(renderMode)
+		object_to_luaval<RenderMode>(L, "lstg.RenderMode", renderMode);
 	else
 		lua_pushnil(L);
 }
@@ -381,7 +520,9 @@ bool lua::luaval_to_ColliderType(lua_State* L, int lo, XColliderType* outValue, 
 	const auto type = lua_type(L, lo);
 	if (type == LUA_TSTRING)
 	{
-		const auto v = xmath::collision::from_string(luaL_checkstring(L, lo));
+		size_t size;
+		const auto s = luaL_checklstring(L, lo, &size);
+		const auto v = xmath::collision::from_string({ s,size });
 		if (v == XColliderType::ColliderTypeNum)
 			return false;
 		*outValue = v;
@@ -435,7 +576,7 @@ bool lua::luaval_to_GameObject(lua_State* L, int lo, GameObject** outValue, cons
 		}
 	}
 	if (type == LUA_TCDATA)
-		return lua::luaval_to_cptr(L, lo, (void**)outValue);
+		return luaval_to_cptr(L, lo, (void**)outValue);
 	return false;
 }
 
@@ -458,7 +599,7 @@ void lua::BaseLight_to_luaval(lua_State* L, BaseLight* light)
 		case LightType::AMBIENT: type = "cc.AmbientLight"; break;
 		default: ;
 		}
-		object_to_luaval<cocos2d::BaseLight>(L, type.c_str(), light);
+		object_to_luaval<BaseLight>(L, type.c_str(), light);
 	}
 	else
 		lua_pushnil(L);
@@ -557,7 +698,7 @@ bool lua::luaval_to_async_callback(lua_State* L, int lo, std::function<void()>* 
 	return true;
 }
 
-void lua::ref_type_to_luaval(lua_State* L, cocos2d::Ref* ref, const char* typeID)
+void lua::ref_type_to_luaval(lua_State* L, Ref* ref, const char* typeID)
 {
 	if (ref)
 	{
@@ -578,24 +719,6 @@ void lua::ref_type_to_luaval(lua_State* L, cocos2d::Ref* ref, const char* typeID
 		lua_pushnil(L);
 	}
 }
-
-//int lua::pushArray(lua_State* L, const std::vector<float>& arr)
-//{
-//	return pushArray(L, arr.data(), arr.size());
-//}
-
-//std::vector<float> lua::getArray(lua_State* L, int lo)
-//{
-//	const auto len = lua_objlen(L, lo);
-//	std::vector<float> ret;
-//	ret.reserve(len);
-//	for (size_t i = 1; i <= len; i++)
-//	{
-//		lua_rawgeti(L, lo, i);
-//		ret.push_back(luaL_checknumber(L, -1));
-//	}
-//	return ret;
-//}
 
 std::vector<float> lua::getArray(lua_State* L, int lo, const char* field)
 {
@@ -682,9 +805,9 @@ int lua::pushCArray(lua_State* L, lua_Number* arr, uint32_t size)
 }
 
 #if CC_64BITS
-#define HASH_OFFSET -3
+#define HASH_OFFSET (-3)
 #else
-#define HASH_OFFSET -2
+#define HASH_OFFSET (-2)
 #endif
 
 const char* lua::checkstring(lua_State* L, int lo, size_t* strlen, uint32_t* hash)

@@ -64,46 +64,20 @@ void ComponentManager::updateCommandAni(ResAnimation* res)
 	const auto vert = LMP.getQuad();
 	*vert = res->getVertex(i);
 
-	auto blendMode = res->getBlendMode();
+	auto renderMode = res->getRenderMode();
 	if (blend)
 	{
-		if (blend->blendMode)
-			blendMode = blend->blendMode;
+		if (blend->renderMode)
+			renderMode = blend->renderMode;
 		if (blend->useColor)
 		{
 			for (int j = 0; j < 4; ++j)
 				((V3F_C4B_T2F*)vert)[j].colors = blend->blendColor;
 		}
 	}
-	LRR.updateBlendMode(blendMode);
-	auto state = blendMode->getGLProgramState(LRR.getCurrentFogMode());
-	if (programStateCopy)
-		state = programStateCopy;
-
+	LRR.updateRenderMode(renderMode);
+	LRR.setXTCommand(&xtcmd, sp->getTexture());
 	xtcmd.getTri()->verts = (V3F_C4B_T2F*)vert;
-
-	const auto tex = sp->getTexture();
-	if (tex != cmdTex)
-	{
-		cmdDirty = true;
-		cmdTex = tex;
-	}
-	if (blendMode != cmdBlend)
-	{
-		cmdDirty = true;
-		cmdBlend = blendMode;
-	}
-	if (state != cmdState)
-	{
-		cmdDirty = true;
-		cmdState = state;
-	}
-	if (cmdDirty)
-	{
-		xtcmd.init(0.f, tex,
-			state, blendMode->blendFunc, blendMode->blendEquation);
-		cmdDirty = false;
-	}
 }
 
 void ComponentManager::updateCommandSprite(ResSprite* res)
@@ -113,105 +87,51 @@ void ComponentManager::updateCommandSprite(ResSprite* res)
 	const auto vert = LMP.getQuad();
 	*vert = res->getVertex();
 
-	auto blendMode = res->getBlendMode();
+	auto renderMode = res->getRenderMode();
 	if (blend)
 	{
-		if(blend->blendMode)
-			blendMode = blend->blendMode;
+		if(blend->renderMode)
+			renderMode = blend->renderMode;
 		if (blend->useColor)
 		{
 			for (int j = 0; j < 4; ++j)
 				((V3F_C4B_T2F*)vert)[j].colors = blend->blendColor;
 		}
 	}
-	LRR.updateBlendMode(blendMode);
-	auto state = blendMode->getGLProgramState(LRR.getCurrentFogMode());
+	LRR.updateRenderMode(renderMode);
+	auto state = renderMode->getDefaultProgramState();
 
-	if (programStateCopy)
-		state = programStateCopy;
 	if (light && (light->lightFlag != 0) && res->getNormalMap())
 	{
-		if (!programStateCopy || programStateCopy->getGLProgram() != state->getGLProgram())
-		{
-			// need a new copy
-			setProgramStateCopy(state->clone());
-		}
-		state = programStateCopy;
 		// apply light uniforms to state
-		light->applyUniforms(programStateCopy);
-		programStateCopy->setUniformTexture("u_normalTex", res->getNormalMap());
+		light->applyUniforms(state);
+		state->setTexture(
+			state->getUniformLocation("u_normalTex"),
+			0, res->getNormalMap()->getBackendTexture());
 	}
-
+	// uniform should be set before this
+	LRR.setXTCommand(&xtcmd, sp->getTexture());
 	xtcmd.getTri()->verts = (V3F_C4B_T2F*)vert;
-
-	const auto tex = sp->getTexture();
-	if (tex != cmdTex)
-	{
-		cmdDirty = true;
-		cmdTex = tex;
-	}
-	if (blendMode != cmdBlend)
-	{
-		cmdDirty = true;
-		cmdBlend = blendMode;
-	}
-	if (state != cmdState)
-	{
-		cmdDirty = true;
-		cmdState = state;
-	}
-	if (cmdDirty)
-	{
-		xtcmd.init(0.f, tex,
-			state, blendMode->blendFunc, blendMode->blendEquation);
-		cmdDirty = false;
-	}
 }
 
 void ComponentManager::updateCommandTexture(ResTexture* res)
 {
 	if (!vert) return;
-	auto blendMode = BlendMode::Default;
+	auto renderMode = RenderMode::Default;
 	if (blend)
 	{
-		if (blend->blendMode)
-			blendMode = blend->blendMode;
+		if (blend->renderMode)
+			renderMode = blend->renderMode;
 	}
-	LRR.updateBlendMode(blendMode);
-	auto state = blendMode->getGLProgramState(LRR.getCurrentFogMode());
-	if (programStateCopy)
-		state = programStateCopy;
-
+	LRR.updateRenderMode(renderMode);
+	LRR.setXTCommand(&xtcmd, res->getTexture());
 	*xtcmd.getTri() = vert->tri;
-
-	const auto tex = res->getTexture();
-	if (tex != cmdTex)
-	{
-		cmdDirty = true;
-		cmdTex = tex;
-	}
-	if (blendMode != cmdBlend)
-	{
-		cmdDirty = true;
-		cmdBlend = blendMode;
-	}
-	if (state != cmdState)
-	{
-		cmdDirty = true;
-		cmdState = state;
-	}
-	if (cmdDirty)
-	{
-		xtcmd.init(0.f, tex,
-			state, blendMode->blendFunc, blendMode->blendEquation);
-		cmdDirty = false;
-	}
 }
 
 ComponentManager::ComponentManager():
 	ani(nullptr), blend(nullptr), colli(nullptr), label(nullptr), par(nullptr),
-	vert(nullptr), tr(nullptr), light(nullptr), lightSource(nullptr), programStateCopy(nullptr),
-	_node(nullptr)
+	vert(nullptr), tr(nullptr), light(nullptr), lightSource(nullptr),
+	_node(nullptr), programStateCopy(nullptr)
 {
 	auto tri = xtcmd.getTri();
 	tri->vertCount = 4;
@@ -231,7 +151,7 @@ void ComponentManager::reset()
 	}
 	if (blend)
 	{
-		blend->blendMode = BlendMode::Default;
+		blend->renderMode = RenderMode::Default;
 		blend->blendColor = Color4B::WHITE;
 		blend->useColor = false;
 	}
@@ -423,7 +343,7 @@ void ComponentManager::applyResAnimation(ResAnimation* res)
 	}
 	if (blend)
 	{
-		blend->blendMode = res->getBlendMode();
+		blend->renderMode = res->getRenderMode();
 		blend->blendColor = res->getColor();
 		//blend->useColor = true;
 	}
@@ -442,7 +362,7 @@ void ComponentManager::applyResSprite(ResSprite* res)
 {
 	if (blend)
 	{
-		blend->blendMode = res->getBlendMode();
+		blend->renderMode = res->getRenderMode();
 		blend->blendColor = res->getColor();
 		//blend->useColor = true;
 	}
@@ -461,7 +381,7 @@ void ComponentManager::applyResParticle(ResParticle* res)
 {
 	if (blend)
 	{
-		blend->blendMode = res->getBlendMode();
+		blend->renderMode = res->getRenderMode();
 		//blend->blendColor = res->getColor();
 		//blend->useColor = true;
 	}
@@ -479,7 +399,7 @@ void ComponentManager::applyResFont(ResFont* res)
 {
 	if (blend)
 	{
-		blend->blendMode = res->getBlendMode();
+		blend->renderMode = res->getRenderMode();
 		blend->blendColor = res->getColor();
 		//blend->useColor = true;
 	}
@@ -515,7 +435,7 @@ void ComponentManager::updateParticle()
 	}
 	if (blend)
 	{
-		ps->setBlendMode(blend->blendMode);
+		ps->setRenderMode(blend->renderMode);
 	}
 	par->pool->Update(1.0 / 60);
 }
@@ -567,21 +487,23 @@ void ComponentManager::renderLabel()
 		auto lb = label->label;
 		if(blend)
 		{
-			lb->setBlendFunc(blend->blendMode->blendFunc);
+			lb->setBlendFunc({
+				blend->renderMode->desc.sourceRGBBlendFactor,
+				blend->renderMode->desc. destinationRGBBlendFactor});
 			// TTF label uses shader for effects
-			//lb->setGLProgram(blend->blendMode->getGLProgram());// no fog
+			//lb->setProgram(blend->renderMode->getProgram());// no fog
 			if (blend->useColor)
 			{
 				lb->setOpacity(blend->blendColor.a);
 				lb->setColor(Color3B(blend->blendColor));
 			}
-			LRR.updateBlendMode(blend->blendMode);
+			LRR.updateRenderMode(blend->renderMode);
 		}
 		else
 		{
-			LRR.updateBlendMode(BlendMode::Default);
+			LRR.updateRenderMode(RenderMode::Default);
 		}
-		LRR.pushDummyCommand();
+		//TODO: check
 		lb->visit(LRR.getRenderer(), xtcmd.getModelView(), Node::FLAGS_TRANSFORM_DIRTY);
 	}
 }

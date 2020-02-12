@@ -1,5 +1,6 @@
 ﻿#include "Renderer.h"
 #include "Global.h"
+#include "renderer/backend/Backend.h"
 #include "XProfiler.h"
 #include "AppFrame.h"
 #include "Utility.h"
@@ -7,8 +8,10 @@
 #include <EGL/egl.h>
 #endif
 
-#define BATCH_COMMAND
-#define MT_UpdateVerts
+//#ifdef CC_PLATFORM_PC
+//#define BATCH_COMMAND
+//#define MT_UpdateVerts
+//#endif // CC_PLATFORM_PC
 
 using namespace std;
 using namespace lstg;
@@ -53,7 +56,7 @@ XRenderer* XRenderer::getInstance()
 	return &instance;
 }
 
-XRenderer::XRenderer(): pRenderer(nullptr), storeViewport{}
+XRenderer::XRenderer()
 {
 }
 
@@ -64,14 +67,12 @@ XRenderer::~XRenderer()
 bool XRenderer::init()
 {
 	auto director = Director::getInstance();
-	auto glv = director->getOpenGLView();
+	const auto glv = director->getOpenGLView();
 	if (!glv)
-	{
 		return false;
-	}
 	auto p = getInstance();
 	p->pRenderer = director->getRenderer();
-	// note: there is a default fbo for render, see Director::setClearColor
+	// note: Director::setClearColor has priority
 	//p->pRenderer->setClearColor(Color4F(0, 0, 0, 0));
 	director->setClearColor(Color4F(0, 0, 0, 0));
 	p->bRenderStarted = false;
@@ -85,15 +86,19 @@ bool XRenderer::init()
 	p->movingCamera->retain();
 	p->tempRenderTexture = nullptr;//note: init in PostEffectCapture
 
-	const auto glp = GLProgramCache::getInstance()->getGLProgram(
-		GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP);
-	//auto glp = GLProgramCache::getInstance()->getGLProgram(
-	//GLProgram::SHADER_NAME_ETC1AS_POSITION_TEXTURE_COLOR_NO_MVP);
-	BlendMode::Default->setFogGLProgram(FogMode::None, glp);
-	p->currentBlendMode = BlendMode::Default;
-	p->currentProjection = director->getProjectionMatrix(0);
+	const auto program = backend::ProgramCache::getInstance()->getBuiltinProgram(
+		backend::ProgramType::POSITION_TEXTURE_COLOR);
+	RenderMode::Default->init("DEFAULT",
+		backend::BlendOperation::ADD,
+		backend::BlendFactor::SRC_ALPHA,
+		backend::BlendFactor::ONE_MINUS_SRC_ALPHA,
+		program);
+	p->currentRenderMode = RenderMode::Default;
+	p->currentProjection = director->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
 	director->setProjection(Director::Projection::_2D);
 	director->setDisplayStats(false);
+
+	p->commandBuffer = backend::Device::getInstance()->newCommandBuffer();
 
 	return true;
 }
@@ -105,36 +110,19 @@ bool XRenderer::end()
 	SAFE_DELETE(getInstance()->drawNode);
 	SAFE_DELETE(getInstance()->movingCamera);
 	CC_SAFE_RELEASE_NULL(getInstance()->tempRenderTexture);
+	CC_SAFE_RELEASE_NULL(getInstance()->commandBuffer);
+	RenderMode::modeMap.clear();
+	RenderMode::modeVector.clear();
 	return true;
 }
 
-void XRenderer::updateBlendMode(BlendMode* m)
+void XRenderer::updateRenderMode(RenderMode* m)
 {
-	//assert_ptr(m);
-	if (currentBlendMode == m)
+	assert(m);
+	if (currentRenderMode == m)
 		return;
-	currentBlendMode = m;
-	auto glps = currentBlendMode->getGLProgramState(currentFogMode);
-	//CCASSERT(glps, "can't get GLProgramState!");
-	// only the last param set will take effect at each frame
-	if (currentFogMode != None && glps)
-	{
-		// update fog uniforms, note: they can be killed by the shader compiler
-		auto &c = currentFogParam.color;
-		glps->setUniformVec4("u_fogColor", Vec4(c.r, c.g, c.b, /*c.a*/1.f));
-		switch (currentFogMode)
-		{
-		case Liner:
-			glps->setUniformFloat("u_fogStart", currentFogParam.start);
-			glps->setUniformFloat("u_fogEnd", currentFogParam.end);
-			break;
-		case Exp1:
-		case Exp2:
-			glps->setUniformFloat("u_fogDensity", currentFogParam.density);
-			break;
-		default: break;
-		}
-	}
+	setProgramStateDirty();
+	currentRenderMode = m;
 }
 
 void XRenderer::setAALevel(int lv)noexcept
@@ -202,9 +190,9 @@ void XRenderer::setOffscreen(bool b) noexcept
 		bUseFrameBuffer = true;
 }
 
-void XRenderer::pushCustomCommend(function<void()> f)noexcept
+void XRenderer::pushCallbackCommend(const std::function<void()>& f)noexcept
 {
-	auto cmd = LMP.getCustomCommand();
+	auto cmd = LMP.getCallbackCommand();
 	cmd->init(0.f);
 	cmd->set3D(false);
 	cmd->setTransparent(false);
@@ -213,9 +201,10 @@ void XRenderer::pushCustomCommend(function<void()> f)noexcept
 	addCommand(cmd);
 }
 
-void XRenderer::pushCustomCommend(RenderQueue::QUEUE_GROUP group, float globalZOrder, std::function<void()> f) noexcept
+void XRenderer::pushCallbackCommend(RenderQueue::QUEUE_GROUP group, float globalZOrder,
+	const std::function<void()>& f) noexcept
 {
-	auto cmd = LMP.getCustomCommand();
+	auto cmd = LMP.getCallbackCommand();
 	cmd->init(globalZOrder);
 	cmd->set3D(false);
 	cmd->setTransparent(false);
@@ -241,18 +230,6 @@ void XRenderer::pushCustomCommend(RenderQueue::QUEUE_GROUP group, float globalZO
 	addCommand(cmd);
 }
 
-void XRenderer::pushDummyCommand() noexcept
-{
-	// workaround for XTrianglesCommand::useMaterial, and will make label support blend equation
-	auto dummy = LMP.getXTrianglesCommand();
-	dummy->init(0.f, nullptr, currentBlendMode->getGLProgramState(),
-		currentBlendMode->blendFunc, currentBlendMode->blendEquation);
-	const auto tri = dummy->getTri();
-	tri->vertCount = 0;
-	tri->indexCount = 0;
-	addCommand(dummy);
-}
-
 bool XRenderer::beginScene()noexcept
 {
 	if (bRenderStarted)
@@ -267,13 +244,14 @@ bool XRenderer::beginScene()noexcept
 
 	// Store glViewport, ProjectionMatrix; Load currentProjection
 	const auto f = [=]() {
-		glGetIntegerv(GL_VIEWPORT, storeViewport);
-		storeProjection = Director::getInstance()->getProjectionMatrix(0);
-		Director::getInstance()->loadProjectionMatrix(currentProjection, 0);
+		storeViewport = pRenderer->getViewport();
+		storeProjection = Director::getInstance()->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
+		Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, currentProjection);
 	};
 	// todo: maybe GLOBAL_NEG?
-	pushCustomCommend(f);
+	pushCallbackCommend(f);
 
+	setProgramStateDirty();
 	frameBufferStart();
 	drawNode->clear();
 	_verts.clear();
@@ -304,13 +282,13 @@ bool XRenderer::endScene()noexcept
 
 	frameBufferEnd();
 	bRenderStarted = false;
-	// restore glBlendEquation, glViewport, ProjectionMatrix
+	// restore Viewport, ProjectionMatrix
 	const auto f = [=]() {
-		glBlendEquation(GL_FUNC_ADD);
-		glViewport(storeViewport[0], storeViewport[1], storeViewport[2], storeViewport[3]);
-		Director::getInstance()->loadProjectionMatrix(storeProjection, 0);
+		pRenderer->setViewPort(storeViewport.x, storeViewport.y, storeViewport.w, storeViewport.h);
+		//commandBuffer->setViewport(storeViewport.x, storeViewport.y, storeViewport.w, storeViewport.h);
+		Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, storeProjection);
 	};
-	pushCustomCommend(f);
+	pushCallbackCommend(f);
 
 #ifdef MT_UpdateVerts
 	updateBatchedVerts();
@@ -337,44 +315,36 @@ void XRenderer::renderClear(const Color4F& c)noexcept
 		//   r->clear(c.r, c.g, c.b, c.a);
 		// RenderTexture::clear calls begin + end,
 		// but here is between begin and end.
-		pushCustomCommend([c]()
-		{
-			GLfloat oldColor[4] = { 0.0f };
-			glGetFloatv(GL_COLOR_CLEAR_VALUE, oldColor);//save
-			//glClearColor(c.r, c.g, c.b, 1.f);
-			glClearColor(c.r, c.g, c.b, c.a);
-			glClear(GL_COLOR_BUFFER_BIT);
-			glClearColor(oldColor[0], oldColor[1], oldColor[2], oldColor[3]);//restore
-		});
+		pRenderer->clear(ClearFlag::COLOR, c, 0.f, 0, 0.f);
 	}
 	else
 	{
-		pushCustomCommend([=]()
+		// note: will clear all if not set scissor
+		const auto vp = currentVP;
+		pushCallbackCommend([=]()
 		{
-			// note: glClear will clear all if not use glScissor
-			glScissor(
-				GLint(currentVP._left),
-				GLint(currentVP._bottom),
-				GLsizei(currentVP._width),
-				GLsizei(currentVP._height));
-			glEnable(GL_SCISSOR_TEST);
-			glDepthMask(GL_TRUE);
-			//glClearColor(c.r, c.g, c.b, 1.f);
-			glClearColor(c.r, c.g, c.b, c.a);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glDisable(GL_SCISSOR_TEST);
-			glDepthMask(GL_FALSE);
+			commandBuffer->setScissorRect(true, (float)vp.x, (float)vp.y, (float)vp.w, (float)vp.h);
+		});
+		pRenderer->clear(ClearFlag::ALL, c, 0.f, 0, 0.f);
+		pushCallbackCommend([=]()
+		{
+			commandBuffer->setScissorRect(false, 0, 0, 0, 0);
 		});
 	}
 }
 
 bool XRenderer::setViewport(double left, double right, double bottom, double top)noexcept
 {
-	const auto f = [=]() {
-		glViewport(GLint(left), GLint(bottom), GLsizei(right - left), GLsizei(top - bottom));
-	};
-	pushCustomCommend(f);
-	currentVP = cocos2d::experimental::Viewport(left, bottom, right - left, top - bottom);
+	//TODO: use float
+	const int x = std::min(left, right);
+	const int y = std::min(bottom, top);
+	const unsigned int w = std::max(left, right) - x;
+	const unsigned int h = std::max(bottom, top) - y;
+	pushCallbackCommend([=]() {
+		pRenderer->setViewPort(x, y, w, h);
+		//commandBuffer->setViewport(x, y, w, h);
+	});
+	currentVP = { x,y,w,h };
 	return true;
 }
 
@@ -384,11 +354,11 @@ void XRenderer::setOrtho(float left, float right, float bottom, float top)noexce
 	CC_ASSERT(bottom != top);
 	Mat4::createOrthographicOffCenter(left, right, bottom, top, -1024.f, 1024.f, &currentProjection);
 	auto mt = currentProjection;
-	const auto f = [mt]()
+	pushCallbackCommend([mt]()
 	{
-		Director::getInstance()->loadProjectionMatrix(mt, 0);
-	};
-	pushCustomCommend(f);
+		Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, mt);
+	});
+	setProgramStateDirty();
 }
 
 void XRenderer::setPerspective(float eyeX, float eyeY, float eyeZ,
@@ -406,113 +376,11 @@ void XRenderer::setPerspective(float eyeX, float eyeY, float eyeZ,
 	currentProjection = movingCamera->getViewProjectionMatrix();
 
 	auto mt = currentProjection;
-	const auto f = [mt]()
+	pushCallbackCommend([mt]()
 	{
-		Director::getInstance()->loadProjectionMatrix(mt, 0);
-	};
-	pushCustomCommend(f);
-}
-
-void XRenderer::setFog(float start, float end, const Color4F& color)noexcept
-{
-	if (start != end)
-	{
-		currentFogParam.color = color;
-		if (start == -1.0f)
-		{
-			currentFogParam.density = end;
-			currentFogMode = Exp1;
-		}
-		else if (start == -2.0f)
-		{
-			currentFogParam.density = end;
-			currentFogMode = Exp2;
-		}
-		else
-		{
-			currentFogParam.start = start;
-			currentFogParam.end = end;
-			currentFogMode = Liner;
-		}
-		// update immediately TODO: avoid repeat of setting
-		auto glps = currentBlendMode->getGLProgramState(currentFogMode);
-		if (glps)
-		{
-			auto &c = currentFogParam.color;
-			glps->setUniformVec4("u_fogColor", Vec4(c.r, c.g, c.b, /*c.a*/1.f));
-			switch (currentFogMode)
-			{
-			case Liner:
-				glps->setUniformFloat("u_fogStart", currentFogParam.start);
-				glps->setUniformFloat("u_fogEnd", currentFogParam.end);
-				break;
-			case Exp1:
-			case Exp2:
-				glps->setUniformFloat("u_fogDensity", currentFogParam.density);
-				break;
-			default: break;
-			}
-		}
-	}
-	else
-	{
-		currentFogMode = None;
-	}
-	/*
-	 * Dosen't work TODO: refer lua-test
-	 *
-		function<void()> f;
-		if (start != end)
-		{
-			fogColor[0] = color.r; fogColor[1]= color.g; fogColor[2] = color.b; fogColor[3] = color.a;
-			if (start == -1.0f)
-			{
-				f = [=]() {
-					pRenderer->setDepthTest(true);
-					glEnable(GL_FOG);//激活雾效果
-					glFogi(GL_FOG_MODE, GL_EXP);//雾方程
-					glFogfv(GL_FOG_COLOR, fogColor);//雾颜色
-					glFogf(GL_FOG_DENSITY, end);//雾密度
-					glHint(GL_FOG_HINT, GL_DONT_CARE);//在渲染质量与速度上没有偏向
-				};
-			}
-			else if (start == -2.0f)
-			{
-				f = [=]() {
-					pRenderer->setDepthTest(true);
-					glEnable(GL_FOG);
-					glFogi(GL_FOG_MODE, GL_EXP2);
-					glFogfv(GL_FOG_COLOR, fogColor);
-					glFogf(GL_FOG_DENSITY, end);
-					glHint(GL_FOG_HINT, GL_DONT_CARE);
-				};
-			}
-			else
-			{
-				f = [=]() {
-					pRenderer->setDepthTest(true);
-					glEnable(GL_FOG);
-					glFogi(GL_FOG_MODE, GL_LINEAR)
-					glFogfv(GL_FOG_COLOR, fogColor);
-					glHint(GL_FOG_HINT, GL_DONT_CARE);
-					glFogf(GL_FOG_START, start);//雾开始值(距离观察点开始距离)
-					glFogf(GL_FOG_END, end);//雾结束值
-				};
-			}
-		}
-		else
-		{
-			f = [=]() {
-				pRenderer->setDepthTest(false);
-				glDisable(GL_FOG);//关闭雾效果
-			};
-		}
-		auto cmd = make_shared<CustomCommand>();
-		cmd->init(0.f);
-		cmd->func = f;
-		pRenderer->addCommand(cmd.get());
-		tempRenderCommands.push_back(cmd);
-	*/
+		Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, mt);
+	});
+	setProgramStateDirty();
 }
 
 /******************************************************************************/
@@ -537,13 +405,7 @@ bool XRenderer::render(Sprite* p, V3F_C4B_T2F_Quad* quad,
 	tr->indices = quadIndices9;
 	tr->vertCount = 4;
 	tr->indexCount = 6;
-	// avoid copy Mat4 and Triangles
-	cmd->init(
-		0.f, p->getTexture(),
-		currentBlendMode->getGLProgramState(currentFogMode),
-		currentBlendMode->blendFunc,
-		currentBlendMode->blendEquation
-	);
+	setXTCommand(cmd, p->getTexture());
 	// note: rotation in cocos2dx is adverse to lstg
 	getNodeTransform(p->getAnchorPointInPoints(), x, y, -rot, hscale, vscale, z, cmd->getMV());
 	addXTCommand(cmd);
@@ -552,16 +414,16 @@ bool XRenderer::render(Sprite* p, V3F_C4B_T2F_Quad* quad,
 
 bool XRenderer::render(ResSprite* p, float x, float y, float rot, float hscale, float vscale, float z)noexcept
 {
-	updateBlendMode(p->getBlendMode());
+	updateRenderMode(p->getRenderMode());
 	return render(p->getSprite(), &p->getVertex(), x, y, rot, hscale, vscale, z);
 }
 
 bool XRenderer::renderRect(ResSprite* p,
 	float x1, float y1, float x2, float y2)noexcept
 {
-	assert_ptr(p);
+	assert(p);
 
-	updateBlendMode(p->getBlendMode());
+	updateRenderMode(p->getRenderMode());
 
 	auto v = p->getVertex();
 	//TODO: Check Z
@@ -578,9 +440,9 @@ bool XRenderer::render4V(ResSprite* p,
 	float x3, float y3, float z3,
 	float x4, float y4, float z4)noexcept
 {
-	assert_ptr(p);
+	assert(p);
 
-	updateBlendMode(p->getBlendMode());
+	updateRenderMode(p->getRenderMode());
 
 	auto pSprite = p->getSprite();
 	auto v = p->getVertex();
@@ -595,7 +457,7 @@ bool XRenderer::render4V(ResSprite* p,
 bool XRenderer::render(ResAnimation* p, int ani_timer,
 	float x, float y, float rot, float hscale, float vscale)noexcept
 {
-	updateBlendMode(p->getBlendMode());
+	updateRenderMode(p->getRenderMode());
 	auto i = int32_t(std::floor(ani_timer / p->getInterval())) % int32_t(p->getCount());
 	if (i < 0)i += p->getCount();
 	render(p->getSprite(i), &p->getVertex(i), x, y, rot, hscale, vscale);
@@ -604,7 +466,7 @@ bool XRenderer::render(ResAnimation* p, int ani_timer,
 
 bool XRenderer::render(ResParticle::ParticlePool* p, float hscale, float vscale)noexcept
 {
-	updateBlendMode(p->getBlendMode());
+	updateRenderMode(p->getRenderMode());
 	// already set in Render
 	//p->SetCenter(p->GetCenter());
 	p->Render(hscale, vscale);
@@ -616,21 +478,13 @@ bool XRenderer::renderTexture(Texture2D* t, V3F_C4B_T2F_Quad* quad)noexcept
 	auto cmd = LMP.getXTrianglesCommand();
 	auto q = LMP.getQuad();
 	*q = *quad;
-	//TrianglesCommand::Triangles tri;
 	const auto tri = cmd->getTri();
 	tri->verts = (V3F_C4B_T2F*)q;
 	tri->indices = quadIndices9;
 	tri->vertCount = 4;
 	tri->indexCount = 6;
 	*cmd->getMV() = Mat4::IDENTITY;
-	cmd->init(
-		0.f, t,
-		currentBlendMode->getGLProgramState(currentFogMode),
-		currentBlendMode->blendFunc,
-		currentBlendMode->blendEquation
-		//tri,// triangles will be copied
-		//Mat4::IDENTITY
-	);//TODO: May be better
+	setXTCommand(cmd, t);
 	addXTCommand(cmd);
 	return true;
 }
@@ -638,14 +492,9 @@ bool XRenderer::renderTexture(Texture2D* t, V3F_C4B_T2F_Quad* quad)noexcept
 bool XRenderer::renderTexture(Texture2D* t, const TrianglesCommand::Triangles& triangles) noexcept
 {
 	auto cmd = LMP.getXTrianglesCommand();
-	cmd->init(
-		0.f, t,
-		currentBlendMode->getGLProgramState(currentFogMode),
-		currentBlendMode->blendFunc,
-		currentBlendMode->blendEquation,
-		triangles,
-		Mat4::IDENTITY
-	);
+	setXTCommand(cmd, t);
+	*cmd->getTri() = triangles;
+	*cmd->getMV() = Mat4::IDENTITY;
 	addXTCommand(cmd);
 	return true;
 }
@@ -658,16 +507,16 @@ bool XRenderer::renderTexture(ResTexture* p, V3F_C4B_T2F_Quad* quad)noexcept
 bool XRenderer::renderText(ResFont* p, const char* str, float x, float y, float scale,
 	TextHAlignment halign, TextVAlignment valign)noexcept
 {
-	assert_ptr(p);
+	assert(p);
 	p->setHAlign(halign);
 	p->setVAlign(valign);
 	return renderText(p, str, x, y, -1, -1, scale);
 }
 
-bool XRenderer::renderTextAutoAlign(ResFont* p, const char* str, Rect& rect, float scale,
-	TextHAlignment halign, TextVAlignment valign, Color4B c)noexcept
+bool XRenderer::renderTextAutoAlign(ResFont* p, const char* str, const Rect& rect, float scale,
+	TextHAlignment halign, TextVAlignment valign, const Color4B& c)noexcept
 {
-	assert_ptr(p);
+	assert(p);
 	p->setHAlign(halign);
 	p->setVAlign(valign);
 	p->setColor(c);
@@ -691,9 +540,9 @@ bool XRenderer::renderTextAutoAlign(ResFont* p, const char* str, Rect& rect, flo
 bool XRenderer::renderText(ResFont* p, const char* str,
 	float x, float y, float width, float height, float scale)noexcept
 {
-	assert_ptr(p);
+	assert(p);
 	flushTriangles();
-	updateBlendMode(p->getBlendMode());
+	updateRenderMode(p->getRenderMode());
 
 	// use temprary label
 	auto label = labelPool.getWithResFont(p);
@@ -707,26 +556,25 @@ bool XRenderer::renderText(ResFont* p, const char* str,
 		label->setDimensions(width, height);
 	label->setScale(scale);//TODO: setFontSize
 	label->setPosition(x, y);
-	label->setBlendFunc(currentBlendMode->blendFunc);
+	label->setBlendFunc(currentRenderMode->getBlendFunc());
 	if (p->getLabelType() == ResFont::LabelType::TTF)
 	{
 		// for TTF
 		label->enableOutline(p->getOutlineColor(), p->getOutlineSize());
 		label->setTextColor(p->getColor());
-		//lb->setGLProgram(currentGLProgram);//TTF label uses shader for effects
 	}
 	else
 	{
-		//label->setBlendColor(p->GetBlendColor());//no need
+		//label->setBlendColor(p->GetBlendColor());//TODO: check
 		label->setOpacity(p->getColor().a);
 		label->setColor(Color3B(p->getColor()));
-		label->setGLProgram(currentBlendMode->getGLProgram());//don't set fog
 	}
+	//label->setProgramState(currentRenderMode->getProgramState());// Label uses shader for effects
 
-	// workaround, and will make label support blend equation
-	pushDummyCommand();
+	//label->visit(pRenderer, Mat4::IDENTITY, 0);
+	const auto& proj = Director::getInstance()->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
+	label->visit(pRenderer, proj.getInversed()*currentProjection, 0);
 
-	label->visit(pRenderer, Mat4::IDENTITY, 0);
 	return true;
 }
 
@@ -756,21 +604,21 @@ bool XRenderer::pushRenderTarget(ResRenderTarget* p) noexcept
 	flushTriangles();
 
 	rt->setVirtualViewport(Vec2::ZERO,
-		Rect(currentVP._left, currentVP._bottom, currentVP._width, currentVP._height),
-		Rect(0, 0, currentVP._width, currentVP._height));
+		Rect(currentVP.x, currentVP.y, currentVP.w, currentVP.h),
+		Rect(0, 0, currentVP.w, currentVP.h));
 	const auto c = p->getClearColor();
 	rt->beginWithClear(c.r / 255.f, c.g / 255.f, c.b / 255.f, c.a / 255.f);
 	// RenderTexture::onBegin will set matrix to the state
 	// when RenderTexture::begin is called, since we deferred
 	// loading matrix, we need to set it again.
 	auto mt = currentProjection;
-	pushCustomCommend([mt]()
+	pushCallbackCommend([mt]()
 	{
-		Director::getInstance()->loadProjectionMatrix(mt, 0);
+		Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, mt);
 	});
 	renderTargetStack.push_back(p);
-	// fix alpha blend
-	XTrianglesCommand::isBlendFuncSeparate = p->isNeedBlendFix();
+	//TODO:
+	//XTrianglesCommand::isBlendFuncSeparate = p->isNeedBlendFix();
 	return true;
 }
 
@@ -794,14 +642,15 @@ bool XRenderer::popRenderTarget()noexcept
 	renderTargetStack.pop_back();
 	rt->end();
 
-	if (renderTargetStack.empty())
-		XTrianglesCommand::isBlendFuncSeparate = false;
-	else
-		XTrianglesCommand::isBlendFuncSeparate = renderTargetStack.back()->isNeedBlendFix();
+	//TODO:
+	//if (renderTargetStack.empty())
+	//	XTrianglesCommand::isBlendFuncSeparate = false;
+	//else
+	//	XTrianglesCommand::isBlendFuncSeparate = renderTargetStack.back()->isNeedBlendFix();
 	return true;
 }
 
-bool XRenderer::postEffect(ResRenderTarget* p, ResFX* shader, BlendMode* blend)noexcept
+bool XRenderer::postEffect(ResRenderTarget* p, ResFX* shader, RenderMode* blend)noexcept
 {
 	if (!bRenderStarted)
 	{
@@ -810,7 +659,7 @@ bool XRenderer::postEffect(ResRenderTarget* p, ResFX* shader, BlendMode* blend)n
 	}
 	auto rt = p->getTarget();
 	auto sp = rt->getSprite();
-	if (!sp || !shader->getProgram())
+	if (!sp || !shader || !blend)
 	{
 		XERROR("internal error");
 		return false;
@@ -818,54 +667,69 @@ bool XRenderer::postEffect(ResRenderTarget* p, ResFX* shader, BlendMode* blend)n
 
 	const auto screenSize = Director::getInstance()->getOpenGLView()->getDesignResolutionSize();
 	shader->setScreenSize(Vec2(screenSize.width, screenSize.height));
-	shader->setViewport(Rect(currentVP._left, currentVP._bottom, currentVP._width, currentVP._height));
+	shader->setViewport(currentVP);
 
 	// here RenderTexture will always fill screen
-	auto size = rt->getSprite()->getTexture()->getContentSizeInPixels();
-	pushCustomCommend([=]() {
-		glViewport(GLint(0), GLint(0), GLsizei(size.width), GLsizei(size.height));
-	});
-	pushCustomCommend([rt]()
+	auto size = sp->getTexture()->getContentSizeInPixels();
+	pushCallbackCommend([=]()
 	{
+		pRenderer->setViewPort(0, 0, size.width, size.height);
 		// see ResRenderTarget::checkTarget
-		Director::getInstance()->loadProjectionMatrix(rt->getNodeToParentTransform(), 0);
+		Director::getInstance()->loadMatrix(
+			MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, rt->getNodeToParentTransform());
 	});
 
 	// clip to currentVP
 	sp->setTextureRect(Rect(
-		currentVP._left, currentVP._bottom,
-		currentVP._width, currentVP._height));
+		currentVP.x, currentVP.y,
+		currentVP.w, currentVP.h));
 	sp->setAnchorPoint(Vec2::ZERO);
-	sp->setPosition(Vec2(currentVP._left, currentVP._bottom));
+	sp->setPosition(Vec2(currentVP.x, currentVP.y));
 
 	auto cmd = LMP.getXTrianglesCommand();
-	cmd->init(
-		0.f, sp->getTexture(),
-		shader->getProgramState(),
-		blend->blendFunc,
-		blend->blendEquation,
-		sp->getPolygonInfo().triangles,
-		sp->getNodeToParentTransform()
-		//Mat4::IDENTITY
-	);
+	const auto state = shader->getRenderMode()->tempraryProgramState();
+	cmd->init(0.f, sp->getTexture(), blend, state);
+	*cmd->getTri() = sp->getPolygonInfo().triangles;
+	*cmd->getMV() = sp->getNodeToParentTransform();
+	state->setTexture(state->getUniformLocation(backend::TEXTURE),
+		0, sp->getTexture()->getBackendTexture());
+	state->setUniform(state->getUniformLocation(backend::MVP_MATRIX),
+		&Mat4::IDENTITY, sizeof(Mat4));
 	addCommand(cmd);
 
-	// RenderTexture::onEnd will restore glViewport to default, set again
-	pushCustomCommend([=]() {
-		glViewport(
-			GLint(currentVP._left), GLint(currentVP._bottom),
-			GLsizei(currentVP._width), GLsizei(currentVP._height));
-	});
-	// restore
-	auto mt = currentProjection;
-	pushCustomCommend([mt]()
+	const auto mt = currentProjection;
+	pushCallbackCommend([=]()
 	{
-		Director::getInstance()->loadProjectionMatrix(mt, 0);
+		// RenderTexture::onEnd will restore viewport to default, set again
+		pRenderer->setViewPort(currentVP.x, currentVP.y, currentVP.w, currentVP.h);
+		// restore
+		Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, mt);
 	});
 	return true;
 }
 
+void XRenderer::setProgramStateDirty()
+{
+	currentProgramState = nullptr;
+	currentTexture = nullptr;
+}
+
 /******************************************************************************/
+
+void XRenderer::setXTCommand(XTrianglesCommand* cmd, Texture2D* t)
+{
+	assert(cmd && t);
+	if (!currentProgramState || currentTexture != t)
+	{
+		currentTexture = t;
+		currentProgramState = currentRenderMode->tempraryProgramState();
+		currentProgramState->setTexture(currentProgramState->getUniformLocation(backend::TEXTURE),
+			0, t->getBackendTexture());
+		currentProgramState->setUniform(currentProgramState->getUniformLocation(backend::MVP_MATRIX),
+			currentProjection.m, sizeof(currentProjection.m));
+	}
+	cmd->init(0.f, t, currentRenderMode, currentProgramState);
+}
 
 void XRenderer::addCommand(RenderCommand* cmd)
 {
@@ -1041,7 +905,7 @@ void XRenderer::frameBufferStart()
 	if (!frameBuffer)
 	{
 		frameBuffer = RenderTexture::create(
-			dw, dh, Texture2D::PixelFormat::RGBA8888, GL_DEPTH24_STENCIL8);
+			dw, dh, backend::PixelFormat::RGBA8888, backend::PixelFormat::D24S8);
 		if (!frameBuffer)
 		{
 			XERROR("create frame buffer failed");
@@ -1061,9 +925,9 @@ void XRenderer::frameBufferStart()
 		frameBuffer->setGlobalZOrder(std::numeric_limits<float>::lowest());
 		frameBuffer->beginWithClear(0, 0, 0, 0);
 		auto mt = currentProjection;
-		pushCustomCommend([mt]()
+		pushCallbackCommend([mt]()
 		{
-			Director::getInstance()->loadProjectionMatrix(mt, 0);
+			Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, mt);
 		});
 	}
 }
@@ -1076,17 +940,15 @@ void XRenderer::frameBufferEnd()
 	frameBuffer->setGlobalZOrder(std::numeric_limits<float>::max());
 	frameBuffer->end();
 	auto size = Director::getInstance()->getOpenGLView()->getFrameSize();
-	pushCustomCommend([=]() {
-		glViewport(GLint(0), GLint(0), GLsizei(size.width), GLsizei(size.height));
-	});
 	if (size.width != _lastFrameSize.width || size.height != _lastFrameSize.height)
 	{
 		_lastFrameSize = size;
 		Mat4::createOrthographicOffCenter(0, size.width, 0, size.height, -1024.f, 1024.f, &_FBProjection);
 	}
-	pushCustomCommend([this]()
+	pushCallbackCommend([=]()
 	{
-		Director::getInstance()->loadProjectionMatrix(_FBProjection, 0);
+		pRenderer->setViewPort(0, 0, size.width, size.height);
+		Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, _FBProjection);
 	});
 
 	if (!bOffscreen)
@@ -1099,42 +961,39 @@ void XRenderer::frameBufferEnd()
 
 void XRenderer::renderFrameBuffer(float scale, bool copy)
 {
-	if (frameBuffer)
+	if (!frameBuffer)
+		return;
+	auto p = frameBuffer->getSprite();
+	p->setScale(scale);
+	p->setAnchorPoint(Vec2::ZERO);
+	p->setPosition(Vec2::ZERO);
+	// frameBuffer may be rendered more than once
+	auto cmd = LMP.getXTrianglesCommand();
+	const auto tex = p->getTexture();
+	if (!copy)
 	{
-		auto p = frameBuffer->getSprite();
-		p->setScale(scale);
-		p->setAnchorPoint(Vec2::ZERO);
-		p->setPosition(Vec2::ZERO);
-		auto cmd = LMP.getXTrianglesCommand();
-		const auto tex = p->getTexture();
-		if (!copy)
-		{
-			cmd->init(
-				0.f, tex,
-				p->getGLProgramState(),
-				p->getBlendFunc(),
-				GL_FUNC_ADD,
-				p->getPolygonInfo().triangles,
-				p->getNodeToParentTransform()
-			);
-		}
-		else
-		{
-			// need flip here
-			auto tr = Mat4::IDENTITY;
-			tr.m[5] = -1.f;
-			tr.m[13] = _lastFBSize.height;
-			cmd->init(
-				0.f, tex,
-				p->getGLProgramState(),
-				p->getBlendFunc(),
-				GL_FUNC_ADD,
-				p->getPolygonInfo().triangles,
-				tr
-			);
-		}
-		addCommand(cmd);
+		cmd->init(0.f, tex,
+			RenderMode::Default, RenderMode::Default->tempraryProgramState());
+		*cmd->getTri() = p->getPolygonInfo().triangles;
+		*cmd->getMV() = p->getNodeToParentTransform();
 	}
+	else
+	{
+		// need flip here
+		auto tr = Mat4::IDENTITY;
+		tr.m[5] = -1.f;
+		tr.m[13] = _lastFBSize.height;
+		cmd->init(0.f, tex,
+			RenderMode::Default, RenderMode::Default->tempraryProgramState());
+		*cmd->getTri() = p->getPolygonInfo().triangles;
+		*cmd->getMV() = tr;
+	}
+	const auto state = cmd->getPipelineDescriptor().programState;
+	state->setTexture(state->getUniformLocation(backend::TEXTURE),
+		0, tex->getBackendTexture());
+	state->setUniform(state->getUniformLocation(backend::MVP_MATRIX),
+		_FBProjection.m, sizeof(_FBProjection.m));
+	addCommand(cmd);
 }
 
 RenderTexture* XRenderer::copyFrameBuffer(bool transparent)
@@ -1143,16 +1002,14 @@ RenderTexture* XRenderer::copyFrameBuffer(bool transparent)
 		return nullptr;
 	auto tmpRT = RenderTexture::create(
 		(int)_lastFBSize.width, (int)_lastFBSize.height,
-		Texture2D::PixelFormat::RGBA8888, GL_DEPTH24_STENCIL8);
+		backend::PixelFormat::RGBA8888, backend::PixelFormat::D24S8);
 	tmpRT->retain();
 	tmpRT->beginWithClear(0, 0, 0, transparent ? 0 : 1);
 	renderFrameBuffer(1.f, true);
 	tmpRT->end();
-	pushCustomCommend([=]()
+	pushCallbackCommend([=]()
 	{
 		tmpRT->release();
 	});
 	return tmpRT;
 }
-
-/******************************************************************************/

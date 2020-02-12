@@ -1,6 +1,6 @@
 #pragma once
 #include "ResBase.h"
-#include "BlendMode.h"
+#include "RenderMode.h"
 #include "../Classes/XTriangles.h"
 
 namespace lstg {
@@ -17,9 +17,9 @@ namespace lstg {
 		void setTriangles(Triangles* tri);
 
 		bool render(const cocos2d::V3F_C4B_T2F_Quad& quad);
-		bool render(BlendMode* blend, const cocos2d::V3F_C4B_T2F_Quad& quad);
+		bool render(RenderMode* blend, const cocos2d::V3F_C4B_T2F_Quad& quad);
 
-		std::string getInfo() const override;
+		std::unordered_map<std::string, std::string> getInfo() const override;
 
 		ResTexture(const std::string& name, cocos2d::Texture2D* tex);
 		~ResTexture();

@@ -1,116 +1,68 @@
 ﻿#include "XTrianglesCommand.h"
-#include "renderer/ccGLStateCache.h"
-#include "renderer/CCGLProgram.h"
-#include "renderer/CCGLProgramState.h"
+#include "Renderer.h"
 #include "xxhash/xxhash.h"
-#include "renderer/CCRenderState.h"
 
+using namespace lstg;
 using namespace cocos2d;
-bool XTrianglesCommand::isBlendFuncSeparate = false;
+using namespace backend;
 
-void XTrianglesCommand::init(float globalOrder, GLuint textureID, GLProgramState* glProgramState,
-	BlendFunc blendType, GLuint blendEquation, const Triangles& triangles, const Mat4& mv)
+void XTrianglesCommand::init(float globalOrder, Texture2D* texture,
+	RenderMode* renderMode, ProgramState* programState)
 {
-	_glBlendEquation = blendEquation;
-	TrianglesCommand::init(globalOrder, textureID, glProgramState, blendType, triangles, mv, 0);
-}
-
-void XTrianglesCommand::init(float globalOrder, Texture2D* texture, GLProgramState* glProgramState,
-	BlendFunc blendType, GLuint blendEquation, const Triangles& triangles, const Mat4& mv)
-{
-	_glBlendEquation = blendEquation;
-	TrianglesCommand::init(globalOrder, texture, glProgramState, blendType, triangles, mv, 0);
-}
-
-void XTrianglesCommand::init(float globalOrder, Texture2D* texture, GLProgramState* glProgramState,
-	BlendFunc blendType, GLuint blendEquation)
-{
-	_glBlendEquation = blendEquation;
 	_globalOrder = globalOrder;
 	_is3D = false;
 	_depth = 0;
-	if (_triangles.indexCount % 3 != 0)
+	assert(programState && renderMode && texture);
+	const auto new_tex = texture->getBackendTexture();
+	// use RenderMode to avoid compare BlendDescriptor
+	if (_renderMode != renderMode ||
+		_texture != new_tex ||
+		_pipelineDescriptor.programState != programState)
 	{
-		const int count = _triangles.indexCount;
-		_triangles.indexCount = count / 3 * 3;
-		CCLOGERROR("Resize indexCount from %zd to %zd, size must be multiple times of 3",
-			count, _triangles.indexCount);
+		_renderMode = renderMode;
+		_pipelineDescriptor.programState = programState;
+		_pipelineDescriptor.blendDescriptor = renderMode->desc;
+		_programType = programState->getProgram()->getProgramType();
+		_texture = new_tex;
+		_blendType.src = renderMode->desc.sourceRGBBlendFactor;
+		_blendType.dst = renderMode->desc.destinationRGBBlendFactor;
+
+		// safe to use cocos batching
+		setSkipBatching(false);
+
+		struct
+		{
+			void* texture;
+			void* renderMode;
+			void* programState;
+		}hashMe;
+		memset(&hashMe, 0, sizeof(hashMe));
+		hashMe.texture = _texture;
+		hashMe.renderMode = renderMode;
+		hashMe.programState = programState;
+		_materialID = XXH32((const void*)&hashMe, sizeof(hashMe), 0);
 	}
-
-	const auto textureID = texture ? texture->getName() : 0;
-	if (_textureID != textureID || _blendType.src != blendType.src || _blendType.dst != blendType.dst ||
-		_glProgramState != glProgramState || _isBlendFuncSeparate != isBlendFuncSeparate)
-	{
-		_textureID = textureID;
-		_blendType = blendType;
-		_glProgramState = glProgramState;
-		_isBlendFuncSeparate = isBlendFuncSeparate;
-		generateMaterialID();
-	}
-	_alphaTextureID = texture ? texture->getAlphaTextureName() : 0;
-}
-
-void XTrianglesCommand::generateMaterialID()
-{
-	//add blendEquation and isBlendFuncSeparate
-	struct {
-		GLuint textureId;
-		GLenum blendSrc;
-		GLenum blendDst;
-		GLuint blendEquation;
-		void* glProgramState;
-		bool isBlendFuncSeparate;
-	} hashMe;
-
-	hashMe.textureId = _textureID;
-	hashMe.blendSrc = _blendType.src;
-	hashMe.blendDst = _blendType.dst;
-	hashMe.blendEquation = _glBlendEquation;
-	hashMe.glProgramState = _glProgramState;
-	hashMe.isBlendFuncSeparate = isBlendFuncSeparate;
-	_materialID = XXH32((const void*)&hashMe, sizeof(hashMe), 0);
-}
-
-void XTrianglesCommand::useMaterial() const
-{
-	//Set texture
-	if(_textureID)
-		GL::bindTexture2D(_textureID);
-
-	// ANDROID ETC1 ALPHA supports.
-	if (_alphaTextureID)
-		GL::bindTexture2DN(1, _alphaTextureID);
-	
-	//set blend mode
-	if (_isBlendFuncSeparate)
-	{
-		// for render in fbo
-		glBlendFuncSeparate(_blendType.src, _blendType.dst, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-		GL::blendFunc(_blendType.src, _blendType.dst);
-	}
-	else
-	{
-		GL::blendFunc(_blendType.src, _blendType.dst);
-	}
-	//WARNING: other command will not restore this value, may need workaround
-	glBlendEquation(_glBlendEquation);
-	_glProgramState->apply(_mv);
 }
 
 void XTrianglesCommand::copyProperties(XTrianglesCommand* other) const
 {
-	other->_glBlendEquation = _glBlendEquation;
+	other->_blendType = _blendType;
+	other->_materialID = _materialID;
+	other->_alphaTextureID = _alphaTextureID;
+	other->_blendType = _blendType;
+	other->_programType = _programType;
+	other->_texture = _texture;
+
 	other->_globalOrder = _globalOrder;
+	other->_isTransparent = _isTransparent;
+	other->_skipBatching = _skipBatching;
 	other->_is3D = _is3D;
 	other->_depth = _depth;
-	other->_textureID = _textureID;
-	other->_blendType = _blendType;
-	other->_glProgramState = _glProgramState;
-	other->_isBlendFuncSeparate = _isBlendFuncSeparate;
-	other->_alphaTextureID = _alphaTextureID;
-	other->_materialID = _materialID;
+	other->_pipelineDescriptor = _pipelineDescriptor;
+	
+	other->_renderMode = _renderMode;
 }
-
+/*
 XTrianglesCommand::XTrianglesCommand()
 {
 }
@@ -232,3 +184,4 @@ void XTrianglesCommand::releaseTrangles()
 {
 	releaseTiangles(&_triangles);
 }
+*/

@@ -1,8 +1,8 @@
 ﻿#pragma once
-#include <string>
 #include "cocos2d.h"
 #include "../Math/XCollision.h"
-#include "BlendMode.h"
+#include "RenderMode.h"
+#include <string>
 
 namespace lstg
 {
@@ -67,7 +67,7 @@ namespace lstg
 		ResourceType getType()const noexcept { return resType; }
 		const std::string& getName()const noexcept { return resName; }
 		virtual const std::string& getPath()const noexcept { return resPath; }
-		virtual std::string getInfo() const;
+		virtual std::unordered_map<std::string, std::string> getInfo() const;
 		void pushLua(lua_State* L);
 		static Resource* fromLua(lua_State* L, int idx, ResourceType type);
 
@@ -89,7 +89,7 @@ namespace lstg
 		double getHalfSizeX()const noexcept { return halfSizeX; }
 		double getHalfSizeY()const noexcept { return halfSizeY; }
 
-		virtual std::string getInfo() const override;
+		virtual std::unordered_map<std::string, std::string> getInfo() const override;
 
 		ResourceColliable(
 			ResourceType t, const std::string& name,
@@ -102,9 +102,9 @@ namespace lstg
 
 	class ResourceQuad : public ResourceColliable
 	{
-	private:
+	protected:
 		cocos2d::V3F_C4B_T2F_Quad vertex;
-		BlendMode* blendMode = BlendMode::Default;
+		RenderMode* renderMode = RenderMode::Default;
 	public:
 		virtual void setVertex(const cocos2d::V3F_C4B_T2F_Quad& v) { vertex = v; }
 		virtual cocos2d::V3F_C4B_T2F_Quad& getVertex() { return vertex; }
@@ -115,10 +115,10 @@ namespace lstg
 
 		cocos2d::Color4B getColor(int i = 0) const;
 
-		BlendMode* getBlendMode()const { return blendMode; }
-		void setBlendMode(BlendMode* blm) { blendMode = blm; }
+		RenderMode* getRenderMode()const { return renderMode; }
+		void setRenderMode(RenderMode* m) { renderMode = m; }
 
-		virtual std::string getInfo() const override;
+		virtual std::unordered_map<std::string, std::string> getInfo() const override;
 
 		ResourceQuad(ResourceType t, const std::string& name,
 			XColliderType colliType, double a, double b, const std::string& path = "");

@@ -79,31 +79,6 @@ LUA_REGISTER_FUNC_DEF(lstg, SetPerspective)
 	);
 	return 0;
 }
-LUA_REGISTER_FUNC_DEF(lstg, SetFog)
-{
-	if (lua_gettop(L) == 3)
-	{
-		LRR.setFog(
-			luaL_checknumber(L, 1),
-			luaL_checknumber(L, 2),
-			Color4F(luaval_to_c4b(L, 3))
-		);
-	}
-	else if (lua_gettop(L) == 2)
-	{
-		const Color4F c(0, 0, 0, 1);//TODO: default?
-		LRR.setFog(
-			luaL_checknumber(L, 1),
-			luaL_checknumber(L, 2),
-			c
-		);
-	}
-	else
-	{
-		LRR.setFog(0.0f, 0.0f, Color4F());
-	}
-	return 0;
-}
 LUA_REGISTER_FUNC_DEF(lstg, PushRenderTarget)
 {
 	auto p = lua::toResRenderTarget(L, 1);
@@ -127,7 +102,7 @@ LUA_REGISTER_FUNC_DEF(lstg, PostEffect)
 	auto fx = lua::toResFX(L, 2);
 	if (!fx)
 		return luaL_error(L, "can't find effect");
-	auto blend = TranslateBlendMode(L, 3);
+	auto blend = TranslateRenderMode(L, 3);
 	if (lua_gettop(L) >= 4)
 		lua::setResFX(fx, L, 4);
 	if (!LRR.postEffect(rt, fx, blend))
@@ -135,24 +110,24 @@ LUA_REGISTER_FUNC_DEF(lstg, PostEffect)
 	return 0;
 }
 
-LUA_REGISTER_FUNC_DEF(lstg, CreateGLProgramFromPath)
+LUA_REGISTER_FUNC_DEF(lstg, CreateShaderProgramFromPath)
 {
 	const auto s1 = luaL_checkstring(L, 1);
 	const auto s2 = luaL_checkstring(L, 2);
-	const auto p = util::CreateGLProgramFromPath(s1, s2);
+	const auto p = util::CreateProgramFromPath(s1, s2);
 	if (!p)
-		return luaL_error(L, "can't create GLProgram from path [%s] and [%s]", s1, s2);
-	object_to_luaval<cocos2d::GLProgram>(L, "cc.GLProgram", p);
+		return luaL_error(L, "can't create Program from path [%s] and [%s]", s1, s2);
+	object_to_luaval<backend::Program>(L, "ccb.Program", p);
 	return 1;
 }
-LUA_REGISTER_FUNC_DEF(lstg, CreateGLProgramFromString)
+LUA_REGISTER_FUNC_DEF(lstg, CreateShaderProgramFromString)
 {
 	const auto s1 = luaL_checkstring(L, 1);
 	const auto s2 = luaL_checkstring(L, 2);
-	const auto p = util::CreateGLProgramFromString(s1, s2);
+	const auto p = util::CreateProgramFromString(s1, s2);
 	if (!p)
-		return luaL_error(L, "can't create GLProgram from string");
-	object_to_luaval<cocos2d::GLProgram>(L, "cc.GLProgram", p);
+		return luaL_error(L, "can't create Program from string");
+	object_to_luaval<backend::Program>(L, "ccb.Program", p);
 	return 1;
 }
 

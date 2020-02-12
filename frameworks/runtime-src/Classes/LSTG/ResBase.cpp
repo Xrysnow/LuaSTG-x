@@ -7,9 +7,14 @@ using namespace cocos2d;
 using namespace lstg;
 
 // TODO: move to lua
-string Resource::getInfo() const
+std::unordered_map<std::string, std::string> Resource::getInfo() const
 {
-	return "Type: " + tostring(resType) + " | Name: " + resName;
+	std::unordered_map<std::string, std::string> ret = {
+		{"type", tostring(resType)},
+		{"name", resName } };
+	if (resPath != "")
+		ret["path"] = resPath;
+	return ret;
 }
 
 void Resource::pushLua(lua_State* L)
@@ -35,11 +40,13 @@ Resource::~Resource()
 {
 }
 
-std::string ResourceColliable::getInfo() const
+std::unordered_map<std::string, std::string> ResourceColliable::getInfo() const
 {
-	return Resource::getInfo() +
-		StringUtils::format(" | Half size: (%.3f, %.3f) | Collider type: %s",
-			halfSizeX, halfSizeY, xmath::collision::to_string(colliderType));
+	auto ret = Resource::getInfo();
+	ret["ra"] = to_string(halfSizeX);
+	ret["rb"] = to_string(halfSizeX);
+	ret["collider"] = xmath::collision::to_string(colliderType);
+	return ret;
 }
 
 ResourceColliable::ResourceColliable(
@@ -108,11 +115,12 @@ Color4B ResourceQuad::getColor(int i) const
 	}
 }
 
-string ResourceQuad::getInfo() const
+std::unordered_map<std::string, std::string> ResourceQuad::getInfo() const
 {
-	return ResourceColliable::getInfo() +
-		" | BlendMode: " + getBlendMode()->getName() +
-		" | Color0: " + tostring(vertex.tl.colors);
+	auto ret = ResourceColliable::getInfo();
+	ret["render_mode"] = getRenderMode()->getName();
+	ret["color"] = tostring(vertex.tl.colors);
+	return ret;
 }
 
 ResourceQuad::ResourceQuad(

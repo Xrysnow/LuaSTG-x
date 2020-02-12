@@ -1,5 +1,5 @@
 ﻿#include "XFileDialog.h"
-#include "../../external/NativeFileDialog/include/nfd.h"
+#include "../../external/NativeFileDialog/src/src/include/nfd.h"
 #include "cocos2d.h"
 
 using namespace std;

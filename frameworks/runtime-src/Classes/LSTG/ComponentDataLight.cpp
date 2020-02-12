@@ -3,18 +3,18 @@
 constexpr uint32_t maxDirLight = 2;
 constexpr uint32_t maxPointLight = 2;
 constexpr uint32_t maxSpotLight = 2;
-static const char *s_dirLightUniformColorName = "u_DirLightSourceColor";
-static const char *s_dirLightUniformDirName = "u_DirLightSourceDirection";
-static const char *s_pointLightUniformColorName = "u_PointLightSourceColor";
-static const char *s_pointLightUniformPositionName = "u_PointLightSourcePosition";
-static const char *s_pointLightUniformRangeInverseName = "u_PointLightSourceRangeInverse";
-static const char *s_spotLightUniformColorName = "u_SpotLightSourceColor";
-static const char *s_spotLightUniformPositionName = "u_SpotLightSourcePosition";
-static const char *s_spotLightUniformDirName = "u_SpotLightSourceDirection";
-static const char *s_spotLightUniformInnerAngleCosName = "u_SpotLightSourceInnerAngleCos";
-static const char *s_spotLightUniformOuterAngleCosName = "u_SpotLightSourceOuterAngleCos";
-static const char *s_spotLightUniformRangeInverseName = "u_SpotLightSourceRangeInverse";
-static const char *s_ambientLightUniformColorName = "u_AmbientLightSourceColor";
+static std::string s_dirLightUniformColorName = "u_DirLightSourceColor";
+static std::string s_dirLightUniformDirName = "u_DirLightSourceDirection";
+static std::string s_pointLightUniformColorName = "u_PointLightSourceColor";
+static std::string s_pointLightUniformPositionName = "u_PointLightSourcePosition";
+static std::string s_pointLightUniformRangeInverseName = "u_PointLightSourceRangeInverse";
+static std::string s_spotLightUniformColorName = "u_SpotLightSourceColor";
+static std::string s_spotLightUniformPositionName = "u_SpotLightSourcePosition";
+static std::string s_spotLightUniformDirName = "u_SpotLightSourceDirection";
+static std::string s_spotLightUniformInnerAngleCosName = "u_SpotLightSourceInnerAngleCos";
+static std::string s_spotLightUniformOuterAngleCosName = "u_SpotLightSourceOuterAngleCos";
+static std::string s_spotLightUniformRangeInverseName = "u_SpotLightSourceRangeInverse";
+static std::string s_ambientLightUniformColorName = "u_AmbientLightSourceColor";
 
 using namespace std;
 using namespace lstg;
@@ -68,9 +68,9 @@ void ComponentDataLight::resetUniforms()
 void ComponentDataLight::applyLights(const std::vector<cocos2d::BaseLight*>& lights)
 {
 	ambientColor = Vec3::ZERO;
-	GLint dirNum = 0;
-	GLint pointNum = 0;
-	GLint spotLightNum = 0;
+	size_t dirNum = 0;
+	size_t pointNum = 0;
+	size_t spotLightNum = 0;
 	const auto maxDirLight = dirLightUniformDirValues.size();
 	const auto maxPointLight = pointLightUniformPositionValues.size();
 	const auto maxSpotLight = spotLightUniformPositionValues.size();
@@ -116,13 +116,15 @@ void ComponentDataLight::applyLights(const std::vector<cocos2d::BaseLight*>& lig
 	}
 }
 
-void ComponentDataLight::applyUniforms(GLProgramState* state)
+void ComponentDataLight::applyUniforms(backend::ProgramState* state)
 {
 	applyDirectionUniforms(state);
 	applyPointUniforms(state);
 	applySpotUniforms(state);
 	if(state)
-		state->setUniformVec3(s_ambientLightUniformColorName, Vec3(ambientColor.x, ambientColor.y, ambientColor.z));
+		state->setUniform(state->getProgram()->getUniformLocation(s_ambientLightUniformColorName),
+			&ambientColor, sizeof(ambientColor));
+		//state->setUniformVec3(s_ambientLightUniformColorName, Vec3(ambientColor.x, ambientColor.y, ambientColor.z));
 }
 
 void ComponentDataLight::applyDirectionLight(DirectionLight* light, size_t index)
@@ -169,34 +171,65 @@ void ComponentDataLight::applySpotLight(SpotLight* light, size_t index)
 	}
 }
 
-void ComponentDataLight::applyDirectionUniforms(GLProgramState* state)
+void ComponentDataLight::applyDirectionUniforms(backend::ProgramState* state)
 {
 	if (state && !dirLightUniformDirValues.empty())
 	{
-		state->setUniformVec3v(s_dirLightUniformColorName, dirLightUniformColorValues.size(), &dirLightUniformColorValues[0]);
-		state->setUniformVec3v(s_dirLightUniformDirName, dirLightUniformDirValues.size(), &dirLightUniformDirValues[0]);
+		//state->setUniformVec3v(s_dirLightUniformColorName, dirLightUniformColorValues.size(), &dirLightUniformColorValues[0]);
+		//state->setUniformVec3v(s_dirLightUniformDirName, dirLightUniformDirValues.size(), &dirLightUniformDirValues[0]);
+		state->setUniform(state->getUniformLocation(s_dirLightUniformColorName),
+			dirLightUniformColorValues.data(), dirLightUniformColorValues.size() * sizeof(Vec3));
+		state->setUniform(state->getUniformLocation(s_dirLightUniformDirName),
+			dirLightUniformDirValues.data(), dirLightUniformDirValues.size() * sizeof(Vec3));
 	}
 }
 
-void ComponentDataLight::applyPointUniforms(GLProgramState* state)
+void ComponentDataLight::applyPointUniforms(backend::ProgramState* state)
 {
 	if (state && !pointLightUniformPositionValues.empty())
 	{
-		state->setUniformVec3v(s_pointLightUniformColorName, pointLightUniformColorValues.size(), &pointLightUniformColorValues[0]);
-		state->setUniformVec3v(s_pointLightUniformPositionName, pointLightUniformPositionValues.size(), &pointLightUniformPositionValues[0]);
-		state->setUniformFloatv(s_pointLightUniformRangeInverseName, pointLightUniformRangeInverseValues.size(), &pointLightUniformRangeInverseValues[0]);
+		//state->setUniformVec3v(s_pointLightUniformColorName,
+		//	pointLightUniformColorValues.size(), &pointLightUniformColorValues[0]);
+		//state->setUniformVec3v(s_pointLightUniformPositionName,
+		//	pointLightUniformPositionValues.size(), &pointLightUniformPositionValues[0]);
+		//state->setUniformFloatv(s_pointLightUniformRangeInverseName,
+		//	pointLightUniformRangeInverseValues.size(), &pointLightUniformRangeInverseValues[0]);
+		state->setUniform(state->getUniformLocation(s_pointLightUniformColorName),
+			pointLightUniformColorValues.data(), pointLightUniformColorValues.size() * sizeof(Vec3));
+		state->setUniform(state->getUniformLocation(s_pointLightUniformPositionName),
+			pointLightUniformPositionValues.data(), pointLightUniformPositionValues.size() * sizeof(Vec3));
+		state->setUniform(state->getUniformLocation(s_pointLightUniformRangeInverseName),
+			pointLightUniformRangeInverseValues.data(), pointLightUniformRangeInverseValues.size() * sizeof(float));
 	}
 }
 
-void ComponentDataLight::applySpotUniforms(GLProgramState* state)
+void ComponentDataLight::applySpotUniforms(backend::ProgramState* state)
 {
 	if (state && !spotLightUniformPositionValues.empty())
 	{
-		state->setUniformVec3v(s_spotLightUniformColorName, spotLightUniformColorValues.size(), &spotLightUniformColorValues[0]);
-		state->setUniformVec3v(s_spotLightUniformPositionName, spotLightUniformPositionValues.size(), &spotLightUniformPositionValues[0]);
-		state->setUniformVec3v(s_spotLightUniformDirName, spotLightUniformDirValues.size(), &spotLightUniformDirValues[0]);
-		state->setUniformFloatv(s_spotLightUniformInnerAngleCosName, spotLightUniformInnerAngleCosValues.size(), &spotLightUniformInnerAngleCosValues[0]);
-		state->setUniformFloatv(s_spotLightUniformOuterAngleCosName, spotLightUniformOuterAngleCosValues.size(), &spotLightUniformOuterAngleCosValues[0]);
-		state->setUniformFloatv(s_spotLightUniformRangeInverseName, spotLightUniformRangeInverseValues.size(), &spotLightUniformRangeInverseValues[0]);
+		//state->setUniformVec3v(s_spotLightUniformColorName,
+		//	spotLightUniformColorValues.size(), &spotLightUniformColorValues[0]);
+		//state->setUniformVec3v(s_spotLightUniformPositionName,
+		//	spotLightUniformPositionValues.size(), &spotLightUniformPositionValues[0]);
+		//state->setUniformVec3v(s_spotLightUniformDirName,
+		//	spotLightUniformDirValues.size(), &spotLightUniformDirValues[0]);
+		//state->setUniformFloatv(s_spotLightUniformInnerAngleCosName,
+		//	spotLightUniformInnerAngleCosValues.size(), &spotLightUniformInnerAngleCosValues[0]);
+		//state->setUniformFloatv(s_spotLightUniformOuterAngleCosName,
+		//	spotLightUniformOuterAngleCosValues.size(), &spotLightUniformOuterAngleCosValues[0]);
+		//state->setUniformFloatv(s_spotLightUniformRangeInverseName,
+		//	spotLightUniformRangeInverseValues.size(), &spotLightUniformRangeInverseValues[0]);
+		state->setUniform(state->getUniformLocation(s_spotLightUniformColorName),
+			spotLightUniformColorValues.data(), spotLightUniformColorValues.size() * sizeof(Vec3));
+		state->setUniform(state->getUniformLocation(s_spotLightUniformPositionName),
+			spotLightUniformPositionValues.data(), spotLightUniformPositionValues.size() * sizeof(Vec3));
+		state->setUniform(state->getUniformLocation(s_spotLightUniformDirName),
+			spotLightUniformDirValues.data(), spotLightUniformDirValues.size() * sizeof(Vec3));
+		state->setUniform(state->getUniformLocation(s_spotLightUniformInnerAngleCosName),
+			spotLightUniformInnerAngleCosValues.data(), spotLightUniformInnerAngleCosValues.size() * sizeof(float));
+		state->setUniform(state->getUniformLocation(s_spotLightUniformOuterAngleCosName),
+			spotLightUniformOuterAngleCosValues.data(), spotLightUniformOuterAngleCosValues.size() * sizeof(float));
+		state->setUniform(state->getUniformLocation(s_spotLightUniformRangeInverseName),
+			spotLightUniformRangeInverseValues.data(), spotLightUniformRangeInverseValues.size() * sizeof(float));
 	}
 }

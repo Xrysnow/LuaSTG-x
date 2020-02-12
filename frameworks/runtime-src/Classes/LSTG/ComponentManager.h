@@ -2,7 +2,7 @@
 #include "ComponentData.h"
 #include "cocos2d.h"
 #include "ResSprite.h"
-#include "XTrianglesCommand.h"
+#include "../Classes/XTrianglesCommand.h"
 #include "GameObjectPool.h"
 
 namespace lstg
@@ -16,8 +16,8 @@ namespace lstg
 		XTrianglesCommand xtcmd;
 		cocos2d::Node* _node;
 	public:
-		GameObjectPool* pool;
-		GameObject* obj;
+		GameObjectPool* pool = nullptr;
+		GameObject* obj = nullptr;
 
 #define PROPERTY_RETAIN(varType, varName, funName)    \
 private: varType varName; \
@@ -41,7 +41,7 @@ inline void set##funName(varType var) \
 		PROPERTY_RETAIN(ComponentDataLight*, light, DataLight);
 
 		PROPERTY_RETAIN(cocos2d::BaseLight*, lightSource, LightSource);
-		PROPERTY_RETAIN(cocos2d::GLProgramState*, programStateCopy, ProgramStateCopy);
+		PROPERTY_RETAIN(cocos2d::backend::ProgramState*, programStateCopy, ProgramStateCopy);
 #undef PROPERTY_RETAIN
 
 	public:
@@ -60,8 +60,8 @@ inline void set##funName(varType var) \
 		bool transformDirty = true;
 		bool cmdDirty = true;
 		cocos2d::Texture2D* cmdTex = nullptr;
-		BlendMode* cmdBlend = nullptr;
-		cocos2d::GLProgramState* cmdState = nullptr;
+		RenderMode* cmdBlend = nullptr;
+		cocos2d::backend::ProgramState* cmdState = nullptr;
 
 		void updateCommandAni(ResAnimation* res);
 		void updateCommandSprite(ResSprite* res);

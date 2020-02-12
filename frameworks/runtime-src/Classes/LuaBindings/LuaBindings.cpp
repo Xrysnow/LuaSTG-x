@@ -3,12 +3,12 @@
 
 #include "lua_BentLaser_auto.hpp"
 LUA_REGISTER_MODULE(x_BentLaser, register_all_x_BentLaser);
-#include "lua_BlendMode_auto.hpp"
-LUA_REGISTER_MODULE(x_BlendMode, register_all_x_BlendMode);
+#include "lua_RenderMode_auto.hpp"
+LUA_REGISTER_MODULE(x_RenderMode, register_all_x_RenderMode);
 #include "lua_Buffer_auto.hpp"
 LUA_REGISTER_MODULE(x_Buffer, register_all_x_Buffer);
-#include "lua_cc_ui_fix.h"
-LUA_REGISTER_MODULE(cc_ui_fix, register_all_cocos2dx_ui_fix);
+#include "lua_cc_fix.h"
+LUA_REGISTER_MODULE(cc_ui_fix, register_all_cocos2dx_fix);
 #include "lua_CCImage_manual.hpp"
 LUA_REGISTER_MODULE(cc_Image_ext, register_all_CCImage_ext);
 #include "lua_FileDialog_auto.hpp"

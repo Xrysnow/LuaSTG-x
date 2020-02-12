@@ -13,15 +13,15 @@ namespace lstg
 		void reset();
 		void resetUniforms();
 		void applyLights(const std::vector<cocos2d::BaseLight*>& lights);
-		void applyUniforms(cocos2d::GLProgramState* state);
+		void applyUniforms(cocos2d::backend::ProgramState* state);
 
 		void applyDirectionLight(cocos2d::DirectionLight* light, size_t index);
 		void applyPointLight(cocos2d::PointLight* light, size_t index);
 		void applySpotLight(cocos2d::SpotLight* light, size_t index);
 
-		void applyDirectionUniforms(cocos2d::GLProgramState* state);
-		void applyPointUniforms(cocos2d::GLProgramState* state);
-		void applySpotUniforms(cocos2d::GLProgramState* state);
+		void applyDirectionUniforms(cocos2d::backend::ProgramState* state);
+		void applyPointUniforms(cocos2d::backend::ProgramState* state);
+		void applySpotUniforms(cocos2d::backend::ProgramState* state);
 
 		uint32_t lightFlag = 0;
 

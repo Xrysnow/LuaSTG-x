@@ -4,11 +4,12 @@
 #include "Utility.h"
 #include "ResourceMgr.h"
 
+#define DECLARE_GUARD std::lock_guard<std::recursive_mutex> mutexGuard(_mutex)
+
 using namespace std;
 using namespace cocos2d;
 
 unordered_map<string, string> fileStringToReplace;
-
 // D:\aaa\bbb\ccc\ddd\abc.txt --> D:/aaa/bbb/ccc/ddd/abc.txt
 static inline string convertPathFormatToUnixStyle(const string& path)
 {
@@ -34,6 +35,7 @@ void XFileUtils::start()
 
 bool XFileUtils::init()
 {
+	DECLARE_GUARD;
 	const auto ret = _FileUtilsBase::init();
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID && 0
 	auto am = getAssetManager();

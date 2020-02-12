@@ -21,7 +21,7 @@ namespace lstg
 		{
 			cocos2d::unz_file_info info;
 			std::string path;
-			cocos2d::ZPOS64_T pos;
+			int64_t pos;
 		};
 	private:
 		std::string path;

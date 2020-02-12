@@ -21,7 +21,7 @@ LUA_REGISTER_FUNC_DEF(lstg, RenderTexture)
 	auto tex = lua::toTexture2D(L, 1);
 	if (!tex)
 		return luaL_error(L, "can't find texture '%s'", lua_tostring(L, 1));
-	const auto blend = TranslateBlendMode(L, 2);
+	const auto blend = TranslateRenderMode(L, 2);
 	const auto h = tex->getPixelsHigh();
 	const auto w = tex->getPixelsWide();
 	auto v = LMP.getQuad();
@@ -52,7 +52,7 @@ LUA_REGISTER_FUNC_DEF(lstg, RenderTexture)
 	// note: it's clockwise in lua
 	std::swap(vi[2], vi[3]);
 	if (blend)
-		LRR.updateBlendMode(blend);
+		LRR.updateRenderMode(blend);
 	if (!LRR.renderTexture(tex, v))
 		return error_render(L, 1);
 	return 0;
@@ -81,7 +81,7 @@ LUA_REGISTER_FUNC_DEF(lstg, RenderSector)
 	if (n < 1)return 0;
 	if (end < start)dth = -dth;
 
-	LRR.updateBlendMode(p->getBlendMode());
+	LRR.updateRenderMode(p->getRenderMode());
 	auto tex = p->getSprite()->getTexture();
 
 	const int nBlocks = n / LGOBJ_MAXLASERNODE + 1;

@@ -3,13 +3,8 @@
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
 #include "UtilLuaConversion.h"
-#define printf(...)
 #define color4b_to_luaval lstg::lua::_color4b_to_luaval
 #define luaval_to_color4b lstg::lua::_luaval_to_color4b
-using lstg::lua::luaval_to_BlendMode;
-using lstg::lua::BlendMode_to_luaval;
-using lstg::lua::luaval_to_V3F_C4B_T2F_Quad;
-using lstg::lua::V3F_C4B_T2F_Quad_to_luaval;
 
 int lua_x_Resource_Resource_getInfo(lua_State* tolua_S)
 {
@@ -44,8 +39,8 @@ int lua_x_Resource_Resource_getInfo(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_Resource_getInfo'", nullptr);
             return 0;
         }
-        std::string ret = cobj->getInfo();
-        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
+        std::unordered_map<std::string, std::string> ret = cobj->getInfo();
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.Resource:getInfo",argc, 0);
@@ -415,7 +410,7 @@ int lua_x_Resource_ResourceQuad_setVertex(lua_State* tolua_S)
     {
         cocos2d::V3F_C4B_T2F_Quad arg0;
 
-        ok &= luaval_to_V3F_C4B_T2F_Quad(tolua_S, 2, &arg0, "lstg.ResourceQuad:setVertex");
+        ok &= lstg::lua::luaval_to_native(tolua_S, 2, &arg0, "setVertex");
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResourceQuad_setVertex'", nullptr);
@@ -494,6 +489,53 @@ int lua_x_Resource_ResourceQuad_setColor(lua_State* tolua_S)
 
     return 0;
 }
+int lua_x_Resource_ResourceQuad_getRenderMode(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResourceQuad* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResourceQuad",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResourceQuad*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResourceQuad_getRenderMode'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResourceQuad_getRenderMode'", nullptr);
+            return 0;
+        }
+        lstg::RenderMode* ret = cobj->getRenderMode();
+        lstg::lua::native_to_luaval(tolua_S, ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResourceQuad:getRenderMode",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResourceQuad_getRenderMode'.",&tolua_err);
+#endif
+
+    return 0;
+}
 int lua_x_Resource_ResourceQuad_getColor(lua_State* tolua_S)
 {
     int argc = 0;
@@ -555,150 +597,6 @@ int lua_x_Resource_ResourceQuad_getColor(lua_State* tolua_S)
 
     return 0;
 }
-int lua_x_Resource_ResourceQuad_setBlendMode(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::ResourceQuad* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.ResourceQuad",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::ResourceQuad*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResourceQuad_setBlendMode'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        lstg::BlendMode* arg0;
-
-        ok &= luaval_to_BlendMode(tolua_S, 2, &arg0, "lstg.ResourceQuad:setBlendMode");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResourceQuad_setBlendMode'", nullptr);
-            return 0;
-        }
-        cobj->setBlendMode(arg0);
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResourceQuad:setBlendMode",argc, 1);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResourceQuad_setBlendMode'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_x_Resource_ResourceQuad_getBlendMode(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::ResourceQuad* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.ResourceQuad",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::ResourceQuad*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResourceQuad_getBlendMode'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
-    {
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResourceQuad_getBlendMode'", nullptr);
-            return 0;
-        }
-        lstg::BlendMode* ret = cobj->getBlendMode();
-        BlendMode_to_luaval(tolua_S, ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResourceQuad:getBlendMode",argc, 0);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResourceQuad_getBlendMode'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_x_Resource_ResourceQuad_getVertex(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::ResourceQuad* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.ResourceQuad",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::ResourceQuad*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResourceQuad_getVertex'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
-    {
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResourceQuad_getVertex'", nullptr);
-            return 0;
-        }
-        cocos2d::V3F_C4B_T2F_Quad& ret = cobj->getVertex();
-        V3F_C4B_T2F_Quad_to_luaval(tolua_S, ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResourceQuad:getVertex",argc, 0);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResourceQuad_getVertex'.",&tolua_err);
-#endif
-
-    return 0;
-}
 int lua_x_Resource_ResourceQuad_setAlpha(lua_State* tolua_S)
 {
     int argc = 0;
@@ -749,6 +647,103 @@ int lua_x_Resource_ResourceQuad_setAlpha(lua_State* tolua_S)
 
     return 0;
 }
+int lua_x_Resource_ResourceQuad_getVertex(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResourceQuad* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResourceQuad",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResourceQuad*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResourceQuad_getVertex'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResourceQuad_getVertex'", nullptr);
+            return 0;
+        }
+        cocos2d::V3F_C4B_T2F_Quad& ret = cobj->getVertex();
+        lstg::lua::native_to_luaval(tolua_S, ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResourceQuad:getVertex",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResourceQuad_getVertex'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_x_Resource_ResourceQuad_setRenderMode(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResourceQuad* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResourceQuad",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResourceQuad*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResourceQuad_setRenderMode'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1) 
+    {
+        lstg::RenderMode* arg0;
+
+        ok &= lstg::lua::luaval_to_native(tolua_S, 2, &arg0, "lstg.ResourceQuad:setRenderMode");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResourceQuad_setRenderMode'", nullptr);
+            return 0;
+        }
+        cobj->setRenderMode(arg0);
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResourceQuad:setRenderMode",argc, 1);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResourceQuad_setRenderMode'.",&tolua_err);
+#endif
+
+    return 0;
+}
 static int lua_x_Resource_ResourceQuad_finalize(lua_State* tolua_S)
 {
     printf("luabindings: finalizing LUA object (ResourceQuad)");
@@ -763,11 +758,11 @@ int lua_register_x_Resource_ResourceQuad(lua_State* tolua_S)
     tolua_beginmodule(tolua_S,"ResourceQuad");
         tolua_function(tolua_S,"setVertex",lua_x_Resource_ResourceQuad_setVertex);
         tolua_function(tolua_S,"setColor",lua_x_Resource_ResourceQuad_setColor);
+        tolua_function(tolua_S,"getRenderMode",lua_x_Resource_ResourceQuad_getRenderMode);
         tolua_function(tolua_S,"getColor",lua_x_Resource_ResourceQuad_getColor);
-        tolua_function(tolua_S,"setBlendMode",lua_x_Resource_ResourceQuad_setBlendMode);
-        tolua_function(tolua_S,"getBlendMode",lua_x_Resource_ResourceQuad_getBlendMode);
-        tolua_function(tolua_S,"getVertex",lua_x_Resource_ResourceQuad_getVertex);
         tolua_function(tolua_S,"setAlpha",lua_x_Resource_ResourceQuad_setAlpha);
+        tolua_function(tolua_S,"getVertex",lua_x_Resource_ResourceQuad_getVertex);
+        tolua_function(tolua_S,"setRenderMode",lua_x_Resource_ResourceQuad_setRenderMode);
     tolua_endmodule(tolua_S);
     std::string typeName = typeid(lstg::ResourceQuad).name();
     g_luaType[typeName] = "lstg.ResourceQuad";
@@ -895,12 +890,12 @@ int lua_x_Resource_ResTexture_render(lua_State* tolua_S)
     argc = lua_gettop(tolua_S)-1;
     do{
         if (argc == 2) {
-            lstg::BlendMode* arg0;
-            ok &= luaval_to_BlendMode(tolua_S, 2, &arg0, "lstg.ResTexture:render");
+            lstg::RenderMode* arg0;
+            ok &= lstg::lua::luaval_to_native(tolua_S, 2, &arg0, "lstg.ResTexture:render");
 
             if (!ok) { break; }
             cocos2d::V3F_C4B_T2F_Quad arg1;
-            ok &= luaval_to_V3F_C4B_T2F_Quad(tolua_S, 3, &arg1, "lstg.ResTexture:render");
+            ok &= lstg::lua::luaval_to_native(tolua_S, 3, &arg1, "render");
 
             if (!ok) { break; }
             bool ret = cobj->render(arg0, arg1);
@@ -912,7 +907,7 @@ int lua_x_Resource_ResTexture_render(lua_State* tolua_S)
     do{
         if (argc == 1) {
             cocos2d::V3F_C4B_T2F_Quad arg0;
-            ok &= luaval_to_V3F_C4B_T2F_Quad(tolua_S, 2, &arg0, "lstg.ResTexture:render");
+            ok &= lstg::lua::luaval_to_native(tolua_S, 2, &arg0, "render");
 
             if (!ok) { break; }
             bool ret = cobj->render(arg0);
@@ -1110,7 +1105,7 @@ int lua_x_Resource_ResAnimation_setVertex(lua_State* tolua_S)
         cocos2d::V3F_C4B_T2F_Quad arg0;
         unsigned int arg1;
 
-        ok &= luaval_to_V3F_C4B_T2F_Quad(tolua_S, 2, &arg0, "lstg.ResAnimation:setVertex");
+        ok &= lstg::lua::luaval_to_native(tolua_S, 2, &arg0, "setVertex");
 
         ok &= luaval_to_uint32(tolua_S, 3,&arg1, "lstg.ResAnimation:setVertex");
         if(!ok)
@@ -1450,7 +1445,7 @@ int lua_x_Resource_ResAnimation_getVertex(lua_State* tolua_S)
             return 0;
         }
         cocos2d::V3F_C4B_T2F_Quad& ret = cobj->getVertex(arg0);
-        V3F_C4B_T2F_Quad_to_luaval(tolua_S, ret);
+        lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResAnimation:getVertex",argc, 1);
@@ -2254,6 +2249,53 @@ int lua_register_x_Resource_ResSprite(lua_State* tolua_S)
     return 1;
 }
 
+int lua_x_Resource_ResParticle_getRenderMode(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResParticle* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResParticle",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResParticle*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResParticle_getRenderMode'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResParticle_getRenderMode'", nullptr);
+            return 0;
+        }
+        lstg::RenderMode* ret = cobj->getRenderMode();
+        lstg::lua::native_to_luaval(tolua_S, ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResParticle:getRenderMode",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResParticle_getRenderMode'.",&tolua_err);
+#endif
+
+    return 0;
+}
 int lua_x_Resource_ResParticle_getBindSprite(lua_State* tolua_S)
 {
     int argc = 0;
@@ -2297,53 +2339,6 @@ int lua_x_Resource_ResParticle_getBindSprite(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
     tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResParticle_getBindSprite'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_x_Resource_ResParticle_getBlendMode(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::ResParticle* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.ResParticle",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::ResParticle*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResParticle_getBlendMode'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
-    {
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResParticle_getBlendMode'", nullptr);
-            return 0;
-        }
-        lstg::BlendMode* ret = cobj->getBlendMode();
-        BlendMode_to_luaval(tolua_S, ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResParticle:getBlendMode",argc, 0);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResParticle_getBlendMode'.",&tolua_err);
 #endif
 
     return 0;
@@ -2406,8 +2401,8 @@ int lua_register_x_Resource_ResParticle(lua_State* tolua_S)
     tolua_cclass(tolua_S,"ResParticle","lstg.ResParticle","lstg.ResourceColliable",nullptr);
 
     tolua_beginmodule(tolua_S,"ResParticle");
+        tolua_function(tolua_S,"getRenderMode",lua_x_Resource_ResParticle_getRenderMode);
         tolua_function(tolua_S,"getBindSprite",lua_x_Resource_ResParticle_getBindSprite);
-        tolua_function(tolua_S,"getBlendMode",lua_x_Resource_ResParticle_getBlendMode);
         tolua_function(tolua_S,"create", lua_x_Resource_ResParticle_create);
     tolua_endmodule(tolua_S);
     std::string typeName = typeid(lstg::ResParticle).name();
@@ -3161,7 +3156,7 @@ int lua_x_Resource_ResFont_getShadowBlurRadius(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFont_getShadowBlurRadius'", nullptr);
             return 0;
         }
-        float ret = cobj->getShadowBlurRadius();
+        double ret = cobj->getShadowBlurRadius();
         tolua_pushnumber(tolua_S,(lua_Number)ret);
         return 1;
     }
@@ -3171,53 +3166,6 @@ int lua_x_Resource_ResFont_getShadowBlurRadius(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
     tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFont_getShadowBlurRadius'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_x_Resource_ResFont_enableUnderline(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::ResFont* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.ResFont",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::ResFont*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResFont_enableUnderline'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
-    {
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFont_enableUnderline'", nullptr);
-            return 0;
-        }
-        cobj->enableUnderline();
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResFont:enableUnderline",argc, 0);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFont_enableUnderline'.",&tolua_err);
 #endif
 
     return 0;
@@ -3718,56 +3666,6 @@ int lua_x_Resource_ResFont_isUnderlined(lua_State* tolua_S)
 
     return 0;
 }
-int lua_x_Resource_ResFont_setBlendMode(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::ResFont* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.ResFont",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::ResFont*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResFont_setBlendMode'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        lstg::BlendMode* arg0;
-
-        ok &= luaval_to_BlendMode(tolua_S, 2, &arg0, "lstg.ResFont:setBlendMode");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFont_setBlendMode'", nullptr);
-            return 0;
-        }
-        cobj->setBlendMode(arg0);
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResFont:setBlendMode",argc, 1);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFont_setBlendMode'.",&tolua_err);
-#endif
-
-    return 0;
-}
 int lua_x_Resource_ResFont_disableBold(lua_State* tolua_S)
 {
     int argc = 0;
@@ -4203,6 +4101,53 @@ int lua_x_Resource_ResFont_isStrikethrough(lua_State* tolua_S)
 
     return 0;
 }
+int lua_x_Resource_ResFont_getRenderMode(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResFont* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResFont",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResFont*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResFont_getRenderMode'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFont_getRenderMode'", nullptr);
+            return 0;
+        }
+        lstg::RenderMode* ret = cobj->getRenderMode();
+        lstg::lua::native_to_luaval(tolua_S, ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResFont:getRenderMode",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFont_getRenderMode'.",&tolua_err);
+#endif
+
+    return 0;
+}
 int lua_x_Resource_ResFont_getVAlign(lua_State* tolua_S)
 {
     int argc = 0;
@@ -4297,7 +4242,7 @@ int lua_x_Resource_ResFont_enableBold(lua_State* tolua_S)
 
     return 0;
 }
-int lua_x_Resource_ResFont_getBlendMode(lua_State* tolua_S)
+int lua_x_Resource_ResFont_enableUnderline(lua_State* tolua_S)
 {
     int argc = 0;
     lstg::ResFont* cobj = nullptr;
@@ -4317,7 +4262,7 @@ int lua_x_Resource_ResFont_getBlendMode(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
     {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResFont_getBlendMode'", nullptr);
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResFont_enableUnderline'", nullptr);
         return 0;
     }
 #endif
@@ -4327,19 +4272,19 @@ int lua_x_Resource_ResFont_getBlendMode(lua_State* tolua_S)
     {
         if(!ok)
         {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFont_getBlendMode'", nullptr);
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFont_enableUnderline'", nullptr);
             return 0;
         }
-        lstg::BlendMode* ret = cobj->getBlendMode();
-        BlendMode_to_luaval(tolua_S, ret);
+        cobj->enableUnderline();
+        lua_settop(tolua_S, 1);
         return 1;
     }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResFont:getBlendMode",argc, 0);
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResFont:enableUnderline",argc, 0);
     return 0;
 
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFont_getBlendMode'.",&tolua_err);
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFont_enableUnderline'.",&tolua_err);
 #endif
 
     return 0;
@@ -4484,6 +4429,56 @@ int lua_x_Resource_ResFont_disableStrikethrough(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
     tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFont_disableStrikethrough'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_x_Resource_ResFont_setRenderMode(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResFont* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResFont",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResFont*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResFont_setRenderMode'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1) 
+    {
+        lstg::RenderMode* arg0;
+
+        ok &= lstg::lua::luaval_to_native(tolua_S, 2, &arg0, "lstg.ResFont:setRenderMode");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFont_setRenderMode'", nullptr);
+            return 0;
+        }
+        cobj->setRenderMode(arg0);
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResFont:setRenderMode",argc, 1);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFont_setRenderMode'.",&tolua_err);
 #endif
 
     return 0;
@@ -4669,7 +4664,6 @@ int lua_register_x_Resource_ResFont(lua_State* tolua_S)
         tolua_function(tolua_S,"getOutlineColor",lua_x_Resource_ResFont_getOutlineColor);
         tolua_function(tolua_S,"disableItalics",lua_x_Resource_ResFont_disableItalics);
         tolua_function(tolua_S,"getShadowBlurRadius",lua_x_Resource_ResFont_getShadowBlurRadius);
-        tolua_function(tolua_S,"enableUnderline",lua_x_Resource_ResFont_enableUnderline);
         tolua_function(tolua_S,"enableStrikethrough",lua_x_Resource_ResFont_enableStrikethrough);
         tolua_function(tolua_S,"setHAlign",lua_x_Resource_ResFont_setHAlign);
         tolua_function(tolua_S,"isShadowed",lua_x_Resource_ResFont_isShadowed);
@@ -4680,7 +4674,6 @@ int lua_register_x_Resource_ResFont(lua_State* tolua_S)
         tolua_function(tolua_S,"disableUnderline",lua_x_Resource_ResFont_disableUnderline);
         tolua_function(tolua_S,"getColor",lua_x_Resource_ResFont_getColor);
         tolua_function(tolua_S,"isUnderlined",lua_x_Resource_ResFont_isUnderlined);
-        tolua_function(tolua_S,"setBlendMode",lua_x_Resource_ResFont_setBlendMode);
         tolua_function(tolua_S,"disableBold",lua_x_Resource_ResFont_disableBold);
         tolua_function(tolua_S,"getShadowColor",lua_x_Resource_ResFont_getShadowColor);
         tolua_function(tolua_S,"setOutlineColor",lua_x_Resource_ResFont_setOutlineColor);
@@ -4690,12 +4683,14 @@ int lua_register_x_Resource_ResFont(lua_State* tolua_S)
         tolua_function(tolua_S,"enableGlow",lua_x_Resource_ResFont_enableGlow);
         tolua_function(tolua_S,"setColor",lua_x_Resource_ResFont_setColor);
         tolua_function(tolua_S,"isStrikethrough",lua_x_Resource_ResFont_isStrikethrough);
+        tolua_function(tolua_S,"getRenderMode",lua_x_Resource_ResFont_getRenderMode);
         tolua_function(tolua_S,"getVAlign",lua_x_Resource_ResFont_getVAlign);
         tolua_function(tolua_S,"enableBold",lua_x_Resource_ResFont_enableBold);
-        tolua_function(tolua_S,"getBlendMode",lua_x_Resource_ResFont_getBlendMode);
+        tolua_function(tolua_S,"enableUnderline",lua_x_Resource_ResFont_enableUnderline);
         tolua_function(tolua_S,"disableShadow",lua_x_Resource_ResFont_disableShadow);
         tolua_function(tolua_S,"setVAlign",lua_x_Resource_ResFont_setVAlign);
         tolua_function(tolua_S,"disableStrikethrough",lua_x_Resource_ResFont_disableStrikethrough);
+        tolua_function(tolua_S,"setRenderMode",lua_x_Resource_ResFont_setRenderMode);
         tolua_function(tolua_S,"createTTF", lua_x_Resource_ResFont_createTTF);
         tolua_function(tolua_S,"createHGE", lua_x_Resource_ResFont_createHGE);
         tolua_function(tolua_S,"createBMF", lua_x_Resource_ResFont_createBMF);
@@ -5346,7 +5341,7 @@ int lua_register_x_Resource_ResMusic(lua_State* tolua_S)
     return 1;
 }
 
-int lua_x_Resource_ResFX_setValue(lua_State* tolua_S)
+int lua_x_Resource_ResFX_setMat4(lua_State* tolua_S)
 {
     int argc = 0;
     lstg::ResFX* cobj = nullptr;
@@ -5366,7 +5361,7 @@ int lua_x_Resource_ResFX_setValue(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
     {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResFX_setValue'", nullptr);
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResFX_setMat4'", nullptr);
         return 0;
     }
 #endif
@@ -5374,27 +5369,74 @@ int lua_x_Resource_ResFX_setValue(lua_State* tolua_S)
     argc = lua_gettop(tolua_S)-1;
     if (argc == 2) 
     {
-        const char* arg0;
-        double arg1;
+        std::string arg0;
+        cocos2d::Mat4 arg1;
 
-        std::string arg0_tmp; ok &= luaval_to_std_string(tolua_S, 2, &arg0_tmp, "lstg.ResFX:setValue"); arg0 = arg0_tmp.c_str();
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResFX:setMat4");
 
-        ok &= luaval_to_number(tolua_S, 3,&arg1, "lstg.ResFX:setValue");
+        ok &= luaval_to_mat4(tolua_S, 3, &arg1, "lstg.ResFX:setMat4");
         if(!ok)
         {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFX_setValue'", nullptr);
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFX_setMat4'", nullptr);
             return 0;
         }
-        cobj->setValue(arg0, arg1);
+        cobj->setMat4(arg0, arg1);
         lua_settop(tolua_S, 1);
         return 1;
     }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResFX:setValue",argc, 2);
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResFX:setMat4",argc, 2);
     return 0;
 
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFX_setValue'.",&tolua_err);
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFX_setMat4'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_x_Resource_ResFX_getUniformNames(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResFX* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResFX",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResFX*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResFX_getUniformNames'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFX_getUniformNames'", nullptr);
+            return 0;
+        }
+        std::vector<std::string> ret = cobj->getUniformNames();
+        ccvector_std_string_to_luaval(tolua_S, ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResFX:getUniformNames",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFX_getUniformNames'.",&tolua_err);
 #endif
 
     return 0;
@@ -5427,10 +5469,10 @@ int lua_x_Resource_ResFX_setColor(lua_State* tolua_S)
     argc = lua_gettop(tolua_S)-1;
     if (argc == 2) 
     {
-        const char* arg0;
+        std::string arg0;
         cocos2d::Color4B arg1;
 
-        std::string arg0_tmp; ok &= luaval_to_std_string(tolua_S, 2, &arg0_tmp, "lstg.ResFX:setColor"); arg0 = arg0_tmp.c_str();
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResFX:setColor");
 
         ok &=luaval_to_color4b(tolua_S, 3, &arg1, "lstg.ResFX:setColor");
         if(!ok)
@@ -5448,6 +5490,106 @@ int lua_x_Resource_ResFX_setColor(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
     tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFX_setColor'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_x_Resource_ResFX_setFloat(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResFX* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResFX",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResFX*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResFX_setFloat'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 2) 
+    {
+        std::string arg0;
+        double arg1;
+
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResFX:setFloat");
+
+        ok &= luaval_to_number(tolua_S, 3,&arg1, "lstg.ResFX:setFloat");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFX_setFloat'", nullptr);
+            return 0;
+        }
+        cobj->setFloat(arg0, arg1);
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResFX:setFloat",argc, 2);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFX_setFloat'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_x_Resource_ResFX_getRenderMode(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResFX* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResFX",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResFX*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResFX_getRenderMode'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFX_getRenderMode'", nullptr);
+            return 0;
+        }
+        lstg::RenderMode* ret = cobj->getRenderMode();
+        lstg::lua::native_to_luaval(tolua_S, ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResFX:getRenderMode",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFX_getRenderMode'.",&tolua_err);
 #endif
 
     return 0;
@@ -5535,7 +5677,7 @@ int lua_x_Resource_ResFX_getProgramState(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFX_getProgramState'", nullptr);
             return 0;
         }
-        cocos2d::GLProgramState* ret = cobj->getProgramState();
+        cocos2d::backend::ProgramState* ret = cobj->getProgramState();
         lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
@@ -5545,6 +5687,59 @@ int lua_x_Resource_ResFX_getProgramState(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
     tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFX_getProgramState'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_x_Resource_ResFX_setVec4(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResFX* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResFX",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResFX*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResFX_setVec4'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 2) 
+    {
+        std::string arg0;
+        cocos2d::Vec4 arg1;
+
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResFX:setVec4");
+
+        ok &= luaval_to_vec4(tolua_S, 3, &arg1, "lstg.ResFX:setVec4");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFX_setVec4'", nullptr);
+            return 0;
+        }
+        cobj->setVec4(arg0, arg1);
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResFX:setVec4",argc, 2);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFX_setVec4'.",&tolua_err);
 #endif
 
     return 0;
@@ -5582,7 +5777,7 @@ int lua_x_Resource_ResFX_getProgram(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFX_getProgram'", nullptr);
             return 0;
         }
-        cocos2d::GLProgram* ret = cobj->getProgram();
+        cocos2d::backend::Program* ret = cobj->getProgram();
         lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
@@ -5624,10 +5819,10 @@ int lua_x_Resource_ResFX_setTexture(lua_State* tolua_S)
     argc = lua_gettop(tolua_S)-1;
     if (argc == 2) 
     {
-        const char* arg0;
+        std::string arg0;
         cocos2d::Texture2D* arg1;
 
-        std::string arg0_tmp; ok &= luaval_to_std_string(tolua_S, 2, &arg0_tmp, "lstg.ResFX:setTexture"); arg0 = arg0_tmp.c_str();
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResFX:setTexture");
 
         ok &= lstg::lua::luaval_to_native(tolua_S, 3, &arg1, "lstg.ResFX:setTexture");
         if(!ok)
@@ -5645,6 +5840,112 @@ int lua_x_Resource_ResFX_setTexture(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
     tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFX_setTexture'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_x_Resource_ResFX_setVec3(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResFX* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResFX",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResFX*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResFX_setVec3'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 2) 
+    {
+        std::string arg0;
+        cocos2d::Vec3 arg1;
+
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResFX:setVec3");
+
+        ok &= luaval_to_vec3(tolua_S, 3, &arg1, "lstg.ResFX:setVec3");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFX_setVec3'", nullptr);
+            return 0;
+        }
+        cobj->setVec3(arg0, arg1);
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResFX:setVec3",argc, 2);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFX_setVec3'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_x_Resource_ResFX_setVec2(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResFX* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResFX",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (lstg::ResFX*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Resource_ResFX_setVec2'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 2) 
+    {
+        std::string arg0;
+        cocos2d::Vec2 arg1;
+
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResFX:setVec2");
+
+        ok &= luaval_to_vec2(tolua_S, 3, &arg1, "lstg.ResFX:setVec2");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFX_setVec2'", nullptr);
+            return 0;
+        }
+        cobj->setVec2(arg0, arg1);
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResFX:setVec2",argc, 2);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFX_setVec2'.",&tolua_err);
 #endif
 
     return 0;
@@ -5677,9 +5978,9 @@ int lua_x_Resource_ResFX_setViewport(lua_State* tolua_S)
     argc = lua_gettop(tolua_S)-1;
     if (argc == 1) 
     {
-        cocos2d::Rect arg0;
+        cocos2d::Viewport arg0;
 
-        ok &= luaval_to_rect(tolua_S, 2, &arg0, "lstg.ResFX:setViewport");
+        ok &= lstg::lua::luaval_to_native(tolua_S, 2, &arg0, "setViewport");
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFX_setViewport'", nullptr);
@@ -5699,7 +6000,7 @@ int lua_x_Resource_ResFX_setViewport(lua_State* tolua_S)
 
     return 0;
 }
-int lua_x_Resource_ResFX_createWithGLProgram(lua_State* tolua_S)
+int lua_x_Resource_ResFX_createWithProgram(lua_State* tolua_S)
 {
     int argc = 0;
     bool ok  = true;
@@ -5717,23 +6018,23 @@ int lua_x_Resource_ResFX_createWithGLProgram(lua_State* tolua_S)
     if (argc == 2)
     {
         std::string arg0;
-        cocos2d::GLProgram* arg1;
-        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResFX:createWithGLProgram");
-        ok &= lstg::lua::luaval_to_native(tolua_S, 3, &arg1, "lstg.ResFX:createWithGLProgram");
+        cocos2d::backend::Program* arg1;
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResFX:createWithProgram");
+        ok &= lstg::lua::luaval_to_native(tolua_S, 3, &arg1, "lstg.ResFX:createWithProgram");
         if(!ok)
         {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFX_createWithGLProgram'", nullptr);
+            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResFX_createWithProgram'", nullptr);
             return 0;
         }
-        lstg::ResFX* ret = lstg::ResFX::createWithGLProgram(arg0, arg1);
+        lstg::ResFX* ret = lstg::ResFX::createWithProgram(arg0, arg1);
         lstg::lua::native_to_luaval(tolua_S, ret);
         return 1;
     }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResFX:createWithGLProgram",argc, 2);
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.ResFX:createWithProgram",argc, 2);
     return 0;
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFX_createWithGLProgram'.",&tolua_err);
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFX_createWithProgram'.",&tolua_err);
 #endif
     return 0;
 }
@@ -5829,14 +6130,20 @@ int lua_register_x_Resource_ResFX(lua_State* tolua_S)
     tolua_cclass(tolua_S,"ResFX","lstg.ResFX","lstg.Resource",nullptr);
 
     tolua_beginmodule(tolua_S,"ResFX");
-        tolua_function(tolua_S,"setValue",lua_x_Resource_ResFX_setValue);
+        tolua_function(tolua_S,"setMat4",lua_x_Resource_ResFX_setMat4);
+        tolua_function(tolua_S,"getUniformNames",lua_x_Resource_ResFX_getUniformNames);
         tolua_function(tolua_S,"setColor",lua_x_Resource_ResFX_setColor);
+        tolua_function(tolua_S,"setFloat",lua_x_Resource_ResFX_setFloat);
+        tolua_function(tolua_S,"getRenderMode",lua_x_Resource_ResFX_getRenderMode);
         tolua_function(tolua_S,"setScreenSize",lua_x_Resource_ResFX_setScreenSize);
         tolua_function(tolua_S,"getProgramState",lua_x_Resource_ResFX_getProgramState);
+        tolua_function(tolua_S,"setVec4",lua_x_Resource_ResFX_setVec4);
         tolua_function(tolua_S,"getProgram",lua_x_Resource_ResFX_getProgram);
         tolua_function(tolua_S,"setTexture",lua_x_Resource_ResFX_setTexture);
+        tolua_function(tolua_S,"setVec3",lua_x_Resource_ResFX_setVec3);
+        tolua_function(tolua_S,"setVec2",lua_x_Resource_ResFX_setVec2);
         tolua_function(tolua_S,"setViewport",lua_x_Resource_ResFX_setViewport);
-        tolua_function(tolua_S,"createWithGLProgram", lua_x_Resource_ResFX_createWithGLProgram);
+        tolua_function(tolua_S,"createWithProgram", lua_x_Resource_ResFX_createWithProgram);
         tolua_function(tolua_S,"create", lua_x_Resource_ResFX_create);
         tolua_function(tolua_S,"createWithString", lua_x_Resource_ResFX_createWithString);
     tolua_endmodule(tolua_S);
@@ -5922,11 +6229,11 @@ int lua_x_Resource_ResRenderTarget_render(lua_State* tolua_S)
     if (argc == 2) 
     {
         lstg::ResFX* arg0;
-        lstg::BlendMode* arg1;
+        lstg::RenderMode* arg1;
 
         ok &= lstg::lua::luaval_to_native(tolua_S, 2, &arg0, "lstg.ResRenderTarget:render");
 
-        ok &= luaval_to_BlendMode(tolua_S, 3, &arg1, "lstg.ResRenderTarget:render");
+        ok &= lstg::lua::luaval_to_native(tolua_S, 3, &arg1, "lstg.ResRenderTarget:render");
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_Resource_ResRenderTarget_render'", nullptr);

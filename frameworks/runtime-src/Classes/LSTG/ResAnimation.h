@@ -24,7 +24,7 @@ namespace lstg {
 		bool render(int ani_timer, float x, float y, float rot = 0,
 			float hscale = 1, float vscale = 1);
 
-		std::string getInfo() const override;
+		std::unordered_map<std::string, std::string> getInfo() const override;
 
 	private:
 		cocos2d::Vector<cocos2d::Sprite*> images;

@@ -64,6 +64,11 @@ void ResParticle::ParticlePool::setColorEnd(const Color4B& color) noexcept
 	particleInfo.ColorEnd[3] = color.a / 255.f;
 }
 
+void ResParticle::ParticlePool::setRenderMode(RenderMode* m) noexcept
+{
+	renderMode = m;
+}
+
 void ResParticle::ParticlePool::setActive(bool b) noexcept
 {
 	if (b)
@@ -174,9 +179,12 @@ void ResParticle::ParticlePool::Update(float delta)
 				pInfo.SizeStart + (pInfo.SizeEnd - pInfo.SizeStart) * pInfo.SizeVar);
 			tInst.sizeDelta = (pInfo.SizeEnd - tInst.size) / tInst.terminalLife;
 
-			tInst.spin = /* pInfo.fSpinStart */ rotation +
-				_rand.GetRandFloat(0, pInfo.SpinEnd) - pInfo.SpinEnd / 2.0f;
-			tInst.spinDelta = pInfo.SpinVar;
+			//tInst.spin = /* pInfo.fSpinStart */ rotation +
+			//	_rand.GetRandFloat(0, pInfo.SpinEnd) - pInfo.SpinEnd / 2.0f;
+			//tInst.spinDelta = pInfo.SpinVar;
+
+			tInst.spin = _rand.GetRandFloat(0, (pInfo.SpinEnd - pInfo.SpinStart)*pInfo.SpinVar) + pInfo.SpinStart;
+			tInst.spinDelta = (pInfo.SpinEnd - tInst.spin) / tInst.terminalLife;
 
 			auto _var = pInfo.ColorVar;
 			for (int j = 0; j < 4; ++j)
@@ -203,7 +211,7 @@ void ResParticle::ParticlePool::Render(float scaleX, float scaleY)
 	const auto _color = p->getColor();
 	const auto _alpha = p->getOpacity();
 
-	LRR.updateBlendMode(blendMode);
+	LRR.updateRenderMode(renderMode);
 
 	for (size_t i = 0; i < numAlive; ++i)
 	{
@@ -243,9 +251,9 @@ ResParticle::ParticlePool::~ParticlePool()
 
 ResParticle::ParticlePool* ResParticle::AllocInstance()noexcept
 {
-	// ！ 警告：潜在bad_alloc导致错误，暂时不予处理
+	//FIXME: may throw bad_alloc
 	ParticlePool* pRet = new(s_MemoryPool.Alloc()) ParticlePool(this);
-	pRet->setBlendMode(blendMode);
+	pRet->setRenderMode(renderMode);
 	//pRet->setSeed(uint32_t(time(nullptr)));
 	return pRet;
 }
@@ -257,55 +265,47 @@ void ResParticle::FreeInstance(ParticlePool* p)noexcept
 	s_MemoryPool.Free(p);
 }
 
-string ResParticle::getInfo() const
+std::unordered_map<std::string, std::string> ResParticle::getInfo() const
 {
-	string ret = Resource::getInfo();
-	string format = " | Blend Mode = %s | ParticleInfo = { | %w = %u | ";
-	int i;
-	for (i = 0; i < 5; ++i) format += "%w = %f | ";
-	format += "%w = %b | ";
-	for (i = 0; i < 14; ++i) format += "%w = %f | ";
-	for (i = 0; i < 2; ++i) format += "%w = %f, %f, %f, %f | ";
-	format += "%w = %f | ";
-	format += "%w = %f | }";
+	auto ret = ResourceColliable::getInfo();
+	ret["render_mode"] = renderMode->getName();
+
+	ret["EmissionFreq"] = to_string(particleInfo.EmissionFreq);
+	ret["Lifetime"] = to_string(particleInfo.Lifetime);
+	ret["LifeMin"] = to_string(particleInfo.LifeMin);
+	ret["LifeMax"] = to_string(particleInfo.LifeMax);
+	ret["Direction"] = to_string(particleInfo.Direction);
+	ret["Spread"] = to_string(particleInfo.Spread);
+	ret["Relative"] = particleInfo.Relative ? "true" : "false";
+	ret["SpeedMin"] = to_string(particleInfo.SpeedMin);
+	ret["SpeedMax"] = to_string(particleInfo.SpeedMax);
+	ret["GravityMin"] = to_string(particleInfo.GravityMin);
+	ret["GravityMax"] = to_string(particleInfo.GravityMax);
+	ret["RadialAccelMin"] = to_string(particleInfo.RadialAccelMin);
+	ret["RadialAccelMax"] = to_string(particleInfo.RadialAccelMax);
+	ret["TangentialAccelMin"] = to_string(particleInfo.TangentialAccelMin);
+	ret["TangentialAccelMax"] = to_string(particleInfo.TangentialAccelMax);
+	ret["SizeStart"] = to_string(particleInfo.SizeStart);
+	ret["SizeEnd"] = to_string(particleInfo.SizeEnd);
+	ret["SizeVar"] = to_string(particleInfo.SizeVar);
+	ret["SpinStart"] = to_string(particleInfo.SpinStart);
+	ret["SpinEnd"] = to_string(particleInfo.SpinEnd);
+	ret["SpinVar"] = to_string(particleInfo.SpinVar);
+	ret["ColorVar"] = to_string(particleInfo.ColorVar);
+	ret["AlphaVar"] = to_string(particleInfo.AlphaVar);
+
 	const auto cstart = particleInfo.ColorStart;
-	const auto cend = particleInfo.ColorStart;
-	const auto info = StringFormat(format.c_str(),
-		blendMode->getName().c_str(),
-		L"每秒发射个数", particleInfo.EmissionFreq,
-		L"生命期", particleInfo.Lifetime,
-		L"粒子最小生命期", particleInfo.LifeMin,
-		L"粒子最大生命期", particleInfo.LifeMax,
-		L"发射方向", particleInfo.Direction,
-		L"偏移角度", particleInfo.Spread,
-		L"使用相对值", particleInfo.Relative,
-		L"速度最小值", particleInfo.SpeedMin,
-		L"速度最大值", particleInfo.SpeedMax,
-		L"重力最小值", particleInfo.GravityMin,
-		L"重力最大值", particleInfo.GravityMax,
-		L"最低线加速度", particleInfo.RadialAccelMin,
-		L"最高线加速度", particleInfo.RadialAccelMax,
-		L"最低角加速度", particleInfo.TangentialAccelMin,
-		L"最高角加速度", particleInfo.TangentialAccelMax,
-		L"起始大小", particleInfo.SizeStart,
-		L"最终大小", particleInfo.SizeEnd,
-		L"大小抖动值", particleInfo.SizeVar,
-		L"起始自旋", particleInfo.SpinStart,
-		L"最终自旋", particleInfo.SpinEnd,
-		L"自旋抖动值", particleInfo.SpinVar,
-		L"起始颜色(rgba)", cstart[0], cstart[1], cstart[2], cstart[3],
-		L"最终颜色(rgba)", cend[0], cend[1], cend[2], cend[3],
-		L"颜色抖动值", particleInfo.ColorVar,
-		L"alpha抖动值", particleInfo.AlphaVar
-	);
-	ret += info;
+	ret["ColorStart"] = StringFormat("%f, %f, %f, %f", cstart[0], cstart[1], cstart[2], cstart[3]);
+	const auto cend = particleInfo.ColorEnd;
+	ret["ColorEnd"] = StringFormat("%f, %f, %f, %f", cend[0], cend[1], cend[2], cend[3]);
+
 	return ret;
 }
 
 ResParticle::ResParticle(const std::string& name, const ParticleInfo& pinfo, Sprite* sprite,
-	BlendMode* bld, double a, double b, XColliderType colliType)
+	RenderMode* bld, double a, double b, XColliderType colliType)
 : ResourceColliable(ResourceType::Particle, name, colliType, a, b),
-bindSprite(sprite), particleInfo(pinfo), blendMode(bld)
+bindSprite(sprite), particleInfo(pinfo), renderMode(bld)
 {
 	CC_ASSERT(sprite&&bld);
 	bindSprite->retain();
@@ -335,20 +335,20 @@ ResParticle* ResParticle::create(const std::string& name, const std::string& pat
 		memcpy(&tInfo, data->data(), sizeof(ParticleInfo));
 		tInfo.BlendInfo = (tInfo.BlendInfo >> 16) & 0x00000003;
 		//TODO: move to lua
-		auto blend = BlendMode::getByName("add+alpha");
+		auto blend = RenderMode::getByName("add+alpha");
 		if (tInfo.BlendInfo & 1)  // ADD
 		{
 			if (tInfo.BlendInfo & 2)  // ALPHA
-				blend = BlendMode::getByName("add+alpha");
+				blend = RenderMode::getByName("add+alpha");
 			else
-				blend = BlendMode::getByName("add+add");
+				blend = RenderMode::getByName("add+add");
 		}
 		else  // MUL
 		{
 			if (tInfo.BlendInfo & 2)  // ALPHA
-				blend = BlendMode::getByName("mul+alpha");
+				blend = RenderMode::getByName("mul+alpha");
 			else
-				blend = BlendMode::getByName("mul+add");
+				blend = RenderMode::getByName("mul+add");
 		}
 		if (!blend)
 			return nullptr;

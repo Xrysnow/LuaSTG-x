@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "ResBase.h"
 #include "../Classes/XLabel.h"
-#include "BlendMode.h"
+#include "RenderMode.h"
 
 namespace lstg {
 	class ResFont :
@@ -22,7 +22,7 @@ namespace lstg {
 			cocos2d::Vec2 Advance;     // brush advance (pixel)
 		};
 	private:
-		BlendMode* blendMode = BlendMode::Default;
+		RenderMode* renderMode = RenderMode::Default;
 		cocos2d::Color4B textColor = cocos2d::Color4B::WHITE;
 		cocos2d::Color4B outlineColor = cocos2d::Color4B(0, 0, 0, 0xFF);
 		cocos2d::Color4B glowColor = cocos2d::Color4B::WHITE;
@@ -39,8 +39,8 @@ namespace lstg {
 		bool _isShadowed = false;
 
 	public:
-		BlendMode* getBlendMode()const { return blendMode; }
-		void setBlendMode(BlendMode* m) { blendMode = m; }
+		RenderMode* getRenderMode()const { return renderMode; }
+		void setRenderMode(RenderMode* m);
 
 		cocos2d::Color4B getColor() const { return textColor; }
 		void setColor(const cocos2d::Color4B& c);
@@ -107,7 +107,7 @@ namespace lstg {
 		bool isStrikethrough() const { return label->isStrikethrough(); }
 		
 		cocos2d::Vec2 calcSize(const std::string& text);
-		std::string getInfo() const override;
+		std::unordered_map<std::string, std::string> getInfo() const override;
 
 		cocos2d::Label* createLabel();
 		static void syncLabelSetting(XLabel* src, cocos2d::Label* target);

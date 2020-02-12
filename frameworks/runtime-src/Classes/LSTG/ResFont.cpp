@@ -11,6 +11,11 @@ using namespace std;
 using namespace cocos2d;
 using namespace lstg;
 
+void ResFont::setRenderMode(RenderMode* m)
+{
+	renderMode = m;
+}
+
 void ResFont::setColor(const Color4B& c)
 {
 	label->setBlendColor(c);
@@ -121,13 +126,14 @@ Vec2 ResFont::calcSize(const string& text)
 	return Vec2(s.width, s.height);
 }
 
-string ResFont::getInfo() const
+std::unordered_map<std::string, std::string> ResFont::getInfo() const
 {
 	auto ret = Resource::getInfo();
-	ret += " | BlendMode = " + blendMode->getName();
-	ret += " | Color = " + tostring(label->getBlendColor());
-	ret += " | Label = { | " + label->getDescription() + " | }";
-	ret += " | HA = " + tostring(h_alignment) + ", VA = " + tostring(v_alignment);
+	ret["render_mode"] = renderMode->getName();
+	ret["color"] = tostring(label->getBlendColor());
+	ret["description"] = label->getDescription();
+	ret["h_align"] = tostring(h_alignment);
+	ret["v_align"] = tostring(v_alignment);
 	return ret;
 }
 

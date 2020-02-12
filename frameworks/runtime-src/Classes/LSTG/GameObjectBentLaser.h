@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Global.h"
 #include "CirularQueue.hpp"
-#include "BlendMode.h"
+#include "RenderMode.h"
 #include "GameObject.h"
 
 namespace lstg
@@ -91,7 +91,7 @@ namespace lstg
 		bool boundCheck();
 
 		void render(ResSprite* sprite);
-		void render(ResTexture* texture, BlendMode* blend, const cocos2d::Color4B& color,
+		void render(ResTexture* texture, RenderMode* blend, const cocos2d::Color4B& color,
 			float tex_left, float tex_top, float tex_width, float tex_height);
 
 		cocos2d::Vec2 getNodePosition(int32_t i);
@@ -116,7 +116,7 @@ namespace lstg
 		LaserNode* getNodeByIndex(int32_t i);
 
 		void renderWithTexture2D(
-			cocos2d::Texture2D* tex, BlendMode* blend, const cocos2d::Color4B& color,
+			cocos2d::Texture2D* tex, RenderMode* blend, const cocos2d::Color4B& color,
 			float tex_left, float tex_top, float tex_width, float tex_height);
 
 		void updateNode(size_t i);

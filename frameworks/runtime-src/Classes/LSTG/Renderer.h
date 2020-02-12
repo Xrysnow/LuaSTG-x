@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "cocos2d.h"
-#include "BlendMode.h"
+#include "RenderMode.h"
 #include "LabelPool.h"
 #include "MemPoolManager.h"
 
@@ -28,18 +28,19 @@ namespace lstg
 		bool optVsync = true;
 		int optAALevel = 0;
 
-		cocos2d::Renderer* pRenderer;
+		cocos2d::Renderer* pRenderer = nullptr;
 		bool bRenderStarted = false;
+		cocos2d::backend::CommandBuffer* commandBuffer = nullptr;
 
-		// BlendMode
-		BlendMode* currentBlendMode = nullptr;
-		FogMode currentFogMode = None;
-		FogParam currentFogParam;
+		// RenderMode
+		RenderMode* currentRenderMode = nullptr;
+		cocos2d::backend::ProgramState* currentProgramState = nullptr;
+		cocos2d::Texture2D* currentTexture = nullptr;
 
 		cocos2d::Mat4 storeProjection;
 		cocos2d::Mat4 currentProjection;
-		GLint storeViewport[4];
-		cocos2d::experimental::Viewport currentVP;
+		cocos2d::Viewport storeViewport;
+		cocos2d::Viewport currentVP;
 
 		cocos2d::Camera* movingCamera = nullptr;
 
@@ -74,7 +75,7 @@ namespace lstg
 		std::vector<BatchTaskInfo> batchTaskInfo;
 
 	public:
-		void updateBlendMode(BlendMode* m);
+		void updateRenderMode(RenderMode* m);
 		//TODO: should be set before GLViewImpl::create
 		void setAALevel(int lv)noexcept;
 		void setVsync(bool v)noexcept;
@@ -86,13 +87,11 @@ namespace lstg
 		void setOffscreen(bool b) noexcept;
 		bool isOffscreen() const noexcept { return bOffscreen; }
 
-		void pushCustomCommend(std::function<void()> f)noexcept;
-		void pushCustomCommend(
+		void pushCallbackCommend(const std::function<void()>& f)noexcept;
+		void pushCallbackCommend(
 			cocos2d::RenderQueue::QUEUE_GROUP group,
 			float globalZOrder,
-			std::function<void()> f)noexcept;
-		// workaround for XTrianglesCommand::useMaterial
-		void pushDummyCommand()noexcept;
+			const std::function<void()>& f)noexcept;
 
 		// must be called before render funcs
 		bool beginScene()noexcept;
@@ -114,9 +113,6 @@ namespace lstg
 		// set perspective projection
 		void setPerspective(float eyeX, float eyeY, float eyeZ, float atX, float atY, float atZ,
 			float upX, float upY, float upZ, float fovy, float aspect, float zn, float zf)noexcept;
-
-		// set fog param
-		void setFog(float start, float end, const cocos2d::Color4F& color)noexcept;
 
 		/******************************************************************************/
 
@@ -160,8 +156,8 @@ namespace lstg
 		// render text
 		bool renderText(ResFont* p, const char* str, float x, float y, float scale,
 			cocos2d::TextHAlignment halign, cocos2d::TextVAlignment valign)noexcept;
-		bool renderTextAutoAlign(ResFont* p, const char* str, cocos2d::Rect& rect, float scale,
-			cocos2d::TextHAlignment halign, cocos2d::TextVAlignment valign, cocos2d::Color4B c)noexcept;
+		bool renderTextAutoAlign(ResFont* p, const char* str, const cocos2d::Rect& rect, float scale,
+			cocos2d::TextHAlignment halign, cocos2d::TextVAlignment valign, const cocos2d::Color4B& c)noexcept;
 		bool renderText(ResFont* p, const char* str, float x, float y, float width, float height, float scale)noexcept;
 
 		/******************************************************************************/
@@ -172,10 +168,12 @@ namespace lstg
 
 		bool popRenderTarget()noexcept;
 
-		bool postEffect(ResRenderTarget* p, ResFX* shader, BlendMode* blend)noexcept;
+		bool postEffect(ResRenderTarget* p, ResFX* shader, RenderMode* blend)noexcept;
 
 		/******************************************************************************/
 
+		void setProgramStateDirty();
+		void setXTCommand(XTrianglesCommand* cmd, cocos2d::Texture2D* t);
 		void addCommand(cocos2d::RenderCommand* cmd);
 		void addXTCommand(XTrianglesCommand* cmd);
 		void flushTriangles();
@@ -195,8 +193,6 @@ namespace lstg
 		cocos2d::Renderer* getRenderer() const noexcept { return pRenderer; }
 		cocos2d::DrawNode* getDrawNode() const noexcept { return drawNode; }
 		const cocos2d::Mat4& getCurrentProjection() const noexcept { return currentProjection; }
-		FogMode getCurrentFogMode() const noexcept { return currentFogMode; }
-		cocos2d::experimental::Viewport getCurrentViewport() const noexcept { return currentVP; }
+		cocos2d::Viewport getCurrentViewport() const noexcept { return currentVP; }
 	};
-
 }

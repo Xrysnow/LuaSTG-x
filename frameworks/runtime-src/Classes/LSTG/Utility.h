@@ -56,7 +56,7 @@ namespace lstg
 	void pathUniform(std::string& path, bool forward_slash = false, bool lower = true, bool utf8_convert = false);
 	void pathUniform(std::wstring& path, bool forward_slash = false, bool lower = true, bool utf8_convert = false);
 	//
-	std::string glBlend_tostring(GLenum blend);
+	std::string BlendFactor_tostring(cocos2d::backend::BlendFactor factor);
 
 	std::string tostring(const cocos2d::Vec2& v);
 	std::string tostring(const cocos2d::Vec3& v);
@@ -110,13 +110,16 @@ namespace lstg
 
 	namespace util
 	{
-		bool glMacroFromString(const std::string& str, GLuint& val);
-		cocos2d::GLProgram* CreateGLProgramFromPath(const std::string& v, const std::string& f);
-		cocos2d::GLProgram* CreateGLProgramFromString(const std::string& v, const std::string& f);
-		cocos2d::GLProgram* CreateGLProgramFromData(cocos2d::Data* v, cocos2d::Data* f);
+		cocos2d::Viewport Viewport(float left, float right, float bottom, float top);
+
+		bool BlendOperationFromString(const std::string& str, cocos2d::backend::BlendOperation& val);
+		bool BlendFactorFromString(const std::string& str, cocos2d::backend::BlendFactor& val);
+		cocos2d::backend::Program* CreateProgramFromPath(const std::string& v, const std::string& f);
+		cocos2d::backend::Program* CreateProgramFromString(const std::string& v, const std::string& f);
+		cocos2d::backend::Program* CreateProgramFromData(cocos2d::Data* v, cocos2d::Data* f);
 		bool CheckFragmentShader(const std::string& src);
 		bool CheckVertexShader(const std::string& src);
-		bool CheckBlendEquation(GLuint equation);
-		bool CheckBlendFunc(GLenum func);
+		bool CheckBlendOperation(cocos2d::backend::BlendOperation equation);
+		bool CheckBlendFactor(cocos2d::backend::BlendFactor func);
 	}
 }

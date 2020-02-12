@@ -10,10 +10,10 @@ using namespace std;
 using namespace lstg;
 using namespace cocos2d;
 
-BlendMode* lstg::TranslateBlendMode(lua_State* L, int argnum)
+RenderMode* lstg::TranslateRenderMode(lua_State* L, int argnum)
 {
-	BlendMode* ret;
-	if (!lua::luaval_to_BlendMode(L, argnum, &ret))
+	RenderMode* ret;
+	if (!lua::luaval_to_RenderMode(L, argnum, &ret))
 	{
 		luaL_error(L, "invalid blend mode");
 		return nullptr;

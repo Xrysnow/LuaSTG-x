@@ -40,15 +40,13 @@ void test(lua_State* L)
 	TEST(cocos2d::FontDefinition);
 	TEST(cocos2d::BlendFunc);
 	TEST(cocos2d::TTFConfig);
-	TEST(cocos2d::Uniform);
-	TEST(cocos2d::VertexAttrib);
 	TEST(cocos2d::Value);
 	TEST(cocos2d::MeshVertexAttrib);
 	TEST(cocos2d::Quaternion);
 	TEST(cocos2d::Texture2D::TexParams);
 
 	TEST(cocos2d::V3F_C4B_T2F_Quad);
-	TEST(lstg::BlendMode*);
+	TEST(lstg::RenderMode*);
 	TEST(XColliderType);
 
 	TEST(cocos2d::Vector<cocos2d::Node*>);

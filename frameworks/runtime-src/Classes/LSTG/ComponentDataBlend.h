@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "ComponentData.h"
 #include "cocos2d.h"
-#include "BlendMode.h"
+#include "RenderMode.h"
 
 namespace lstg
 {	
@@ -9,7 +9,7 @@ namespace lstg
 	{
 	public:
 		CREATE_FUNC(ComponentDataBlend);
-		BlendMode* blendMode = nullptr;
+		RenderMode* renderMode = nullptr;
 		cocos2d::Color4B blendColor = cocos2d::Color4B::WHITE;
 		bool useColor = false;
 	};
