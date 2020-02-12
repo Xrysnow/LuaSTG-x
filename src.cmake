@@ -33,7 +33,9 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XBuffer.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XFileDialog.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XFileUtils.h
+	${RUNTIME_SRC_ROOT}/Classes/Classes/XGifRecoder.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XLabel.h
+	${RUNTIME_SRC_ROOT}/Classes/Classes/XLatex.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XLuaModuleRegistry.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XProfiler.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XRand.h
@@ -59,7 +61,6 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/Dictionary.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ObjectPool.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/AppFrame.h
-	${RUNTIME_SRC_ROOT}/Classes/LSTG/BlendMode.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/CollisionDetect.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ComponentData.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ComponentDataAni.h
@@ -99,6 +100,7 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LW_Render.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LW_Text.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/Renderer.h
+	${RUNTIME_SRC_ROOT}/Classes/LSTG/RenderMode.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ResAnimation.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ResAudio.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ResBase.h
@@ -117,21 +119,24 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/UtilLuaConversion.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/UtilLuaRes.h
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_BentLaser_auto.hpp
-	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_BlendMode_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Buffer_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_controller_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_controller_manual.hpp
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_fix.h
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_CCImage_manual.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_FileDialog_auto.hpp
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Latex_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_LogSystem_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_ObjSym_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_ParticlePool_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Random_auto.hpp
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_RenderMode_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_ResourceMgr_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Resource_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Stream_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Triangles_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_WindowHelper_auto.hpp
-	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_ui_fix.h
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/LuaBindings.h
 	${RUNTIME_SRC_ROOT}/Classes/Math/meow_fft.h
 	${RUNTIME_SRC_ROOT}/Classes/Math/XCollision.h
 	${RUNTIME_SRC_ROOT}/Classes/Math/XComplex.h
@@ -239,7 +244,9 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XBuffer.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XFileDialog.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XFileUtils.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Classes/XGifRecoder.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XLabel.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Classes/XLatex.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XLuaModuleRegistry.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XProfiler.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XRand.cpp
@@ -260,7 +267,6 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/Live2D/Model.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Live2D/XLive2D.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/AppFrame.cpp
-	${RUNTIME_SRC_ROOT}/Classes/LSTG/BlendMode.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/CollisionDetect.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ComponentData.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ComponentDataAni.cpp
@@ -298,6 +304,7 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LW_Render.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LW_Text.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/Renderer.cpp
+	${RUNTIME_SRC_ROOT}/Classes/LSTG/RenderMode.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ResAnimation.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ResAudio.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ResBase.cpp
@@ -317,21 +324,25 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/UtilLuaRes.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/UtilShader.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_BentLaser_auto.cpp
-	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_BlendMode_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Buffer_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_controller_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_controller_manual.cpp
-	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_ui_fix.cpp
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_fix.cpp
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_CCImage_manual.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_FileDialog_auto.cpp
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Latex_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_LogSystem_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_ObjSym_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_ParticlePool_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Random_auto.cpp
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_RenderMode_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_ResourceMgr_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Resource_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Stream_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Triangles_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_WindowHelper_auto.cpp
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/LuaBindings.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Math/meow_fft.c
 	${RUNTIME_SRC_ROOT}/Classes/Math/XCollision.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Math/XComplex.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Math/XDistance.cpp
@@ -384,7 +395,7 @@ set(GAME_SOURCE
 )
 
 # sources need to compile info, include dirs and source files
-include_directories(
+set(GAME_INCLUDE
 	${RUNTIME_SRC_ROOT}/Classes/Audio
 	${RUNTIME_SRC_ROOT}/Classes/Classes
 	${RUNTIME_SRC_ROOT}/Classes/fcyLib
@@ -435,10 +446,12 @@ include_directories(
 
 if(WINDOWS)
     list(APPEND GAME_HEADER
-         ${RUNTIME_SRC_ROOT}/proj.win32/WindowHelperWin32.h
-         )
-	list(APPEND GAME_SOURCE ${cc_common_res})
-	list(APPEND GAME_SOURCE
-         ${RUNTIME_SRC_ROOT}/proj.win32/WindowHelperWin32.cpp
-         )
+        ${RUNTIME_SRC_ROOT}/proj.win32/resource.h
+        ${RUNTIME_SRC_ROOT}/proj.win32/WindowHelperWin32.h
+    )
+    list(APPEND GAME_SOURCE ${cc_common_res})
+    list(APPEND GAME_SOURCE
+        ${RUNTIME_SRC_ROOT}/proj.win32/game.rc
+        ${RUNTIME_SRC_ROOT}/proj.win32/WindowHelperWin32.cpp
+    )
 endif()

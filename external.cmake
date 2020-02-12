@@ -1,24 +1,35 @@
 #
 
-if(WINDOWS)
-	set(FRAMEWORK_GLEW_PATH ${COCOS2DX_ROOT_PATH}/external/win32-specific/gles/include/OGLES)
-	set(FRAMEWORK_DEFINITIOINS "-DCSM_TARGET_WIN_GL")
-elseif(ANDROID)
-	set(FRAMEWORK_DEFINITIOINS "-DCSM_TARGET_ANDROID_ES2")
-elseif(MACOSX)
-	set(FRAMEWORK_DEFINITIOINS "-DCSM_TARGET_MAC_GL")
-elseif(IOS)
-	set(FRAMEWORK_DEFINITIOINS "-DCSM_TARGET_IPHONE_ES2")
-elseif(LINUX)
-	#
-endif()
-
 set(EXTERNAL_LIBS "")
 
 # Live2D
 
+set(FRAMEWORK_SOURCE OpenGL)
 add_subdirectory(${RUNTIME_SRC_ROOT}/external/Cubism)
 add_subdirectory(${RUNTIME_SRC_ROOT}/Classes/Live2D/Framework)
+target_include_directories(CubismFramework PUBLIC ${RUNTIME_SRC_ROOT}/external/Cubism/include)
+target_compile_definitions(CubismFramework PUBLIC CSM_TARGET_COCOS)
+if(APPLE)
+  if(MACOSX)
+    target_compile_definitions(CubismFramework PUBLIC CSM_TARGET_MAC_GL)
+  elseif(IOS)
+    target_compile_definitions(CubismFramework PUBLIC CSM_TARGET_IPHONE_ES2)
+  endif()
+elseif(WINDOWS)
+  cocos_copy_target_dll(${APP_NAME})
+  target_compile_definitions(CubismFramework PUBLIC CSM_TARGET_WIN_GL)
+  set(COCOS_GLEW ${COCOS2DX_ROOT_PATH}/external/win32-specific/gles)
+  target_include_directories(CubismFramework PUBLIC ${COCOS_GLEW}/include/OGLES)
+elseif(ANDROID)
+  target_compile_definitions(CubismFramework PUBLIC CSM_TARGET_ANDROID_ES2)
+elseif(LINUX)
+  target_compile_definitions(CubismFramework PUBLIC CSM_TARGET_LINUX_GL)
+endif()
+
+set_target_properties(CubismFramework
+  PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${RUNTIME_SRC_ROOT}/external/Cubism/include
+)
+
 set(EXTERNAL_LIBS CubismFramework)
 list(APPEND EXTERNAL_LIBS ${CSM_CORE_LIBS})
 
@@ -47,7 +58,7 @@ endif()
 
 if(WINDOWS OR LINUX OR MACOSX)
 	add_subdirectory(${RUNTIME_SRC_ROOT}/external/NativeFileDialog)
-	list(APPEND EXTERNAL_LIBS ext_nfd)
+	list(APPEND EXTERNAL_LIBS ext_NativeFileDialog)
 endif()
 
 # ogg
@@ -81,6 +92,14 @@ add_subdirectory(${RUNTIME_SRC_ROOT}/external/LuaExtensions/lpeg)
 list(APPEND EXTERNAL_LIBS ext_lpeg)
 add_subdirectory(${RUNTIME_SRC_ROOT}/external/LuaExtensions/lua53)
 list(APPEND EXTERNAL_LIBS ext_lua53)
+
+# BurstLinker
+add_subdirectory(${RUNTIME_SRC_ROOT}/external/BurstLinker)
+list(APPEND EXTERNAL_LIBS ext_BurstLinker)
+
+# cLaTeXMath
+add_subdirectory(${RUNTIME_SRC_ROOT}/external/cLaTeXMath)
+list(APPEND EXTERNAL_LIBS ext_cLaTeXMath)
 
 #
 if(WINDOWS)

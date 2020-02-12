@@ -27,6 +27,12 @@ set(APP_NAME LuaSTG-x)
 
 project(${APP_NAME})
 
+if(XCODE)
+    if(NOT DEFINED CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET)
+        SET (CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET 8.0)
+    endif()
+endif()
+
 set(RUNTIME_SRC_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/frameworks/runtime-src)
 set(COCOS2DX_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/frameworks/cocos2d-x)
 set(CMAKE_MODULE_PATH ${COCOS2DX_ROOT_PATH}/cmake/Modules/)
@@ -42,9 +48,6 @@ set(res_res_folders
 set(res_src_folders
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
     )
-set(res_script_folders
-    "${COCOS2DX_ROOT_PATH}/cocos/scripting/lua-bindings/script"
-    )
 if(APPLE OR VS)
     cocos_mark_multi_resources(res_res RES_TO "Resources/res" FOLDERS ${res_res_folders})
     cocos_mark_multi_resources(res_src RES_TO "Resources/src" FOLDERS ${res_src_folders})
@@ -54,14 +57,7 @@ endif()
 # record sources, headers
 include(src.cmake)
 # sources need to compile info, include dirs and source files
-include_directories(
-        ${RUNTIME_SRC_ROOT}/Classes
-        ${COCOS2DX_ROOT_PATH}/cocos/scripting/lua-bindings/auto
-        ${COCOS2DX_ROOT_PATH}/cocos/scripting/lua-bindings/manual
-        ${COCOS2DX_ROOT_PATH}/external/lua/luajit/include
-        ${COCOS2DX_ROOT_PATH}/external/lua/tolua
-        ${COCOS2DX_ROOT_PATH}/tools/simulator/libsimulator/lib
-)
+
 if(ANDROID)
     # change APP_NAME to the share library name for Android, it's value depend on AndroidManifest.xml
     set(APP_NAME cocos2dlua)
@@ -71,16 +67,9 @@ elseif(LINUX)
 elseif(WINDOWS)
     list(APPEND GAME_HEADER
          ${RUNTIME_SRC_ROOT}/proj.win32/main.h
-         ${RUNTIME_SRC_ROOT}/proj.win32/stdafx.h
-         ${RUNTIME_SRC_ROOT}/proj.win32/SimulatorWin.h
-         ${RUNTIME_SRC_ROOT}/proj.win32/targetver.h
-         ${RUNTIME_SRC_ROOT}/proj.win32/resource.h
          )
     list(APPEND GAME_SOURCE
-         ${RUNTIME_SRC_ROOT}/proj.win32/game.rc
-         ${RUNTIME_SRC_ROOT}/proj.win32/stdafx.cpp
          ${RUNTIME_SRC_ROOT}/proj.win32/main.cpp
-         ${RUNTIME_SRC_ROOT}/proj.win32/SimulatorWin.cpp
          ${cc_common_res}
          )
 elseif(APPLE)
@@ -104,21 +93,13 @@ elseif(APPLE)
              )
     elseif(MACOSX)
         list(APPEND GAME_HEADER
-             ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/SimulatorApp.h
-             ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/ConsoleWindowController.h
              )
         set(APP_UI_RES
-            ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/Base.lproj/MainMenu.xib
-            ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/en.lproj/MainMenu.xib
-            ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/zh-Hans.lproj/MainMenu.xib
-            ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/ConsoleWindow.xib
             ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/Icon.icns
             ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/Info.plist
             )
         list(APPEND GAME_SOURCE
-             ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/main.m
-             ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/SimulatorApp.mm
-             ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/ConsoleWindowController.m
+             ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/main.cpp
              ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/Prefix.pch
              ${APP_UI_RES}
              )
@@ -141,16 +122,13 @@ endif()
 
 target_link_libraries(${APP_NAME} luacocos2d)
 target_include_directories(${APP_NAME} PRIVATE ${RUNTIME_SRC_ROOT}/Classes)
-
-if(WINDOWS OR MACOSX)
-    add_subdirectory(${COCOS2DX_ROOT_PATH}/tools/simulator/libsimulator ${ENGINE_BINARY_PATH}/cocos/simulatorlib)
-    target_link_libraries(${APP_NAME} simulatorlib)
-endif()
+target_include_directories(${APP_NAME} PRIVATE ${GAME_INCLUDE})
 
 # mark app resources, resource will be copy auto after mark
 setup_cocos_app_config(${APP_NAME})
 
 include(external.cmake)
+
 if(MSVC)
 	set_property(TARGET ${APP_NAME} APPEND_STRING PROPERTY LINK_FLAGS " /SAFESEH:NO")
 endif()
@@ -161,15 +139,21 @@ if(APPLE)
         set_target_properties(${APP_NAME} PROPERTIES
                               MACOSX_BUNDLE_INFO_PLIST "${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/Info.plist"
                               )
+        set_target_properties(${APP_NAME} PROPERTIES
+            LINK_FLAGS "-pagezero_size 10000 -image_base 100000000"
+        )
     elseif(IOS)
-        cocos_pak_xcode(${APP_NAME} INFO_PLIST "iOSBundleInfo.plist.in")
+        set_xcode_property(${APP_NAME} INFOPLIST_FILE "${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/Info.plist")
         set_xcode_property(${APP_NAME} ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon")
+        set_xcode_property(${APP_NAME} DEVELOPMENT_TEAM "")
+        set_xcode_property(${APP_NAME} CODE_SIGN_IDENTITY "iPhone Developer")
     endif()
 elseif(WINDOWS)
-    cocos_copy_target_dll(${APP_NAME} COPY_TO ${APP_RES_DIR}/..)
+    cocos_copy_target_dll(${APP_NAME})
 endif()
 # copy resource on linux or WINDOWS
 if(LINUX OR WINDOWS)
-    cocos_copy_res(COPY_TO ${APP_RES_DIR}/../res FOLDERS ${res_res_folders})
-    cocos_copy_res(COPY_TO ${APP_RES_DIR}/../src FOLDERS ${res_src_folders})
+    cocos_get_resource_path(APP_RES_DIR ${APP_NAME})
+    cocos_copy_target_res(${APP_NAME} LINK_TO ${APP_RES_DIR}/res FOLDERS ${res_res_folders})
+    cocos_copy_lua_scripts(${APP_NAME} ${res_src_folders} ${APP_RES_DIR}/src )
 endif()
