@@ -1146,7 +1146,7 @@ int GameObjectManager::NextObject(int groupId, int id)noexcept
 			return -1;
 		}
 		auto it = colliList[groupId].find(p);
-		if (it == objList.end())
+		if (it == colliList[groupId].end())
 		{
 			XERROR("can't find GameObject in colliList %d!", groupId);
 			return -1;
