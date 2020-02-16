@@ -130,7 +130,8 @@ setup_cocos_app_config(${APP_NAME})
 include(external.cmake)
 
 if(MSVC)
-	set_property(TARGET ${APP_NAME} APPEND_STRING PROPERTY LINK_FLAGS " /SAFESEH:NO")
+    target_compile_options(${APP_NAME} PUBLIC /Z7)
+    set_property(TARGET ${APP_NAME} APPEND_STRING PROPERTY LINK_FLAGS " /SAFESEH:NO")
 endif()
 
 if(APPLE)
