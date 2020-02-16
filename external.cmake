@@ -4,39 +4,13 @@ set(EXTERNAL_LIBS "")
 
 # Live2D
 
-set(FRAMEWORK_SOURCE OpenGL)
-add_subdirectory(${RUNTIME_SRC_ROOT}/external/Cubism)
-add_subdirectory(${RUNTIME_SRC_ROOT}/Classes/Live2D/Framework)
-target_include_directories(CubismFramework PUBLIC ${RUNTIME_SRC_ROOT}/external/Cubism/include)
-target_compile_definitions(CubismFramework PUBLIC CSM_TARGET_COCOS)
-if(APPLE)
-  if(MACOSX)
-    target_compile_definitions(CubismFramework PUBLIC CSM_TARGET_MAC_GL)
-  elseif(IOS)
-    target_compile_definitions(CubismFramework PUBLIC CSM_TARGET_IPHONE_ES2)
-  endif()
-elseif(WINDOWS)
-  cocos_copy_target_dll(${APP_NAME})
-  target_compile_definitions(CubismFramework PUBLIC CSM_TARGET_WIN_GL)
-  set(COCOS_GLEW ${COCOS2DX_ROOT_PATH}/external/win32-specific/gles)
-  target_include_directories(CubismFramework PUBLIC ${COCOS_GLEW}/include/OGLES)
-elseif(ANDROID)
-  target_compile_definitions(CubismFramework PUBLIC CSM_TARGET_ANDROID_ES2)
-elseif(LINUX)
-  target_compile_definitions(CubismFramework PUBLIC CSM_TARGET_LINUX_GL)
-endif()
-
-set_target_properties(CubismFramework
-  PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${RUNTIME_SRC_ROOT}/external/Cubism/include
-)
-
-set(EXTERNAL_LIBS CubismFramework)
-list(APPEND EXTERNAL_LIBS ${CSM_CORE_LIBS})
+add_subdirectory(${RUNTIME_SRC_ROOT}/Classes/Live2D)
+set(EXTERNAL_LIBS cc_live2d)
 
 # reader
 
-#add_subdirectory(${RUNTIME_SRC_ROOT}/Classes/reader)
-#list(APPEND EXTERNAL_LIBS creator_reader)
+add_subdirectory(${RUNTIME_SRC_ROOT}/Classes/reader)
+list(APPEND EXTERNAL_LIBS creator_reader)
 
 # ffmpeg
 

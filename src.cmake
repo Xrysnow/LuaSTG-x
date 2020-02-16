@@ -49,14 +49,6 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc/fcyStopWatch.h
 	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc/fcyStringHelper.h
 	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyParser/fcyPathParser.h
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/LAppAllocator.hpp
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/LAppDefine.hpp
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/LAppModel.hpp
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/LAppPal.hpp
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/lua_x_L2D_auto.hpp
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/AppMacros.h
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/Model.h
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/XLive2D.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/CirularQueue.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/Dictionary.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ObjectPool.hpp
@@ -148,68 +140,6 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/Math/XMath.h
 	${RUNTIME_SRC_ROOT}/Classes/Math/XRandom.h
 	${RUNTIME_SRC_ROOT}/Classes/Math/XSpline.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/CreatorReader.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/CreatorReader_generated.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/Macros.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/animation/AnimateClip.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/animation/AnimationClip.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/animation/AnimationClipProperties.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/animation/AnimationManager.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/animation/Bezier.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/animation/Easing.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/collider/Collider.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/collider/ColliderManager.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/collider/Contract.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/collider/Intersection.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/DragonBonesHeaders.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/animation/Animation.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/animation/AnimationState.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/animation/BaseTimelineState.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/animation/IAnimateble.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/animation/TimelineState.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/animation/WorldClock.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/armature/Armature.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/armature/Bone.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/armature/IArmatureDisplay.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/armature/Slot.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/armature/TransformObject.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/cocos2dx/CCArmatureDisplay.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/cocos2dx/CCDragonBonesHeaders.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/cocos2dx/CCFactory.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/cocos2dx/CCSlot.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/cocos2dx/CCTextureData.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/core/BaseObject.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/core/DragonBones.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/events/EventObject.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/factories/BaseFactory.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/geom/ColorTransform.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/geom/Matrix.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/geom/Point.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/geom/Rectangle.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/geom/Transform.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/model/AnimationData.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/model/ArmatureData.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/model/DragonBonesData.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/model/FrameData.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/model/TimelineData.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/parsers/DataParser.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/parsers/JSONDataParser.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/textures/TextureData.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/flatbuffers/code_generators.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/flatbuffers/flatbuffers.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/flatbuffers/grpc.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/flatbuffers/hash.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/flatbuffers/idl.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/flatbuffers/reflection.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/flatbuffers/reflection_generated.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/flatbuffers/util.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/lua-bindings/creator_reader_bindings.hpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/lua-bindings/dragonbones/lua_dragonbones_auto.hpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/lua-bindings/dragonbones/lua_dragonbones_manual.hpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/lua-bindings/reader/lua_creator_reader_auto.hpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/lua-bindings/reader/lua_creator_reader_manual.hpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/ui/PageView.h
-	${RUNTIME_SRC_ROOT}/Classes/reader/ui/RichtextStringVisitor.h
 	${RUNTIME_SRC_ROOT}/Classes/Video/SpriteVideo.h
 	${RUNTIME_SRC_ROOT}/Classes/Video/VideoDecoder.h
 	${RUNTIME_SRC_ROOT}/Classes/Video/VideoHeader.h
@@ -259,13 +189,6 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc/fcyStopWatch.cpp
 	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc/fcyStringHelper.cpp
 	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyParser/fcyPathParser.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/LAppAllocator.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/LAppDefine.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/LAppModel.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/LAppPal.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/lua_x_L2D_auto.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/Model.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/XLive2D.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/AppFrame.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/CollisionDetect.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ComponentData.cpp
@@ -351,45 +274,6 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/Math/XIntersect.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Math/XRandom.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Math/XSpline.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/CreatorReader.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/animation/AnimateClip.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/animation/AnimationClip.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/animation/AnimationManager.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/animation/Bezier.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/animation/Easing.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/collider/Collider.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/collider/ColliderManager.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/collider/Contract.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/collider/Intersection.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/animation/Animation.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/animation/AnimationState.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/animation/TimelineState.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/animation/WorldClock.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/armature/Armature.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/armature/Bone.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/armature/Slot.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/cocos2dx/CCArmatureDisplay.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/cocos2dx/CCFactory.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/cocos2dx/CCSlot.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/cocos2dx/CCTextureData.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/core/BaseObject.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/events/EventObject.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/factories/BaseFactory.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/model/AnimationData.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/model/ArmatureData.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/model/DragonBonesData.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/model/FrameData.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/model/TimelineData.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/parsers/DataParser.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/parsers/JSONDataParser.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/textures/TextureData.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/lua-bindings/creator_reader_bindings.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/lua-bindings/dragonbones/lua_dragonbones_auto.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/lua-bindings/dragonbones/lua_dragonbones_manual.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/lua-bindings/reader/lua_creator_reader_auto.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/lua-bindings/reader/lua_creator_reader_manual.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/ui/PageView.cpp
-	${RUNTIME_SRC_ROOT}/Classes/reader/ui/RichtextStringVisitor.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Video/SpriteVideo.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Video/VideoDecoder.cpp
 )
@@ -409,39 +293,8 @@ set(GAME_INCLUDE
 	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc
 	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyParser
 	${RUNTIME_SRC_ROOT}/Classes/imgui
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/Framework
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/Framework/src
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/Framework/src/Effect
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/Framework/src/Id
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/Framework/src/Math
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/Framework/src/Model
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/Framework/src/Motion
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/Framework/src/Physics
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/Framework/src/Rendering
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/Framework/src/Type
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/Framework/src/Utils
-	${RUNTIME_SRC_ROOT}/Classes/Live2D/Framework/src/Rendering/OpenGL
 	${RUNTIME_SRC_ROOT}/Classes/LuaExtensions/lfs
 	${RUNTIME_SRC_ROOT}/Classes/LuaExtensions/lpeg
-	${RUNTIME_SRC_ROOT}/Classes/reader/animation
-	${RUNTIME_SRC_ROOT}/Classes/reader/collider
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones
-	${RUNTIME_SRC_ROOT}/Classes/reader/flatbuffers
-	${RUNTIME_SRC_ROOT}/Classes/reader/lua-bindings
-	${RUNTIME_SRC_ROOT}/Classes/reader/ui
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/animation
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/armature
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/cocos2dx
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/core
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/events
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/factories
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/geom
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/model
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/parsers
-	${RUNTIME_SRC_ROOT}/Classes/reader/dragonbones/textures
-	${RUNTIME_SRC_ROOT}/Classes/reader/lua-bindings/dragonbones
-	${RUNTIME_SRC_ROOT}/Classes/reader/lua-bindings/reader
-	${RUNTIME_SRC_ROOT}/external/Cubism/include
 )
 
 if(WINDOWS)
