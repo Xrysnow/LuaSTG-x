@@ -10,7 +10,7 @@
 #include "Renderer.h"
 #include "InputManager.h"
 #include "WindowHelper.h"
-#include "XLive2D.h"
+#include "../Live2D/L2DFramework.h"
 #include "UtilLua.h"
 #include "../Classes/XLuaModuleRegistry.h"
 #include <memory>
@@ -390,7 +390,7 @@ void AppFrame::Shutdown()noexcept
 	LRES.unloadAllResourcePacks();
 	LINFO("unload all packs");
 
-	l2d::XLive2D::end();
+	l2d::Framework::end();
 
 	// note: must be called after ClearAllResource
 	audio::Engine::end();

@@ -211,8 +211,8 @@ end
 	return 0;
 }
 
-#include "lua_x_L2D_auto.hpp"
-LUA_REGISTER_MODULE(x_L2D, register_all_x_L2D);
+#include "lua_live2d_auto.hpp"
+LUA_REGISTER_MODULE(x_L2D, register_all_live2d);
 #include "../Audio/lua_Audio_auto.hpp"
 LUA_REGISTER_MODULE(x_Audio, register_all_x_Audio);
 #include "reader/lua-bindings/creator_reader_bindings.hpp"
