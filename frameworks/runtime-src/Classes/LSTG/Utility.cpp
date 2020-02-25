@@ -595,21 +595,36 @@ void lstg::getNodeTransform3D(const Vec2& anchorPointInPoints, float x, float y,
 
 Image* lstg::getTextureImage(Texture2D* texture, bool flipImage)
 {
-	// from RenderTexture::newImage
-	if (!texture)
-		return nullptr;
-	if (texture->getPixelFormat() != backend::PixelFormat::RGBA8888)
+	if (!texture || texture->getPixelFormat() != backend::PixelFormat::RGBA8888)
 		return nullptr;
 	const auto s = texture->getContentSizeInPixels();
-	const auto savedBufferWidth = (size_t)s.width;
-	const auto savedBufferHeight = (size_t)s.height;
-	auto image = new (std::nothrow) Image();
-	auto callback = [=](const unsigned char* data, std::size_t width, std::size_t height) {
-		image->initWithRawData(data, width * height * 4,
-			width, height, 8, texture->hasPremultipliedAlpha());
+	return getTextureImage(texture, 0, 0, s.width, s.height, flipImage);
+}
+
+Image* lstg::getTextureImage(Texture2D* texture,
+	size_t x, size_t y, size_t width, size_t height, bool flipImage)
+{
+	if (!texture
+		|| width * height == 0
+		|| texture->getPixelFormat() != backend::PixelFormat::RGBA8888)
+		return nullptr;
+	const auto image = new Image();
+	const auto bytePerPixel = texture->getBitsPerPixelForFormat() / 8;
+	auto callback = [=](const unsigned char* data, std::size_t w, std::size_t h) {
+		image->initWithRawData(data, w * h * bytePerPixel,
+			w, h, bytePerPixel * 8, texture->hasPremultipliedAlpha());
 	};
-	texture->getBackendTexture()->getBytes(0, 0, savedBufferWidth, savedBufferHeight, flipImage, callback);
+	texture->getBackendTexture()->getBytes(x, y, width, height, flipImage, callback);
 	return image;
+}
+
+Image* lstg::getSpriteImage(Sprite* sprite, bool flipImage)
+{
+	if (!sprite || sprite->getTexture()->getPixelFormat() != backend::PixelFormat::RGBA8888)
+		return nullptr;
+	const auto rect = sprite->getTextureRect();
+	return getTextureImage(sprite->getTexture(),
+		rect.origin.x, rect.origin.y, rect.size.width, rect.size.height, flipImage);
 }
 
 void lstg::deployThreadTask(size_t taskSize, size_t nSlice, const std::function<void(int, int, int)>& task)
