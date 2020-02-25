@@ -90,7 +90,7 @@ namespace lstg
 		float x, float y, float z, const cocos2d::Vec3& axis, float angle,
 		float hscale, float vscale, float zscale, cocos2d::Mat4* out);
 
-	cocos2d::Image* GetTextureImage(cocos2d::Texture2D* texture, bool flipImage);
+	cocos2d::Image* getTextureImage(cocos2d::Texture2D* texture, bool flipImage);
 
 	// (start, end, iThread)
 	void deployThreadTask(size_t taskSize, size_t nSlice, const std::function<void(int, int, int)>& task);

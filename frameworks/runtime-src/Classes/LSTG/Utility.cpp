@@ -593,7 +593,7 @@ void lstg::getNodeTransform3D(const Vec2& anchorPointInPoints, float x, float y,
 	}
 }
 
-Image* lstg::GetTextureImage(Texture2D* texture, bool flipImage)
+Image* lstg::getTextureImage(Texture2D* texture, bool flipImage)
 {
 	// from RenderTexture::newImage
 	if (!texture)
