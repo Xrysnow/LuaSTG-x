@@ -344,7 +344,10 @@ bool XRenderer::setViewport(double left, double right, double bottom, double top
 		pRenderer->setViewPort(x, y, w, h);
 		//commandBuffer->setViewport(x, y, w, h);
 	});
-	currentVP = { x,y,w,h };
+	currentVP.x = x;
+	currentVP.y = y;
+	currentVP.w = w;
+	currentVP.h = h;
 	return true;
 }
 

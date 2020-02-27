@@ -83,7 +83,7 @@ namespace lstg
 		struct to_native<T, typename std::enable_if<std::is_enum<T>::value>::type> {
 			static bool F(lua_State* L, int lo, T* outValue, const char* fName = "") {
 				CHECK_TO_NATIVE;
-				using type = std::underlying_type_t<T>;
+				using type = typename std::underlying_type<T>::type;
 				type value;
 				auto ok = to_native<type>::F(L, lo, &value, fName);
 				if (ok) *outValue = (T)value;
@@ -487,7 +487,7 @@ namespace lstg
 		struct to_lua<T, typename std::enable_if<std::is_enum<T>::value>::type> {
 			static void F(lua_State* L, T inValue) {
 				if (!L) return;
-				using type = std::underlying_type_t<T>;
+				using type = typename std::underlying_type<T>::type;
 				lua_pushnumber(L, (lua_Number)(type)inValue);
 			}
 		};

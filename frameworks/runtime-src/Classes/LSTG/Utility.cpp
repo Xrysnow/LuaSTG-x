@@ -728,11 +728,12 @@ RC4::RC4(const uint8_t* password, size_t len)
 
 Viewport util::Viewport(float left, float right, float bottom, float top)
 {
-	const auto x = std::min(left, right);
-	const auto y = std::min(bottom, top);
-	const auto w = std::max(left, right) - x;
-	const auto h = std::max(bottom, top) - y;
-	return { (int)x,(int)y,(unsigned int)w,(unsigned int)h };
+	::Viewport ret;
+	ret.x = std::min(left, right);
+	ret.y = std::min(bottom, top);
+	ret.w = std::max(left, right) - ret.x;
+	ret.h = std::max(bottom, top) - ret.y;
+	return ret;
 }
 
 #define MAP(K) { #K, backend::BlendOperation::K }
