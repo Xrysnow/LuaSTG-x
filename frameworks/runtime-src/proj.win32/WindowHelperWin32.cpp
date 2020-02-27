@@ -1,5 +1,4 @@
 ﻿#include "WindowHelperWin32.h"
-#include "SimulatorWin.h"
 #include <unordered_map>
 
 using namespace lstg;
@@ -133,7 +132,7 @@ void WindowHelperWin32::SetAbsoluteForeground()
 	AttachThreadInput(nTargetID, nForegroundID, FALSE);
 }
 
-int WindowHelperWin32::PopMessageBox(const wstring& text, const wstring& caption, bool moreButton)
+int WindowHelperWin32::PopMessageBox(const std::wstring& text, const std::wstring& caption, bool moreButton)
 {
 	auto flag = MB_ICONERROR;
 	if (moreButton)
@@ -293,12 +292,12 @@ uint32_t WindowHelperWin32::GetIMEInfo(F2DIMEINFO InfoType)
 
 void WindowHelperWin32::setCloseNotify(bool notify)
 {
-	SimulatorWin::setCloseNotify(notify);
+	//SimulatorWin::setCloseNotify(notify);
 }
 
-void WindowHelperWin32::setCloseNotifyInfo(const string& caption, const string& text)
+void WindowHelperWin32::setCloseNotifyInfo(const std::string& caption, const std::string& text)
 {
-	SimulatorWin::setCloseNotifyInfo(caption, text);
+	//SimulatorWin::setCloseNotifyInfo(caption, text);
 }
 
 typedef LONG(WINAPI * PFN_RtlVerifyVersionInfo)(OSVERSIONINFOEXW*, ULONG, ULONGLONG);
