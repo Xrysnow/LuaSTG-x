@@ -14,19 +14,22 @@ list(APPEND EXTERNAL_LIBS creator_reader)
 
 # ffmpeg
 
+set(CC_VIDEO_DEPEND_LIBS)
 add_subdirectory(${RUNTIME_SRC_ROOT}/external/ffmpeg)
-list(APPEND EXTERNAL_LIBS ext_ffmpeg)
+list(APPEND CC_VIDEO_DEPEND_LIBS ext_ffmpeg)
 if(MACOSX OR IOS)
 	include_directories(/System/Library/Frameworks)
 	find_library(COREMEDIA_LIBRARY CoreMedia)
 	find_library(SECURITY_LIBRARY Security)
 	find_library(VIDEOTOOLBOX_LIBRARY VideoToolbox)
-	list(APPEND EXTERNAL_LIBS ${COREMEDIA_LIBRARY})
-	list(APPEND EXTERNAL_LIBS ${SECURITY_LIBRARY})
-	list(APPEND EXTERNAL_LIBS ${VIDEOTOOLBOX_LIBRARY})
-
-	list(APPEND EXTERNAL_LIBS bz2)
+	list(APPEND CC_VIDEO_DEPEND_LIBS ${COREMEDIA_LIBRARY})
+	list(APPEND CC_VIDEO_DEPEND_LIBS ${SECURITY_LIBRARY})
+	list(APPEND CC_VIDEO_DEPEND_LIBS ${VIDEOTOOLBOX_LIBRARY})
+	list(APPEND CC_VIDEO_DEPEND_LIBS bz2)
 endif()
+
+add_subdirectory(${RUNTIME_SRC_ROOT}/Classes/Video)
+list(APPEND EXTERNAL_LIBS cc_video)
 
 # nfd
 

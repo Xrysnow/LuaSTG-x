@@ -140,12 +140,6 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/Math/XMath.h
 	${RUNTIME_SRC_ROOT}/Classes/Math/XRandom.h
 	${RUNTIME_SRC_ROOT}/Classes/Math/XSpline.h
-	${RUNTIME_SRC_ROOT}/Classes/Video/SpriteVideo.h
-	${RUNTIME_SRC_ROOT}/Classes/Video/VideoDecoder.h
-	${RUNTIME_SRC_ROOT}/Classes/Video/VideoHeader.h
-	${RUNTIME_SRC_ROOT}/Classes/Video/VideoMacros.h
-	${RUNTIME_SRC_ROOT}/Classes/Video/VideoStream.h
-	${RUNTIME_SRC_ROOT}/Classes/Video/VideoStruct.h
 )
 set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/Audio/ALSupport.cpp
@@ -274,8 +268,6 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/Math/XIntersect.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Math/XRandom.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Math/XSpline.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Video/SpriteVideo.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Video/VideoDecoder.cpp
 )
 
 # sources need to compile info, include dirs and source files
