@@ -15,7 +15,7 @@
 	url = https://github.com/Xrysnow/lstgx_Math.git
 [submodule "frameworks/runtime-src/Classes/Video"]
 	path = frameworks/runtime-src/Classes/Video
-	url = https://github.com/Xrysnow/lstgx_Video.git
+	url = https://github.com/Xrysnow/cocos2d-x-video.git
 [submodule "frameworks/runtime-src/Classes/reader"]
 	path = frameworks/runtime-src/Classes/reader
 	url = https://github.com/Xrysnow/creator_to_cocos2dx.git
