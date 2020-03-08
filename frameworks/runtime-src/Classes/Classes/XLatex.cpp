@@ -1,7 +1,7 @@
 ﻿#include "XLatex.h"
 #include "2d/CCFontFreeType.h"
 #include "../../external/cLaTeXMath/src/src/latex.h"
-#include "../fcyLib/fcyMisc/fcyStringHelper.h"
+#include "Utility.h"
 
 using namespace lstg;
 
@@ -102,7 +102,7 @@ public:
 	TexTextLayout(const wstring& src, const sptr<TexFont>& font)
 	: _font(font), _txt(src)
 	{
-		const auto txt = fcyStringHelper::WideCharToMultiByte_UTF8(src);
+		const auto txt = util::WideCharToMultiByte_UTF8(src);
 		_lb = cocos2d::Label::createWithTTF(_font->cfg, txt);
 		CC_SAFE_RETAIN(_lb);
 	}
@@ -251,7 +251,7 @@ public:
 
 	void drawText(const wstring& c, float x, float y) override
 	{
-		const auto txt = fcyStringHelper::WideCharToMultiByte_UTF8(c);
+		const auto txt = util::WideCharToMultiByte_UTF8(c);
 		if (_onDrawText)_onDrawText(txt, x, y, this);
 	}
 
@@ -339,7 +339,7 @@ bool Latex::_init(const std::string& str,
 	if (!drawNode)
 		return false;
 	root->addChild(drawNode);
-	const auto txt = fcyStringHelper::MultiByteToWideChar_UTF8(str);
+	const auto txt = util::MultiByteToWideChar_UTF8(str);
 	const TexGraphics2D::DrawTextCb cb = [&](const string& s, float x, float y, TexGraphics2D* g2)
 	{
 		auto f = (TexFont*)g2->getFont();

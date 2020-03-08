@@ -3,7 +3,7 @@
 #include "ResBase.h"
 #include "RenderMode.h"
 #include "ResSprite.h"
-#include "../fcyLib/fcyMisc/fcyRandom.h"
+#include "../Classes/RandomWELL512.h"
 
 namespace lstg {
 	// implement of HGE particle system
@@ -69,7 +69,7 @@ namespace lstg {
 		private:
 			ResParticle* _res;
 			ParticleInfo particleInfo;
-			fcyRandomWELL512 _rand;
+			RandomWELL512 _rand;
 
 			RenderMode* renderMode = RenderMode::Default;
 			Status status = Status::Alive;  // 状态
@@ -115,8 +115,8 @@ namespace lstg {
 			ResParticle* getResource()const noexcept { return _res; }
 			size_t getAliveCount()const noexcept { return numAlive; }
 
-			void setSeed(uint32_t seed)noexcept { _rand.SetSeed(seed); }
-			uint32_t getSeed()const noexcept { return _rand.GetRandSeed(); }
+			void setSeed(uint32_t seed)noexcept { _rand.setSeed(seed); }
+			uint32_t getSeed()const noexcept { return _rand.getSeed(); }
 			RenderMode* getRenderMode()const noexcept { return renderMode; }
 			void setRenderMode(RenderMode* m) noexcept;
 			bool isActive()const noexcept { return status == Status::Alive; }

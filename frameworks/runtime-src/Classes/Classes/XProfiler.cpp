@@ -87,7 +87,7 @@ void XProfiler::clearAll()
 
 void XProfiler::ProfileTimer::tic()
 {
-	sw.Reset();
+	sw.reset();
 	_toc = false;
 }
 
@@ -95,7 +95,7 @@ double XProfiler::ProfileTimer::toc()
 {
 	if (_toc)return 0.0;
 	_toc = true;
-	const auto dt = sw.GetElapsed();
+	const auto dt = sw.get();
 	if (que.isFull())
 		sum -= que.Queue(dt);
 	else
@@ -109,7 +109,7 @@ double XProfiler::ProfileTimer::toc()
 
 void XProfiler::ProfileTimer::clear()
 {
-	sw.Reset();
+	sw.reset();
 	sum = 0.0;
 	avg = 0.0;
 	min = 1e10;

@@ -5,7 +5,6 @@
 #include "AppFrame.h"
 #include "LogSystem.h"
 #include "ResourceMgr.h"
-#include "../fcyLib/fcyMisc/fcyStringHelper.h"
 
 using namespace std;
 using namespace cocos2d;
@@ -296,14 +295,13 @@ void ResFont::ReadHGEDefine(const string& data, unordered_map<char, GlyphInfo>& 
 	out.clear();
 	tex.clear();
 
-	vector<string> tLines;
-	fcyStringHelper::StringSplit(data, "\n", true, tLines);
+	vector<string> tLines = util::stringSplit(data, "\n", true);
 	for (auto& i : tLines)
 	{
-		i = fcyStringHelper::Trim(i);
+		i = util::stringTrim(i);
 	}
 
-	// 第一行必须是HGEFONT
+	// check header
 	if (tLines.size() <= 1 || tLines[0] != "[HGEFONT]")
 	{
 		XERROR("bad file format");
@@ -339,7 +337,7 @@ void ResFont::ReadHGEDefine(const string& data, unordered_map<char, GlyphInfo>& 
 				c = static_cast<char>(c_hex);
 			}
 
-			// 计算到f2d字体偏移量
+			// calculate offset
 			//TODO: CHECK
 			GlyphInfo tInfo = {
 				Rect(x, y, w, h),

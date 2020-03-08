@@ -1,8 +1,9 @@
 ﻿#include "Utility.h"
 #include "AppFrame.h"
 #include "LogSystem.h"
-#include "../fcyLib/fcyMisc/fcyStringHelper.h"
 #include "renderer/backend/Device.h"
+#include <locale>
+#include <codecvt>
 
 using namespace std;
 using namespace lstg;
@@ -89,7 +90,7 @@ string lstg::StringFormatV(const char* Format, va_list vaptr)noexcept
 					{
 						const wchar_t* p = va_arg(vaptr, wchar_t*);
 						if (p)
-							tRet.append(move(fcyStringHelper::WideCharToMultiByte_UTF8(p)));
+							tRet.append(move(util::WideCharToMultiByte_UTF8(p)));
 						else
 							tRet.append("<null>");
 					}
@@ -210,9 +211,9 @@ void lstg::pathUniform(string& path, bool forward_slash, bool lower, bool utf8_c
 	if (path[0] == '.' && (path[1] == '/' || path[1] == '\\'))path = path.substr(2);
 	if (utf8_convert)
 	{
-		auto s = fcyStringHelper::MultiByteToWideChar_UTF8(path);
+		auto s = util::MultiByteToWideChar_UTF8(path);
 		_pathUniform(s.begin(), s.end(), forward_slash, lower);
-		path = fcyStringHelper::WideCharToMultiByte_UTF8(s);
+		path = util::WideCharToMultiByte_UTF8(s);
 	}
 	else
 		_pathUniform(path.begin(), path.end(), forward_slash, lower);
@@ -223,9 +224,9 @@ void lstg::pathUniform(wstring& path, bool forward_slash, bool lower, bool utf8_
 	if (path[0] == L'.' && (path[1] == L'/' || path[1] == L'\\'))path = path.substr(2);
 	if (utf8_convert)
 	{
-		auto s = fcyStringHelper::WideCharToMultiByte_UTF8(path);
+		auto s = util::WideCharToMultiByte_UTF8(path);
 		_pathUniform(s.begin(), s.end(), forward_slash, lower);
-		path = fcyStringHelper::MultiByteToWideChar_UTF8(s);
+		path = util::MultiByteToWideChar_UTF8(s);
 	}
 	else
 		_pathUniform(path.begin(), path.end(), forward_slash, lower);
@@ -743,6 +744,80 @@ static std::unordered_map<std::string, backend::BlendOperation> BlendOperationMa
 	MAP(RESERVE_SUBTRACT)
 };
 #undef MAP
+
+vector<string> util::stringSplit(const string& str, const string& delimiter, bool trim)
+{
+	vector<string> ret;
+	ret.clear();
+
+	uint32_t last = 0;
+	auto pos = str.find(delimiter);
+	while (pos != string::npos)
+	{
+		auto tstr = str.substr(last, pos - last);
+		if (!(trim && tstr.empty()))
+			ret.push_back(tstr);
+
+		last = pos + (int32_t)delimiter.length();
+		pos = (int32_t)str.find(delimiter, last);
+	}
+	const auto tstr = str.substr(last, pos - last);
+	if (!(trim && tstr.empty()))
+		ret.push_back(tstr);
+
+	return ret;
+}
+
+string util::stringTrimLeft(const string &str)
+{
+	auto ret = str;
+	const auto p = find_if_not(ret.begin(), ret.end(), ::isspace);
+	ret.erase(ret.begin(), p);
+	return ret;
+}
+
+string util::stringTrimRight(const string &str)
+{
+	auto ret = str;
+	const auto p = find_if_not(ret.rbegin(), ret.rend(), ::isspace);
+	ret.erase(p.base(), ret.end());
+	return ret;
+}
+
+string util::stringTrim(const string &str)
+{
+	return stringTrimLeft(stringTrimRight(str));
+}
+
+wstring_convert<codecvt_utf8<wchar_t>> cv;
+
+wstring util::MultiByteToWideChar_UTF8(const string& str)
+{
+	wstring ret;
+	try
+	{
+		ret = cv.from_bytes(str);
+	}
+	catch (const range_error&)
+	{
+		ret = L"";
+	}
+	return ret;
+}
+
+string util::WideCharToMultiByte_UTF8(const wstring& str)
+{
+	string ret;
+	try
+	{
+		ret = cv.to_bytes(str);
+	}
+	catch (const range_error&)
+	{
+		ret = "";
+	}
+	return ret;
+}
 
 bool util::BlendOperationFromString(const std::string& str, backend::BlendOperation& val)
 {

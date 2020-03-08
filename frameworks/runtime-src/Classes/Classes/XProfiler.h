@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include <string>
 #include "../LSTG/CirularQueue.hpp"
-#include "../fcyLib/fcyMisc/fcyStopWatch.h"
+#include "XStopWatch.h"
+#include <string>
 
 namespace lstg
 {
@@ -27,7 +27,7 @@ namespace lstg
 
 		struct ProfileTimer
 		{
-			fcyStopWatch sw;
+			StopWatch sw;
 			CirularQueue<double, 60> que;
 			double sum = 0.0;
 			double avg = 0.0;

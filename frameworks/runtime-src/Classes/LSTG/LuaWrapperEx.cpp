@@ -8,10 +8,11 @@
 #else
 #define UTF8ToMB(s) s 
 #endif
-#include "../Video/SpriteVideo.h"
 #include "Renderer.h"
-#include "../fcyLib/fcyMisc/fcyStopWatch.h"
+#include "UtilLuaConversion.h"
 #include "../Classes/XLuaModuleRegistry.h"
+#include "../Classes/XStopWatch.h"
+#include "../Video/VideoPlayer.h"
 
 #ifdef MessageBox
 #undef MessageBox
@@ -24,20 +25,20 @@ using namespace lstg;
 
 LUA_REGISTER_MODULE_DEF(lstg_ex)
 {
-	static fcyStopWatch sw0;
-	static fcyStopWatch sw;
+	static StopWatch sw0;
+	static StopWatch sw;
 
 	struct WrapperImpl
 	{
 		static int QueryTimeMS(lua_State* L)noexcept
 		{
-			lua_pushnumber(L, sw0.GetElapsed() * 1000);
+			lua_pushnumber(L, sw0.get() * 1000);
 			return 1;
 		}
 		static int Tic(lua_State* L)noexcept
 		{
-			lua_pushnumber(L, sw.GetElapsed() * 1000);
-			sw.Reset();
+			lua_pushnumber(L, sw.get() * 1000);
+			sw.reset();
 			return 1;
 		}
 		static int SetFactor(lua_State* L)noexcept

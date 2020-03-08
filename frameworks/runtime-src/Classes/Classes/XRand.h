@@ -1,14 +1,14 @@
 ﻿#pragma once
-#include "../fcyLib/fcyMisc/fcyRandom.h"
 #include "cocos2d.h"
 #include "../Math/XRandom.h"
+#include "RandomWELL512.h"
 
 namespace lstg
 {
 	class Random : public cocos2d::Ref, public xmath::random::Random
 	{
 	private:
-		fcyRandomWELL512 random;
+		RandomWELL512 random;
 	public:
 		static Random* create();
 		static Random* create(uint32_t seed);

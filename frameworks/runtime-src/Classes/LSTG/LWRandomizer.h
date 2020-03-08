@@ -1,12 +1,12 @@
 ﻿#pragma once
 #include "Global.h"
-#include "../fcyLib/fcyMisc/fcyRandom.h"
+#include "../Classes/RandomWELL512.h"
 
 namespace lstg
 {
 	class RandomizerWrapper
 	{
 	public:
-		static fcyRandomWELL512* CreateAndPush(lua_State* L);
+		static RandomWELL512* CreateAndPush(lua_State* L);
 	};
 }

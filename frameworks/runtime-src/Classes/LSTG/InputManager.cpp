@@ -2,7 +2,7 @@
 #include "cocos2d.h"
 #include "LogSystem.h"
 #include "UtilLua.h"
-#include "../fcyLib/fcyMisc/fcyStringHelper.h"
+#include "Utility.h"
 
 using namespace std;
 using namespace lstg;
@@ -123,7 +123,7 @@ int InputManager::getLastChar(lua_State* L) noexcept
 		{
 			wchar_t tBuf[2] = {lastChar, 0};
 			lua_pushstring(L,
-				fcyStringHelper::WideCharToMultiByte_UTF8(tBuf).c_str());
+				util::WideCharToMultiByte_UTF8(tBuf).c_str());
 		}
 		catch (const bad_alloc&)
 		{

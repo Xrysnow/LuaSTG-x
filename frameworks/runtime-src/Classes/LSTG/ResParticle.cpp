@@ -2,13 +2,10 @@
 #include "AppFrame.h"
 #include "Utility.h"
 #include "Renderer.h"
-#include "../fcyLib/fcyMemPool.h"
 
 using namespace std;
 using namespace cocos2d;
 using namespace lstg;
-
-static fcyMemPool<sizeof(ResParticle::ParticlePool)> s_MemoryPool;
 
 Color4B ResParticle::ParticlePool::getColorStart() noexcept
 {
@@ -158,23 +155,23 @@ void ResParticle::ParticlePool::Update(float delta)
 
 			ParticleInstance& tInst = particlePool[numAlive++];
 			tInst.life = 0.0f;
-			tInst.terminalLife = _rand.GetRandFloat(pInfo.LifeMin, pInfo.LifeMax);
+			tInst.terminalLife = _rand.getRandFloat(pInfo.LifeMin, pInfo.LifeMax);
 			// magic numbers here
-			tInst.vecLocation = prevCenter + (center - prevCenter) * _rand.GetRandFloat(0.0f, 1.0f);
-			tInst.vecLocation.x += _rand.GetRandFloat(-2.0f, 2.0f);
-			tInst.vecLocation.y += _rand.GetRandFloat(-2.0f, 2.0f);
+			tInst.vecLocation = prevCenter + (center - prevCenter) * _rand.getRandFloat(0.0f, 1.0f);
+			tInst.vecLocation.x += _rand.getRandFloat(-2.0f, 2.0f);
+			tInst.vecLocation.y += _rand.getRandFloat(-2.0f, 2.0f);
 
 			const float ang = /* pInfo.fDirection */ (rotation - float(LPI_HALF)) - float(LPI_HALF) +
-				_rand.GetRandFloat(0, pInfo.Spread) - pInfo.Spread / 2.0f;
+				_rand.getRandFloat(0, pInfo.Spread) - pInfo.Spread / 2.0f;
 			tInst.vecVelocity.x = cos(ang);
 			tInst.vecVelocity.y = sin(ang);
-			tInst.vecVelocity *= _rand.GetRandFloat(pInfo.SpeedMin, pInfo.SpeedMax);
+			tInst.vecVelocity *= _rand.getRandFloat(pInfo.SpeedMin, pInfo.SpeedMax);
 
-			tInst.gravity = _rand.GetRandFloat(pInfo.GravityMin, pInfo.GravityMax);
-			tInst.radialAccel = _rand.GetRandFloat(pInfo.RadialAccelMin, pInfo.RadialAccelMax);
-			tInst.tangentialAccel = _rand.GetRandFloat(pInfo.TangentialAccelMin, pInfo.TangentialAccelMax);
+			tInst.gravity = _rand.getRandFloat(pInfo.GravityMin, pInfo.GravityMax);
+			tInst.radialAccel = _rand.getRandFloat(pInfo.RadialAccelMin, pInfo.RadialAccelMax);
+			tInst.tangentialAccel = _rand.getRandFloat(pInfo.TangentialAccelMin, pInfo.TangentialAccelMax);
 
-			tInst.size = _rand.GetRandFloat(
+			tInst.size = _rand.getRandFloat(
 				pInfo.SizeStart,
 				pInfo.SizeStart + (pInfo.SizeEnd - pInfo.SizeStart) * pInfo.SizeVar);
 			tInst.sizeDelta = (pInfo.SizeEnd - tInst.size) / tInst.terminalLife;
@@ -183,14 +180,14 @@ void ResParticle::ParticlePool::Update(float delta)
 			//	_rand.GetRandFloat(0, pInfo.SpinEnd) - pInfo.SpinEnd / 2.0f;
 			//tInst.spinDelta = pInfo.SpinVar;
 
-			tInst.spin = _rand.GetRandFloat(0, (pInfo.SpinEnd - pInfo.SpinStart)*pInfo.SpinVar) + pInfo.SpinStart;
+			tInst.spin = _rand.getRandFloat(0, (pInfo.SpinEnd - pInfo.SpinStart)*pInfo.SpinVar) + pInfo.SpinStart;
 			tInst.spinDelta = (pInfo.SpinEnd - tInst.spin) / tInst.terminalLife;
 
 			auto _var = pInfo.ColorVar;
 			for (int j = 0; j < 4; ++j)
 			{
 				if (j == 3)_var = pInfo.AlphaVar;
-				tInst.color[j] = _rand.GetRandFloat(
+				tInst.color[j] = _rand.getRandFloat(
 					pInfo.ColorStart[j],
 					pInfo.ColorStart[j] + (pInfo.ColorEnd[j] - pInfo.ColorStart[j])*_var);
 			}
@@ -251,8 +248,7 @@ ResParticle::ParticlePool::~ParticlePool()
 
 ResParticle::ParticlePool* ResParticle::AllocInstance()noexcept
 {
-	//FIXME: may throw bad_alloc
-	ParticlePool* pRet = new(s_MemoryPool.Alloc()) ParticlePool(this);
+	auto pRet = new ParticlePool(this);
 	pRet->setRenderMode(renderMode);
 	//pRet->setSeed(uint32_t(time(nullptr)));
 	return pRet;
@@ -260,9 +256,7 @@ ResParticle::ParticlePool* ResParticle::AllocInstance()noexcept
 
 void ResParticle::FreeInstance(ParticlePool* p)noexcept
 {
-	CC_ASSERT(p);
-	p->~ParticlePool();
-	s_MemoryPool.Free(p);
+	delete p;
 }
 
 std::unordered_map<std::string, std::string> ResParticle::getInfo() const

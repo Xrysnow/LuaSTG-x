@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Global.h"
-#include "../fcyLib/fcyMisc/fcyStopWatch.h"
+#include "../Classes/XStopWatch.h"
 
 namespace lstg
 {
@@ -22,7 +22,7 @@ namespace lstg
 	class TimerScope
 	{
 	private:
-		fcyStopWatch m_StopWatch;
+		StopWatch m_StopWatch;
 		float& m_Out;
 	public:
 		TimerScope(float& Out)
@@ -31,7 +31,7 @@ namespace lstg
 		}
 		~TimerScope()
 		{
-			m_Out = static_cast<float>(m_StopWatch.GetElapsed());
+			m_Out = static_cast<float>(m_StopWatch.get());
 		}
 	};
 
@@ -113,6 +113,13 @@ namespace lstg
 	namespace util
 	{
 		cocos2d::Viewport Viewport(float left, float right, float bottom, float top);
+
+		std::vector<std::string> stringSplit(const std::string& str, const std::string& delimiter, bool trim);
+		std::string stringTrimLeft(const std::string &str);
+		std::string stringTrimRight(const std::string &str);
+		std::string stringTrim(const std::string &str);
+		std::wstring MultiByteToWideChar_UTF8(const std::string& str);
+		std::string WideCharToMultiByte_UTF8(const std::wstring& str);
 
 		bool BlendOperationFromString(const std::string& str, cocos2d::backend::BlendOperation& val);
 		bool BlendFactorFromString(const std::string& str, cocos2d::backend::BlendFactor& val);

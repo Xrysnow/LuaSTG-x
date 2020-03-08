@@ -485,7 +485,7 @@ int AppFrame::run()
 	QueryPerformanceFrequency(&freq);
 	//uint32_t timer = 0;
 	//double pe_t1 = 0;
-	fcyStopWatch sw, sw2;
+	StopWatch sw, sw2;
 	LONGLONG sleep_skip = 0LL;
 	auto hdc = wglGetCurrentDC();
 

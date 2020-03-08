@@ -27,32 +27,32 @@ Random* Random::create(uint32_t seed)
 
 void Random::setSeed(uint32_t seed)
 {
-	random.SetSeed(seed);
+	random.setSeed(seed);
 }
 
 uint32_t Random::getSeed()
 {
-	return random.GetRandSeed();
+	return random.getSeed();
 }
 
 int32_t Random::randInt(int32_t a, int32_t b)
 {
-	return a + int32_t(random.GetRandUInt(uint32_t(b - a)));
+	return a + int32_t(random.getRandUInt(uint32_t(b - a)));
 }
 
 float Random::randFloat(float a, float b)
 {
-	return random.GetRandFloat(a, b);
+	return random.getRandFloat(a, b);
 }
 
 int32_t Random::randSign()
 {
-	return random.GetRandUInt(1) * 2 - 1;
+	return random.getRandUInt(1) * 2 - 1;
 }
 
 double Random::_rand()
 {
-	return random.GetRandFloat();
+	return random.getRandFloat();
 }
 
 Random::Random()

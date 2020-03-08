@@ -289,8 +289,8 @@ void GameObjectPool::test()
 	}
 	auto ret = new bool[M];
 	memset(ret, 0, M * sizeof(bool));
-	fcyStopWatch sw;
-	sw.Reset();
+	StopWatch sw;
+	sw.reset();
 
 	for (int j = 0; j < N; ++j)
 	{
@@ -300,18 +300,18 @@ void GameObjectPool::test()
 			ret[i] = obj[i]->bound && !(x[i] > l&&x[i]<r&&y[i]>b&&y[i] < t);
 		}
 	}
-	auto t1 = sw.GetElapsed();
-	sw.Reset();
+	auto t1 = sw.get();
+	sw.reset();
 
 	for (int j = 0; j < N; ++j)
 	{
 		boundCheck(l, r, b, t, ret);
 	}
-	auto t2 = sw.GetElapsed();
-	sw.Reset();
+	auto t2 = sw.get();
+	sw.reset();
 
-	auto t3 = sw.GetElapsed();
-	sw.Reset();
+	auto t3 = sw.get();
+	sw.reset();
 
 	cocos2d::log("-----\n  %f, %f, %f", t1, t2, t3);
 }
