@@ -10,7 +10,7 @@ LUA_REGISTER_MODULE(x_Buffer, register_all_x_Buffer);
 #include "lua_cc_fix.h"
 LUA_REGISTER_MODULE(cc_ui_fix, register_all_cocos2dx_fix);
 #include "lua_CCImage_manual.hpp"
-LUA_REGISTER_MODULE(cc_Image_ext, register_all_CCImage_ext);
+LUA_REGISTER_MODULE(cc_Image_ext, register_all_cc_ext);
 #include "lua_FileDialog_auto.hpp"
 LUA_REGISTER_MODULE(x_FileDialog, register_all_x_FileDialog);
 #include "lua_Latex_auto.hpp"

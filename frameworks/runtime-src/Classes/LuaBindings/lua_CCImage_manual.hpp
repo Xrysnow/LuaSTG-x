@@ -1,6 +1,5 @@
+#pragma once
 #include "base/ccConfig.h"
-#ifndef __CCImage_ext_h__
-#define __CCImage_ext_h__
 
 #ifdef __cplusplus
 extern "C" {
@@ -10,9 +9,5 @@ extern "C" {
 }
 #endif
 
-int register_all_CCImage_ext(lua_State* tolua_S);
+int register_all_cc_ext(lua_State* tolua_S);
 
-
-
-
-#endif // __CCImage_ext_h__

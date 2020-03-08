@@ -3,9 +3,10 @@
 #include "../Classes/XBuffer.h"
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
-#include "UtilLuaConversion.h"
+#include "../LSTG/UtilLuaConversion.h"
+#include "../LSTG/Utility.h"
 
-int lua_CCImage_ext_Image_initWithImageData(lua_State* tolua_S)
+int lua_cc_ext_Image_initWithImageData(lua_State* tolua_S)
 {
     int argc = 0;
     cocos2d::Image* cobj = nullptr;
@@ -13,10 +14,6 @@ int lua_CCImage_ext_Image_initWithImageData(lua_State* tolua_S)
 
 #if COCOS2D_DEBUG >= 1
     tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
     if (!tolua_isusertype(tolua_S,1,"cc.Image",0,&tolua_err)) goto tolua_lerror;
 #endif
 
@@ -25,7 +22,7 @@ int lua_CCImage_ext_Image_initWithImageData(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
     {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_CCImage_ext_Image_initWithImageData'", nullptr);
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cc_ext_Image_initWithImageData'", nullptr);
         return 0;
     }
 #endif
@@ -39,7 +36,7 @@ int lua_CCImage_ext_Image_initWithImageData(lua_State* tolua_S)
 		if(!arg0) ok = false;
         if(!ok)
         {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_CCImage_ext_Image_initWithImageData'", nullptr);
+            tolua_error(tolua_S,"invalid arguments in function 'lua_cc_ext_Image_initWithImageData'", nullptr);
             return 0;
         }
         bool ret = cobj->initWithImageData(arg0->data(), arg0->size());
@@ -51,12 +48,11 @@ int lua_CCImage_ext_Image_initWithImageData(lua_State* tolua_S)
 
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_CCImage_ext_Image_initWithImageData'.",&tolua_err);
-#endif
-
+    tolua_error(tolua_S,"#ferror in function 'lua_cc_ext_Image_initWithImageData'.",&tolua_err);
     return 0;
+#endif
 }
-int lua_CCImage_ext_Image_initWithRawData(lua_State* tolua_S)
+int lua_cc_ext_Image_initWithRawData(lua_State* tolua_S)
 {
     int argc = 0;
     cocos2d::Image* cobj = nullptr;
@@ -64,10 +60,6 @@ int lua_CCImage_ext_Image_initWithRawData(lua_State* tolua_S)
 
 #if COCOS2D_DEBUG >= 1
     tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
     if (!tolua_isusertype(tolua_S,1,"cc.Image",0,&tolua_err)) goto tolua_lerror;
 #endif
 
@@ -76,7 +68,7 @@ int lua_CCImage_ext_Image_initWithRawData(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
     {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_CCImage_ext_Image_initWithRawData'", nullptr);
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cc_ext_Image_initWithRawData'", nullptr);
         return 0;
     }
 #endif
@@ -99,7 +91,7 @@ int lua_CCImage_ext_Image_initWithRawData(lua_State* tolua_S)
         ok &= luaval_to_int32(tolua_S, 5,(int *)&arg3, "cc.Image:initWithRawData");
         if(!ok)
         {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_CCImage_ext_Image_initWithRawData'", nullptr);
+            tolua_error(tolua_S,"invalid arguments in function 'lua_cc_ext_Image_initWithRawData'", nullptr);
             return 0;
         }
         bool ret = cobj->initWithRawData(arg0->data(), arg0->size(), arg1, arg2, arg3);
@@ -125,7 +117,7 @@ int lua_CCImage_ext_Image_initWithRawData(lua_State* tolua_S)
         ok &= luaval_to_boolean(tolua_S, 6,&arg4, "cc.Image:initWithRawData");
         if(!ok)
         {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_CCImage_ext_Image_initWithRawData'", nullptr);
+            tolua_error(tolua_S,"invalid arguments in function 'lua_cc_ext_Image_initWithRawData'", nullptr);
             return 0;
         }
         bool ret = cobj->initWithRawData(arg0->data(), arg0->size(), arg1, arg2, arg3, arg4);
@@ -137,13 +129,13 @@ int lua_CCImage_ext_Image_initWithRawData(lua_State* tolua_S)
 
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_CCImage_ext_Image_initWithRawData'.",&tolua_err);
+    tolua_error(tolua_S,"#ferror in function 'lua_cc_ext_Image_initWithRawData'.",&tolua_err);
+    return 0;
 #endif
 
-    return 0;
 }
 
-int register_all_CCImage_ext(lua_State* tolua_S)
+int register_all_cc_ext(lua_State* tolua_S)
 {
 	if (nullptr == tolua_S)
         return 0;
@@ -151,8 +143,8 @@ int register_all_CCImage_ext(lua_State* tolua_S)
     lua_rawget(tolua_S, LUA_REGISTRYINDEX);
     if (lua_istable(tolua_S,-1))
     {
-        tolua_function(tolua_S,"initWithImageData",lua_CCImage_ext_Image_initWithImageData);
-        tolua_function(tolua_S,"initWithRawData",lua_CCImage_ext_Image_initWithRawData);
+        tolua_function(tolua_S,"initWithImageData", lua_cc_ext_Image_initWithImageData);
+        tolua_function(tolua_S,"initWithRawData", lua_cc_ext_Image_initWithRawData);
     }
     lua_pop(tolua_S, 1);
 	return 0;
