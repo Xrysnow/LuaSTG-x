@@ -211,10 +211,12 @@ end
 	return 0;
 }
 
-#include "lua_live2d_auto.hpp"
-LUA_REGISTER_MODULE(x_L2D, register_all_live2d);
+#include "../Live2D/lua_live2d_auto.hpp"
+LUA_REGISTER_MODULE(cc_l2d, register_all_live2d);
 #include "../Audio/lua_Audio_auto.hpp"
 LUA_REGISTER_MODULE(x_Audio, register_all_x_Audio);
+#include "../Video/lua_video_auto.hpp"
+LUA_REGISTER_MODULE(cc_video, register_all_cc_video);
 #include "reader/lua-bindings/creator_reader_bindings.hpp"
 LUA_REGISTER_MODULE(cc_creator_reader, register_creator_reader_module);
 extern "C" int luaopen_lfs(lua_State *L);
@@ -225,7 +227,7 @@ LUA_REGISTER_MODULE_DEF(lpeg) { luaopen_lpeg(L); lua_pop(L, 2); return 0; }
 #ifdef CC_PLATFORM_PC
 #include "../imgui/lua-bindings/imgui_lua.hpp"
 LUA_REGISTER_MODULE(imgui, luaopen_imgui);
-#endif // CC_PLATFORM_PC
+#endif
 
 #if defined(CC_PLATFORM_PC)
 #include "glfw3.h"
