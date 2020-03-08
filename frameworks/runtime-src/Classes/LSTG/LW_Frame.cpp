@@ -107,6 +107,30 @@ LUA_REGISTER_FUNC_DEF(lstg, FrameReset)
 	return 0;
 }
 
+LUA_REGISTER_FUNC_DEF(lstg, FrameEnd)
+{
+	LAPP.Shutdown();
+	return 0;
+}
+
+LUA_REGISTER_FUNC_DEF(lstg, GetPlatform)
+{
+#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
+	lua_pushstring(L, "windows");
+#elif CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+	lua_pushstring(L, "mac");
+#elif CC_TARGET_PLATFORM == CC_PLATFORM_LINUX
+	lua_pushstring(L, "linux");
+#elif CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+	lua_pushstring(L, "android");
+#elif CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+	lua_pushstring(L, "ios");
+#else
+	lua_pushstring(L, "others");
+#endif
+	return 1;
+}
+
 LUA_REGISTER_FUNC_DEF(lstg, SetOnWriteLog)
 {
 	const auto handler = toluafix_ref_function(L, 1, 0);
@@ -119,5 +143,14 @@ LUA_REGISTER_FUNC_DEF(lstg, SetOnWriteLog)
 		stack->executeFunctionByHandler(handler, 1);
 		stack->clean();
 	});
+	return 0;
+}
+
+#ifdef MessageBox
+#undef MessageBox
+#endif
+LUA_REGISTER_FUNC_DEF(lstg, MessageBox)
+{
+	cocos2d::ccMessageBox(luaL_checkstring(L, 1), luaL_checkstring(L, 2));
 	return 0;
 }
