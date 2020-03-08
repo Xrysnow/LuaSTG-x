@@ -5,7 +5,6 @@
 #include "UtilLua.h"
 #include "Renderer.h"
 #include "UtilLuaRes.h"
-#include "../fcyLib/fcyMisc/fcyStringHelper.h"
 #include "../Classes/XLuaModuleRegistry.h"
 
 using namespace std;
@@ -103,20 +102,7 @@ LUA_REGISTER_FUNC_DEF(lstg, CalcTextSize)
 	auto p = lua::toResFont(L, 1);
 	if (!p)
 		return error_find(L, 1);
-	auto text = luaL_checkstring(L, 2);
-	// TODO: ???
-	static wstring s_TempStringBuf;
-	string txt;
-	try
-	{
-		Utf8ToUtf16(text, s_TempStringBuf);
-		txt = fcyStringHelper::WideCharToMultiByte_UTF8(s_TempStringBuf);
-	}
-	catch (const bad_alloc&)
-	{
-		return luaL_error(L, "can't convert code, out of memory.");
-	}
-	auto size = p->calcSize(txt);
+	const auto size = p->calcSize(luaL_checkstring(L, 2));
 	lua_pushnumber(L, size.x * 0.5);
 	lua_pushnumber(L, size.y * 0.5);
 	return 2;

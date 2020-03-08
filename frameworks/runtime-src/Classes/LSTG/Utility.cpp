@@ -12,9 +12,9 @@ string lstg::StringFormat(const char* Format, ...)noexcept
 {
 	va_list vaptr;
 	va_start(vaptr, Format);
-	string tRet = StringFormatV(Format, vaptr);
+	auto ret = StringFormatV(Format, vaptr);
 	va_end(vaptr);
-	return tRet;
+	return ret;
 }
 
 string lstg::StringFormatV(const char* Format, va_list vaptr)noexcept

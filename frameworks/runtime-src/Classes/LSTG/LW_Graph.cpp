@@ -12,7 +12,6 @@
 using namespace std;
 using namespace lstg;
 using namespace cocos2d;
-using lua::_luaval_to_color4b;
 using lua::luaval_to_c4b;
 
 LUA_REGISTER_FUNC_DEF(lstg, BeginScene)

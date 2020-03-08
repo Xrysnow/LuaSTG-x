@@ -17,7 +17,6 @@
 #include <iostream>
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
-//#include "../../proj.win32/SimulatorWin.h"
 #include "../../proj.win32/WindowHelperWin32.h"
 extern "C"
 {
