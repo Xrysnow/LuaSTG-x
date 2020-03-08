@@ -35,8 +35,6 @@ namespace lstg
 		}
 	};
 
-	std::string StringFormat(const char* Format, ...)noexcept;
-
 	/** @brief string format, va_list\n
 	* @code
 	* bool     b; int32_t   c; unsigned int p;
@@ -44,6 +42,7 @@ namespace lstg
 	* int64_t ld; uint64_t lu; double lf;
 	* char*    s; wchar_t*  w; @endcode
 	*/
+	std::string StringFormat(const char* Format, ...)noexcept;
 	std::string StringFormatV(const char* Format, va_list vaptr)noexcept;
 
 	/** dump lua stack */
@@ -70,8 +69,8 @@ namespace lstg
 	std::string tostring(const cocos2d::V3F_C4B_T2F& v);
 	std::string tostring(const cocos2d::V3F_C4B_T2F_Quad& v);
 	std::string tostring(const cocos2d::Mat4& m);
-	std::string tostring(const cocos2d::TextHAlignment ha);
-	std::string tostring(const cocos2d::TextVAlignment va);
+	std::string tostring(cocos2d::TextHAlignment ha);
+	std::string tostring(cocos2d::TextVAlignment va);
 
 	void getNodeTransform(const cocos2d::Vec2& anchorPointInPoints,
 		float x, float y, float rot, float hscale, float vscale, float z, cocos2d::Mat4* out);
