@@ -72,9 +72,6 @@ bool XRenderer::init()
 		return false;
 	auto p = getInstance();
 	p->pRenderer = director->getRenderer();
-	// note: Director::setClearColor has priority
-	//p->pRenderer->setClearColor(Color4F(0, 0, 0, 0));
-	director->setClearColor(Color4F(0, 0, 0, 0));
 	p->bRenderStarted = false;
 	// note: set this
 	Image::setPNGPremultipliedAlphaEnabled(false);
