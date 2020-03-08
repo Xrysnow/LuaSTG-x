@@ -147,3 +147,18 @@ LUA_REGISTER_FUNC_DEF(lstg, GetFrameBuffer)
 	object_to_luaval<cocos2d::RenderTexture>(L, "cc.RenderTexture", p);
 	return 1;
 }
+
+static set<int> MSAALevels = { 0,2,4,8,16 };
+LUA_REGISTER_FUNC_DEF(lstg, SetMSAALevel)
+{
+	const auto level = luaL_checkinteger(L, 1);
+	bool ok = false;
+	if (MSAALevels.find(level) != MSAALevels.end())
+	{
+		ok = true;
+		GLContextAttrs glContextAttrs = { 8, 8, 8, 8, 24, 8, level };
+		GLView::setGLContextAttrs(glContextAttrs);
+	}
+	lua_pushboolean(L, ok);
+	return 1;
+}
