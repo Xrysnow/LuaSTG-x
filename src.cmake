@@ -28,6 +28,7 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/Classes/ControllerHelper.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/LabelPool.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/MemPoolManager.h
+	${RUNTIME_SRC_ROOT}/Classes/Classes/RandomWELL512.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/WindowHelper.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XBinaryHelper.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XBuffer.h
@@ -40,15 +41,10 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XProfiler.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XRand.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XRefAdapter.h
+	${RUNTIME_SRC_ROOT}/Classes/Classes/XStopWatch.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XStream.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XTriangles.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XTrianglesCommand.h
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMemPool.h
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc/fcyHash.h
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc/fcyRandom.h
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc/fcyStopWatch.h
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc/fcyStringHelper.h
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyParser/fcyPathParser.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/CirularQueue.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/Dictionary.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ObjectPool.hpp
@@ -163,6 +159,7 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/Classes/ControllerHelper.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/LabelPool.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/MemPoolManager.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Classes/RandomWELL512.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/WindowHelper.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XBinaryHelper.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XBuffer.cpp
@@ -175,14 +172,10 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XProfiler.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XRand.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XRefAdapter.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Classes/XStopWatch.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XStream.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XTriangles.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XTrianglesCommand.cpp
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc/fcyHash.cpp
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc/fcyRandom.cpp
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc/fcyStopWatch.cpp
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc/fcyStringHelper.cpp
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyParser/fcyPathParser.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/AppFrame.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/CollisionDetect.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ComponentData.cpp
@@ -274,19 +267,13 @@ set(GAME_SOURCE
 set(GAME_INCLUDE
 	${RUNTIME_SRC_ROOT}/Classes/Audio
 	${RUNTIME_SRC_ROOT}/Classes/Classes
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib
+	${RUNTIME_SRC_ROOT}/Classes/imgui
 	${RUNTIME_SRC_ROOT}/Classes/Live2D
 	${RUNTIME_SRC_ROOT}/Classes/LSTG
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings
-	${RUNTIME_SRC_ROOT}/Classes/LuaExtensions
 	${RUNTIME_SRC_ROOT}/Classes/Math
 	${RUNTIME_SRC_ROOT}/Classes/reader
 	${RUNTIME_SRC_ROOT}/Classes/Video
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyMisc
-	${RUNTIME_SRC_ROOT}/Classes/fcyLib/fcyParser
-	${RUNTIME_SRC_ROOT}/Classes/imgui
-	${RUNTIME_SRC_ROOT}/Classes/LuaExtensions/lfs
-	${RUNTIME_SRC_ROOT}/Classes/LuaExtensions/lpeg
 )
 
 if(WINDOWS)
