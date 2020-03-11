@@ -61,16 +61,17 @@ LUA_REGISTER_FUNC_DEF(lstg, Print)
 
 LUA_REGISTER_FUNC_DEF(lstg, DoFile)
 {
-	LAPP.loadScript(luaL_checkstring(L, 1));
+	size_t size;
+	const auto s = luaL_checklstring(L, 1, &size);
+	LAPP.loadScript({ s,size });
 	return 0;
 }
 
-LUA_REGISTER_FUNC_DEF(lstg, ShowSplashWindow)
+LUA_REGISTER_FUNC_DEF(lstg, Snapshot)
 {
-	if (lua_gettop(L) == 0)
-		LAPP.ShowSplashWindow();
-	else
-		LAPP.ShowSplashWindow(luaL_checkstring(L, 1));
+	size_t size;
+	const auto s = luaL_checklstring(L, 1, &size);
+	LAPP.snapShot({ s,size });
 	return 0;
 }
 
@@ -91,7 +92,7 @@ LUA_REGISTER_FUNC_DEF(lstg, GetThreadPoolSize)
 
 LUA_REGISTER_FUNC_DEF(lstg, FrameInit)
 {
-	if (!LAPP.Init())
+	if (!LAPP.frameInit())
 	{
 		return luaL_error(L, "FrameInit failed");
 	}
@@ -100,7 +101,7 @@ LUA_REGISTER_FUNC_DEF(lstg, FrameInit)
 
 LUA_REGISTER_FUNC_DEF(lstg, FrameReset)
 {
-	if (!LAPP.Reset())
+	if (!LAPP.frameReset())
 	{
 		return luaL_error(L, "FrameReset failed");
 	}
@@ -109,7 +110,7 @@ LUA_REGISTER_FUNC_DEF(lstg, FrameReset)
 
 LUA_REGISTER_FUNC_DEF(lstg, FrameEnd)
 {
-	LAPP.Shutdown();
+	LAPP.frameShutdown();
 	return 0;
 }
 
