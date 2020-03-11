@@ -2,17 +2,17 @@
 #include "Global.h"
 #include "scripting/lua-bindings/manual/CCLuaEngine.h"
 #include "scripting/lua-bindings/manual/lua_module_register.h"
-#include "XFileUtils.h"
-#include "Utility.h"
-#include "LuaWrapper.h"
-#include "../Audio/AudioEngine.h"
 #include "../Classes/XProfiler.h"
+#include "../Classes/XLuaModuleRegistry.h"
+#include "../Audio/AudioEngine.h"
+#include "../Live2D/L2DFramework.h"
+#include "LuaWrapper.h"
+#include "XFileUtils.h"
 #include "Renderer.h"
 #include "InputManager.h"
 #include "WindowHelper.h"
-#include "../Live2D/L2DFramework.h"
+#include "Utility.h"
 #include "UtilLua.h"
-#include "../Classes/XLuaModuleRegistry.h"
 #include <memory>
 #include <iostream>
 
@@ -27,13 +27,6 @@ extern "C"
 	// https://community.amd.com/thread/169965
 	_declspec(dllexport) DWORD AmdPowerXpressRequestHighPerformance = 1;
 }
-#endif
-
-#ifdef max
-#undef max
-#endif
-#ifdef min
-#undef min
 #endif
 
 #ifdef LERROR
@@ -54,6 +47,7 @@ using namespace lstg;
 using namespace cocos2d;
 
 AppFrame* AppFrame::sharedInstance = nullptr;
+std::vector<std::string> AppFrame::cmdLineArgs;
 const string AppFrame::PF_Schedule = "AppFrame::PF_Schedule";
 const string AppFrame::PF_Visit = "AppFrame::PF_Visit";
 const string AppFrame::PF_Render = "AppFrame::PF_Render";
@@ -65,8 +59,6 @@ AppFrame* AppFrame::getInstance()
 	if (sharedInstance == nullptr)
 		sharedInstance = new AppFrame();
 	return sharedInstance;
-	//static AppFrame s_Instance;
-	//return &s_Instance;
 }
 
 void AppFrame::destroyInstance()
@@ -75,10 +67,15 @@ void AppFrame::destroyInstance()
 		CC_SAFE_DELETE(sharedInstance);
 }
 
+void AppFrame::setCmdLineArgs(const std::vector<std::string>& args)
+{
+	cmdLineArgs = args;
+}
+
 void AppFrame::initGLContextAttrs()
 {
 	// set OpenGL context attributes: red,green,blue,alpha,depth,stencil,msaa
-	GLContextAttrs glContextAttrs = { 8, 8, 8, 8, 24, 8, 0 };//TODO: AALevel
+	GLContextAttrs glContextAttrs = { 8, 8, 8, 8, 24, 8, 0 };
 	GLView::setGLContextAttrs(glContextAttrs);
 }
 // if you want to use the package manager to install more packages, 
@@ -113,10 +110,21 @@ bool AppFrame::applicationDidFinishLaunching()
 	LuaModuleRegistry::registerFunctions(L);
 	register_all_packages();
 	stack->setXXTEAKeyAndSign("2dxLua", strlen("2dxLua"), "XXTEA", strlen("XXTEA"));
+	{
+		lua_newtable(L);
+		int i = 1;
+		for (auto& arg : cmdLineArgs)
+		{
+			lua_pushlstring(L, arg.c_str(), arg.size());
+			lua_rawseti(L, -2, i);
+			++i;
+		}
+		lua_setglobal(L, "_ARGS");
+	}
 
 	InitGameObjectPropertyHash();
 	CC_SAFE_DELETE(threadPool);
-	// note: on android, this is the number of currently activated cores
+	// note: on android, this is usually the number of current activated cores
 	const int nThr = std::thread::hardware_concurrency();
 	threadPool = new ThreadPool(std::max(1, std::min(nThr - 1, 3)));
 	if (nThr > 0)
@@ -196,22 +204,9 @@ AppFrame::~AppFrame()
 {
 	if (status != Status::NotInitialized && status != Status::Destroyed)
 	{
-		Shutdown();
+		frameShutdown();
 	}
 	CC_SAFE_DELETE(threadPool);
-}
-
-void AppFrame::ShowSplashWindow(const char* imgPath)noexcept
-{
-	if (status == Status::Initializing)
-	{
-#ifdef CC_PLATFORM_PC
-		//TODO:
-#endif
-		optSplashWindow = true;
-	}
-	else
-		LWARNING("ShowSplashWindow: can't load at this moment");
 }
 
 void AppFrame::setFPS(uint32_t v) noexcept
@@ -222,11 +217,10 @@ void AppFrame::setFPS(uint32_t v) noexcept
 
 double AppFrame::getFPS() noexcept
 {
-	// TODO: Smooth
 	return Director::getInstance()->getFrameRate();
 }
 
-void AppFrame::loadScript(const char* path)noexcept
+void AppFrame::loadScript(const std::string& path)noexcept
 {
 	string err;
 	auto data = LRES.getBufferFromFile(path);
@@ -248,9 +242,9 @@ void AppFrame::loadScript(const char* path)noexcept
 	}
 }
 
-void AppFrame::snapShot(const char* path)noexcept
+void AppFrame::snapShot(const std::string& path)noexcept
 {
-	utils::captureScreen(nullptr, path);//TODO: CHECK
+	utils::captureScreen(nullptr, path);
 }
 
 ThreadPool* AppFrame::getThreadPool() noexcept
@@ -260,7 +254,7 @@ ThreadPool* AppFrame::getThreadPool() noexcept
 	return threadPool;
 }
 
-bool AppFrame::Init()noexcept
+bool AppFrame::frameInit()noexcept
 {
 	if (status != Status::NotInitialized)
 	{
@@ -332,7 +326,7 @@ bool AppFrame::Init()noexcept
 	// EVENT_RESET will be sent in Director::end.
 	auto listener = EventListenerCustom::create(Director::EVENT_RESET, [this](EventCustom* event)
 	{
-		Shutdown();
+		frameShutdown();
 	});
 	e->addEventListenerWithFixedPriority(listener, 1);
 
@@ -373,7 +367,7 @@ bool AppFrame::Init()noexcept
 	return true;
 }
 
-void AppFrame::Shutdown()noexcept
+void AppFrame::frameShutdown()noexcept
 {
 	if (status == Status::NotInitialized || status == Status::Destroyed)
 		return;
@@ -400,7 +394,7 @@ void AppFrame::Shutdown()noexcept
 	LINFO("cleared successfully");
 }
 
-bool AppFrame::Reset()noexcept
+bool AppFrame::frameReset()noexcept
 {
 	status = Status::Initializing;
 
