@@ -27,7 +27,6 @@
 
 USING_NS_CC;
 
-// uncomment below line, open debug console
 #define USE_WIN32_CONSOLE
 
 int WINAPI _tWinMain(HINSTANCE hInstance,
@@ -45,8 +44,16 @@ int WINAPI _tWinMain(HINSTANCE hInstance,
     freopen("CONOUT$", "w", stderr);
 #endif
 
-    // create the application instance
-    //AppDelegate app;
+	std::vector<std::string> args;
+	for (int i = 0; i < __argc; ++i)
+	{
+		size_t len = wcslen(__wargv[i]);
+		char* buf = (char*)malloc(len);
+		wcstombs(buf, __wargv[i], len);
+		args.emplace_back(buf, len);
+		free(buf);
+	}
+	lstg::AppFrame::setCmdLineArgs(args);
     int ret = lstg::AppFrame::getInstance()->run();
 	lstg::AppFrame::destroyInstance();
 

@@ -175,7 +175,7 @@ BEGIN
             VALUE "FileDescription", "LuaSTG-x"
             VALUE "FileVersion", "0.0.0.1"
             VALUE "InternalName", "LuaSTG-x"
-            VALUE "LegalCopyright", "Copyright (C) 2018 Xrysnow. All rights reserved."
+            VALUE "LegalCopyright", "Copyright (C) 2018-2020 Xrysnow. All rights reserved."
             VALUE "OriginalFilename", "LuaSTG-x.exe"
             VALUE "ProductName", "LuaSTG-x"
             VALUE "ProductVersion", "0.0.0.1"
