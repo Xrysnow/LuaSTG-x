@@ -22,19 +22,20 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "../Classes/AppDelegate.h"
 #include "cocos2d.h"
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
+#include "AppFrame.h"
+#include <vector>
 #include <string>
 
 USING_NS_CC;
 
 int main(int argc, char **argv)
 {
-    // create the application instance
-    AppDelegate app;
-    return Application::getInstance()->run();
+	std::vector<std::string> args;
+	for (int i = 0; i < argc; ++i)
+		args.emplace_back(argv[i]);
+	lstg::AppFrame::setCmdLineArgs(args);
+	int ret = lstg::AppFrame::getInstance()->run();
+	lstg::AppFrame::destroyInstance();
+	return ret;
 }
