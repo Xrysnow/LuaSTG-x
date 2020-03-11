@@ -17,6 +17,10 @@ LUA_REGISTER_FUNC_DEF(lstg, GetnObj)
 	lua_pushinteger(L, (lua_Integer)LPOOL.GetObjectCount());
 	return 1;
 }
+LUA_REGISTER_FUNC_DEF(lstg, ObjTable)
+{
+	return LPOOL.GetObjectTable(L);
+}
 LUA_REGISTER_FUNC_DEF(lstg, ObjFrame)
 {
 	LPOOL.DoFrame();
