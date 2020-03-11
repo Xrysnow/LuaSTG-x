@@ -1327,7 +1327,7 @@ int GameObjectManager::GetAttr(lua_State* L)noexcept
 		else
 			lua_pushnil(L);
 		break;
-	case GameObjectProperty::FX:
+	case GameObjectProperty::RENDERMODE:
 		if (isExtProperty(p))
 		{
 			const auto dat = p->cm->getDataBlend();
@@ -1408,18 +1408,6 @@ int GameObjectManager::GetAttr(lua_State* L)noexcept
 		else
 			lua_pushnil(L);
 		break;
-	//case GameObjectProperty::SHADER:
-	//	if (isExtProperty(p))
-	//	{
-	//		const auto dat = p->cm->getDataBlend();
-	//		if (dat)
-	//			object_to_luaval(L, "lstg.RenderMode", dat->renderMode);
-	//		else
-	//			lua_pushnil(L);
-	//	}
-	//	else
-	//		lua_pushnil(L);
-	//	break;
 
 #define GET_3D_VALUE(_P) if (isExtProperty3D(p))\
 		lua_pushnumber(L, cm->getDataTrasform()->_P);\
@@ -1607,13 +1595,13 @@ int GameObjectManager::SetAttr(lua_State* L)noexcept
 		else
 			lua_rawset(L, 1);
 		break;
-	case GameObjectProperty::FX:
+	case GameObjectProperty::RENDERMODE:
 		if (isExtProperty(p))
 		{
 			RenderMode* v = nullptr;
 			lua::luaval_to_RenderMode(L, 3, &v);
 			if (!v)
-				return error_prop(L, "fx");
+				return error_prop(L, "rm");
 			const auto blend = p->cm->getOrCreateBlend();
 			blend->renderMode = v;
 		}
@@ -1693,34 +1681,6 @@ int GameObjectManager::SetAttr(lua_State* L)noexcept
 		else
 			lua_rawset(L, 1);
 		break;
-	//case GameObjectProperty::SHADER:
-	//	if (isExtProperty(p))
-	//	{
-	//		// 1.string 2.ResFX 3.ProgramState 4.nil
-	//		const auto type = lua_type(L, 3);
-	//		backend::ProgramState* state = nullptr;
-	//		if (type == LUA_TSTRING)
-	//		{
-	//		}
-	//		else if (type == LUA_TUSERDATA)
-	//		{
-	//			do
-	//			{
-	//				const auto fx = lua::tousertype<ResFX>(L, 3, "lstg.ResFX");
-	//				if (fx)
-	//					state = fx->getProgramState();
-	//				if (state) break;
-	//				state = lua::tousertype<backend::ProgramState>(L, 3, "ccb.ProgramState");
-	//			} while (false);
-	//		}
-	//		if (type == LUA_TNIL)
-	//			p->cm->setProgramStateCopy(nullptr);
-	//		else if (state)
-	//			p->cm->setProgramStateCopy(state->clone());
-	//	}
-	//	else
-	//		lua_rawset(L, 1);
-	//	break;
 
 #define SET_3D_VALUE(_P) if (isExtProperty3D(p))\
 		cm->getDataTrasform()->_P = luaL_checknumber(L, 3);\

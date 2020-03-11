@@ -41,7 +41,7 @@ static unordered_map<string, GameObjectProperty> prop_map = {
 	{ "img",	GameObjectProperty::IMG		},
 	{ "ani",	GameObjectProperty::ANI		},
 
-	{ "fx",		GameObjectProperty::FX		},
+	{ "rm",		GameObjectProperty::RENDERMODE},
 	{ "color",	GameObjectProperty::COLOR	},
 	{ "res",	GameObjectProperty::RES		},
 	{ "A",		GameObjectProperty::_A		},
@@ -49,7 +49,6 @@ static unordered_map<string, GameObjectProperty> prop_map = {
 	{ "G",		GameObjectProperty::_G		},
 	{ "B",		GameObjectProperty::_B		},
 	{ "light",	GameObjectProperty::LIGHT	},
-	//{ "shader",	GameObjectProperty::SHADER	},
 
 	{ "z",		GameObjectProperty::Z		},
 	{ "dz",		GameObjectProperty::DZ		},
@@ -64,7 +63,7 @@ void lstg::InitGameObjectPropertyHash()
 {
 	prop_hash_map.clear();
 	const auto L = cocos2d::LuaEngine::getInstance()->getLuaStack()->getLuaState();
-	for (auto it : prop_map)
+	for (auto& it : prop_map)
 	{
 		lua_pushstring(L, it.first.c_str());
 		const auto hash = ((uint32_t*)lua_tolstring(L, -1, nullptr))[HASH_OFFSET];

@@ -32,7 +32,7 @@ namespace lstg
 		IMG = 24,
 		ANI = 25,
 
-		FX = 26,
+		RENDERMODE = 26,
 		COLOR = 27,
 		RES = 28,
 		_A = 29,
@@ -40,7 +40,6 @@ namespace lstg
 		_G = 31,
 		_B = 32,
 		LIGHT = 33,
-		//SHADER = 34,
 
 		Z = 35,
 		DZ = 36,
