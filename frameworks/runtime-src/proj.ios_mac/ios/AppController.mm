@@ -26,7 +26,7 @@
 
 #import "AppController.h"
 #import "cocos2d.h"
-#import "LSTG/AppFrame.h"
+#import "AppFrame.h"
 #import "RootViewController.h"
 
 @implementation AppController
@@ -36,12 +36,9 @@
 #pragma mark -
 #pragma mark Application lifecycle
 
-// cocos2d application instance
-static AppDelegate s_sharedApplication;
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-    cocos2d::Application *app = &LAPP;
+    lstg::AppFrame *app = lstg::AppFrame::getInstance();
     
     // Initialize the GLView attributes
     app->initGLContextAttrs();
@@ -72,6 +69,12 @@ static AppDelegate s_sharedApplication;
     [window makeKeyAndVisible];
 
     [[UIApplication sharedApplication] setStatusBarHidden:true];
+
+    //Launching the app with the arguments -NSAllowsDefaultLineBreakStrategy NO to force back to the old behavior.
+    if ( [[UIDevice currentDevice].systemVersion floatValue] >= 13.0f)
+    {
+        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"NSAllowsDefaultLineBreakStrategy"];
+    }
     
     // IMPORTANT: Setting the GLView should be done after creating the RootViewController
     cocos2d::GLView *glview = cocos2d::GLViewImpl::createWithEAGLView((__bridge void *)_viewController.view);
@@ -80,6 +83,7 @@ static AppDelegate s_sharedApplication;
     //run the cocos2d-x game scene
     app->run();
 
+    lstg::AppFrame::destroyInstance();
     return YES;
 }
 
