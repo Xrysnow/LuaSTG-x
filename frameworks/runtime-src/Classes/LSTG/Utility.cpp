@@ -628,6 +628,41 @@ Image* lstg::getSpriteImage(Sprite* sprite, bool flipImage)
 		rect.origin.x, rect.origin.y, rect.size.width, rect.size.height, flipImage);
 }
 
+#define NANOSVG_IMPLEMENTATION
+#include "../../external/nanosvg/src/nanosvg.h"
+#define NANOSVGRAST_IMPLEMENTATION
+#include "../../external/nanosvg/src/nanosvgrast.h"
+bool lstg::initImageWithSVG(Image* image, const std::string& path,
+	float scale, const std::string& units, float dpi)
+{
+	if (!image)
+		return false;
+	bool ok = false;
+	NSVGimage* img = nullptr;
+	NSVGrasterizer* rast = nullptr;
+	do
+	{
+		const auto data = FileUtils::getInstance()->getDataFromFile(path);
+		if (data.isNull()) break;
+		img = nsvgParse((char*)data.getBytes(), units.c_str(), dpi);
+		if (!img) break;
+		rast = nsvgCreateRasterizer();
+		if(!rast) break;
+		const auto w = (int)(img->width * scale);
+		const auto h = (int)(img->height * scale);
+		const auto byteSize = w * h * 4;
+		auto buffer = new (nothrow) uint8_t[byteSize];
+		if (!buffer) break;
+		nsvgRasterize(rast, img, 0, 0, scale, buffer, w, h, w * 4);
+		ok = image->initWithRawData(buffer, byteSize, w, h, 32, false);
+		delete[] buffer;
+	}
+	while (false);
+	nsvgDeleteRasterizer(rast);
+	nsvgDelete(img);
+	return ok;
+}
+
 void lstg::deployThreadTask(size_t taskSize, size_t nSlice, const std::function<void(int, int, int)>& task)
 {
 	const auto nThr = nSlice;
