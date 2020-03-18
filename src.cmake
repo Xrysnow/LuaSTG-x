@@ -110,8 +110,8 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Buffer_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_controller_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_controller_manual.hpp
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_ext.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_fix.h
-	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_CCImage_manual.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_FileDialog_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Latex_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_LogSystem_auto.hpp
@@ -237,8 +237,8 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Buffer_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_controller_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_controller_manual.cpp
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_ext.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_cc_fix.cpp
-	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_CCImage_manual.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_FileDialog_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Latex_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_LogSystem_auto.cpp

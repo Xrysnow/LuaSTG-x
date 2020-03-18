@@ -1,4 +1,4 @@
-#include "lua_CCImage_manual.hpp"
+#include "lua_cc_ext.hpp"
 #include "platform/CCImage.h"
 #include "../Classes/XBuffer.h"
 #include "scripting/lua-bindings/manual/tolua_fix.h"
