@@ -360,7 +360,7 @@ bool lua::luaval_to_UniformLocation(lua_State* L, int lo, backend::UniformLocati
 	if (!luaval_field_to_native(L, lo, "location", &loc, funcName) ||
 		!luaval_field_to_native(L, lo, "shaderStage", &stage, funcName))
 		return false;
-	for (auto i = 0u; i < std::min(2u, loc.size()); ++i)
+	for (auto i = 0u; i < std::min((size_t)2, loc.size()); ++i)
 		outValue->location[i] = loc.at(i);
 	outValue->shaderStage = stage;
 	return true;
