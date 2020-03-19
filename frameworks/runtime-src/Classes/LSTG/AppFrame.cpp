@@ -3,6 +3,7 @@
 #include "../Classes/XProfiler.h"
 #include "../Classes/XLuaModuleRegistry.h"
 #include "../Audio/AudioEngine.h"
+#include "../Video/VideoCommon.h"
 #include "../Live2D/L2DFramework.h"
 #include "LuaWrapper.h"
 #include "XFileUtils.h"
@@ -292,6 +293,9 @@ bool AppFrame::frameInit()noexcept
 
 	// configuration info
 	//LINFO("Cocos2dx Configuration Info:%s", Configuration::getInstance()->getInfo().c_str());
+
+	audio::setLoggingFunction([](const std::string& s) { LLOGGER.writeLine(s); });
+	video::setLoggingFunction([](const std::string& s) { LLOGGER.writeLine(s); });
 
 	// audio engine
 	if (!audio::Engine::init())
