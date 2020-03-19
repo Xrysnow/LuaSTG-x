@@ -1,28 +1,5 @@
 # sources, headers
 set(GAME_HEADER
-	${RUNTIME_SRC_ROOT}/Classes/Audio/lua_Audio_auto.hpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/ALHeader.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/ALSupport.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoder.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoderFlac.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoderMp3.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoderVorbis.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoderWav.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioEffect.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioEngine.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioFilter.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioMacros.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioPool.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioRecordingDevice.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioSoundData.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioSource.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioStream.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/Common.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/Dither.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/dr_flac.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/dr_mp3.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/IMA4Util.h
-	${RUNTIME_SRC_ROOT}/Classes/Audio/RiffUtils.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/ArrayObjectPool.hpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XThreadPool.hpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/ControllerHelper.h
@@ -74,12 +51,10 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/InputManager.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LogSystem.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LuaWrapper.h
-	${RUNTIME_SRC_ROOT}/Classes/LSTG/LuaWrapperEx.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LWBuiltInFunction.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LWColor.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LWProfiler.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LWRandomizer.h
-	${RUNTIME_SRC_ROOT}/Classes/LSTG/LW_Audio.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LW_Frame.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LW_Graph.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LW_Input.h
@@ -99,7 +74,6 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ResRenderTarget.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ResSprite.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ResTexture.h
-	${RUNTIME_SRC_ROOT}/Classes/LSTG/UnicodeStringEncoding.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/UtilColor.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/UtilGLDefinition.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/Utility.h
@@ -121,41 +95,13 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_RenderMode_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_ResourceMgr_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Resource_auto.hpp
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_StopWatch_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Stream_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Triangles_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_WindowHelper_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/LuaBindings.h
-	${RUNTIME_SRC_ROOT}/Classes/Math/meow_fft.h
-	${RUNTIME_SRC_ROOT}/Classes/Math/XCollision.h
-	${RUNTIME_SRC_ROOT}/Classes/Math/XComplex.h
-	${RUNTIME_SRC_ROOT}/Classes/Math/XConstant.h
-	${RUNTIME_SRC_ROOT}/Classes/Math/XDistance.h
-	${RUNTIME_SRC_ROOT}/Classes/Math/XEquation.h
-	${RUNTIME_SRC_ROOT}/Classes/Math/XFFT.h
-	${RUNTIME_SRC_ROOT}/Classes/Math/XIntersect.h
-	${RUNTIME_SRC_ROOT}/Classes/Math/XMath.h
-	${RUNTIME_SRC_ROOT}/Classes/Math/XRandom.h
-	${RUNTIME_SRC_ROOT}/Classes/Math/XSpline.h
 )
 set(GAME_SOURCE
-	${RUNTIME_SRC_ROOT}/Classes/Audio/ALSupport.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoder.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoderFlac.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoderMp3.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoderVorbis.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioDecoderWav.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioEffect.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioEngine.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioFilter.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioMacros.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioPool.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioRecordingDevice.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioSoundData.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioSource.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/AudioStream.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/Common.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/lua_Audio_auto.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Audio/RiffUtils.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/ControllerHelper.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/LabelPool.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/MemPoolManager.cpp
@@ -200,12 +146,10 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/InputManager.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LogSystem.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LuaWrapper.cpp
-	${RUNTIME_SRC_ROOT}/Classes/LSTG/LuaWrapperEx.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LWBuiltInFunction.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LWColor.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LWProfiler.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LWRandomizer.cpp
-	${RUNTIME_SRC_ROOT}/Classes/LSTG/LW_Audio.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LW_Frame.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LW_Graph.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/LW_Input.cpp
@@ -225,7 +169,6 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ResRenderTarget.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ResSprite.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ResTexture.cpp
-	${RUNTIME_SRC_ROOT}/Classes/LSTG/UnicodeStringEncoding.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/UtilColor.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/UtilGLDefinition.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/Utility.cpp
@@ -248,23 +191,16 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_RenderMode_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_ResourceMgr_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Resource_auto.cpp
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_StopWatch_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Stream_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Triangles_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_WindowHelper_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/LuaBindings.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Math/meow_fft.c
-	${RUNTIME_SRC_ROOT}/Classes/Math/XCollision.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Math/XComplex.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Math/XDistance.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Math/XEquation.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Math/XFFT.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Math/XIntersect.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Math/XRandom.cpp
-	${RUNTIME_SRC_ROOT}/Classes/Math/XSpline.cpp
 )
 
 # sources need to compile info, include dirs and source files
 set(GAME_INCLUDE
+	${RUNTIME_SRC_ROOT}/Classes
 	${RUNTIME_SRC_ROOT}/Classes/Audio
 	${RUNTIME_SRC_ROOT}/Classes/Classes
 	${RUNTIME_SRC_ROOT}/Classes/imgui
@@ -276,14 +212,49 @@ set(GAME_INCLUDE
 	${RUNTIME_SRC_ROOT}/Classes/Video
 )
 
-if(WINDOWS)
+if(ANDROID)
+	list(APPEND GAME_SOURCE ${RUNTIME_SRC_ROOT}/proj.android/app/jni/hellolua/main.cpp)
+elseif(LINUX)
+    list(APPEND GAME_SOURCE ${RUNTIME_SRC_ROOT}/proj.linux/main.cpp)
+elseif(IOS)
+	set(APP_UI_RES
+		${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/LaunchScreen.storyboard
+		${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/LaunchScreenBackground.png
+		${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/Images.xcassets
+	)
+	list(APPEND GAME_HEADER
+        ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/AppController.h
+        ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/RootViewController.h
+	)
+	list(APPEND GAME_SOURCE
+		${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/main.m
+		${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/AppController.mm
+		${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/RootViewController.mm
+		${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/Prefix.pch
+		${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/build-cfg.json
+		${APP_UI_RES}
+	)
+elseif(MACOSX)
+	set(APP_UI_RES
+		${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/Icon.icns
+		${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/Info.plist
+	)
+	list(APPEND GAME_SOURCE
+		${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/main.mm
+		${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/ConsoleWindowController.m
+		${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/Prefix.pch
+		${APP_UI_RES}
+	)
+elseif(WINDOWS)
     list(APPEND GAME_HEADER
-        ${RUNTIME_SRC_ROOT}/proj.win32/resource.h
+		${RUNTIME_SRC_ROOT}/proj.win32/main.h
+		${RUNTIME_SRC_ROOT}/proj.win32/resource.h
         ${RUNTIME_SRC_ROOT}/proj.win32/WindowHelperWin32.h
     )
     list(APPEND GAME_SOURCE ${cc_common_res})
     list(APPEND GAME_SOURCE
-        ${RUNTIME_SRC_ROOT}/proj.win32/game.rc
+		${RUNTIME_SRC_ROOT}/proj.win32/main.cpp
+		${RUNTIME_SRC_ROOT}/proj.win32/game.rc
         ${RUNTIME_SRC_ROOT}/proj.win32/WindowHelperWin32.cpp
     )
 endif()

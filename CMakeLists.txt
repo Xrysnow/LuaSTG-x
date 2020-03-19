@@ -29,7 +29,7 @@ project(${APP_NAME})
 
 if(XCODE)
     if(NOT DEFINED CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET)
-        SET (CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET 8.0)
+        set(CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET 8.0)
     endif()
 endif()
 
@@ -44,67 +44,22 @@ add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos ${ENGINE_BINARY_PATH}/cocos/core)
 # script and source files info, not need to compile
 set(res_res_folders
     "${CMAKE_CURRENT_SOURCE_DIR}/res"
-    )
+)
 set(res_src_folders
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
-    )
+)
 if(APPLE OR VS)
     cocos_mark_multi_resources(res_res RES_TO "Resources/res" FOLDERS ${res_res_folders})
     cocos_mark_multi_resources(res_src RES_TO "Resources/src" FOLDERS ${res_src_folders})
     set(cc_common_res ${res_res} ${res_src} ${res_script})
 endif()
 
-# record sources, headers
+# sources
 include(src.cmake)
-# sources need to compile info, include dirs and source files
 
 if(ANDROID)
     # change APP_NAME to the share library name for Android, it's value depend on AndroidManifest.xml
     set(APP_NAME cocos2dlua)
-    list(APPEND GAME_SOURCE ${RUNTIME_SRC_ROOT}/proj.android/app/jni/hellolua/main.cpp)
-elseif(LINUX)
-    list(APPEND GAME_SOURCE ${RUNTIME_SRC_ROOT}/proj.linux/main.cpp)
-elseif(WINDOWS)
-    list(APPEND GAME_HEADER
-         ${RUNTIME_SRC_ROOT}/proj.win32/main.h
-         )
-    list(APPEND GAME_SOURCE
-         ${RUNTIME_SRC_ROOT}/proj.win32/main.cpp
-         ${cc_common_res}
-         )
-elseif(APPLE)
-    if(IOS)
-        list(APPEND GAME_HEADER
-             ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/AppController.h
-             ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/RootViewController.h
-             )
-        set(APP_UI_RES
-            ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/LaunchScreen.storyboard
-            ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/LaunchScreenBackground.png
-            ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/Images.xcassets
-            )
-        list(APPEND GAME_SOURCE
-             ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/main.m
-             ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/AppController.mm
-             ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/RootViewController.mm
-             ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/Prefix.pch
-             ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/build-cfg.json
-             ${APP_UI_RES}
-             )
-    elseif(MACOSX)
-        list(APPEND GAME_HEADER
-             )
-        set(APP_UI_RES
-            ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/Icon.icns
-            ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/Info.plist
-            )
-        list(APPEND GAME_SOURCE
-             ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/main.cpp
-             ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/Prefix.pch
-             ${APP_UI_RES}
-             )
-    endif()
-    list(APPEND GAME_SOURCE ${cc_common_res})
 endif()
 
 set(APP_SRC ${GAME_HEADER} ${GAME_SOURCE})
@@ -121,13 +76,12 @@ else()
 endif()
 
 target_link_libraries(${APP_NAME} luacocos2d)
-target_include_directories(${APP_NAME} PRIVATE ${RUNTIME_SRC_ROOT}/Classes)
 target_include_directories(${APP_NAME} PRIVATE ${GAME_INCLUDE})
 
 # mark app resources, resource will be copy auto after mark
 setup_cocos_app_config(${APP_NAME})
 
-include(external.cmake)
+include(modules.cmake)
 
 if(MSVC)
     target_compile_options(${APP_NAME} PUBLIC /Z7)
@@ -138,8 +92,8 @@ if(APPLE)
     set_target_properties(${APP_NAME} PROPERTIES RESOURCE "${APP_UI_RES}")
     if(MACOSX)
         set_target_properties(${APP_NAME} PROPERTIES
-                              MACOSX_BUNDLE_INFO_PLIST "${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/Info.plist"
-                              )
+            MACOSX_BUNDLE_INFO_PLIST "${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/Info.plist"
+        )
         set_target_properties(${APP_NAME} PROPERTIES
             LINK_FLAGS "-pagezero_size 10000 -image_base 100000000"
         )
