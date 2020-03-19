@@ -1,5 +1,6 @@
 ﻿#include "WindowHelper.h"
-#include "Global.h"
+#include "../LSTG/Global.h"
+#include "../LSTG/LogSystem.h"
 #include "../LSTG/Renderer.h"
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
