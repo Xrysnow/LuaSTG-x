@@ -43,8 +43,8 @@ LUA_REGISTER_MODULE(cc_controller_manual, register_all_cocos2dx_controller_manua
 
 #include "../Live2D/lua_live2d_auto.hpp"
 LUA_REGISTER_MODULE(cc_l2d, register_all_live2d);
-#include "../Audio/lua_Audio_auto.hpp"
-LUA_REGISTER_MODULE(x_Audio, register_all_x_Audio);
+#include "../Audio/lua_audio_auto.hpp"
+LUA_REGISTER_MODULE(x_Audio, register_all_cc_audio);
 #include "../Video/lua_video_auto.hpp"
 LUA_REGISTER_MODULE(cc_video, register_all_cc_video);
 #include "../reader/lua-bindings/creator_reader_bindings.hpp"
