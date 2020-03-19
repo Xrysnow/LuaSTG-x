@@ -3,7 +3,7 @@
 	url = https://github.com/Xrysnow/cocos2d-x-live2d.git
 [submodule "frameworks/runtime-src/Classes/Audio"]
 	path = frameworks/runtime-src/Classes/Audio
-	url = https://github.com/Xrysnow/lstgx_Audio.git
+	url = https://github.com/Xrysnow/cocos2d-x-audio.git
 [submodule "frameworks/runtime-src/Classes/imgui"]
 	path = frameworks/runtime-src/Classes/imgui
 	url = https://github.com/Xrysnow/cocos2d-x-imgui.git
