@@ -1,9 +1,10 @@
 ﻿#include "Renderer.h"
 #include "Global.h"
-#include "renderer/backend/Backend.h"
 #include "XProfiler.h"
 #include "AppFrame.h"
 #include "Utility.h"
+#include "LogSystem.h"
+#include "renderer/backend/Backend.h"
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
 #include <EGL/egl.h>
 #endif

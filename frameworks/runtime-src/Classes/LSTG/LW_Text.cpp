@@ -1,7 +1,6 @@
 ﻿#include "LW_Text.h"
 #include "AppFrame.h"
 #include "LuaWrapper.h"
-#include "UnicodeStringEncoding.h"
 #include "UtilLua.h"
 #include "Renderer.h"
 #include "UtilLuaRes.h"

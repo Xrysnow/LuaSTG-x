@@ -1,6 +1,7 @@
 #include "ResSprite.h"
 #include "Renderer.h"
 #include "AppFrame.h"
+#include "LogSystem.h"
 
 using namespace std;
 using namespace lstg;

@@ -1,6 +1,7 @@
 ﻿#include "LW_Frame.h"
 #include "AppFrame.h"
 #include "Renderer.h"
+#include "LogSystem.h"
 #include "tolua_fix.h"
 #include "CCLuaEngine.h"
 #include "../Classes/XLuaModuleRegistry.h"

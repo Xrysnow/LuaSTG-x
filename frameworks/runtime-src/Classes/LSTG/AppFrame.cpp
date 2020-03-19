@@ -1,7 +1,5 @@
 ﻿#include "AppFrame.h"
 #include "Global.h"
-#include "scripting/lua-bindings/manual/CCLuaEngine.h"
-#include "scripting/lua-bindings/manual/lua_module_register.h"
 #include "../Classes/XProfiler.h"
 #include "../Classes/XLuaModuleRegistry.h"
 #include "../Audio/AudioEngine.h"
@@ -13,6 +11,9 @@
 #include "WindowHelper.h"
 #include "Utility.h"
 #include "UtilLua.h"
+#include "LogSystem.h"
+#include "scripting/lua-bindings/manual/CCLuaEngine.h"
+#include "scripting/lua-bindings/manual/lua_module_register.h"
 #include <memory>
 #include <iostream>
 
