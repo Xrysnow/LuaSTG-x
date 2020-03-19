@@ -311,3 +311,43 @@ StreamMemory::~StreamMemory()
 	CC_SAFE_RELEASE(_buffer);
 }
 
+// implemente audio stream creator
+
+#include "../LSTG/ResourceMgr.h"
+#include "../Audio/AudioSoundData.h"
+
+audio::Stream* audio::Stream::createFromFile(const std::string& path)
+{
+	const auto buffer = LRES.getBufferFromFile(path);
+	if (!buffer)
+		return nullptr;
+	return XAudioStream::create(lstg::StreamMemory::create(buffer));
+}
+
+audio::Stream* audio::Stream::createFromLocalFile(const std::string& path)
+{
+	return XAudioStream::create(lstg::StreamFile::create(path, false));
+}
+
+audio::Stream* audio::Stream::createFromStringData(const std::string& str)
+{
+	const auto buffer = lstg::Buffer::createFromString(str);
+	if (!buffer)
+		return nullptr;
+	return XAudioStream::create(lstg::StreamMemory::create(buffer));
+}
+
+audio::Stream* audio::Stream::createFromSoundData(audio::SoundData* soundData)
+{
+	if (!soundData)
+		return nullptr;
+	const auto s = lstg::StreamMemory::create();
+	if (!s)
+		return nullptr;
+	if (!s->resize(soundData->getSize()))
+		return nullptr;
+	// copy data
+	if (!s->write((const uint8_t*)soundData->getData(), soundData->getSize(), nullptr))
+		return nullptr;
+	return XAudioStream::create(s);
+}
