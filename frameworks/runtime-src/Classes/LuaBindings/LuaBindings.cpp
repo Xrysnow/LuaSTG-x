@@ -27,6 +27,8 @@ LUA_REGISTER_MODULE(x_Random, register_all_x_Random);
 LUA_REGISTER_MODULE(x_Resource, register_all_x_Resource);
 #include "lua_ResourceMgr_auto.hpp"
 LUA_REGISTER_MODULE(x_ResourceMgr, register_all_x_ResourceMgr);
+#include "lua_StopWatch_auto.hpp"
+LUA_REGISTER_MODULE(x_StopWatch, register_all_x_StopWatch);
 #include "lua_Stream_auto.hpp"
 LUA_REGISTER_MODULE(x_Stream, register_all_x_Stream);
 #include "lua_Triangles_auto.hpp"
