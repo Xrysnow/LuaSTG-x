@@ -927,9 +927,8 @@ backend::Program* util::CreateProgramFromData(Data* v, Data* f)
 		return nullptr;
 	}
 	const auto ret = backend::Device::getInstance()->newProgram(vdata, fdata);
-	if (ret)return ret;
-	const auto __error = glGetError();
-	if (__error) { XERROR("OpenGL error %u", __error); }
+	if (ret)
+		return ret;
 	XERROR("can't load shader from given bytes");
 	CheckVertexShader(vdata);
 	CheckFragmentShader(fdata);
