@@ -804,7 +804,8 @@ int lua::pushCArray(lua_State* L, lua_Number* arr, uint32_t size)
 	return 0;
 }
 
-#if CC_64BITS
+// LJ_GC64 is off by default on win64
+#if CC_64BITS && CC_TARGET_PLATFORM != CC_PLATFORM_WIN32
 #define HASH_OFFSET (-3)
 #else
 #define HASH_OFFSET (-2)
