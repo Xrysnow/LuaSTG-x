@@ -65,7 +65,38 @@ namespace lstg
 		bool init(size_t size);
 		bool check_index(size_t index) const { return index < buffer.size(); }
 		bool check_pos(size_t index) const { return index <= buffer.size(); }
-	};	
+	};
+
+	class BufferStreamBuf : public std::streambuf
+	{
+		using traits = std::char_traits<char>;
+		void init(Buffer* buffer);
+	public:
+		BufferStreamBuf();
+		explicit BufferStreamBuf(size_t reserve);
+		explicit BufferStreamBuf(Buffer* buffer);
+		~BufferStreamBuf() noexcept override;
+		Buffer* buffer() const { return _buf; }
+	protected:
+		int_type overflow(int_type ch) override;
+		//int_type pbackfail(int_type) override;
+		//std::streamsize showmanyc() override;
+		//int_type underflow() override;
+		//int_type uflow() override;
+		std::streamsize xsgetn(char* s, std::streamsize count) override;
+		std::streamsize xsputn(const char* s, std::streamsize count) override;
+		pos_type seekoff(off_type, std::ios_base::seekdir, std::ios_base::openmode) override;
+		pos_type seekpos(pos_type, std::ios_base::openmode) override;
+		//basic_streambuf* setbuf(char*, std::streamsize) override;
+		//int sync() override;
+		//void imbue(const std::locale&) override;
+
+		void pupdate(std::streamsize offset);
+		void gupdate(std::streamsize offset);
+		ptrdiff_t poff() const;
+		ptrdiff_t goff() const;
+		Buffer* _buf = nullptr;
+	};
 }
 
 namespace cocos2d
