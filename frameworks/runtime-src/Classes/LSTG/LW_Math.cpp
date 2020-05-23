@@ -52,6 +52,7 @@ LUA_REGISTER_FUNC_DEF(lstg, sincos)
 	lua_pushnumber(L, c);
 	return 2;
 }
+
 LUA_REGISTER_FUNC_DEF(lstg, SampleBezierA1)
 {
 	auto in_pos = lua::getVec2Array(L, 1, "x", "y");
@@ -78,3 +79,101 @@ LUA_REGISTER_FUNC_DEF(lstg, SampleBezierA1)
 	lua::native_to_luaval(L, out_rot);
 	return 3;
 }
+
+#define LUA_MATH_DEF1(F) LUA_REGISTER_FUNC_DEF(math, F) {\
+	lua_pushnumber(L, std::F(\
+		luaL_checknumber(L, 1)));\
+	return 1;\
+}
+#define LUA_MATH_DEF2(F) LUA_REGISTER_FUNC_DEF(math, F) {\
+	lua_pushnumber(L, std::F(\
+		luaL_checknumber(L, 1), luaL_checknumber(L, 2)));\
+	return 1;\
+}
+
+LUA_REGISTER_FUNC_DEF(math, div)
+{
+	const auto v = std::lldiv(
+		luaL_checknumber(L, 1), luaL_checknumber(L, 2));
+	lua_pushnumber(L, v.quot);
+	lua_pushnumber(L, v.rem);
+	return 2;
+}
+
+// basic
+
+LUA_MATH_DEF2(remainder)
+LUA_REGISTER_FUNC_DEF(math, fma)
+{
+	lua_pushnumber(L, std::fma(
+		luaL_checknumber(L, 1), luaL_checknumber(L, 2), luaL_checknumber(L, 3)));
+	return 1;
+}
+LUA_MATH_DEF2(fdim)
+
+// exp
+
+LUA_MATH_DEF1(exp2)
+LUA_MATH_DEF1(expm1)
+LUA_MATH_DEF1(log2)
+LUA_MATH_DEF1(log1p)
+
+// pow
+
+LUA_MATH_DEF1(cbrt)
+LUA_MATH_DEF2(hypot)
+
+// hyperbolic
+
+LUA_MATH_DEF1(asinh)
+LUA_MATH_DEF1(acosh)
+LUA_MATH_DEF1(atanh)
+
+// erf, gamma
+
+LUA_MATH_DEF1(erf)
+LUA_MATH_DEF1(erfc)
+LUA_MATH_DEF1(tgamma)
+LUA_MATH_DEF1(lgamma)
+
+// rounding
+
+LUA_MATH_DEF1(trunc)
+LUA_MATH_DEF1(round)
+
+// float operation
+
+LUA_MATH_DEF2(scalbln)
+LUA_MATH_DEF1(ilogb)
+LUA_MATH_DEF1(logb)
+LUA_MATH_DEF2(nextafter)
+LUA_MATH_DEF2(nexttoward)
+LUA_MATH_DEF2(copysign)
+
+// classify
+
+LUA_REGISTER_FUNC_DEF(math, fpclassify)
+{
+	switch (std::fpclassify(
+		luaL_checknumber(L, 1)))
+	{
+	case FP_INFINITE: lua_pushliteral(L, "inf");
+	case FP_NAN: lua_pushliteral(L, "nan");
+	case FP_NORMAL: lua_pushliteral(L, "normal");
+	case FP_SUBNORMAL: lua_pushliteral(L, "subnormal");
+	case FP_ZERO: lua_pushliteral(L, "zero");
+	default: lua_pushliteral(L, "unknown");
+	}
+	return 1;
+}
+LUA_MATH_DEF1(isfinite)
+LUA_MATH_DEF1(isinf)
+LUA_MATH_DEF1(isnan)
+LUA_MATH_DEF1(isnormal)
+LUA_REGISTER_FUNC_DEF(math, signbit)
+{
+	lua_pushboolean(L, std::signbit(
+		luaL_checknumber(L, 1)));
+	return 1;
+}
+
