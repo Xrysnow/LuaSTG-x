@@ -313,7 +313,7 @@ void XRenderer::renderClear(const Color4F& c)noexcept
 		//   r->clear(c.r, c.g, c.b, c.a);
 		// RenderTexture::clear calls begin + end,
 		// but here is between begin and end.
-		pRenderer->clear(ClearFlag::COLOR, c, 0.f, 0, 0.f);
+		pRenderer->clear(ClearFlag::COLOR, c, 1.f, 0, 0.f);
 	}
 	else
 	{
@@ -323,7 +323,7 @@ void XRenderer::renderClear(const Color4F& c)noexcept
 		{
 			commandBuffer->setScissorRect(true, (float)vp.x, (float)vp.y, (float)vp.w, (float)vp.h);
 		});
-		pRenderer->clear(ClearFlag::ALL, c, 0.f, 0, 0.f);
+		pRenderer->clear(ClearFlag::ALL, c, 1.f, 0, 0.f);
 		pushCallbackCommend([=]()
 		{
 			commandBuffer->setScissorRect(false, 0, 0, 0, 0);
