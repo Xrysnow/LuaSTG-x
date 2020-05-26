@@ -35,6 +35,8 @@ LUA_REGISTER_MODULE(x_Stream, register_all_x_Stream);
 LUA_REGISTER_MODULE(x_Triangles, register_all_x_Triangles);
 #include "lua_WindowHelper_auto.hpp"
 LUA_REGISTER_MODULE(x_WindowHelper, register_all_x_WindowHelper);
+#include "lua_ZipArchive_auto.hpp"
+LUA_REGISTER_MODULE(x_ZipArchive, register_all_x_ZipArchive);
 
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_ANDROID) && (CC_TARGET_PLATFORM != CC_PLATFORM_IOS)
 #include "lua_cc_controller_auto.hpp"
