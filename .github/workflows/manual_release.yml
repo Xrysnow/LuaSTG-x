@@ -1,0 +1,29 @@
+name: Manual Release
+
+on:
+  repository_dispatch:
+    types: manual_release
+
+jobs:
+  update_release_draft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get date
+      uses: srfrnk/current-time@master
+      id: current-time
+      with:
+        format: YYYYMMDD
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ steps.current-time.outputs.formattedTime }}
+          body: |
+            Release ${{ steps.current-time.outputs.formattedTime }}
+          draft: false
+          prerelease: true
