@@ -8,7 +8,7 @@ jobs:
   update_release_draft:
     runs-on: ubuntu-latest
     steps:
-      - name: Get date
+      - name: Get Date
         uses: srfrnk/current-time@master
         id: current-time
         with:
@@ -19,33 +19,33 @@ jobs:
           FILE_NAME: LuaSTG-x_release_${{ steps.current-time.outputs.formattedTime }}.zip
         run: |
           echo RELEASE_DATE: $RELEASE_DATE
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v2
         with:
           submodules: 'recursive'
-      - name: Packing project
+      - name: Packing Project
         id: packing-project
         run: |
-          zip -q -r %FILE_NAME% *
+          zip -q -1 -r $FILE_NAME *
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.RELEASE_DATE }}
-          release_name: ${{ env.RELEASE_DATE }}
+          tag_name: $RELEASE_DATE
+          release_name: $RELEASE_DATE
           body: |
-            Release ${{ env.RELEASE_DATE }}
+            Release $RELEASE_DATE
           draft: false
           prerelease: true
       - name: Upload Release Asset
-        id: upload-release-asset 
+        id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ env.FILE_NAME }}
-          asset_name: ${{ env.FILE_NAME }}
+          asset_path: ./$FILE_NAME
+          asset_name: $FILE_NAME
           asset_content_type: application/zip
