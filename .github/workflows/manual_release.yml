@@ -5,7 +5,7 @@ on:
     types: manual_release
 
 jobs:
-  update_release_draft:
+  pre:
     runs-on: ubuntu-latest
     steps:
       - name: Get Date
@@ -13,30 +13,35 @@ jobs:
         id: current-time
         with:
           format: YYYYMMDD
-      - name: Set file name
-        env:
-          RELEASE_DATE: ${{ steps.current-time.outputs.formattedTime }}
-          FILE_NAME: LuaSTG-x_release_${{ steps.current-time.outputs.formattedTime }}.zip
-        run: |
-          echo RELEASE_DATE: $RELEASE_DATE
+    outputs:
+      RELEASE_DATE: ${{ steps.current-time.outputs.formattedTime }}
+      FILE_NAME: LuaSTG-x_release_${{ steps.current-time.outputs.formattedTime }}.zip
+  release:
+    runs-on: ubuntu-latest
+    needs: pre
+    steps:
       - name: Checkout Code
         uses: actions/checkout@v2
         with:
           submodules: 'recursive'
       - name: Packing Project
         id: packing-project
+        env:
+          FILE_NAME: ${{ needs.pre.outputs.FILE_NAME }}
         run: |
+          echo FILE_NAME: $FILE_NAME
           zip -q -1 -r $FILE_NAME *
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_DATE: ${{ needs.pre.outputs.RELEASE_DATE }}
         with:
-          tag_name: $RELEASE_DATE
-          release_name: $RELEASE_DATE
+          tag_name: ${{ env.RELEASE_DATE }}
+          release_name: ${{ env.RELEASE_DATE }}
           body: |
-            Release $RELEASE_DATE
+            Release ${{ env.RELEASE_DATE }}
           draft: false
           prerelease: true
       - name: Upload Release Asset
@@ -44,8 +49,9 @@ jobs:
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FILE_NAME: ${{ needs.pre.outputs.FILE_NAME }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./$FILE_NAME
-          asset_name: $FILE_NAME
+          asset_path: ./${{ env.FILE_NAME }}
+          asset_name: ${{ env.FILE_NAME }}
           asset_content_type: application/zip
