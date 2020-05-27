@@ -18,9 +18,9 @@ jobs:
           RELEASE_DATE: ${{ steps.current-time.outputs.formattedTime }}
           FILE_NAME: LuaSTG-x_release_${{ steps.current-time.outputs.formattedTime }}.zip
       - name: Checkout code
-        - uses: actions/checkout@v2
-          with:
-            submodules: 'recursive'
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
       - name: Packing project
         id: packing-project
         run: |
