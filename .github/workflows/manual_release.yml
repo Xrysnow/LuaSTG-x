@@ -17,6 +17,8 @@ jobs:
         env:
           RELEASE_DATE: ${{ steps.current-time.outputs.formattedTime }}
           FILE_NAME: LuaSTG-x_release_${{ steps.current-time.outputs.formattedTime }}.zip
+        run: |
+          echo RELEASE_DATE: $RELEASE_DATE
       - name: Checkout code
         uses: actions/checkout@v2
         with:
