@@ -9,10 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get date
-      uses: srfrnk/current-time@master
-      id: current-time
-      with:
-        format: YYYYMMDD
+        uses: srfrnk/current-time@master
+        id: current-time
+        with:
+          format: YYYYMMDD
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Create Release
