@@ -464,7 +464,7 @@ void BufferStreamBuf::pupdate(std::streamsize offset)
 	if (!_buf)
 		return;
 	const auto base = (char*)_buf->data();
-	setp(base, base + offset, base + _buf->size());
+	setp(base + offset, base + _buf->size());
 }
 
 void BufferStreamBuf::gupdate(std::streamsize offset)
