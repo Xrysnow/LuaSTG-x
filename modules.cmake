@@ -96,6 +96,11 @@ list(APPEND EXTERNAL_LIBS ext_lpeg)
 add_subdirectory(${RUNTIME_SRC_ROOT}/external/LuaExtensions/lua53)
 list(APPEND EXTERNAL_LIBS ext_lua53)
 
+# libzippp
+
+add_subdirectory(${RUNTIME_SRC_ROOT}/external/libzippp)
+list(APPEND EXTERNAL_LIBS ext_libzippp)
+
 # nfd
 
 if(WINDOWS OR LINUX OR MACOSX)

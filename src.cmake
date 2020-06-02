@@ -22,6 +22,7 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XStream.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XTriangles.h
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XTrianglesCommand.h
+	${RUNTIME_SRC_ROOT}/Classes/Classes/XZipArchive.h
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/CirularQueue.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/Dictionary.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ObjectPool.hpp
@@ -99,6 +100,7 @@ set(GAME_HEADER
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Stream_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Triangles_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_WindowHelper_auto.hpp
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_ZipArchive_auto.hpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/LuaBindings.h
 )
 set(GAME_SOURCE
@@ -122,6 +124,7 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XStream.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XTriangles.cpp
 	${RUNTIME_SRC_ROOT}/Classes/Classes/XTrianglesCommand.cpp
+	${RUNTIME_SRC_ROOT}/Classes/Classes/XZipArchive.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/AppFrame.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/CollisionDetect.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LSTG/ComponentData.cpp
@@ -195,6 +198,7 @@ set(GAME_SOURCE
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Stream_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_Triangles_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_WindowHelper_auto.cpp
+	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/lua_ZipArchive_auto.cpp
 	${RUNTIME_SRC_ROOT}/Classes/LuaBindings/LuaBindings.cpp
 )
 
