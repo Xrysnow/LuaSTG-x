@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" baseProfile="tiny"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 200 200"
+	 xml:space="preserve">
+<path fill="#231815" stroke="#231815" stroke-width="8" stroke-miterlimit="10" d="M142,180.9H44.4c-4.1,0-7.3-3.3-7.3-7.3V25.3
+	c0-4.1,3.3-7.3,7.3-7.3H142c4.1,0,7.3,3.3,7.3,7.3v148.2C149.3,177.6,146.1,180.9,142,180.9z"/>
+<circle fill="#FFFFFF" stroke="#E72739" stroke-width="8" stroke-miterlimit="10" cx="110" cy="55.2" r="29"/>
+<circle fill="#FFFFFF" stroke="#74BC48" stroke-width="8" stroke-miterlimit="10" cx="67.1" cy="145.4" r="26.1"/>
+<circle fill="#FFFFFF" stroke="#699AD2" stroke-width="6" stroke-miterlimit="10" cx="128.6" cy="130.3" r="18.7"/>
+<circle fill="#FFFFFF" stroke="#699AD2" stroke-width="6" stroke-miterlimit="10" cx="54.1" cy="81.1" r="16"/>
+<path fill="none" stroke="#FFF468" stroke-width="8" stroke-miterlimit="10" d="M142,182.3H44.4c-4.1,0-7.3-3.4-7.3-7.4V23.8
+	c0-4.2,3.3-7.4,7.3-7.4H142c4.1,0,7.3,3.4,7.3,7.4v151C149.3,179,146.1,182.3,142,182.3z"/>
+<path fill="#77C071" d="M128.7,87v108.9c0,1.9,2.7,2.8,4.3,1.5l65-54.4c1-0.9,1-2.2,0-3l-65-54.4C131.4,84.2,128.7,85.1,128.7,87z"
+	/>
+</svg>
