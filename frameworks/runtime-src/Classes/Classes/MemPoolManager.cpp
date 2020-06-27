@@ -53,6 +53,7 @@ void MemPoolManager::clear()
 	laserQuadsPool.clear();
 	for (auto&it : statePool)
 		it.second->clear();
+	statePool.clear();
 	clearArrays();
 }
 
@@ -103,7 +104,7 @@ ProgramStatePool::ProgramStatePool(Program* program)
 {
 	_program = program;
 	CC_SAFE_RETAIN(_program);
-	on_alloc = std::bind(&ProgramStatePool::alloc_, this);
+	on_alloc = [this] { alloc_(); };
 	clear();
 }
 
