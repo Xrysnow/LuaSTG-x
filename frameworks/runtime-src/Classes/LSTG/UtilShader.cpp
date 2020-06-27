@@ -1,11 +1,11 @@
 #include "Utility.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
 #include "LogSystem.h"
-#ifndef CC_USE_METAL
-#include "renderer/backend/opengl/ProgramGL.h"
-#else
-#include "glsl_optimizer.h"
-#endif
+//#ifndef CC_USE_METAL
+//#include "renderer/backend/opengl/ProgramGL.h"
+//#else
+//#include "glsl_optimizer.h"
+//#endif
 
 using namespace std;
 using namespace lstg;
@@ -31,6 +31,7 @@ static const char * COCOS2D_SHADER_UNIFORMS =
 #ifndef CC_USE_METAL
 static string logForOpenGLShader(GLuint shader)
 {
+#if 0
 	GLint logLength = 0;
 
 	glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
@@ -43,11 +44,15 @@ static string logForOpenGLShader(GLuint shader)
 
 	free(logBytes);
 	return ret;
+#else
+	return "";
+#endif
 }
 #endif
 
 bool CheckShader(const string& src, bool isVertexShader)
 {
+#if 0
 #ifndef CC_USE_METAL
 	if (src.empty())
 	{
@@ -102,6 +107,10 @@ bool CheckShader(const string& src, bool isVertexShader)
 		glslopt_cleanup(ctx);
 		return false;
 	}
+	return true;
+#endif
+
+#else
 	return true;
 #endif
 }
