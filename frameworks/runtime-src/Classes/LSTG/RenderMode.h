@@ -76,6 +76,7 @@ namespace lstg
 
 	protected:
 		static void addMode(RenderMode* mode);
+		static void clearModes();
 
 		static RenderMode _Default;
 		static std::vector<RenderMode*> modeVector;
@@ -84,5 +85,6 @@ namespace lstg
 		friend class XRenderer;
 		friend class XTrianglesCommand;
 		friend class ComponentManager;
+		friend class AppFrame;
 	};
 }

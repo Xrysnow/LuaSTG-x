@@ -305,3 +305,9 @@ void RenderMode::addMode(RenderMode* mode)
 	modeVector.push_back(mode);
 	mode->id = modeVector.size();
 }
+
+void RenderMode::clearModes()
+{
+	modeVector.clear();
+	modeMap.clear();
+}
