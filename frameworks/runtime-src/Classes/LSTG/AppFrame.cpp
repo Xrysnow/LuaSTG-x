@@ -376,7 +376,6 @@ void AppFrame::frameShutdown()noexcept
 {
 	if (status == Status::NotInitialized || status == Status::Destroyed)
 		return;
-
 	XRenderer::end();
 
 	gameObjectPool = nullptr;
@@ -408,13 +407,12 @@ bool AppFrame::frameReset()noexcept
 
 	L = LuaEngine::getInstance()->getLuaStack()->getLuaState();
 	gameObjectPool->ResetLua(L);
+	RenderMode::clearModes();
 	audio::Engine::stop();
 	InputManager::getInstance()->clearState();
-
 	LRES.clearLocalFileCache();
-
-	status = Status::NotInitialized;
-	LuaEngine::getInstance()->executeScriptFile("main.lua");
+	LMP.clear();
+	status = Status::Initialized;
 	LINFO("reset successfully");
 	return true;
 }
