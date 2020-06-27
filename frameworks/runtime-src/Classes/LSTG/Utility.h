@@ -94,7 +94,9 @@ namespace lstg
 		size_t x, size_t y, size_t width, size_t height, bool flipImage = false);
 	cocos2d::Image* getSpriteImage(cocos2d::Sprite* sprite, bool flipImage = false);
 	bool initImageWithSVG(cocos2d::Image* image, const std::string& path,
-		float scale = 1, const std::string& units = "px", float dpi = 96);
+		float scale, const std::string& units = "px", float dpi = 96);
+	bool initImageWithSVG(cocos2d::Image* image, const std::string& path,
+		const cocos2d::Size& size);
 
 	// (start, end, iThread)
 	void deployThreadTask(size_t taskSize, size_t nSlice, const std::function<void(int, int, int)>& task);

@@ -629,8 +629,8 @@ Image* lstg::getSpriteImage(Sprite* sprite, bool flipImage)
 }
 
 #define NANOSVG_IMPLEMENTATION
-#include "../../external/nanosvg/src/nanosvg.h"
 #define NANOSVGRAST_IMPLEMENTATION
+#include "../../external/nanosvg/src/nanosvg.h"
 #include "../../external/nanosvg/src/nanosvgrast.h"
 bool lstg::initImageWithSVG(Image* image, const std::string& path,
 	float scale, const std::string& units, float dpi)
@@ -642,22 +642,74 @@ bool lstg::initImageWithSVG(Image* image, const std::string& path,
 	NSVGrasterizer* rast = nullptr;
 	do
 	{
-		const auto data = FileUtils::getInstance()->getDataFromFile(path);
-		if (data.isNull()) break;
-		img = nsvgParse((char*)data.getBytes(), units.c_str(), dpi);
+		const auto str = FileUtils::getInstance()->getStringFromFile(path);
+		if (str.empty()) break;
+		img = nsvgParse((char*)str.c_str(), units.c_str(), dpi);
 		if (!img) break;
 		rast = nsvgCreateRasterizer();
-		if(!rast) break;
+		if (!rast) break;
 		const auto w = (int)(img->width * scale);
 		const auto h = (int)(img->height * scale);
 		const auto byteSize = w * h * 4;
-		auto buffer = new (nothrow) uint8_t[byteSize];
+		auto buffer = new (std::nothrow) uint8_t[byteSize];
 		if (!buffer) break;
 		nsvgRasterize(rast, img, 0, 0, scale, buffer, w, h, w * 4);
 		ok = image->initWithRawData(buffer, byteSize, w, h, 32, false);
 		delete[] buffer;
-	}
-	while (false);
+	} while (false);
+	nsvgDeleteRasterizer(rast);
+	nsvgDelete(img);
+	return ok;
+}
+
+bool lstg::initImageWithSVG(Image* image, const std::string& path, const Size& size)
+{
+	const auto width = (int)size.width;
+	const auto height = (int)size.height;
+	if (width <= 0 && height <= 0)
+		return initImageWithSVG(image, path, 1, "px", 96);
+	if (!image)
+		return false;
+	bool ok = false;
+	NSVGimage* img = nullptr;
+	NSVGrasterizer* rast = nullptr;
+	do
+	{
+		const auto str = FileUtils::getInstance()->getStringFromFile(path);
+		if (str.empty()) break;
+		img = nsvgParse((char*)str.c_str(), "px", 96);
+		if (!img) break;
+		rast = nsvgCreateRasterizer();
+		if (!rast) break;
+		int w = 0, h = 0, dx = 0, dy = 0;
+		float scale = 1;
+		if (width <= 0)
+		{
+			scale = (float)height / img->height;
+			h = height;
+			w = int(scale * img->width);
+		}
+		else if (height <= 0)
+		{
+			scale = (float)width / img->width;
+			w = width;
+			h = int(scale * img->height);
+		}
+		else
+		{
+			scale = std::min((float)height / img->height, (float)width / img->width);
+			w = width;
+			h = height;
+			dx = (w - img->width * scale) / 2;
+			dy = (h - img->height * scale) / 2;
+		}
+		const auto byteSize = w * h * 4;
+		auto buffer = new (std::nothrow) uint8_t[byteSize];
+		if (!buffer) break;
+		nsvgRasterize(rast, img, dx, dy, scale, buffer, w, h, w * 4);
+		ok = image->initWithRawData(buffer, byteSize, w, h, 32, false);
+		delete[] buffer;
+	} while (false);
 	nsvgDeleteRasterizer(rast);
 	nsvgDelete(img);
 	return ok;
