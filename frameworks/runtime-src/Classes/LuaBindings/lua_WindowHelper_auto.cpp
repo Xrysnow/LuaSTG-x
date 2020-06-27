@@ -86,8 +86,8 @@ int lua_x_WindowHelper_WindowHelper_getClipboardString(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_WindowHelper_WindowHelper_getClipboardString'", nullptr);
             return 0;
         }
-        const char* ret = cobj->getClipboardString().c_str();
-        tolua_pushstring(tolua_S,(const char*)ret);
+		const auto ret = cobj->getClipboardString();
+		lua_pushlstring(tolua_S, ret.c_str(), ret.size());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.WindowHelper:getClipboardString",argc, 0);
