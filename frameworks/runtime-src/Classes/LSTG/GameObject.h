@@ -25,14 +25,14 @@ namespace lstg
 		lua_Number layer = 0.0;    // render layer
 		GameClass* cls = nullptr;
 
-		GAMEOBJECTSTATUS status;   // status
-		size_t id;                 // (internal) id in pool
-		size_t luaID;              // (internal) id in lua pool
-		int64_t uid;               // (internal) uid
+		GAMEOBJECTSTATUS status = STATUS_FREE;   // status
+		size_t id = 0;             // (internal) id in pool
+		size_t luaID = 0;          // (internal) id in lua pool
+		int64_t uid = 0;           // (internal) uid
 
-		bool colli;                // need collision check
-		bool bound;                // auto del when out of bound
-		bool hide;                 // skip render
+		bool colli = false;        // need collision check
+		bool bound = false;        // auto del when out of bound
+		bool hide = false;         // skip render
 		// only for allocateObject
 		void _Reset();
 
