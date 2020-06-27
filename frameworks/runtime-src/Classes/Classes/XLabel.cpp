@@ -3,12 +3,11 @@
 using namespace std;
 using namespace cocos2d;
 
-XLabel* XLabel::createWithBMFont(const string& bmfontFilePath, const string& text, const TextHAlignment& hAlignment, int maxLineWidth, const Vec2& imageOffset)
+XLabel* XLabel::createWithBMFont(const string& bmfontFilePath, const string& text, const Vec2& imageOffset)
 {
-	auto ret = new (nothrow) XLabel(hAlignment);
-	if (ret && ret->setBMFontFilePath(bmfontFilePath, imageOffset))
+	auto ret = new (nothrow) XLabel();
+	if (ret && ret->setBMFontFilePath(bmfontFilePath, Rect(imageOffset.x, imageOffset.y, 0, 0), false))
 	{
-		ret->setMaxLineWidth(maxLineWidth);
 		ret->setString(text);
 		ret->autorelease();
 		return ret;

@@ -12,7 +12,6 @@ public:
 	};
 
 	static XLabel* createWithBMFont(const std::string& bmfontPath, const std::string& text,
-		const cocos2d::TextHAlignment& hAlignment = cocos2d::TextHAlignment::LEFT, int maxLineWidth = 0,
 		const cocos2d::Vec2& imageOffset = cocos2d::Vec2::ZERO);
 
 	static XLabel* createWithTTF(const cocos2d::TTFConfig& ttfConfig, const std::string& text,
