@@ -182,11 +182,11 @@ int lua_x_StopWatch_StopWatch_constructor(lua_State* tolua_S)
 
 static int lua_x_StopWatch_StopWatch_finalize(lua_State* tolua_S)
 {
-    printf("luabindings: finalizing LUA object (StopWatch)");
 #if COCOS2D_DEBUG >= 1
+    printf("luabindings: finalizing LUA object (StopWatch)");
     tolua_Error tolua_err;
     if (
-    !tolua_isusertype(tolua_S,1,"StopWatch",0,&tolua_err) ||
+    !tolua_isusertype(tolua_S,1,"lstg.StopWatch",0,&tolua_err) ||
     !tolua_isnoobj(tolua_S,2,&tolua_err)
     )
         goto tolua_lerror;
