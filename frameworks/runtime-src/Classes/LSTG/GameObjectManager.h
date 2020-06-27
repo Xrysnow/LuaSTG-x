@@ -16,25 +16,25 @@ namespace lstg
 
 	bool CollisionCheck(GameObject* p1, GameObject* p2)noexcept;
 
+	struct less_obj
+	{
+		bool operator()(GameObject* p1, GameObject* p2) const
+		{
+			return p1->uid < p2->uid;
+		}
+	};
+
+	struct less_render
+	{
+		bool operator()(GameObject* p1, GameObject* p2) const
+		{
+			return (p1->layer < p2->layer) || ((p1->layer == p2->layer) && (p1->uid < p2->uid));
+		}
+	};
+
 	class GameObjectManager
 	{
 	private:
-		struct less_obj
-		{
-			bool operator()(GameObject* p1, GameObject* p2) const
-			{
-				return p1->uid < p2->uid;
-			}
-		};
-
-		struct less_render
-		{
-			bool operator()(GameObject* p1, GameObject* p2) const
-			{
-				return (p1->layer < p2->layer) || ((p1->layer == p2->layer) && (p1->uid < p2->uid));
-			}
-		};
-
 		lua_State* L = nullptr;
 
 		GameObjectPool pool{ LGOBJ_MAXCNT };
