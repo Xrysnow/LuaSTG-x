@@ -104,14 +104,17 @@ namespace lstg
 	std::vector<std::future<std::shared_ptr<void>>> deployThreadTaskFuture(size_t taskSize, size_t nSlice,
 		const std::function<std::shared_ptr<void>(int, int, int)>& task);
 
+	uint32_t XXHash32(const void* data, size_t size, uint32_t seed = 0);
+	uint64_t XXHash64(const void* data, size_t size, uint64_t seed = 0);
+	void RC4XOR(const std::string& key, const void* data, size_t size, void* out);
+
 	// RC4 cryption
 	class RC4
 	{
-	private:
 		uint8_t S[256];
 	public:
 		void operator()(const uint8_t* input, size_t inputlen, uint8_t* output);
-		RC4(const uint8_t* password, size_t len);
+		RC4(const char* password, size_t len);
 	};
 
 	namespace util

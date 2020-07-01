@@ -788,6 +788,25 @@ std::vector<std::future<std::shared_ptr<void>>> lstg::deployThreadTaskFuture(siz
 	return futures;
 }
 
+#include "xxhash.h"
+uint32_t lstg::XXHash32(const void* data, size_t size, uint32_t seed)
+{
+	return XXH32(data, size, seed);
+}
+
+uint64_t lstg::XXHash64(const void* data, size_t size, uint64_t seed)
+{
+	return XXH64(data, size, seed);
+}
+
+void lstg::RC4XOR(const std::string& key, const void* data, size_t size, void* out)
+{
+	if (!data || !out)
+		return;
+	RC4 rc4(key.c_str(), key.size());
+	rc4((const uint8_t*)data, size, (uint8_t*)out);
+}
+
 void RC4::operator()(const uint8_t* input, size_t inputlen, uint8_t* output)
 {
 	uint8_t Scpy[256];
@@ -802,7 +821,8 @@ void RC4::operator()(const uint8_t* input, size_t inputlen, uint8_t* output)
 	}
 }
 
-RC4::RC4(const uint8_t* password, size_t len)
+RC4::RC4(const char* password, size_t len)
+	: S()
 {
 	len = min(len, size_t(256));
 	for (int i = 0; i < 256; ++i)

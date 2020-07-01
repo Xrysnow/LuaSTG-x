@@ -2,6 +2,8 @@
 #include "AppFrame.h"
 #include "Renderer.h"
 #include "LogSystem.h"
+#include "Utility.h"
+#include "UtilLua.h"
 #include "tolua_fix.h"
 #include "CCLuaEngine.h"
 #include "../Classes/XLuaModuleRegistry.h"
@@ -155,4 +157,103 @@ LUA_REGISTER_FUNC_DEF(lstg, MessageBox)
 {
 	cocos2d::ccMessageBox(luaL_checkstring(L, 1), luaL_checkstring(L, 2));
 	return 0;
+}
+
+LUA_REGISTER_FUNC_DEF(lstg, XXHash32)
+{
+	const auto type = lua_type(L, 1);
+
+	if (type == LUA_TNIL)
+	{
+		lua_pushinteger(L, XXHash32("nil", 3, type));
+		return 1;
+	}
+	if (type == LUA_TBOOLEAN)
+	{
+		const auto v = lua_toboolean(L, 1);
+		lua_pushinteger(L, XXHash32(&v, sizeof(v), type));
+		return 1;
+	}
+	if (type == LUA_TNUMBER)
+	{
+		const auto data = luaL_checknumber(L, 1);
+		lua_pushinteger(L, XXHash32(&data, sizeof(data), type));
+		return 1;
+	}
+	if (type == LUA_TLIGHTUSERDATA || type == LUA_TUSERDATA)
+	{
+		const auto p = lua_touserdata(L, 1);
+		if (!p)
+			lua_pushinteger(L, 0);
+		else
+		{
+			if (lua_gettop(L) >= 2)
+			{
+				const auto size = luaL_checkinteger(L, 2);
+				lua_pushinteger(L, XXHash32(p, size, type));
+			}
+			else
+			{
+				lua_pushinteger(L, XXHash32(&p, sizeof(p), type));
+			}
+		}
+		return 1;
+	}
+	if (type == lua::LUA_TCDATA)
+	{
+		void* p = nullptr;
+		lua::luaval_to_cptr(L, 1, &p);
+		if (!p)
+			lua_pushinteger(L, 0);
+		else
+		{
+			if (lua_gettop(L) >= 2)
+			{
+				const auto size = luaL_checkinteger(L, 2);
+				lua_pushinteger(L, XXHash32(p, size, type));
+			}
+			else
+			{
+				lua_pushinteger(L, XXHash32(&p, sizeof(p), type));
+			}
+		}
+		return 1;
+	}
+
+	size_t size = 0;
+	const auto str = lua_tolstring(L, 1, &size);
+	lua_pushinteger(L, XXHash32(str, size, type));
+	return 1;
+}
+
+LUA_REGISTER_FUNC_DEF(lstg, RC4XOR)
+{
+	size_t key_size = 0;
+	const auto key = luaL_checklstring(L, 1, &key_size);
+	const auto type = lua_type(L, 2);
+	if (type == LUA_TSTRING)
+	{
+		size_t size = 0;
+		const auto str = lua_tolstring(L, 2, &size);
+		vector<char> ret;
+		ret.resize(size);
+		RC4XOR({ key, key_size }, str, size, ret.data());
+		lua_pushlstring(L, ret.data(), ret.size());
+		return 1;
+	}
+	if (type == lua::LUA_TCDATA)
+	{
+		void* p = nullptr;
+		lua::luaval_to_cptr(L, 2, &p);
+		if (p)
+		{
+			const auto size = luaL_checkinteger(L, 2);
+			vector<char> ret;
+			ret.resize(size);
+			RC4XOR({ key, key_size }, p, size, ret.data());
+			lua_pushlstring(L, ret.data(), ret.size());
+			return 1;
+		}
+	}
+	return luaL_error(L, "invalid parameter #1");
 }
