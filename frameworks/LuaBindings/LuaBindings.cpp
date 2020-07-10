@@ -7,6 +7,8 @@ LUA_REGISTER_MODULE(x_BentLaser, register_all_x_BentLaser);
 LUA_REGISTER_MODULE(x_RenderMode, register_all_x_RenderMode);
 #include "lua_Buffer_auto.hpp"
 LUA_REGISTER_MODULE(x_Buffer, register_all_x_Buffer);
+#include "lua_cc_configuration_auto.hpp"
+LUA_REGISTER_MODULE(cc_configuration, register_all_cocos2dx_configuration);
 #include "lua_cc_fix.h"
 LUA_REGISTER_MODULE(cc_ui_fix, register_all_cocos2dx_fix);
 #include "lua_cc_ext.hpp"
