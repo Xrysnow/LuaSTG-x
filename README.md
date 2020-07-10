@@ -15,7 +15,7 @@ LuaSTG-x is a multi-platform game engine based on [cocos2d-x](https://github.com
 
 3. Download extra files from Cubism SDK ([instructions](https://github.com/Xrysnow/cocos2d-x-live2d)).
 
-4. Generate project using CMake ([instructions](https://github.com/cocos2d/cocos2d-x/blob/v4/cmake/README.md)).
+4. Generate project using CMake ([instructions](https://github.com/cocos2d/cocos2d-x/blob/v4/cmake/README.md)). Or open `frameworks/runtime-src/proj.android` with Android Studio if your target is Android platform.
 
         $ mkdir build
         $ cd build
@@ -54,28 +54,31 @@ Runtime requirements is actually decided by your compiler, but in most cases the
 ## Dependency Graph
 
 LuaSTG-x\
-©À¡¡[cocos2d-x](https://github.com/Xrysnow/cocos2d-x)\
-©À¡¡[lstgx_Audio](https://github.com/Xrysnow/lstgx_Audio)\
-©¦¡¡¡¡©¸ [openal-soft](https://github.com/kcat/openal-soft) (in lstgx_external)\
-©À¡¡[lstgx_external](https://github.com/Xrysnow/lstgx_external)\
-©¦¡¡¡¡©À [BurstLinker](https://github.com/Xrysnow/BurstLinker)\
-©¦¡¡¡¡©À [luafilesystem](http://keplerproject.github.io/luafilesystem)\
-©¦¡¡¡¡©À [LPeg](http://www.inf.puc-rio.br/~roberto/lpeg)\
-©¦¡¡¡¡©À [NativeFileDialog](https://github.com/mlabbe/nativefiledialog)\
-©¦¡¡¡¡©À [libogg](https://xiph.org/ogg)\
-©¦¡¡¡¡©À [openal-soft](https://github.com/kcat/openal-soft)\
-©¦¡¡¡¡©À [cLaTeXMath](https://github.com/NanoMichael/cLaTeXMath)\
-©¦¡¡¡¡©À [FFmpeg](http://ffmpeg.org)\
-©¦¡¡¡¡©À [nanosvg](https://github.com/memononen/nanosvg)\
-©¦¡¡¡¡©¸ [libzippp](https://github.com/ctabin/libzippp)\
-©¦¡¡¡¡¡¡©¸ [libzip](https://github.com/nih-at/libzip)\
-©À¡¡[lstgx_Math](https://github.com/Xrysnow/lstgx_Math)\
-©À¡¡[lstgx_LuaCore](https://github.com/Xrysnow/lstgx_LuaCore)\
-©À¡¡[cocos2d-x-imgui](https://github.com/Xrysnow/cocos2d-x-imgui)\
-©¦¡¡¡¡©¸ [ImGui](https://github.com/ocornut/imgui)\
-©À¡¡[cocos2d-x-live2d](https://github.com/Xrysnow/cocos2d-x-live2d)\
-©¦¡¡©À [CubismNativeFramework](https://github.com/Xrysnow/CubismNativeFramework)\
-©¦¡¡©¸ [Cubism SDK for Native](https://www.live2d.com/en/download/cubism-sdk/download-native)\
-©À¡¡[cocos2d-x-video](https://github.com/Xrysnow/cocos2d-x-video)\
-©¦¡¡¡¡©¸ [FFmpeg](http://ffmpeg.org) (in lstgx_external)\
-©¸¡¡[creator_to_cocos2dx](https://github.com/Xrysnow/creator_to_cocos2dx)
+â”œã€€[cocos2d-x](https://github.com/Xrysnow/cocos2d-x)\
+â”œã€€[lstgx_Audio](https://github.com/Xrysnow/lstgx_Audio)\
+â”‚ã€€ã€€â”” [openal-soft](https://github.com/kcat/openal-soft) (in lstgx_external)\
+â”œã€€[lstgx_external](https://github.com/Xrysnow/lstgx_external)\
+â”‚ã€€ã€€â”œ [BurstLinker](https://github.com/Xrysnow/BurstLinker)\
+â”‚ã€€ã€€â”œ [luafilesystem](http://keplerproject.github.io/luafilesystem)\
+â”‚ã€€ã€€â”œ [LPeg](http://www.inf.puc-rio.br/~roberto/lpeg)\
+â”‚ã€€ã€€â”œ [NativeFileDialog](https://github.com/mlabbe/nativefiledialog)\
+â”‚ã€€ã€€â”œ [libogg](https://xiph.org/ogg)\
+â”‚ã€€ã€€â”œ [openal-soft](https://github.com/kcat/openal-soft)\
+â”‚ã€€ã€€â”œ [cLaTeXMath](https://github.com/NanoMichael/cLaTeXMath)\
+â”‚ã€€ã€€â”œ [FFmpeg](http://ffmpeg.org)\
+â”‚ã€€ã€€â”œ [nanosvg](https://github.com/memononen/nanosvg)\
+â”‚ã€€ã€€â”” [libzippp](https://github.com/ctabin/libzippp)\
+â”‚ã€€ã€€ã€€â”” [libzip](https://github.com/nih-at/libzip)\
+â”œã€€[lstgx_Math](https://github.com/Xrysnow/lstgx_Math)\
+â”œã€€[lstgx_LuaCore](https://github.com/Xrysnow/lstgx_LuaCore)\
+â”œã€€[cocos2d-x-imgui](https://github.com/Xrysnow/cocos2d-x-imgui)\
+â”‚ã€€ã€€â”œ [ImGui](https://github.com/ocornut/imgui)\
+â”‚ã€€ã€€â”œ [imgui_markdown](https://github.com/juliettef/imgui_markdown)\
+â”‚ã€€ã€€â”œ [ImGuiColorTextEdit](https://github.com/Xrysnow/ImGuiColorTextEdit)\
+â”‚ã€€ã€€â”” [implot](https://github.com/epezent/implot)\
+â”œã€€[cocos2d-x-live2d](https://github.com/Xrysnow/cocos2d-x-live2d)\
+â”‚ã€€â”œ [CubismNativeFramework](https://github.com/Xrysnow/CubismNativeFramework)\
+â”‚ã€€â”” [Cubism SDK for Native](https://www.live2d.com/en/download/cubism-sdk/download-native)\
+â”œã€€[cocos2d-x-video](https://github.com/Xrysnow/cocos2d-x-video)\
+â”‚ã€€ã€€â”” [FFmpeg](http://ffmpeg.org) (in lstgx_external)\
+â””ã€€[creator_to_cocos2dx](https://github.com/Xrysnow/creator_to_cocos2dx)
