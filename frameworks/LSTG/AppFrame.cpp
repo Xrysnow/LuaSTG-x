@@ -19,7 +19,7 @@
 #include <iostream>
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
-#include "../../proj.win32/WindowHelperWin32.h"
+#include "../runtime-src/proj.win32/WindowHelperWin32.h"
 extern "C"
 {
 	// Prefer the higher performance GPU on Windows systems that use nvidia Optimus.

@@ -2,7 +2,7 @@
 #include "../LSTG/Renderer.h"
 #include "../LSTG/AppFrame.h"
 #include "../LSTG/Utility.h"
-#include "../../external/BurstLinker/src/src/BurstLinker.h"
+#include "../external/BurstLinker/src/src/BurstLinker.h"
 
 using namespace lstg;
 

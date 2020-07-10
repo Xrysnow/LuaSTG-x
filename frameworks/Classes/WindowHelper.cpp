@@ -4,7 +4,7 @@
 #include "../LSTG/Renderer.h"
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
-#include "../../proj.win32/WindowHelperWin32.h"
+#include "../runtime-src/proj.win32/WindowHelperWin32.h"
 #endif
 
 using namespace std;

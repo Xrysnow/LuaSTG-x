@@ -1,9 +1,9 @@
 ﻿#pragma once
-#include "../Classes/LSTG/Global.h"
+#include "../../LSTG/Global.h"
 #include <cstdint>
 #include <string>
 #include <vector>
-#include "../Classes/Classes/WindowHelper.h"
+#include "../../Classes/WindowHelper.h"
 
 namespace lstg
 {
