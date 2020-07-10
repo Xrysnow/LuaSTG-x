@@ -1,23 +1,23 @@
 [submodule "frameworks/runtime-src/Classes/Live2D"]
-	path = frameworks/runtime-src/Classes/Live2D
+	path = frameworks/Live2D
 	url = https://github.com/Xrysnow/cocos2d-x-live2d.git
 [submodule "frameworks/runtime-src/Classes/Audio"]
-	path = frameworks/runtime-src/Classes/Audio
+	path = frameworks/Audio
 	url = https://github.com/Xrysnow/cocos2d-x-audio.git
 [submodule "frameworks/runtime-src/Classes/imgui"]
-	path = frameworks/runtime-src/Classes/imgui
+	path = frameworks/imgui
 	url = https://github.com/Xrysnow/cocos2d-x-imgui.git
 [submodule "frameworks/runtime-src/Classes/Math"]
-	path = frameworks/runtime-src/Classes/Math
+	path = frameworks/Math
 	url = https://github.com/Xrysnow/lstgx_Math.git
 [submodule "frameworks/runtime-src/Classes/Video"]
-	path = frameworks/runtime-src/Classes/Video
+	path = frameworks/Video
 	url = https://github.com/Xrysnow/cocos2d-x-video.git
 [submodule "frameworks/runtime-src/Classes/reader"]
-	path = frameworks/runtime-src/Classes/reader
+	path = frameworks/reader
 	url = https://github.com/Xrysnow/creator_to_cocos2dx.git
 [submodule "frameworks/runtime-src/external"]
-	path = frameworks/runtime-src/external
+	path = frameworks/external
 	url = https://github.com/Xrysnow/lstgx_external.git
 [submodule "frameworks/cocos2d-x"]
 	path = frameworks/cocos2d-x
