@@ -39,7 +39,7 @@ namespace lstg
 				for (size_t i = 0; i < len; i++) {\
 					lua_pushnumber(L, i + 1);\
 					lua_gettable(L, lo);\
-					ok &= to_native<T>::F(L, top, &value, fName);\
+					ok &= to_native<T>::F(L, top + 1, &value, fName);\
 					lua_pop(L, 1);\
 					if (ok)\
 						outValue->_Setter(value);\
@@ -229,7 +229,7 @@ namespace lstg
 				for (size_t i = 0; i < len; i++) {
 					lua_pushnumber(L, i + 1);
 					lua_gettable(L, lo);
-					ok &= to_native<T>::F(L, top, &value, fName);
+					ok &= to_native<T>::F(L, top + 1, &value, fName);
 					lua_pop(L, 1);
 					if (ok)
 						outValue->operator[](i) = value;
@@ -251,7 +251,7 @@ namespace lstg
 				bool ok = true;
 				lua_pushnumber(L, 1);
 				lua_gettable(L, lo);
-				ok &= to_native<T1>::F(L, top, &value1, fName);
+				ok &= to_native<T1>::F(L, top + 1, &value1, fName);
 				lua_pop(L, 1);
 				if (ok)
 					outValue->first = value1;
@@ -259,7 +259,7 @@ namespace lstg
 					return false;
 				lua_pushnumber(L, 2);
 				lua_gettable(L, lo);
-				ok &= to_native<T2>::F(L, top, &value2, fName);
+				ok &= to_native<T2>::F(L, top + 1, &value2, fName);
 				lua_pop(L, 1);
 				if (ok)
 					outValue->second = value2;
@@ -313,7 +313,7 @@ namespace lstg
 				for (size_t i = 0; i < len; i++) {
 					lua_pushnumber(L, i + 1);
 					lua_gettable(L, lo);
-					ok &= to_native<bool>::F(L, top, &value, fName);
+					ok &= to_native<bool>::F(L, top + 1, &value, fName);
 					lua_pop(L, 1);
 					if (ok)
 						outValue->set(i, value);
