@@ -137,9 +137,13 @@ LUA_REGISTER_FUNC_DEF(lstg, GetPlatform)
 
 LUA_REGISTER_FUNC_DEF(lstg, SetOnWriteLog)
 {
+	static int refid = 0;
 	const auto handler = toluafix_ref_function(L, 1, 0);
 	if (handler == 0)
 		return luaL_error(L, "invalid argument");
+	if (refid != 0)
+		toluafix_remove_function_by_refid(L, refid);
+	refid = handler;
 	LLOGGER.setOnWrite([=](const std::string& str)
 	{
 		auto stack = cocos2d::LuaEngine::getInstance()->getLuaStack();
