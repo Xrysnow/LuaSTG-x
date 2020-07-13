@@ -1320,6 +1320,17 @@ int GameObjectManager::GetAttr(lua_State* L)noexcept
 		if (isExtProperty(p))
 		{
 			if (p->res)
+				p->res->pushLua(L);
+			else
+				lua_pushnil(L);
+		}
+		else
+			lua_pushnil(L);
+		break;
+	case GameObjectProperty::RES_COMPONENT:
+		if (isExtProperty(p))
+		{
+			if (p->res)
 				p->cm->pushLua(L, p->res);
 			else
 				lua_pushnil(L);
@@ -1541,37 +1552,37 @@ int GameObjectManager::SetAttr(lua_State* L)noexcept
 		p->cm->setTransformDirty(true);
 		break;
 	case GameObjectProperty::CLASS:
-	{
-		// obj s(key) cls
-		lua_rawgeti(L, -1, 7);// obj s(key) cls cid
-		const auto cid = luaL_checkinteger(L, -1);
-		const auto cls = GameClass::getByID(cid);
-		if (!cls)
-			return error_prop(L, "class");
-		p->cls = cls;
-		lua_pop(L, 1);
-		lua_rawseti(L, 1, 1);
-		p->cm->getDataTrasform()->is3D = isExtProperty3D(p);
-	}
-	break;
+		{
+			// obj s(key) cls
+			lua_rawgeti(L, -1, 7);// obj s(key) cls cid
+			const auto cid = luaL_checkinteger(L, -1);
+			const auto cls = GameClass::getByID(cid);
+			if (!cls)
+				return error_prop(L, "class");
+			p->cls = cls;
+			lua_pop(L, 1);
+			lua_rawseti(L, 1, 1);
+			p->cm->getDataTrasform()->is3D = isExtProperty3D(p);
+		}
+		break;
 	case GameObjectProperty::A:
-	{
-		const auto v = luaL_checknumber(L, 3);
-		if (v < 0.0)
-			return luaL_error(L, "invalid negative value for property 'a': %f", v);
-		cm->getDataColli()->a = v * L_IMG_FACTOR;
-		cm->updateColli();
-	}
-	break;
+		{
+			const auto v = luaL_checknumber(L, 3);
+			if (v < 0.0)
+				return luaL_error(L, "invalid negative value for property 'a': %f", v);
+			cm->getDataColli()->a = v * L_IMG_FACTOR;
+			cm->updateColli();
+		}
+		break;
 	case GameObjectProperty::B:
-	{
-		const auto v = luaL_checknumber(L, 3);
-		if (v < 0.0)
-			return luaL_error(L, "invalid negative value for property 'b': %f", v);
-		cm->getDataColli()->b = v * L_IMG_FACTOR;
-		cm->updateColli();
-	}
-	break;
+		{
+			const auto v = luaL_checknumber(L, 3);
+			if (v < 0.0)
+				return luaL_error(L, "invalid negative value for property 'b': %f", v);
+			cm->getDataColli()->b = v * L_IMG_FACTOR;
+			cm->updateColli();
+		}
+		break;
 	case GameObjectProperty::RECT:
 		if (!lua::luaval_to_ColliderType(L, 3, &cm->getDataColli()->type))
 			return error_prop(L, "rect");
@@ -1588,6 +1599,10 @@ int GameObjectManager::SetAttr(lua_State* L)noexcept
 			p->ani_timer = luaL_checknumber(L, 3);
 		break;
 	case GameObjectProperty::RES:
+		if (!setObjectResource(p, L, 3))
+			return luaL_error(L, "can't set resource");
+		break;
+	case GameObjectProperty::RES_COMPONENT:
 		if (isExtProperty(p))
 		{
 			// readonly
