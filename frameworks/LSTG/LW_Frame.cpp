@@ -135,6 +135,12 @@ LUA_REGISTER_FUNC_DEF(lstg, GetPlatform)
 	return 1;
 }
 
+LUA_REGISTER_FUNC_DEF(lstg, GetBuildDate)
+{
+	lua_pushstring(L, __DATE__);
+	return 1;
+}
+
 LUA_REGISTER_FUNC_DEF(lstg, SetOnWriteLog)
 {
 	static int refid = 0;
