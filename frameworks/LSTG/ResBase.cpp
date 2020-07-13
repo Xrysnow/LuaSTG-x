@@ -12,7 +12,7 @@ std::unordered_map<std::string, std::string> Resource::getInfo() const
 	std::unordered_map<std::string, std::string> ret = {
 		{"type", tostring(resType)},
 		{"name", resName } };
-	if (resPath != "")
+	if (!resPath.empty())
 		ret["path"] = resPath;
 	return ret;
 }
