@@ -44,6 +44,7 @@ static unordered_map<string, GameObjectProperty> prop_map = {
 	{ "rm",		GameObjectProperty::RENDERMODE},
 	{ "color",	GameObjectProperty::COLOR	},
 	{ "res",	GameObjectProperty::RES		},
+	{ "rc",		GameObjectProperty::RES_COMPONENT},
 	{ "A",		GameObjectProperty::_A		},
 	{ "R",		GameObjectProperty::_R		},
 	{ "G",		GameObjectProperty::_G		},
