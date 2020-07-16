@@ -13,6 +13,7 @@ set(GAME_HEADER
 	${LSTGX_SRC_ROOT}/Classes/XFileDialog.h
 	${LSTGX_SRC_ROOT}/Classes/XFileUtils.h
 	${LSTGX_SRC_ROOT}/Classes/XGifRecoder.h
+	${LSTGX_SRC_ROOT}/Classes/XInfoware.h
 	${LSTGX_SRC_ROOT}/Classes/XLabel.h
 	${LSTGX_SRC_ROOT}/Classes/XLatex.h
 	${LSTGX_SRC_ROOT}/Classes/XLuaModuleRegistry.h
@@ -116,6 +117,7 @@ set(GAME_SOURCE
 	${LSTGX_SRC_ROOT}/Classes/XFileDialog.cpp
 	${LSTGX_SRC_ROOT}/Classes/XFileUtils.cpp
 	${LSTGX_SRC_ROOT}/Classes/XGifRecoder.cpp
+	${LSTGX_SRC_ROOT}/Classes/XInfoware.cpp
 	${LSTGX_SRC_ROOT}/Classes/XLabel.cpp
 	${LSTGX_SRC_ROOT}/Classes/XLatex.cpp
 	${LSTGX_SRC_ROOT}/Classes/XLuaModuleRegistry.cpp
