@@ -137,7 +137,7 @@ LUA_REGISTER_FUNC_DEF(lstg, GetPlatform)
 
 LUA_REGISTER_FUNC_DEF(lstg, GetBuildDate)
 {
-	lua_pushstring(L, __DATE__);
+	lua_pushstring(L, AppFrame::getBuildDate());
 	return 1;
 }
 

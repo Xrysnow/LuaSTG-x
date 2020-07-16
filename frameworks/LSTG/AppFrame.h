@@ -48,6 +48,7 @@ namespace lstg
 		static AppFrame* getInstance();
 		static void destroyInstance();
 		static void setCmdLineArgs(const std::vector<std::string>& args);
+		static const char* getBuildDate();
 
 		void initGLContextAttrs() override;
 

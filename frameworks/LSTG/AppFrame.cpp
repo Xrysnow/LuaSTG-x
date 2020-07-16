@@ -74,6 +74,11 @@ void AppFrame::setCmdLineArgs(const std::vector<std::string>& args)
 	cmdLineArgs = args;
 }
 
+const char* AppFrame::getBuildDate()
+{
+	return __DATE__;
+}
+
 void AppFrame::initGLContextAttrs()
 {
 	// set OpenGL context attributes: red,green,blue,alpha,depth,stencil,msaa
