@@ -88,19 +88,19 @@ int lua_x_Random_Random_log_norml(lua_State* tolua_S)
         double arg0;
         double arg1;
 
-        ok &= luaval_to_number(tolua_S, 2,&arg0, "lstg.Random:log_norml");
+        ok &= luaval_to_number(tolua_S, 2,&arg0, "lstg.Random:log_normal");
 
-        ok &= luaval_to_number(tolua_S, 3,&arg1, "lstg.Random:log_norml");
+        ok &= luaval_to_number(tolua_S, 3,&arg1, "lstg.Random:log_normal");
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_x_Random_Random_log_norml'", nullptr);
             return 0;
         }
-        double ret = cobj->log_norml(arg0, arg1);
+        double ret = cobj->log_normal(arg0, arg1);
         tolua_pushnumber(tolua_S,(lua_Number)ret);
         return 1;
     }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.Random:log_norml",argc, 2);
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.Random:log_normal",argc, 2);
     return 0;
 
 #if COCOS2D_DEBUG >= 1
@@ -1040,7 +1040,7 @@ int lua_register_x_Random_Random(lua_State* tolua_S)
 
     tolua_beginmodule(tolua_S,"Random");
         tolua_function(tolua_S,"randFloat",lua_x_Random_Random_randFloat);
-        tolua_function(tolua_S,"log_norml",lua_x_Random_Random_log_norml);
+        tolua_function(tolua_S,"log_normal",lua_x_Random_Random_log_norml);
         tolua_function(tolua_S,"vonMises",lua_x_Random_Random_vonMises);
         tolua_function(tolua_S,"getSeed",lua_x_Random_Random_getSeed);
         tolua_function(tolua_S,"triangular",lua_x_Random_Random_triangular);
