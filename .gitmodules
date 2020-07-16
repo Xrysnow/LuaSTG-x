@@ -25,3 +25,6 @@
 [submodule "src"]
 	path = src
 	url = https://github.com/Xrysnow/lstgx_LuaCore.git
+[submodule "doc"]
+	path = doc
+	url = https://github.com/Xrysnow/lstgx_LuaDoc.git
