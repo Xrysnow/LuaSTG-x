@@ -87,7 +87,7 @@ namespace lstg
 		void DoFrame()noexcept;
 
 		// invoke render callback on all game objects
-		void DoRender()noexcept;
+		void DoRender();
 
 		bool IsInBound(float x, float y) const noexcept
 		{
@@ -107,7 +107,7 @@ namespace lstg
 
 		/* collision check between two groups, will invoke callback of
 		 * object in groupA and pass object in groupB as parameter */
-		void CollisionCheck(size_t groupA, size_t groupB)noexcept;
+		void CollisionCheck(size_t groupA, size_t groupB);
 		void CollisionCheck(GameObject* objectA, size_t groupB)noexcept;
 		void CollisionCheck(size_t groupA, GameObject* objectB)noexcept;
 		void CollisionCheck(GameObject* objectA, GameObject* objectB)noexcept;
@@ -173,8 +173,8 @@ namespace lstg
 		static void UpdateParticle(GameObject* p)noexcept;
 		bool UpdateParticle(size_t id)noexcept;
 
-		bool DoDefaultRender(size_t id)noexcept;
-		static bool DoDefaultRender(GameObject* p)noexcept;
+		bool DoDefaultRender(size_t id);
+		static bool DoDefaultRender(GameObject* p);
 
 		// get id of next object, return -1 when failed
 		int NextObject(int groupId, int id)noexcept;
@@ -187,7 +187,7 @@ namespace lstg
 		int GetAttr(lua_State* L)noexcept;
 
 		// __newindex metamethod for game object
-		int SetAttr(lua_State* L)noexcept;
+		int SetAttr(lua_State* L);
 
 		// bind a cocos2d::Node instance on the game object
 		int BindNode(lua_State* L)noexcept;

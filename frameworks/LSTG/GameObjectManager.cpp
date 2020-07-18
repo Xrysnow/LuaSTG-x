@@ -59,18 +59,6 @@ using namespace xmath;
 using namespace intersect;
 using namespace collision;
 
-static bool ObjectListSortFunc(GameObject* p1, GameObject* p2)noexcept
-{
-	// by uid
-	return p1->uid < p2->uid;
-}
-
-static bool RenderListSortFunc(GameObject* p1, GameObject* p2)noexcept
-{
-	// lower layer first, then uid
-	return (p1->layer < p2->layer) || ((p1->layer == p2->layer) && (p1->uid < p2->uid));
-}
-
 bool lstg::CollisionCheck(GameObject* p1, GameObject* p2)noexcept
 {
 	// skip
@@ -105,7 +93,7 @@ void CreateObjectTable(lua_State* L)
 ////////////////////////////////////////////////////////////////////////////////
 
 GameObjectManager::GameObjectManager(lua_State* pL)
-	: L(pL)
+	: L(pL), idForLua()
 {
 	for (auto& cm : cmPool)
 	{
@@ -255,7 +243,7 @@ void GameObjectManager::DoFrame()noexcept
 	inDoFrame = false;
 }
 
-void GameObjectManager::DoRender()noexcept
+void GameObjectManager::DoRender()
 {
 	inDoRender = true;
 	//XProfiler::getInstance()->tic("updateTransformMat");
@@ -367,9 +355,10 @@ void GameObjectManager::BoundCheck()noexcept
 	}
 	else
 	{
-		auto result = new bool[pool.size()];//TODO:
+		const auto size = pool.size();
+		auto result = new bool[size];//TODO:
 		pool.boundCheck(_boundLeft, _boundRight, _boundBottom, _boundTop, result);
-		for (auto i = 0u; i < pool.size(); ++i)
+		for (auto i = 0u; i < size; ++i)
 		{
 			if (result[i])
 			{
@@ -383,7 +372,7 @@ void GameObjectManager::BoundCheck()noexcept
 	lua_pop(L, 1);
 }
 
-void GameObjectManager::CollisionCheck(size_t groupA, size_t groupB)noexcept
+void GameObjectManager::CollisionCheck(size_t groupA, size_t groupB)
 {
 	if (!checkGroupID(groupA) || !checkGroupID(groupB))
 		luaL_error(L, "Invalid collision group.");
@@ -887,7 +876,7 @@ bool GameObjectManager::Angle(size_t idA, size_t idB, double& out)noexcept
 	const auto pB = pool.atLua(idB);
 	if (!pA || !pB)
 		return false;
-	out = LRAD2DEGREE * atan2(pool.y[pB->id] - pool.y[pA->id], pool.x[pB->id] - pool.x[pA->id]);
+	out = (double)LRAD2DEGREE * atan2(pool.y[pB->id] - pool.y[pA->id], pool.x[pB->id] - pool.x[pA->id]);
 	return true;
 }
 
@@ -910,7 +899,7 @@ bool GameObjectManager::GetV(size_t id, double& v, double& a)noexcept
 		return false;
 	id = p->id;
 	v = sqrt(pool.vx[id] * pool.vx[id] + pool.vy[id] * pool.vy[id]);
-	a = atan2(pool.vy[id], pool.vx[id]) * LRAD2DEGREE;
+	a = (double)LRAD2DEGREE * atan2(pool.vy[id], pool.vx[id]);
 	return true;
 }
 
@@ -1031,13 +1020,13 @@ bool GameObjectManager::UpdateParticle(size_t id) noexcept
 	return true;
 }
 
-bool GameObjectManager::DoDefaultRender(size_t id)noexcept
+bool GameObjectManager::DoDefaultRender(size_t id)
 {
 	return DoDefaultRender(pool.atLua(id));
 }
 
 using QUEUE_GROUP = RenderQueue::QUEUE_GROUP;
-bool GameObjectManager::DoDefaultRender(GameObject* p) noexcept
+bool GameObjectManager::DoDefaultRender(GameObject* p)
 {
 	if (!p)
 		return false;
@@ -1454,7 +1443,7 @@ int GameObjectManager::GetAttr(lua_State* L)noexcept
 	return 1;
 }
 
-int GameObjectManager::SetAttr(lua_State* L)noexcept
+int GameObjectManager::SetAttr(lua_State* L)
 {
 	lua_rawgeti(L, 1, 2);  // obj s(key) any(v) i(id)
 	auto id = static_cast<size_t>(lua_tonumber(L, -1));
