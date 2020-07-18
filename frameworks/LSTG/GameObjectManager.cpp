@@ -1182,7 +1182,7 @@ int GameObjectManager::FirstObject(int groupId)noexcept
 
 int GameObjectManager::GetAttr(lua_State* L)noexcept
 {
-	lua_rawgeti(L, 1, 2);  // obj s(key) ??? i(id)
+	lua_rawgeti(L, 1, 2);  // obj s(key) ... i(id)
 	auto id = size_t(lua_tonumber(L, -1));
 	lua_pop(L, 1);  // obj s(key)
 	GameObject* p = pool.atLua(id);
@@ -1194,20 +1194,16 @@ int GameObjectManager::GetAttr(lua_State* L)noexcept
 	size_t strlen;
 	const char* key = luaL_checklstring(L, 2, &strlen);
 
-	// x, y
-	if (key[1] == '\0')
+	// shortcut for x, y
+	if (key[0] == 'x' && key[1] == '\0')
 	{
-		const auto k0 = key[0];
-		if (k0 == 'x')
-		{
-			lua_pushnumber(L, pool.x[id]);
-			return 1;
-		}
-		if (k0 == 'y')
-		{
-			lua_pushnumber(L, pool.y[id]);
-			return 1;
-		}
+		lua_pushnumber(L, pool.x[id]);
+		return 1;
+	}
+	if (key[0] == 'y' && key[1] == '\0')
+	{
+		lua_pushnumber(L, pool.y[id]);
+		return 1;
 	}
 	// others
 	const auto cm = p->cm;
@@ -1465,14 +1461,14 @@ int GameObjectManager::SetAttr(lua_State* L)
 	size_t strlen;
 	const char* key = luaL_checklstring(L, 2, &strlen);
 
-	// x, y
+	// shortcut for x, y
 	if (key[0] == 'x' && key[1] == '\0')
 	{
 		pool.x[id] = luaL_checknumber(L, 3);
 		p->cm->setTransformDirty(true);
 		return 0;
 	}
-	else if (key[0] == 'y' && key[1] == '\0')
+	if (key[0] == 'y' && key[1] == '\0')
 	{
 		pool.y[id] = luaL_checknumber(L, 3);
 		p->cm->setTransformDirty(true);
