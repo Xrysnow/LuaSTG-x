@@ -2,11 +2,12 @@
 #include "Global.h"
 #include "../Classes/XProfiler.h"
 #include "../Classes/XLuaModuleRegistry.h"
+#include "../Classes/XFileUtils.h"
+#include "../Classes/XInfoware.h"
 #include "../Audio/AudioEngine.h"
 #include "../Video/VideoCommon.h"
 #include "../Live2D/L2DFramework.h"
 #include "LuaWrapper.h"
-#include "XFileUtils.h"
 #include "Renderer.h"
 #include "InputManager.h"
 #include "WindowHelper.h"
@@ -97,6 +98,13 @@ bool AppFrame::applicationDidFinishLaunching()
 	char tmp[32];
 	::strftime(tmp, sizeof(tmp), "%H:%M:%S", ::localtime(&t));
 	LINFO("=== Application start at: %s ===", tmp);
+	LINFO("CPU name: %s", infoware::cpu::model_name().c_str());
+	const auto mem_info = infoware::system::memory();
+	constexpr uint64_t mem_factor = 1024 * 1024;
+	LINFO("Memory: %ldMB / %ldMB", mem_info.physical_available / mem_factor, mem_info.physical_total / mem_factor);
+	const auto os_info = infoware::system::os_info();
+	LINFO("OS name: %s", os_info.full_name.c_str());
+
 	// default FPS is set in lua
 	//Director::getInstance()->setAnimationInterval(1.0 / 60.0f);
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
