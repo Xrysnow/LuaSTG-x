@@ -1437,7 +1437,14 @@ int GameObjectManager::GetAttr(lua_State* L)noexcept
 	case GameObjectProperty::X:
 	case GameObjectProperty::Y:
 	default:
-		lua_pushnil(L);
+		if (isExtProperty(p))
+		{
+			p->cls->pushLua(L); // obj s ... cls
+			lua_pushvalue(L, 2); // obj s ... cls s
+			lua_gettable(L, -2); // obj s ... cls v
+		}
+		else
+			lua_pushnil(L);
 		break;
 	}
 	return 1;
