@@ -5,8 +5,12 @@
 #include "../Classes/XFileUtils.h"
 #include "../Classes/XInfoware.h"
 #include "../Audio/AudioEngine.h"
-#include "../Video/VideoCommon.h"
-#include "../Live2D/L2DFramework.h"
+#ifndef LSTGX_NO_VIDEO
+	#include "../Video/VideoCommon.h"
+#endif
+#ifndef LSTGX_NO_LIVE2D
+	#include "../Live2D/L2DFramework.h"
+#endif
 #include "LuaWrapper.h"
 #include "Renderer.h"
 #include "InputManager.h"
@@ -308,7 +312,9 @@ bool AppFrame::frameInit()noexcept
 	//LINFO("Cocos2dx Configuration Info:%s", Configuration::getInstance()->getInfo().c_str());
 
 	audio::setLoggingFunction([](const std::string& s) { LLOGGER.writeLine(s); });
+#ifndef LSTGX_NO_VIDEO
 	video::setLoggingFunction([](const std::string& s) { LLOGGER.writeLine(s); });
+#endif
 
 	// audio engine
 	if (!audio::Engine::init())
@@ -400,7 +406,9 @@ void AppFrame::frameShutdown()noexcept
 	LRES.unloadAllResourcePacks();
 	LINFO("unload all packs");
 
+#ifndef LSTGX_NO_LIVE2D
 	l2d::Framework::end();
+#endif
 
 	// note: must be called after ClearAllResource
 	audio::Engine::end();
