@@ -140,7 +140,7 @@ namespace lstg {
 	public:
 		RenderMode* getRenderMode() const noexcept { return renderMode; }
 		ParticlePool* newPool()noexcept;
-		void FreeInstance(ParticlePool* p)noexcept;
+		cocos2d::ParticleSystemQuad* newCocosParticle();
 
 		cocos2d::Sprite* getBindSprite() const noexcept { return bindSprite; }
 		const ParticleInfo& getParticleInfo() const noexcept { return particleInfo; }

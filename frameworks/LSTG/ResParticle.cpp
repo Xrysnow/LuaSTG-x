@@ -264,6 +264,74 @@ ResParticle::ParticlePool* ResParticle::newPool() noexcept
 	return pool;
 }
 
+ParticleSystemQuad* ResParticle::newCocosParticle()
+{
+	auto ret = ParticleSystemQuad::create();
+	if (!ret)
+		return nullptr;
+
+	ret->setEmitterMode(ParticleSystem::Mode::GRAVITY);
+	ret->setRotationIsDir(false);
+	ret->setSourcePosition(Vec2::ZERO);
+	ret->setAutoRemoveOnFinish(false);
+	ret->setTotalParticles(LPARTICLE_MAXCNT);
+
+	auto& info = particleInfo;
+	if (info.BlendInfo & 1)
+		ret->setBlendAdditive(true);
+	else
+		ret->setBlendAdditive(false);
+	if (info.BlendInfo & 2)
+		ret->setBlendFunc(BlendFunc::ALPHA_NON_PREMULTIPLIED);
+	else
+		ret->setBlendFunc(BlendFunc::ADDITIVE);
+	ret->setEmissionRate((float)info.EmissionFreq);
+	if (info.Lifetime < 0)
+		ret->setDuration(ParticleSystem::DURATION_INFINITY);
+	else
+		ret->setDuration(info.Lifetime);
+	ret->setLife((info.LifeMax + info.LifeMin) / 2);
+	ret->setLifeVar((info.LifeMax - info.LifeMin) / 2);
+	ret->setAngle(CC_RADIANS_TO_DEGREES(info.Direction));
+	ret->setAngleVar(CC_RADIANS_TO_DEGREES(info.Spread));
+	ret->setSpeed((info.SpeedMax + info.SpeedMin) / 2);
+	ret->setSpeedVar((info.SpeedMax - info.SpeedMin) / 2);
+	// no gravity var in cocos
+	ret->setGravity({ 0, (info.GravityMax + info.GravityMin) / 2 });
+	ret->setRadialAccel((info.RadialAccelMax + info.RadialAccelMin) / 2);
+	ret->setRadialAccelVar((info.RadialAccelMax - info.RadialAccelMin) / 2);
+	ret->setTangentialAccel((info.TangentialAccelMax + info.TangentialAccelMin) / 2);
+	ret->setTangentialAccelVar((info.TangentialAccelMax - info.TangentialAccelMin) / 2);
+
+	const auto rect = bindSprite->getTextureRect();
+	const auto size = (rect.size.width + rect.size.height) / 2;
+	ret->setStartSize(info.SizeStart * size);
+	ret->setStartSizeVar(info.SizeVar * size);
+	ret->setEndSize(info.SizeEnd * size);
+	ret->setEndSizeVar(info.SizeVar * size);
+	
+	ret->setStartSpin(CC_RADIANS_TO_DEGREES(info.SpinStart));
+	ret->setStartSpinVar(CC_RADIANS_TO_DEGREES(info.SpinVar));
+	ret->setEndSpin(CC_RADIANS_TO_DEGREES(info.SpinEnd));
+	ret->setEndSpinVar(CC_RADIANS_TO_DEGREES(info.SpinVar));
+
+	const auto ins_color = particleInfo.ColorStart[0] >= 0;
+	if (ins_color)
+		ret->setStartColor({ info.ColorStart[0],info.ColorStart[1],info.ColorStart[2],info.ColorStart[3] });
+	else
+		ret->setStartColor({ 1,1,1,info.ColorStart[3] });
+	if (ins_color)
+		ret->setEndColor({ info.ColorEnd[0],info.ColorEnd[1],info.ColorEnd[2],info.ColorEnd[3] });
+	else
+		ret->setEndColor({ 1,1,1,info.ColorEnd[3] });
+	const auto colorVar = Color4F(info.ColorVar, info.ColorVar, info.ColorVar, info.AlphaVar);
+	ret->setStartColorVar(colorVar);
+	ret->setEndColorVar(colorVar);
+
+	ret->setTextureWithRect(bindSprite->getTexture(), bindSprite->getTextureRect());
+	return ret;
+}
+
 std::unordered_map<std::string, std::string> ResParticle::getInfo() const
 {
 	auto ret = ResourceColliable::getInfo();
