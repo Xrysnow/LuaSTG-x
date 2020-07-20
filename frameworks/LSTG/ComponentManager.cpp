@@ -437,7 +437,7 @@ void ComponentManager::updateParticle()
 	{
 		ps->setRenderMode(blend->renderMode);
 	}
-	par->pool->Update(1.0 / 60);
+	par->pool->update(1.0 / 60);
 }
 
 void ComponentManager::updateTransform()
@@ -514,9 +514,9 @@ void ComponentManager::renderParticle()
 	{
 		const auto factor = L_IMG_FACTOR;
 		if (tr)
-			par->pool->Render(PROP(hscale) * factor, PROP(vscale) * factor);
+			par->pool->render(PROP(hscale) * factor, PROP(vscale) * factor);
 		else
-			par->pool->Render(1.f*factor, 1.f*factor);
+			par->pool->render(1.f*factor, 1.f*factor);
 	}
 }
 

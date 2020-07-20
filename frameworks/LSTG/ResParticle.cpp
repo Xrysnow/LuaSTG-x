@@ -86,7 +86,7 @@ void ResParticle::ParticlePool::setCenter(const cocos2d::Vec2& pos) noexcept
 	center = pos;
 }
 
-void ResParticle::ParticlePool::Update(float delta)
+void ResParticle::ParticlePool::update(float delta)
 {
 	//const ParticleInfo& pInfo = m_pInstance->getParticleInfo();
 	const auto& pInfo = particleInfo;
@@ -161,7 +161,7 @@ void ResParticle::ParticlePool::Update(float delta)
 			tInst.vecLocation.x += _rand.getRandFloat(-2.0f, 2.0f);
 			tInst.vecLocation.y += _rand.getRandFloat(-2.0f, 2.0f);
 
-			const float ang = /* pInfo.fDirection */ (rotation - float(LPI_HALF)) - float(LPI_HALF) +
+			const float ang = /* pInfo.Direction */ (rotation - float(LPI_HALF)) - float(LPI_HALF) +
 				_rand.getRandFloat(0, pInfo.Spread) - pInfo.Spread / 2.0f;
 			tInst.vecVelocity.x = cos(ang);
 			tInst.vecVelocity.y = sin(ang);
@@ -201,7 +201,7 @@ void ResParticle::ParticlePool::Update(float delta)
 	prevCenter = center;
 }
 
-void ResParticle::ParticlePool::Render(float scaleX, float scaleY)
+void ResParticle::ParticlePool::render(float scaleX, float scaleY)
 {
 	Sprite* p = _res->getBindSprite();
 	const auto no_ins_color = particleInfo.ColorStart[0] < 0;
@@ -234,8 +234,15 @@ void ResParticle::ParticlePool::Render(float scaleX, float scaleY)
 	p->setOpacity(_alpha);
 }
 
+ResParticle::ParticleInstance* ResParticle::ParticlePool::getParticleInstance(int32_t index)
+{
+	if (0 <= index && index < numAlive)
+		return &particlePool.at(index);
+	return nullptr;
+}
+
 ResParticle::ParticlePool::ParticlePool(ResParticle* ref)
-	: _res(ref)//, emissionFreq(float(ref->getParticleInfo().EmissionFreq)), m_ParticlePool()
+	: _res(ref), particleInfo()//, emissionFreq(float(ref->getParticleInfo().EmissionFreq))
 {
 	_res->retain();
 	particleInfo = _res->getParticleInfo();
@@ -246,17 +253,15 @@ ResParticle::ParticlePool::~ParticlePool()
 	_res->release();
 }
 
-ResParticle::ParticlePool* ResParticle::AllocInstance()noexcept
+ResParticle::ParticlePool* ResParticle::newPool() noexcept
 {
-	auto pRet = new ParticlePool(this);
-	pRet->setRenderMode(renderMode);
-	//pRet->setSeed(uint32_t(time(nullptr)));
-	return pRet;
-}
-
-void ResParticle::FreeInstance(ParticlePool* p)noexcept
-{
-	delete p;
+	auto pool = new (std::nothrow) ParticlePool(this);
+	if (pool)
+	{		
+		pool->setRenderMode(renderMode);
+		//pool->setSeed(uint32_t(time(nullptr)));
+	}
+	return pool;
 }
 
 std::unordered_map<std::string, std::string> ResParticle::getInfo() const

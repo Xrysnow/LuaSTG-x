@@ -469,8 +469,8 @@ bool XRenderer::render(ResParticle::ParticlePool* p, float hscale, float vscale)
 {
 	updateRenderMode(p->getRenderMode());
 	// already set in Render
-	//p->SetCenter(p->GetCenter());
-	p->Render(hscale, vscale);
+	//p->setCenter(p->getCenter());
+	p->render(hscale, vscale);
 	return true;
 }
 

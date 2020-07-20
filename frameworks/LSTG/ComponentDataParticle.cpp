@@ -3,7 +3,7 @@
 bool lstg::ComponentDataParticle::init(ResParticle* res)
 {
 	if (!res)return false;
-	pool = res->AllocInstance();
+	pool = res->newPool();
 	return true;
 }
 
@@ -15,7 +15,7 @@ lstg::ComponentDataParticle::~ComponentDataParticle()
 {
 	if (pool)
 	{
-		pool->getResource()->FreeInstance(pool);
+		pool->release();
 		pool = nullptr;
 	}
 }

@@ -6,7 +6,7 @@
 #include "../Classes/RandomWELL512.h"
 
 namespace lstg {
-	// implement of HGE particle system
+	// implements HGE particle system
 	class ResParticle :
 		public ResourceColliable
 	{
@@ -42,19 +42,19 @@ namespace lstg {
 		};
 		struct ParticleInstance
 		{
-			cocos2d::Vec2 vecLocation;  // 位置
-			cocos2d::Vec2 vecVelocity;  // 速度
-			float gravity;              // 重力
-			float radialAccel;          // 线加速度
-			float tangentialAccel;      // 角加速度
-			float spin;                 // 自旋
-			float spinDelta;            // 自旋增量
-			float size;                 // 大小
-			float sizeDelta;            // 大小增量
-			float color[4];             // 颜色
-			float colorDelta[4];        // 颜色增量
-			float life;                 // 当前存活时间
-			float terminalLife;         // 终止时间
+			cocos2d::Vec2 vecLocation;
+			cocos2d::Vec2 vecVelocity;
+			float gravity = 0;              // 重力
+			float radialAccel = 0;          // 线加速度
+			float tangentialAccel = 0;      // 角加速度
+			float spin = 0;                 // 自旋
+			float spinDelta = 0;            // 自旋增量
+			float size = 0;                 // 大小
+			float sizeDelta = 0;            // 大小增量
+			float color[4] = {};            // 颜色
+			float colorDelta[4] = {};       // 颜色增量
+			float life = 0;                 // 当前存活时间
+			float terminalLife = 0;         // 终止时间
 		};
 		// particle pool instance
 		class ParticlePool : public cocos2d::Ref
@@ -126,8 +126,9 @@ namespace lstg {
 			void setRotation(float r)noexcept { rotation = r; }
 			float getRotation() const noexcept { return rotation; }
 
-			void Update(float delta);
-			void Render(float scaleX, float scaleY);
+			void update(float delta = 1.f / 60);
+			void render(float scaleX = 1.f, float scaleY = 1.f);
+			ParticleInstance* getParticleInstance(int32_t index);
 		public:
 			explicit ParticlePool(ResParticle* ref);
 			~ParticlePool();
@@ -138,7 +139,7 @@ namespace lstg {
 		RenderMode* renderMode;
 	public:
 		RenderMode* getRenderMode() const noexcept { return renderMode; }
-		ParticlePool* AllocInstance()noexcept;
+		ParticlePool* newPool()noexcept;
 		void FreeInstance(ParticlePool* p)noexcept;
 
 		cocos2d::Sprite* getBindSprite() const noexcept { return bindSprite; }
