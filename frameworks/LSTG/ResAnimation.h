@@ -25,12 +25,14 @@ namespace lstg {
 			float hscale = 1, float vscale = 1);
 
 		std::unordered_map<std::string, std::string> getInfo() const override;
+		cocos2d::Animation* newCocosAnimation();
 
 	private:
 		cocos2d::Vector<cocos2d::Sprite*> images;
 		std::vector<cocos2d::V3F_C4B_T2F_Quad> verts;
 		float interval = 1.f;
-		float w, h; int m, n;
+		float w, h;
+		int m, n;
 
 	public:
 		ResAnimation(const char* name, ResTexture* tex,

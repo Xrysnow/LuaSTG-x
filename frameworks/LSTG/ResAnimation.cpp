@@ -93,10 +93,18 @@ std::unordered_map<std::string, std::string> ResAnimation::getInfo() const
 	return ret;
 }
 
+Animation* ResAnimation::newCocosAnimation()
+{
+	Vector<SpriteFrame*> frames;
+	for (auto& img : images)
+		frames.pushBack(img->getSpriteFrame());
+	return Animation::createWithSpriteFrames(frames);
+}
+
 ResAnimation::ResAnimation(const char* name, ResTexture* tex,
-	float x, float y, float w, float h,
-	int n, int m, int intv, double a, double b,
-	XColliderType colliType, const std::string& path)
+                           float x, float y, float w, float h,
+                           int n, int m, int intv, double a, double b,
+                           XColliderType colliType, const std::string& path)
 : ResourceQuad(ResourceType::Animation, name, colliType, a, b, path),
 interval(intv), w(w), h(h), m(m), n(n)
 {
