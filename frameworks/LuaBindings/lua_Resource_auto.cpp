@@ -1563,6 +1563,43 @@ int lua_x_Resource_ResAnimation_create(lua_State* tolua_S)
 #endif
     return 0;
 }
+int lua_x_Resource_ResAnimation_newCocosAnimation(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResAnimation* cobj = nullptr;
+    bool ok = true;
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+    if (!tolua_isusertype(tolua_S, 1, "lstg.ResAnimation", 0, &tolua_err)) goto tolua_lerror;
+#endif
+    cobj = (lstg::ResAnimation*)tolua_tousertype(tolua_S, 1, nullptr);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj)
+    {
+        tolua_error(tolua_S, "invalid 'cobj' in function 'lua_x_Resource_ResAnimation_newCocosAnimation'", nullptr);
+        return 0;
+    }
+#endif
+    argc = lua_gettop(tolua_S) - 1;
+    if (argc == 0)
+    {
+        if (!ok)
+        {
+            tolua_error(tolua_S, "invalid arguments in function 'lua_x_Resource_ResAnimation_newCocosAnimation'", nullptr);
+            return 0;
+        }
+        cocos2d::Animation* ret = cobj->newCocosAnimation();
+        lstg::lua::native_to_luaval(tolua_S, ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResAnimation:newCocosAnimation", argc, 0);
+    return 0;
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S, "#ferror in function 'lua_x_Resource_ResAnimation_newCocosAnimation'.", &tolua_err);
+    return 0;
+#endif
+}
 static int lua_x_Resource_ResAnimation_finalize(lua_State* tolua_S)
 {
     printf("luabindings: finalizing LUA object (ResAnimation)");
@@ -1575,6 +1612,7 @@ int lua_register_x_Resource_ResAnimation(lua_State* tolua_S)
     tolua_cclass(tolua_S,"ResAnimation","lstg.ResAnimation","lstg.ResourceQuad",nullptr);
 
     tolua_beginmodule(tolua_S,"ResAnimation");
+        tolua_function(tolua_S,"newCocosAnimation", lua_x_Resource_ResAnimation_newCocosAnimation);
         tolua_function(tolua_S,"setVertex",lua_x_Resource_ResAnimation_setVertex);
         tolua_function(tolua_S,"getInterval",lua_x_Resource_ResAnimation_getInterval);
         tolua_function(tolua_S,"render",lua_x_Resource_ResAnimation_render);
@@ -2389,6 +2427,43 @@ int lua_x_Resource_ResParticle_create(lua_State* tolua_S)
 #endif
     return 0;
 }
+int lua_x_Resource_ResParticle_newCocosParticle(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResParticle* cobj = nullptr;
+    bool ok = true;
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+    if (!tolua_isusertype(tolua_S, 1, "lstg.ResParticle", 0, &tolua_err)) goto tolua_lerror;
+#endif
+    cobj = (lstg::ResParticle*)tolua_tousertype(tolua_S, 1, nullptr);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj)
+    {
+        tolua_error(tolua_S, "invalid 'cobj' in function 'lua_x_Resource_ResParticle_newCocosParticle'", nullptr);
+        return 0;
+    }
+#endif
+    argc = lua_gettop(tolua_S) - 1;
+    if (argc == 0)
+    {
+        if (!ok)
+        {
+            tolua_error(tolua_S, "invalid arguments in function 'lua_x_Resource_ResParticle_newCocosParticle'", nullptr);
+            return 0;
+        }
+        cocos2d::ParticleSystemQuad* ret = cobj->newCocosParticle();
+        lstg::lua::native_to_luaval(tolua_S, ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResParticle:newCocosParticle", argc, 0);
+    return 0;
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S, "#ferror in function 'lua_x_Resource_ResParticle_newCocosParticle'.", &tolua_err);
+    return 0;
+#endif
+}
 static int lua_x_Resource_ResParticle_finalize(lua_State* tolua_S)
 {
     printf("luabindings: finalizing LUA object (ResParticle)");
@@ -2403,6 +2478,7 @@ int lua_register_x_Resource_ResParticle(lua_State* tolua_S)
     tolua_beginmodule(tolua_S,"ResParticle");
         tolua_function(tolua_S,"getRenderMode",lua_x_Resource_ResParticle_getRenderMode);
         tolua_function(tolua_S,"getBindSprite",lua_x_Resource_ResParticle_getBindSprite);
+        tolua_function(tolua_S,"newCocosParticle", lua_x_Resource_ResParticle_newCocosParticle);
         tolua_function(tolua_S,"create", lua_x_Resource_ResParticle_create);
     tolua_endmodule(tolua_S);
     std::string typeName = typeid(lstg::ResParticle).name();
