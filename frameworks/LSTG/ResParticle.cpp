@@ -293,7 +293,7 @@ ParticleSystemQuad* ResParticle::newCocosParticle()
 	ret->setLife((info.LifeMax + info.LifeMin) / 2);
 	ret->setLifeVar((info.LifeMax - info.LifeMin) / 2);
 	ret->setAngle(CC_RADIANS_TO_DEGREES(info.Direction));
-	ret->setAngleVar(CC_RADIANS_TO_DEGREES(info.Spread));
+	ret->setAngleVar(CC_RADIANS_TO_DEGREES(info.Spread / 2));
 	ret->setSpeed((info.SpeedMax + info.SpeedMin) / 2);
 	ret->setSpeedVar((info.SpeedMax - info.SpeedMin) / 2);
 	// no gravity var in cocos
