@@ -9,10 +9,10 @@ namespace lstg {
 	{
 	private:
 		cocos2d::RenderTexture* target = nullptr;
+		cocos2d::Color4B clearColor;
 		bool autoResize;
 		bool pushed = false;
 		bool blendFix = false;
-		cocos2d::Color4B clearColor;
 	public:
 		bool isNeedBlendFix() const;
 		void setNeedBlendFix(bool b);
