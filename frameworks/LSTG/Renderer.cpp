@@ -695,7 +695,7 @@ bool XRenderer::postEffect(ResRenderTarget* p, ResFX* shader, RenderMode* blend)
 	state->setTexture(state->getUniformLocation(backend::TEXTURE),
 		0, sp->getTexture()->getBackendTexture());
 	state->setUniform(state->getUniformLocation(backend::MVP_MATRIX),
-		&Mat4::IDENTITY, sizeof(Mat4));
+		&rt->getNodeToParentTransform(), sizeof(Mat4));
 	addCommand(cmd);
 
 	const auto mt = currentProjection;
