@@ -16,7 +16,7 @@ ResFX::ResFX(const std::string& name, RenderMode* m)
 	: Resource(ResourceType::FX, name)
 {
 	renderMode = m;
-	CC_SAFE_RETAIN(renderMode);
+	renderMode->retain();
 	program = renderMode->getProgram();
 	auto infos = program->getAllActiveUniformInfo(backend::ShaderStage::VERTEX_AND_FRAGMENT);
 	for (auto& it : infos)
@@ -26,7 +26,7 @@ ResFX::ResFX(const std::string& name, RenderMode* m)
 
 ResFX::~ResFX()
 {
-	CC_SAFE_RELEASE(renderMode);
+	renderMode->release();
 }
 
 void ResFX::setUniform(const std::string& name, const void* data, size_t size)
@@ -49,7 +49,7 @@ void ResFX::setViewport(const Viewport& vp)
 
 void ResFX::setScreenSize(const Vec2& size)
 {
-	renderMode->setVec4(Uniform_Viewport,
+	renderMode->setVec4(Uniform_ScreenSize,
 		{ 0, 0, size.x, size.y });
 }
 
