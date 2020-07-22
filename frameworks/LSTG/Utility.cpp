@@ -596,7 +596,7 @@ void lstg::getNodeTransform3D(const Vec2& anchorPointInPoints, float x, float y,
 
 Image* lstg::getTextureImage(Texture2D* texture, bool flipImage)
 {
-	if (!texture || texture->getPixelFormat() != backend::PixelFormat::RGBA8888)
+	if (!texture)
 		return nullptr;
 	const auto s = texture->getContentSizeInPixels();
 	return getTextureImage(texture, 0, 0, s.width, s.height, flipImage);
@@ -605,9 +605,12 @@ Image* lstg::getTextureImage(Texture2D* texture, bool flipImage)
 Image* lstg::getTextureImage(Texture2D* texture,
 	size_t x, size_t y, size_t width, size_t height, bool flipImage)
 {
-	if (!texture
-		|| width * height == 0
-		|| texture->getPixelFormat() != backend::PixelFormat::RGBA8888)
+	if (!texture || width * height == 0)
+		return nullptr;
+	auto format = texture->getPixelFormat();
+	if (format == backend::PixelFormat::AUTO)
+		format = texture->getBackendTexture()->getTextureFormat();
+	if(format != backend::PixelFormat::RGBA8888)
 		return nullptr;
 	const auto image = new Image();
 	const auto bytePerPixel = texture->getBitsPerPixelForFormat() / 8;
@@ -621,7 +624,7 @@ Image* lstg::getTextureImage(Texture2D* texture,
 
 Image* lstg::getSpriteImage(Sprite* sprite, bool flipImage)
 {
-	if (!sprite || sprite->getTexture()->getPixelFormat() != backend::PixelFormat::RGBA8888)
+	if (!sprite || sprite->getTexture())
 		return nullptr;
 	const auto rect = sprite->getTextureRect();
 	return getTextureImage(sprite->getTexture(),
