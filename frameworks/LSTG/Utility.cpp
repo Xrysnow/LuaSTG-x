@@ -624,7 +624,7 @@ Image* lstg::getTextureImage(Texture2D* texture,
 
 Image* lstg::getSpriteImage(Sprite* sprite, bool flipImage)
 {
-	if (!sprite || sprite->getTexture())
+	if (!sprite || !sprite->getTexture())
 		return nullptr;
 	const auto rect = sprite->getTextureRect();
 	return getTextureImage(sprite->getTexture(),
