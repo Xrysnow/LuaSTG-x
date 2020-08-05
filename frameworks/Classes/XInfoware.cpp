@@ -18,7 +18,12 @@
 	#include <sys/utsname.h>
 	#define INFOWARE_XCR_XFEATURE_ENABLED_MASK 0
 #else
+
+#if defined(__arm__) || defined(__arm) || defined(__ARM__) || defined(__ARM) || defined(__aarch64__)
+#define ARCH_ARM
+#else
 	#include <cpuid.h>
+#endif
 	#include <unistd.h>
 	#include <sys/utsname.h>
 	#define INFOWARE_XCR_XFEATURE_ENABLED_MASK 0
@@ -31,7 +36,7 @@ std::array<int32_t, 4> detail::cpuid(int32_t x)
 	int32_t out[4];
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 	__cpuidex(out, x, 0);
-#else
+#elif !defined(ARCH_ARM)
 	__cpuid_count(x, 0, out[0], out[1], out[2], out[3]);
 #endif
 	return { out[0],out[1],out[2],out[3] };
@@ -41,10 +46,12 @@ uint64_t detail::xgetbv(uint32_t x)
 {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 	return _xgetbv(x);
-#else
+#elif !defined(ARCH_ARM)
 	std::uint32_t eax, edx;
 	__asm__ __volatile__("xgetbv" : "=a"(eax), "=d"(edx) : "c"(index));
 	return ((uint64_t)edx << 32) | eax;
+#else
+	return 0;
 #endif
 }
 
@@ -189,6 +196,23 @@ cpu::quantities_t cpu::quantities() {
 }
 #endif
 
+std::string cpu::vendor_id()
+{
+#ifndef ARCH_ARM
+	char name[13];
+	const auto info = detail::cpuid(0);
+	std::memcpy(name + 0, &info[1], 4);
+	std::memcpy(name + 4, &info[3], 4);
+	std::memcpy(name + 8, &info[2], 4);
+	name[12] = '\0';
+	return name;
+#elif defined(__aarch64__)
+	return "ARM64";
+#else
+	return "ARM";
+#endif // !ARCH_ARM
+}
+
 // frequency
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
@@ -198,7 +222,7 @@ uint64_t cpu::frequency() noexcept {
 		// Fallback
 		LARGE_INTEGER freq;
 		QueryPerformanceFrequency(&freq);
-		return freq.QuadPart * 1'000;
+		return freq.QuadPart * 1000;
 	}
 
 	DWORD freq_mhz;
@@ -207,17 +231,6 @@ uint64_t cpu::frequency() noexcept {
 		return {};
 
 	return (uint64_t)freq_mhz * 1000000;
-}
-
-std::string cpu::vendor_id()
-{
-	char name[13];
-	const auto info = detail::cpuid(0);
-	std::memcpy(name + 0, &info[1], 4);
-	std::memcpy(name + 4, &info[3], 4);
-	std::memcpy(name + 8, &info[2], 4);
-	name[12] = '\0';
-	return name;
 }
 
 #elif (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
@@ -238,7 +251,7 @@ uint64_t cpu::frequency() noexcept {
 	for (std::string line; std::getline(cpuinfo, line);)
 		if (line.find("cpu MHz") == 0) {
 			const auto colon_id = line.find_first_of(':');
-			return static_cast<std::uint64_t>(std::strtod(line.c_str() + colon_id + 1, nullptr) * 1'000'000);
+			return static_cast<std::uint64_t>(std::strtod(line.c_str() + colon_id + 1, nullptr) * 1000000);
 		}
 	return 0;
 }
@@ -303,6 +316,7 @@ std::string cpu::model_name() {
 // supported_instruction_sets
 
 static bool has_os_avx() {
+#ifndef ARCH_ARM
 	bool avxsupport = false;
 	const auto cpuinfo = detail::cpuid(1);
 	bool osusesxsave_restore = (cpuinfo[2] & (1 << 27)) != 0;
@@ -312,15 +326,23 @@ static bool has_os_avx() {
 		avxsupport = (xcrFeatureMask & 0x06) == 0x06;
 	}
 	return avxsupport;
+#else
+	return false;
+#endif // !ARCH_ARM
 }
 static bool has_os_avx_512() {
+#ifndef ARCH_ARM
 	if (!has_os_avx())
 		return false;
 	const auto xcrFeatureMask = detail::xgetbv(INFOWARE_XCR_XFEATURE_ENABLED_MASK);
 	return (xcrFeatureMask & 0xE6) == 0xE6;
+#else
+	return false;
+#endif // !ARCH_ARM
 }
 
 std::vector<cpu::instruction_set_t> cpu::supported_instruction_sets() {
+#ifndef ARCH_ARM
 	auto info = detail::cpuid(0);
 	const auto idinfo = info[0];
 	info = detail::cpuid(0x80000000);
@@ -393,6 +415,9 @@ std::vector<cpu::instruction_set_t> cpu::supported_instruction_sets() {
 	}
 #undef ADD_SET_IF
 	return supported;
+#else
+	return {};
+#endif // !ARCH_ARM
 }
 
 // instruction_set_supported
@@ -465,7 +490,7 @@ bool cpu::instruction_set_supported(cpu::instruction_set_t set) {
 	if (ctl_data.empty())
 		return 0;
 	for (auto cur_name = std::strtok(ctl_data.data(), " \t\n"); cur_name; cur_name = std::strtok(nullptr, " \t\n"))
-		if (std::any_of(set_names.first, set_names.second, [&](auto name) { return name == cur_name; }))
+		if (std::any_of(set_names.first, set_names.second, [&](const char* name) { return name == cur_name; }))
 			return true;
 	return false;
 }
@@ -509,7 +534,7 @@ bool cpu::instruction_set_supported(cpu::instruction_set_t set) {
 			const auto colon_id = tmp.find_first_of(':');
 			std::istringstream is(tmp.c_str() + colon_id + 1);
 			while (is >> tmp)
-				if (std::any_of(set_names.first, set_names.second, [&](auto name) { return tmp == name; }))
+				if (std::any_of(set_names.first, set_names.second, [&](const char* name) { return tmp == name; }))
 					return true;
 		}
 	return false;
