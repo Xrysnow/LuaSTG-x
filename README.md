@@ -51,6 +51,14 @@ Runtime requirements is actually decided by your compiler, but in most cases the
 - Multi-thread optimizations.
 - Console window on desktop platforms.
 
+## Relevant Link
+
+- [LuaSTG-x GitHub Wiki](https://github.com/Xrysnow/LuaSTG-x/wiki)
+- [LuaSTG-x Lua API Document](https://xrysnow.github.io/lstgx_Doc)
+- [百度贴吧](https://tieba.baidu.com/f?kw=luastg)
+- [LuaSTG Wiki Site](http://en.luastg.shoutwiki.com/wiki/Main_Page)
+- [Bullet Hell Engines Discord Channel](https://discordapp.com/invite/TYvazgV)
+
 ## Dependency Graph
 
 LuaSTG-x\
