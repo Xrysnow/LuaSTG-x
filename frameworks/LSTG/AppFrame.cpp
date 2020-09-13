@@ -25,6 +25,7 @@
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 #include "../runtime-src/proj.win32/WindowHelperWin32.h"
+#ifdef LSTGX_HP_GPU
 extern "C"
 {
 	// Prefer the higher performance GPU on Windows systems that use nvidia Optimus.
@@ -34,6 +35,7 @@ extern "C"
 	// https://community.amd.com/thread/169965
 	_declspec(dllexport) DWORD AmdPowerXpressRequestHighPerformance = 1;
 }
+#endif
 #endif
 
 #ifdef LERROR
