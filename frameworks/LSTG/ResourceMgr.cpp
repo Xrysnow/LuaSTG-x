@@ -70,8 +70,14 @@ Buffer* ResourcePack::loadFile(const std::string& fpath)
 	if (it == files.end())
 		return nullptr;
 	auto pwd = password.empty() ? nullptr : password.c_str();
-	if (unzSetOffset64(zipFile, it->second.pos) != UNZ_OK
-		|| unzOpenCurrentFilePassword(zipFile, pwd) != UNZ_OK)
+	const auto check1 = unzSetOffset64(zipFile, it->second.pos) != UNZ_OK;
+	const auto open_ret = unzOpenCurrentFilePassword(zipFile, pwd);
+	const auto check2 = open_ret != UNZ_OK;
+	if (check1)
+		XERROR("can't set offset at %ld", it->second.pos);
+	if (check2)
+		XERROR("can't open file: %d", open_ret);
+	if (check1 || check2)
 	{
 		return nullptr;
 	}
