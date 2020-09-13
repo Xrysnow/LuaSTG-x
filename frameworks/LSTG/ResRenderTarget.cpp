@@ -114,9 +114,15 @@ bool ResRenderTarget::render(ResFX* shader, RenderMode* blend)
 {
 	// do not render if in use
 	if (pushed)
+	{
+		XWARNING("not poped");
 		return false;
+	}
 	if (!shader)
+	{
+		XWARNING("no shader");
 		return false;
+	}
 	if (!blend)
 		blend = RenderMode::Default;
 	return LRR.postEffect(this, shader, blend);
