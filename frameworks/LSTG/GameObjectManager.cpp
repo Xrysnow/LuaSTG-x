@@ -616,7 +616,7 @@ int GameObjectManager::RawNew(lua_State* L) noexcept
 	const auto cid = getClassID(L, 1);
 	p->cls = GameClass::getByID(cid);
 	if (!p->cls)
-		return error_obj(L);
+		return luaL_error(L, "invalid luastg game class");
 	p->cm->getDataTrasform()->is3D = isExtProperty3D(p);
 	// obj[1]=class
 	// obj[2]=id
@@ -654,7 +654,7 @@ int GameObjectManager::New(lua_State* L)noexcept
 	const auto cid = getClassID(L, 1);
 	p->cls = GameClass::getByID(cid);
 	if (!p->cls)
-		return error_obj(L);
+		return luaL_error(L, "invalid luastg game class");
 	p->cm->getDataTrasform()->is3D = isExtProperty3D(p);
 
 	// obj[1]=class
