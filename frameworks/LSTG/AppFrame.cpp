@@ -252,7 +252,7 @@ void AppFrame::loadScript(const std::string& path)noexcept
 	}
 	// LUA_MULTRET will return the result
 	//if ((luaL_loadstring(L, s.c_str()) || lua_pcall(L, 0, LUA_MULTRET, 0)))
-	if (luaL_loadbuffer(L, (const char*)data->data(), (size_t)data->size(), luaL_checkstring(L, 1))
+	if (luaL_loadbuffer(L, (const char*)data->data(), (size_t)data->size(), path.c_str())
 		|| lua_pcall(L, 0, LUA_MULTRET, 0))
 	{
 		err = string("failed to compile [") + string(path) + "]:\n" + string(lua_tostring(L, -1));
