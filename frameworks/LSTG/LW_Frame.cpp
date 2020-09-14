@@ -66,8 +66,10 @@ LUA_REGISTER_FUNC_DEF(lstg, DoFile)
 {
 	size_t size;
 	const auto s = luaL_checklstring(L, 1, &size);
-	LAPP.loadScript({ s,size });
-	return 0;
+	const std::string path = { s,size };
+	lua_settop(L, 0);
+	LAPP.loadScript(path);
+	return lua_gettop(L);
 }
 
 LUA_REGISTER_FUNC_DEF(lstg, Snapshot)
