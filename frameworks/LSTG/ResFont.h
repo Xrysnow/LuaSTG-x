@@ -105,7 +105,8 @@ namespace lstg {
 		bool isBold() const { return label->isBold(); }
 		bool isUnderlined() const { return label->isUnderlined(); }
 		bool isStrikethrough() const { return label->isStrikethrough(); }
-		
+		int getFontAscender() const;
+
 		cocos2d::Vec2 calcSize(const std::string& text);
 		std::unordered_map<std::string, std::string> getInfo() const override;
 

@@ -5,6 +5,7 @@
 #include "AppFrame.h"
 #include "LogSystem.h"
 #include "ResourceMgr.h"
+#include "2d/CCFontFreeType.h"
 
 using namespace std;
 using namespace cocos2d;
@@ -113,6 +114,17 @@ void ResFont::disableAllEffects()
 	_isOutlined = false;
 	_isGlowed = false;
 	_isShadowed = false;
+}
+
+int ResFont::getFontAscender() const
+{
+	const auto atlas = label->getFontAtlas();
+	if (!atlas)
+		return -1;
+	const auto font = dynamic_cast<const FontFreeType*>(atlas->getFont());
+	if(!font)
+		return -1;
+	return font->getFontAscender();
 }
 
 Vec2 ResFont::calcSize(const string& text)
