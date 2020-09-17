@@ -88,6 +88,7 @@ LUA_REGISTER_FUNC_DEF(lstg, RenderTTF)
 			top,
 			max(0.f, right - left),
 			max(0.f, top - bottom),
+			L_IMG_FACTOR*0.5,
 			L_IMG_FACTOR*0.5
 		))
 		{

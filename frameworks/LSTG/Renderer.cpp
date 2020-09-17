@@ -505,16 +505,16 @@ bool XRenderer::renderTexture(ResTexture* p, V3F_C4B_T2F_Quad* quad)noexcept
 	return renderTexture(p->getTexture(), quad);
 }
 
-bool XRenderer::renderText(ResFont* p, const char* str, float x, float y, float scale,
+bool XRenderer::renderText(ResFont* p, const std::string& str, float x, float y, float scale,
 	TextHAlignment halign, TextVAlignment valign)noexcept
 {
 	assert(p);
 	p->setHAlign(halign);
 	p->setVAlign(valign);
-	return renderText(p, str, x, y, -1, -1, scale);
+	return renderText(p, str, x, y, -1, -1, scale, scale);
 }
 
-bool XRenderer::renderTextAutoAlign(ResFont* p, const char* str, const Rect& rect, float scale,
+bool XRenderer::renderTextAutoAlign(ResFont* p, const std::string& str, const Rect& rect, float scale,
 	TextHAlignment halign, TextVAlignment valign, const Color4B& c)noexcept
 {
 	assert(p);
@@ -535,11 +535,11 @@ bool XRenderer::renderTextAutoAlign(ResFont* p, const char* str, const Rect& rec
 	case TextVAlignment::BOTTOM: y = rect.getMinY(); break;
 	}
 	p->getLabel()->setOverflow(Label::Overflow::NONE);
-	return renderText(p, str, x, y, rect.size.width, rect.size.height, scale);
+	return renderText(p, str, x, y, rect.size.width, rect.size.height, scale, scale);
 }
 
-bool XRenderer::renderText(ResFont* p, const char* str,
-	float x, float y, float width, float height, float scale)noexcept
+bool XRenderer::renderText(ResFont* p, const std::string& str,
+	float x, float y, float width, float height, float scaleX, float scaleY)noexcept
 {
 	assert(p);
 	flushTriangles();
@@ -555,7 +555,7 @@ bool XRenderer::renderText(ResFont* p, const char* str,
 	//label->setOverflow(bWordBreak ? Label::Overflow::RESIZE_HEIGHT : Label::Overflow::NONE);
 	if (width > 0 && height > 0 && label->getOverflow() != Label::Overflow::NONE)
 		label->setDimensions(width, height);
-	label->setScale(scale);//TODO: setFontSize
+	label->setScale(scaleX, scaleY);//TODO: setFontSize
 	label->setPosition(x, y);
 	label->setBlendFunc(currentRenderMode->getBlendFunc());
 	if (p->getLabelType() == ResFont::LabelType::TTF)

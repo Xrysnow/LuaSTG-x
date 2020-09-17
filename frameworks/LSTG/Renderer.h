@@ -154,11 +154,11 @@ namespace lstg
 		// TODO: render video
 
 		// render text
-		bool renderText(ResFont* p, const char* str, float x, float y, float scale,
+		bool renderText(ResFont* p, const std::string& str, float x, float y, float scale,
 			cocos2d::TextHAlignment halign, cocos2d::TextVAlignment valign)noexcept;
-		bool renderTextAutoAlign(ResFont* p, const char* str, const cocos2d::Rect& rect, float scale,
+		bool renderTextAutoAlign(ResFont* p, const std::string& str, const cocos2d::Rect& rect, float scale,
 			cocos2d::TextHAlignment halign, cocos2d::TextVAlignment valign, const cocos2d::Color4B& c)noexcept;
-		bool renderText(ResFont* p, const char* str, float x, float y, float width, float height, float scale)noexcept;
+		bool renderText(ResFont* p, const std::string& str, float x, float y, float width, float height, float scaleX, float scaleY)noexcept;
 
 		/******************************************************************************/
 
