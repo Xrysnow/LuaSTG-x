@@ -205,10 +205,11 @@ bool RenderMode::init(const std::string& name, BlendOperation equation,
 
 	_name = name;
 	desc.blendEnabled = true;
-	desc.rgbBlendOperation = desc.alphaBlendOperation = equation;
+	desc.rgbBlendOperation = equation;
 	desc.sourceRGBBlendFactor = funcSrc;
 	desc.destinationRGBBlendFactor = funcDst;
-	//TODO: check
+	//note: keep alpha here
+	desc.alphaBlendOperation = BlendOperation::ADD;
 	desc.sourceAlphaBlendFactor = BlendFactor::ONE;
 	desc.destinationAlphaBlendFactor = BlendFactor::ONE_MINUS_SRC_ALPHA;
 
