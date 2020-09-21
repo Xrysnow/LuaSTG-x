@@ -107,6 +107,7 @@ namespace lstg {
 		bool isStrikethrough() const { return label->isStrikethrough(); }
 		int getFontAscender() const;
 
+		bool render(const std::string& str, float x, float y, float width = -1, float height = -1, float scaleX = 1, float scaleY = 1);
 		cocos2d::Vec2 calcSize(const std::string& text);
 		std::unordered_map<std::string, std::string> getInfo() const override;
 

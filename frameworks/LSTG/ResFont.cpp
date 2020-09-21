@@ -4,6 +4,7 @@
 #include "XFileUtils.h"
 #include "AppFrame.h"
 #include "LogSystem.h"
+#include "Renderer.h"
 #include "ResourceMgr.h"
 #include "2d/CCFontFreeType.h"
 
@@ -125,6 +126,11 @@ int ResFont::getFontAscender() const
 	if(!font)
 		return -1;
 	return font->getFontAscender();
+}
+
+bool ResFont::render(const std::string& str, float x, float y, float width, float height, float scaleX, float scaleY)
+{
+	return LRR.renderText(this, str, x, y, width, height, scaleX, scaleY);
 }
 
 Vec2 ResFont::calcSize(const string& text)
