@@ -56,6 +56,7 @@ namespace lstg
 
 		bool boxCheck(size_t id, float l, float r, float b, float t) const;
 
-		void test();
+		static void test();
+		static void test(int N, int M);
 	};
 }

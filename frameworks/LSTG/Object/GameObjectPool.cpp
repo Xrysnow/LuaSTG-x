@@ -22,7 +22,7 @@ void getTransform(const cocos2d::Vec2& anchorPointInPoints,
 	}
 	else
 	{
-		const float halfRadz = -(.5f * 0.01745329252f*rot);
+		const float halfRadz = -(.5f * 0.01745329252f * rot);
 		const float qz = std::sin(halfRadz);
 		const float qw = std::cos(halfRadz);
 		const float z2 = qz + qz;
@@ -149,6 +149,7 @@ GameObject* GameObjectPool::alloc()
 
 void GameObjectPool::free(GameObject* p)
 {
+	// move tail object to keep continuity
 	const auto id = p->id;
 	const auto tail = _size - 1;
 	if (id != tail)
@@ -185,7 +186,7 @@ void GameObjectPool::clear()
 
 void GameObjectPool::update()
 {
-	if (LTHP.empty())
+	if (_size < 10000 || LTHP.empty())
 	{
 		update(0, _size);
 	}
@@ -243,17 +244,17 @@ void GameObjectPool::getTransformMat(size_t id, float factor, float z, cocos2d::
 
 void GameObjectPool::boundCheck(float l, float r, float b, float t, bool* out)
 {
-	if (LTHP.empty())
+	if (_size < 10000 || LTHP.empty())
+	{
+		boundCheck(0, _size, l, r, b, t, out);
+	}
+	else
 	{
 		deployThreadTaskAndWait(size(), LTHP.size() + 1,
 			[=](int start, int end, int)
 		{
-			boundCheck(start, end, l, r, b, t, out + start);
+				boundCheck(start, end, l, r, b, t, out + start);
 		});
-	}
-	else
-	{
-		boundCheck(0, _size, l, r, b, t, out);
 	}
 }
 
@@ -261,7 +262,7 @@ void GameObjectPool::boundCheck(size_t begin, size_t end, float l, float r, floa
 {
 	for (auto i = begin; i < end; ++i)
 	{
-		out[i - begin] = obj[i]->bound && !(x[i] > l&&x[i]<r&&y[i]>b&&y[i] < t);
+		out[i - begin] = obj[i]->bound && !(x[i] > l && x[i] < r && y[i] > b && y[i] < t);
 	}
 }
 
@@ -272,8 +273,17 @@ bool GameObjectPool::boxCheck(size_t id, float l, float r, float b, float t) con
 
 void GameObjectPool::test()
 {
-	const int N = 1000;
-	const int M = 3e4;
+	// MT should not be used when M < 10000
+	const auto x = 20000000;
+	for (auto& M : { 2000, 3000, 5000, 8000, 10000, 20000, 30000 })
+	{
+		test(x / M, M);
+	}
+}
+
+void GameObjectPool::test(int N, int M)
+{
+	GameObjectPool pool{ LGOBJ_MAXCNT };
 	const float l = -1;
 	const float r = 1;
 	const float b = -1;
@@ -281,37 +291,41 @@ void GameObjectPool::test()
 	auto cmp = new ComponentManager[M];
 	for (int i = 0; i < M; ++i)
 	{
-		auto p = alloc();
+		auto p = pool.alloc();
 		p->bound = false;
 		p->cm = cmp + i;
-		p->cm->pool = this;
+		p->cm->pool = &pool;
 		p->cm->getOrCreateTrasform2D();
 	}
 	auto ret = new bool[M];
 	memset(ret, 0, M * sizeof(bool));
 	StopWatch sw;
 	sw.reset();
-
+	// no MT
 	for (int j = 0; j < N; ++j)
-	{
-		//memset(ret, 0, M * sizeof(bool));
-		for (int i = 0; i < M; ++i)
-		{
-			ret[i] = obj[i]->bound && !(x[i] > l&&x[i]<r&&y[i]>b&&y[i] < t);
-		}
-	}
+		pool.boundCheck(0, M, l, r, b, t, ret);
 	auto t1 = sw.get();
 	sw.reset();
-
+	// MT
 	for (int j = 0; j < N; ++j)
-	{
-		boundCheck(l, r, b, t, ret);
-	}
+		pool.boundCheck(l, r, b, t, ret);
 	auto t2 = sw.get();
 	sw.reset();
-
+	
+	// no MT
+	for (int j = 0; j < N; ++j)
+		pool.update(0, M);
 	auto t3 = sw.get();
 	sw.reset();
+	//MT
+	for (int j = 0; j < N; ++j)
+		pool.update();
+	auto t4 = sw.get();
+	sw.reset();
 
-	cocos2d::log("-----\n  %f, %f, %f", t1, t2, t3);
+	cocos2d::log("-----\n  THP: %d, M: %d", LTHP.size(), M);
+	cocos2d::log("  %f, %f | %f, %f", t1, t2, t3, t4);
+
+	delete[] cmp;
+	delete[] ret;
 }
