@@ -1,8 +1,8 @@
 ﻿#include "LW_Math.h"
-#include "UtilLua.h"
 #include "../Math/XMath.h"
 #include "CollisionDetect.h"
-#include "UtilLuaConversion.h"
+#include "Util/UtilLua.h"
+#include "Util/UtilLuaConversion.h"
 #include "../Classes/XLuaModuleRegistry.h"
 
 using namespace std;

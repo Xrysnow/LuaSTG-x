@@ -1,7 +1,7 @@
 ﻿#include "ResRenderTarget.h"
 #include "LogSystem.h"
 #include "Renderer.h"
-#include "Utility.h"
+#include "Util/Utility.h"
 
 using namespace std;
 using namespace lstg;

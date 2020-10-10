@@ -3,7 +3,7 @@
 #include "scripting/lua-bindings/manual/CCLuaStack.h"
 #include "scripting/lua-bindings/manual/CCLuaEngine.h"
 #include "RenderMode.h"
-#include "GameObjectBentLaser.h"
+#include "Object/GameObjectBentLaser.h"
 #include "../Math/XCollision.h"
 
 #define luaL_checkfloat(L, n) ((float)luaL_checknumber(L, n))

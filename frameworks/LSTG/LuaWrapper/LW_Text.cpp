@@ -1,9 +1,9 @@
 ﻿#include "LW_Text.h"
 #include "AppFrame.h"
 #include "LuaWrapper.h"
-#include "UtilLua.h"
 #include "Renderer.h"
-#include "UtilLuaRes.h"
+#include "Util/UtilLua.h"
+#include "Util/UtilLuaRes.h"
 #include "../Classes/XLuaModuleRegistry.h"
 
 using namespace std;

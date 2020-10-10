@@ -1,6 +1,6 @@
 ﻿#include "LogSystem.h"
-#include "Utility.h"
 #include "Global.h"
+#include "Util/Utility.h"
 
 using namespace std;
 using namespace lstg;

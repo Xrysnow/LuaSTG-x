@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "GameResources.h"
+#include "Resource/GameResources.h"
 
 namespace lstg
 {

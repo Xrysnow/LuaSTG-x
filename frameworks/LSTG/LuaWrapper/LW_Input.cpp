@@ -1,9 +1,9 @@
 ﻿#include "LW_Input.h"
 #include "AppFrame.h"
 #include "scripting/lua-bindings/manual/CCLuaEngine.h"
-#include "UtilLua.h"
-#include "InputManager.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
+#include "InputManager.h"
+#include "Util/UtilLua.h"
 #include "../Classes/XLuaModuleRegistry.h"
 
 using namespace std;

@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Global.h"
-#include "GameObjectManager.h"
 #include "XThreadPool.hpp"
+#include "Object/GameObjectManager.h"
 
 // LSTG AppFrame
 #define LAPP (*lstg::AppFrame::getInstance())

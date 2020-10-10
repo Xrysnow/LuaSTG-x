@@ -1,6 +1,6 @@
 ﻿#include "LuaWrapper.h"
 #include "AppFrame.h"
-#include "UtilLua.h"
+#include "Util/UtilLua.h"
 #include "LogSystem.h"
 #include "lstrlib.h"
 #include "lutf8lib.h"

@@ -1,5 +1,5 @@
 ﻿#include "GameClass.h"
-#include "UtilLua.h"
+#include "Util/UtilLua.h"
 
 #define KEY_FRAME_FUNC(_P) (void*)((size_t)(_P) + 1)
 #define KEY_RENDER_FUNC(_P) (void*)((size_t)(_P) + 2)

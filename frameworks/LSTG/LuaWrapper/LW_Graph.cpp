@@ -1,12 +1,12 @@
 ﻿#include "LW_Graph.h"
 #include "AppFrame.h"
 #include "LuaWrapper.h"
-#include "Utility.h"
-#include "UtilLua.h"
 #include "scripting/lua-bindings/manual/CCLuaEngine.h"
-#include "Renderer.h"
-#include "UtilLuaRes.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
+#include "Renderer.h"
+#include "Util/Utility.h"
+#include "Util/UtilLua.h"
+#include "Util/UtilLuaRes.h"
 #include "../Classes/XLuaModuleRegistry.h"
 
 using namespace std;

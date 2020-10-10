@@ -2,12 +2,12 @@
 #include "scripting/lua-bindings/manual/CCLuaEngine.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
 #include "Utility.h"
-#include "LuaWrapper.h"
 #include "AppFrame.h"
 #include "LogSystem.h"
-#include "LWColor.h"
 #include "UtilLuaConversion.h"
-#include "ResFX.h"
+#include "LuaWrapper/LuaWrapper.h"
+#include "LuaWrapper/LWColor.h"
+#include "Resource/ResFX.h"
 
 using namespace std;
 using namespace lstg;

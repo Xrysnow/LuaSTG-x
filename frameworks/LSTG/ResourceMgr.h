@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Global.h"
 #include "unzip/unzip.h"
-#include "GameResources.h"
+#include "Resource/GameResources.h"
 #include "../Classes/XBuffer.h"
 
 #define LRES (*lstg::ResourceMgr::getInstance())

@@ -1,7 +1,5 @@
 ﻿#include "GOSymbolNumber.h"
-#include "UtilLua.h"
-//#include "AppFrame.h"
-//#include "xxhash/xxhash.h"
+#include "Util/UtilLua.h"
 
 using namespace lstg;
 using namespace lstg::symbol;

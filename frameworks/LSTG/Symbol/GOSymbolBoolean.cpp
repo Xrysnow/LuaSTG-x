@@ -1,5 +1,5 @@
 ﻿#include "GOSymbolBoolean.h"
-#include "UtilLua.h"
+#include "Util/UtilLua.h"
 
 using namespace lstg;
 using namespace lstg::symbol;

@@ -11,12 +11,12 @@
 #ifndef LSTGX_NO_LIVE2D
 	#include "../Live2D/L2DFramework.h"
 #endif
-#include "LuaWrapper.h"
+#include "LuaWrapper/LuaWrapper.h"
 #include "Renderer.h"
 #include "InputManager.h"
 #include "WindowHelper.h"
-#include "Utility.h"
-#include "UtilLua.h"
+#include "Util/Utility.h"
+#include "Util/UtilLua.h"
 #include "LogSystem.h"
 #include "scripting/lua-bindings/manual/CCLuaEngine.h"
 #include "scripting/lua-bindings/manual/lua_module_register.h"

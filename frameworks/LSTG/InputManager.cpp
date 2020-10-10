@@ -1,8 +1,8 @@
 ﻿#include "InputManager.h"
 #include "cocos2d.h"
 #include "LogSystem.h"
-#include "UtilLua.h"
-#include "Utility.h"
+#include "Util/UtilLua.h"
+#include "Util/Utility.h"
 
 using namespace std;
 using namespace lstg;

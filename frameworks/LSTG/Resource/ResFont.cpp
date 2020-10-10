@@ -1,6 +1,6 @@
 ﻿#include "ResFont.h"
 #include "Global.h"
-#include "Utility.h"
+#include "Util/Utility.h"
 #include "XFileUtils.h"
 #include "AppFrame.h"
 #include "LogSystem.h"

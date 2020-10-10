@@ -2,8 +2,8 @@
 #include "GameObjectManager.h"
 #include "AppFrame.h"
 #include "Renderer.h"
-#include "Utility.h"
-#include "UtilColor.h"
+#include "Util/Utility.h"
+#include "Util/UtilColor.h"
 #include "../Math/XIntersect.h"
 
 using namespace std;

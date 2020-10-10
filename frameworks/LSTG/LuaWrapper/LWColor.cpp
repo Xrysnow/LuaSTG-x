@@ -1,7 +1,7 @@
 ﻿#include "LWColor.h"
 #include "Global.h"
-#include "UtilLua.h"
-#include "UtilColor.h"
+#include "Util/UtilLua.h"
+#include "Util/UtilColor.h"
 #include "../Classes/XLuaModuleRegistry.h"
 
 using namespace std;

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "GameObjectSymbol.h"
+#include "Symbol/GameObjectSymbol.h"
 #include <array>
 
 namespace lstg

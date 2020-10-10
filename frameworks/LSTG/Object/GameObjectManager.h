@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Global.h"
 #include "GameObject.h"
-#include "ComponentManager.h"
+#include "Component/ComponentManager.h"
 #include "GameClass.h"
 #include "GameObjectPool.h"
 

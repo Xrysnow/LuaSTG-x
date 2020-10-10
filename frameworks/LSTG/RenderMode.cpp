@@ -1,6 +1,6 @@
 ﻿#include "RenderMode.h"
-#include "Utility.h"
-#include "UtilLua.h"
+#include "Util/Utility.h"
+#include "Util/UtilLua.h"
 #include "LogSystem.h"
 #include "../Classes/MemPoolManager.h"
 #include "Renderer.h"

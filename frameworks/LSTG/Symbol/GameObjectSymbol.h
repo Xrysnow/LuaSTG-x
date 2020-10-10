@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "cocos2d.h"
-#include "GameObject.h"
-#include "GameObjectPropertyHash.h"
+#include "../Object/GameObject.h"
+#include "../Object/GameObjectPropertyHash.h"
 #include <functional>
 
 #define DEF_OP_NUMBER1(name, _f) Operator::regist(name, 1, 1, ComputeNode::Type::Number, [](Operator* op){\

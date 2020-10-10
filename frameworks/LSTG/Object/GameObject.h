@@ -1,5 +1,5 @@
 #pragma once
-#include "ComponentManager.h"
+#include "Component/ComponentManager.h"
 #include "GameClass.h"
 
 namespace lstg

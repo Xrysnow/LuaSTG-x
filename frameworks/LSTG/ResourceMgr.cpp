@@ -1,6 +1,6 @@
 ﻿#include "ResourceMgr.h"
 #include "AppFrame.h"
-#include "Utility.h"
+#include "Util/Utility.h"
 #include "unzip/unzip.h"
 #include "XFileUtils.h"
 #include "LogSystem.h"

@@ -1,7 +1,7 @@
 ﻿#include "LW_Object.h"
 #include "AppFrame.h"
 #include "LuaWrapper.h"
-#include "UtilLua.h"
+#include "Util/UtilLua.h"
 #include "../Classes/XLuaModuleRegistry.h"
 #include <vector>
 

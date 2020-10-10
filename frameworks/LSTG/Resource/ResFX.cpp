@@ -1,7 +1,7 @@
 ﻿#include "ResFX.h"
 #include "AppFrame.h"
-#include "UtilLua.h"
-#include "Utility.h"
+#include "Util/UtilLua.h"
+#include "Util/Utility.h"
 #include "ResourceMgr.h"
 
 using namespace std;

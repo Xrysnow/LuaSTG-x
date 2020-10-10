@@ -1,6 +1,6 @@
 #include "ResBase.h"
 #include <scripting/lua-bindings/manual/tolua_fix.h>
-#include "Utility.h"
+#include "Util/Utility.h"
 
 using namespace std;
 using namespace cocos2d;

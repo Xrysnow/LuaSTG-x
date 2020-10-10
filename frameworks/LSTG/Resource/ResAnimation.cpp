@@ -1,5 +1,4 @@
 ﻿#include "ResAnimation.h"
-#include "Utility.h"
 #include "Renderer.h"
 
 using namespace std;
