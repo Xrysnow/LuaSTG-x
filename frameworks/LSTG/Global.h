@@ -24,17 +24,6 @@
 
 #include "cocos2d.h"
 
-#if ((CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)\
-	|| (CC_TARGET_PLATFORM == CC_PLATFORM_IOS))
-#define PLATFORM_MOBILE
-#elif ((CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)\
-	|| (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)\
-	|| (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX))
-#define PLATFORM_PC
-#else
-#error
-#endif
-
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 // Keep order
 #include "WinSock2.h"
@@ -47,21 +36,6 @@
 #include "../../cocos2d-x/external/lua/luajit/include/lua.hpp"
 
 // macros
-
-#if defined(_MSC_VER)
-#define LNOINLINE __declspec(noinline)
-#elif (defined(__GNUC__) && ((__GNUC__ >= 4))\
-	||(defined(__clang__) && (__clang_major__ >= 3)))
-#define LNOINLINE __attribute__((noinline))
-#else
-#error
-#endif
-
-#define LNOEXCEPT noexcept
-#define LNOUSE(x) static_cast<void>(x)
-#ifdef _DEBUG
-//#define LDEBUG
-#endif
 
 #ifndef MAX_PATH
 #define MAX_PATH 260
@@ -117,11 +91,10 @@ constexpr auto LDEGREE2RAD = 0.0174532925f; // degree to rad
 constexpr auto LPI_HALF = 1.5707963267f;  // PI*0.5
 
 // assert for pointer
-#define assert_ptr(p) if(p==nullptr){\
+#define assert_ptr(p) if((p) == nullptr) {\
 	LogSystem::getInstance()->Log(LogType::Error, "unexpected nullptr in %s (%s, line %d)",\
 	__FUNCTION__, __FILE__, __LINE__);\
-	CCASSERT(p, "unexpected nullptr");\
-}
+	CCASSERT(p, "unexpected nullptr"); }
 
 namespace lstg
 {
