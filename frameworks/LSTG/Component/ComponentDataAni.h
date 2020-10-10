@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "ComponentData.h"
 #include "cocos2d.h"
-#include "ResAnimation.h"
+#include "Resource/ResAnimation.h"
 
 namespace lstg
 {

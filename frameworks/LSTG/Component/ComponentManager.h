@@ -1,9 +1,9 @@
 ﻿#pragma once
 #include "ComponentData.h"
 #include "cocos2d.h"
-#include "ResSprite.h"
+#include "Resource/ResSprite.h"
 #include "../Classes/XTrianglesCommand.h"
-#include "GameObjectPool.h"
+#include "Object/GameObjectPool.h"
 
 namespace lstg
 {

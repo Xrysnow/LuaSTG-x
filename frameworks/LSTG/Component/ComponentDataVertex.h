@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "ComponentData.h"
 #include "cocos2d.h"
+#include "Resource/ResTexture.h"
 
 namespace lstg
 {

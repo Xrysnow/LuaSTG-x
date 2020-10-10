@@ -1,10 +1,10 @@
 ﻿#include "ComponentManager.h"
-#include "Utility.h"
 #include "Renderer.h"
 #include "AppFrame.h"
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "Math/XMath.h"
-#include "UtilLua.h"
+#include "Util/Utility.h"
+#include "Util/UtilLua.h"
 using namespace lstg;
 using namespace cocos2d;
 using xmath::collision::ColliderType;

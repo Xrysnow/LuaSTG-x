@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "ComponentData.h"
 #include "cocos2d.h"
-#include "ResFont.h"
+#include "Resource/ResFont.h"
 
 namespace lstg
 {
