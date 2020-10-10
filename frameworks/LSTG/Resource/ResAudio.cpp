@@ -228,6 +228,9 @@ ResAudio::ResAudio(const std::string& name, ResourceType type, const std::string
 
 ResAudio::~ResAudio()
 {
+	// stop immediately to avoid glitch
+	if (source)
+		source->stop();
 	CC_SAFE_RELEASE_NULL(stream);
 	CC_SAFE_RELEASE_NULL(source);
 	if (fftWorkset)
@@ -267,6 +270,7 @@ ResSound* ResSound::create(const std::string& name, const std::string& path)
 	auto ret = new (nothrow) ResSound(name, path);
 	if (ret && ret->initWithBuffer(data))
 	{
+		// autoreleased in Resource ctor
 		//ret->autorelease();
 		return ret;
 	}
@@ -308,6 +312,7 @@ ResMusic* ResMusic::create(const std::string& name, const std::string& path, dou
 	auto ret = new (nothrow) ResMusic(name, path);
 	if (ret && ret->initWithBuffer(data, loopStart, loopEnd))
 	{
+		// autoreleased in Resource ctor
 		//ret->autorelease();
 		return ret;
 	}
