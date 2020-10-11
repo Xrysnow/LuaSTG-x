@@ -1,6 +1,6 @@
 ﻿#include "XLatex.h"
 #include "2d/CCFontFreeType.h"
-#include "Utility.h"
+#include "Util/Utility.h"
 #include "../external/cLaTeXMath/src/src/config.h"
 #ifdef __OS_Android__
 #undef __OS_Android__

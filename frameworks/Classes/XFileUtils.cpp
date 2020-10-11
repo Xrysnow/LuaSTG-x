@@ -1,7 +1,7 @@
 ﻿#include "XFileUtils.h"
 #include "platform/CCFileUtils.h"
 #include "../LSTG/AppFrame.h"
-#include "Utility.h"
+#include "Util/Utility.h"
 #include "ResourceMgr.h"
 
 #define DECLARE_GUARD std::lock_guard<std::recursive_mutex> mutexGuard(_mutex)

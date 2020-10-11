@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../LSTG/CirularQueue.hpp"
+#include "CirularQueue.hpp"
 #include "XStopWatch.h"
 #include <string>
 

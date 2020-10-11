@@ -265,7 +265,7 @@ namespace lstg
 	};
 }
 
-#include "UtilLuaConversion.h"
+#include "Util/UtilLuaConversion.h"
 
 namespace lstg
 {

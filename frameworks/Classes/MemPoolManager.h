@@ -2,7 +2,7 @@
 #include "cocos2d.h"
 #include "ArrayObjectPool.hpp"
 #include "XTrianglesCommand.h"
-#include "GameObjectBentLaser.h"
+#include "Object/GameObjectBentLaser.h"
 
 #define LMP (*lstg::MemPoolManager::getInstance())
 
