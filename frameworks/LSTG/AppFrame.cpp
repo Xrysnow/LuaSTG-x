@@ -203,12 +203,10 @@ void AppFrame::applicationDidEnterBackground()
 
 void AppFrame::applicationWillEnterForeground()
 {
+	// note: pop message here may cause dead loop, make sure no error is thrown
 	LuaEngine::getInstance()->executeGlobalFunction(LFUNC_GAINFOCUS);
 	audio::Engine::onEnterForeground();
 	Director::getInstance()->startAnimation();
-	// note: pop message here will cause dead loop
-	//if (!SafeCallGlobalFunction(LFUNC_GAINFOCUS))
-	//	LERROR("AppFrame: call LFUNC_GAINFOCUS failed");
 }
 
 AppFrame::AppFrame()

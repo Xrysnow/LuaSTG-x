@@ -618,8 +618,6 @@ bool XRenderer::pushRenderTarget(ResRenderTarget* p) noexcept
 		Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, mt);
 	});
 	renderTargetStack.push_back(p);
-	//TODO:
-	//XTrianglesCommand::isBlendFuncSeparate = p->isNeedBlendFix();
 	return true;
 }
 
@@ -643,11 +641,6 @@ bool XRenderer::popRenderTarget()noexcept
 	renderTargetStack.pop_back();
 	rt->end();
 
-	//TODO:
-	//if (renderTargetStack.empty())
-	//	XTrianglesCommand::isBlendFuncSeparate = false;
-	//else
-	//	XTrianglesCommand::isBlendFuncSeparate = renderTargetStack.back()->isNeedBlendFix();
 	return true;
 }
 

@@ -209,6 +209,7 @@ bool RenderMode::init(const std::string& name, BlendOperation equation,
 	desc.sourceRGBBlendFactor = funcSrc;
 	desc.destinationRGBBlendFactor = funcDst;
 	//note: keep alpha here
+	//TODO: custom for RenderTarget
 	desc.alphaBlendOperation = BlendOperation::ADD;
 	desc.sourceAlphaBlendFactor = BlendFactor::ONE;
 	desc.destinationAlphaBlendFactor = BlendFactor::ONE_MINUS_SRC_ALPHA;
