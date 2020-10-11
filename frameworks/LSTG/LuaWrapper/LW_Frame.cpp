@@ -200,14 +200,9 @@ LUA_REGISTER_FUNC_DEF(lstg, XXHash32)
 		else
 		{
 			if (lua_gettop(L) >= 2)
-			{
-				const auto size = luaL_checkinteger(L, 2);
-				lua_pushinteger(L, XXHash32(p, size, type));
-			}
+				lua_pushinteger(L, XXHash32(p, (size_t)luaL_checkinteger(L, 2), type));
 			else
-			{
 				lua_pushinteger(L, XXHash32(&p, sizeof(p), type));
-			}
 		}
 		return 1;
 	}
@@ -220,14 +215,9 @@ LUA_REGISTER_FUNC_DEF(lstg, XXHash32)
 		else
 		{
 			if (lua_gettop(L) >= 2)
-			{
-				const auto size = luaL_checkinteger(L, 2);
-				lua_pushinteger(L, XXHash32(p, size, type));
-			}
+				lua_pushinteger(L, XXHash32(p, (size_t)luaL_checkinteger(L, 2), type));
 			else
-			{
 				lua_pushinteger(L, XXHash32(&p, sizeof(p), type));
-			}
 		}
 		return 1;
 	}
