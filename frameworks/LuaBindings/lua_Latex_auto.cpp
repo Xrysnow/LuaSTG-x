@@ -2,7 +2,7 @@
 #include "../Classes/XLatex.h"
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
-#include "UtilLuaConversion.h"
+#include "Util/UtilLuaConversion.h"
 
 int lua_x_Latex_Latex_getDepth(lua_State* tolua_S)
 {

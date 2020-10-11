@@ -1,10 +1,10 @@
 #include "lua_ObjSym_auto.hpp"
-#include "GameObjectSymbol.h"
-#include "GOSymbolNumber.h"
-#include "GOSymbolBoolean.h"
+#include "Symbol/GameObjectSymbol.h"
+#include "Symbol/GOSymbolNumber.h"
+#include "Symbol/GOSymbolBoolean.h"
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
-#include "UtilLua.h"
+#include "Util/UtilLua.h"
 
 int lua_x_ObjSym_ComputeNode_reset(lua_State* tolua_S)
 {

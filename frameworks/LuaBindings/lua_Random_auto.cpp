@@ -2,7 +2,7 @@
 #include "../Classes/XRand.h"
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
-#include "UtilLua.h"
+#include "Util/UtilLua.h"
 
 int lua_x_Random_Random_randFloat(lua_State* tolua_S)
 {

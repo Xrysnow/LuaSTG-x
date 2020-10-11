@@ -2,7 +2,7 @@
 #include "XStream.h"
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
-#include "UtilLua.h"
+#include "Util/UtilLua.h"
 #define printf(...)
 
 int lua_x_Buffer_Buffer_set(lua_State* tolua_S)

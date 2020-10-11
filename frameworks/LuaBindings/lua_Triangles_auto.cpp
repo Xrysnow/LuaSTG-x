@@ -2,7 +2,7 @@
 #include "../Classes/XTriangles.h"
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
-#include "UtilLua.h"
+#include "Util/UtilLua.h"
 #define printf(...)
 #define color4b_to_luaval lstg::lua::_color4b_to_luaval
 #define luaval_to_color4b lstg::lua::_luaval_to_color4b

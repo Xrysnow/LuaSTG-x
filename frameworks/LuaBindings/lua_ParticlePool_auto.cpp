@@ -1,9 +1,9 @@
 #include "lua_ParticlePool_auto.hpp"
-#include "../LSTG/ResParticle.h"
+#include "Resource/ResParticle.h"
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
-#include "UtilLua.h"
-#include "UtilLuaConversion.h"
+#include "Util/UtilLua.h"
+#include "Util/UtilLuaConversion.h"
 #define color4b_to_luaval lstg::lua::_color4b_to_luaval
 #define luaval_to_color4b lstg::lua::_luaval_to_color4b
 //using namespace lstg::lua;

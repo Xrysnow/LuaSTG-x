@@ -2,7 +2,7 @@
 #include "../LSTG/ResourceMgr.h"
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
-#include "UtilLua.h"
+#include "Util/UtilLua.h"
 #define printf(...)
 using lstg::lua::luaval_to_async_callback;
 using lstg::lua::ref_vector_to_luaval;

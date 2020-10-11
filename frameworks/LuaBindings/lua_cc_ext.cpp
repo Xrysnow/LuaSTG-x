@@ -3,8 +3,8 @@
 #include "../Classes/XBuffer.h"
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
-#include "../LSTG/UtilLuaConversion.h"
-#include "../LSTG/Utility.h"
+#include "Util/UtilLuaConversion.h"
+#include "Util/Utility.h"
 
 int lua_cc_ext_Image_initWithImageData(lua_State* tolua_S)
 {
