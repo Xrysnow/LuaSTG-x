@@ -4713,6 +4713,236 @@ int lua_x_Resource_ResFont_HGE2BMF(lua_State* tolua_S)
 #endif
     return 0;
 }
+int lua_x_Resource_ResFont_getLabel(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResFont* cobj = nullptr;
+    bool ok  = true;
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResFont",0,&tolua_err)) goto tolua_lerror;
+#endif
+    cobj = (lstg::ResFont*)tolua_tousertype(tolua_S, 1, nullptr);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S, "invalid 'cobj' in function 'lua_x_Resource_ResFont_getLabel'", nullptr);
+        return 0;
+    }
+#endif
+    argc = lua_gettop(tolua_S) - 1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S, "invalid arguments in function 'lua_x_Resource_ResFont_getLabel'", nullptr);
+            return 0;
+        }
+        Label* ret = cobj->getLabel();
+        object_to_luaval(tolua_S, "cc.Label", ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResFont:getLabel", argc, 0);
+    return 0;
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFont_getLabel'.",&tolua_err);
+    return 0;
+#endif
+}
+int lua_x_Resource_ResFont_getFontAscender(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResFont* cobj = nullptr;
+    bool ok  = true;
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResFont",0,&tolua_err)) goto tolua_lerror;
+#endif
+    cobj = (lstg::ResFont*)tolua_tousertype(tolua_S, 1, nullptr);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S, "invalid 'cobj' in function 'lua_x_Resource_ResFont_getFontAscender'", nullptr);
+        return 0;
+    }
+#endif
+    argc = lua_gettop(tolua_S) - 1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S, "invalid arguments in function 'lua_x_Resource_ResFont_getFontAscender'", nullptr);
+            return 0;
+        }
+        int ret = cobj->getFontAscender();
+        tolua_pushnumber(tolua_S,(lua_Number)ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResFont:getFontAscender", argc, 0);
+    return 0;
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFont_getFontAscender'.",&tolua_err);
+    return 0;
+#endif
+}
+int lua_x_Resource_ResFont_render(lua_State* tolua_S)
+{
+    int argc = 0;
+    lstg::ResFont* cobj = nullptr;
+    bool ok  = true;
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+    if (!tolua_isusertype(tolua_S,1,"lstg.ResFont",0,&tolua_err)) goto tolua_lerror;
+#endif
+    cobj = (lstg::ResFont*)tolua_tousertype(tolua_S, 1, nullptr);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S, "invalid 'cobj' in function 'lua_x_Resource_ResFont_render'", nullptr);
+        return 0;
+    }
+#endif
+    argc = lua_gettop(tolua_S) - 1;
+    if (argc == 3) 
+    {
+        std::string arg0;
+        double arg1;
+        double arg2;
+
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResFont:render");
+
+        ok &= luaval_to_number(tolua_S, 3,&arg1, "lstg.ResFont:render");
+
+        ok &= luaval_to_number(tolua_S, 4,&arg2, "lstg.ResFont:render");
+        if(!ok)
+        {
+            tolua_error(tolua_S, "invalid arguments in function 'lua_x_Resource_ResFont_render'", nullptr);
+            return 0;
+        }
+        bool ret = cobj->render(arg0, arg1, arg2);
+        tolua_pushboolean(tolua_S,(bool)ret);
+        return 1;
+    }
+    if (argc == 4) 
+    {
+        std::string arg0;
+        double arg1;
+        double arg2;
+        double arg3;
+
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResFont:render");
+
+        ok &= luaval_to_number(tolua_S, 3,&arg1, "lstg.ResFont:render");
+
+        ok &= luaval_to_number(tolua_S, 4,&arg2, "lstg.ResFont:render");
+
+        ok &= luaval_to_number(tolua_S, 5,&arg3, "lstg.ResFont:render");
+        if(!ok)
+        {
+            tolua_error(tolua_S, "invalid arguments in function 'lua_x_Resource_ResFont_render'", nullptr);
+            return 0;
+        }
+        bool ret = cobj->render(arg0, arg1, arg2, arg3);
+        tolua_pushboolean(tolua_S,(bool)ret);
+        return 1;
+    }
+    if (argc == 5) 
+    {
+        std::string arg0;
+        double arg1;
+        double arg2;
+        double arg3;
+        double arg4;
+
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResFont:render");
+
+        ok &= luaval_to_number(tolua_S, 3,&arg1, "lstg.ResFont:render");
+
+        ok &= luaval_to_number(tolua_S, 4,&arg2, "lstg.ResFont:render");
+
+        ok &= luaval_to_number(tolua_S, 5,&arg3, "lstg.ResFont:render");
+
+        ok &= luaval_to_number(tolua_S, 6,&arg4, "lstg.ResFont:render");
+        if(!ok)
+        {
+            tolua_error(tolua_S, "invalid arguments in function 'lua_x_Resource_ResFont_render'", nullptr);
+            return 0;
+        }
+        bool ret = cobj->render(arg0, arg1, arg2, arg3, arg4);
+        tolua_pushboolean(tolua_S,(bool)ret);
+        return 1;
+    }
+    if (argc == 6) 
+    {
+        std::string arg0;
+        double arg1;
+        double arg2;
+        double arg3;
+        double arg4;
+        double arg5;
+
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResFont:render");
+
+        ok &= luaval_to_number(tolua_S, 3,&arg1, "lstg.ResFont:render");
+
+        ok &= luaval_to_number(tolua_S, 4,&arg2, "lstg.ResFont:render");
+
+        ok &= luaval_to_number(tolua_S, 5,&arg3, "lstg.ResFont:render");
+
+        ok &= luaval_to_number(tolua_S, 6,&arg4, "lstg.ResFont:render");
+
+        ok &= luaval_to_number(tolua_S, 7,&arg5, "lstg.ResFont:render");
+        if(!ok)
+        {
+            tolua_error(tolua_S, "invalid arguments in function 'lua_x_Resource_ResFont_render'", nullptr);
+            return 0;
+        }
+        bool ret = cobj->render(arg0, arg1, arg2, arg3, arg4, arg5);
+        tolua_pushboolean(tolua_S,(bool)ret);
+        return 1;
+    }
+    if (argc == 7) 
+    {
+        std::string arg0;
+        double arg1;
+        double arg2;
+        double arg3;
+        double arg4;
+        double arg5;
+        double arg6;
+
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.ResFont:render");
+
+        ok &= luaval_to_number(tolua_S, 3,&arg1, "lstg.ResFont:render");
+
+        ok &= luaval_to_number(tolua_S, 4,&arg2, "lstg.ResFont:render");
+
+        ok &= luaval_to_number(tolua_S, 5,&arg3, "lstg.ResFont:render");
+
+        ok &= luaval_to_number(tolua_S, 6,&arg4, "lstg.ResFont:render");
+
+        ok &= luaval_to_number(tolua_S, 7,&arg5, "lstg.ResFont:render");
+
+        ok &= luaval_to_number(tolua_S, 8,&arg6, "lstg.ResFont:render");
+        if(!ok)
+        {
+            tolua_error(tolua_S, "invalid arguments in function 'lua_x_Resource_ResFont_render'", nullptr);
+            return 0;
+        }
+        bool ret = cobj->render(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+        tolua_pushboolean(tolua_S,(bool)ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResFont:render", argc, 3);
+    return 0;
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_x_Resource_ResFont_render'.",&tolua_err);
+    return 0;
+#endif
+}
 static int lua_x_Resource_ResFont_finalize(lua_State* tolua_S)
 {
     printf("luabindings: finalizing LUA object (ResFont)");
@@ -4727,9 +4957,11 @@ int lua_register_x_Resource_ResFont(lua_State* tolua_S)
     tolua_beginmodule(tolua_S,"ResFont");
         tolua_function(tolua_S,"disableOutline",lua_x_Resource_ResFont_disableOutline);
         tolua_function(tolua_S,"enableShadow",lua_x_Resource_ResFont_enableShadow);
+        tolua_function(tolua_S,"render",lua_x_Resource_ResFont_render);
         tolua_function(tolua_S,"isBold",lua_x_Resource_ResFont_isBold);
         tolua_function(tolua_S,"setTTFConfig",lua_x_Resource_ResFont_setTTFConfig);
         tolua_function(tolua_S,"disableGlow",lua_x_Resource_ResFont_disableGlow);
+        tolua_function(tolua_S,"getLabel",lua_x_Resource_ResFont_getLabel);
         tolua_function(tolua_S,"getHAlign",lua_x_Resource_ResFont_getHAlign);
         tolua_function(tolua_S,"isItalics",lua_x_Resource_ResFont_isItalics);
         tolua_function(tolua_S,"getShadowOffset",lua_x_Resource_ResFont_getShadowOffset);
@@ -4767,6 +4999,7 @@ int lua_register_x_Resource_ResFont(lua_State* tolua_S)
         tolua_function(tolua_S,"setVAlign",lua_x_Resource_ResFont_setVAlign);
         tolua_function(tolua_S,"disableStrikethrough",lua_x_Resource_ResFont_disableStrikethrough);
         tolua_function(tolua_S,"setRenderMode",lua_x_Resource_ResFont_setRenderMode);
+        tolua_function(tolua_S,"getFontAscender",lua_x_Resource_ResFont_getFontAscender);
         tolua_function(tolua_S,"createTTF", lua_x_Resource_ResFont_createTTF);
         tolua_function(tolua_S,"createHGE", lua_x_Resource_ResFont_createHGE);
         tolua_function(tolua_S,"createBMF", lua_x_Resource_ResFont_createBMF);
