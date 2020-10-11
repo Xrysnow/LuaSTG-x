@@ -96,8 +96,13 @@ void RenderMode::setProgram(Program* program)
 
 	locations.clear();
 	uniformNames.clear();
-	auto infos = _program->getAllActiveUniformInfo(ShaderStage::VERTEX_AND_FRAGMENT);
-	for (auto& it : infos)
+	// ShaderStage::VERTEX_AND_FRAGMENT is not valid for metal
+	for (const auto& it : _program->getAllActiveUniformInfo(ShaderStage::FRAGMENT))
+	{
+		locations[it.first] = _program->getUniformLocation(it.first);
+		uniformNames.push_back(it.first);
+	}
+	for (const auto& it : _program->getAllActiveUniformInfo(ShaderStage::VERTEX))
 	{
 		locations[it.first] = _program->getUniformLocation(it.first);
 		uniformNames.push_back(it.first);
