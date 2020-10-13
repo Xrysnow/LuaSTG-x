@@ -3,7 +3,7 @@
 
 using namespace lstg;
 
-#define QUERY(t) QueryPerformanceCounter((LARGE_INTEGER*)&t)
+#define QUERY(t) QueryPerformanceCounter((LARGE_INTEGER*)&(t))
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 //#if 0
