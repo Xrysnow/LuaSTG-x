@@ -2,7 +2,7 @@
 set(LSTGX_SRC_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/frameworks)
 set(GAME_HEADER
 	${LSTGX_SRC_ROOT}/Classes/ArrayObjectPool.hpp
-	${LSTGX_SRC_ROOT}/Classes/XThreadPool.hpp
+	${LSTGX_SRC_ROOT}/Classes/CirularQueue.hpp
 	${LSTGX_SRC_ROOT}/Classes/ControllerHelper.h
 	${LSTGX_SRC_ROOT}/Classes/LabelPool.h
 	${LSTGX_SRC_ROOT}/Classes/MemPoolManager.h
@@ -22,67 +22,67 @@ set(GAME_HEADER
 	${LSTGX_SRC_ROOT}/Classes/XRefAdapter.h
 	${LSTGX_SRC_ROOT}/Classes/XStopWatch.h
 	${LSTGX_SRC_ROOT}/Classes/XStream.h
+	${LSTGX_SRC_ROOT}/Classes/XThreadPool.hpp
 	${LSTGX_SRC_ROOT}/Classes/XTriangles.h
 	${LSTGX_SRC_ROOT}/Classes/XTrianglesCommand.h
 	${LSTGX_SRC_ROOT}/Classes/XZipArchive.h
-	${LSTGX_SRC_ROOT}/LSTG/CirularQueue.hpp
-	${LSTGX_SRC_ROOT}/LSTG/Dictionary.hpp
-	${LSTGX_SRC_ROOT}/LSTG/ObjectPool.hpp
 	${LSTGX_SRC_ROOT}/LSTG/AppFrame.h
 	${LSTGX_SRC_ROOT}/LSTG/CollisionDetect.h
-	${LSTGX_SRC_ROOT}/LSTG/ComponentData.h
-	${LSTGX_SRC_ROOT}/LSTG/ComponentDataAni.h
-	${LSTGX_SRC_ROOT}/LSTG/ComponentDataBlend.h
-	${LSTGX_SRC_ROOT}/LSTG/ComponentDataColli.h
-	${LSTGX_SRC_ROOT}/LSTG/ComponentDataLabel.h
-	${LSTGX_SRC_ROOT}/LSTG/ComponentDataLight.h
-	${LSTGX_SRC_ROOT}/LSTG/ComponentDataParticle.h
-	${LSTGX_SRC_ROOT}/LSTG/ComponentDataTrasform.h
-	${LSTGX_SRC_ROOT}/LSTG/ComponentDataVertex.h
-	${LSTGX_SRC_ROOT}/LSTG/ComponentManager.h
-	${LSTGX_SRC_ROOT}/LSTG/GameClass.h
-	${LSTGX_SRC_ROOT}/LSTG/GameObject.h
-	${LSTGX_SRC_ROOT}/LSTG/GameObjectBentLaser.h
-	${LSTGX_SRC_ROOT}/LSTG/GameObjectManager.h
-	${LSTGX_SRC_ROOT}/LSTG/GameObjectPool.h
-	${LSTGX_SRC_ROOT}/LSTG/GameObjectPropertyHash.h
-	${LSTGX_SRC_ROOT}/LSTG/GameObjectSymbol.h
-	${LSTGX_SRC_ROOT}/LSTG/GameResources.h
 	${LSTGX_SRC_ROOT}/LSTG/Global.h
-	${LSTGX_SRC_ROOT}/LSTG/GOSymbolBoolean.h
-	${LSTGX_SRC_ROOT}/LSTG/GOSymbolNumber.h
 	${LSTGX_SRC_ROOT}/LSTG/InputManager.h
 	${LSTGX_SRC_ROOT}/LSTG/LogSystem.h
-	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper.h
-	${LSTGX_SRC_ROOT}/LSTG/LWBuiltInFunction.h
-	${LSTGX_SRC_ROOT}/LSTG/LWColor.h
-	${LSTGX_SRC_ROOT}/LSTG/LWProfiler.h
-	${LSTGX_SRC_ROOT}/LSTG/LWRandomizer.h
-	${LSTGX_SRC_ROOT}/LSTG/LW_Frame.h
-	${LSTGX_SRC_ROOT}/LSTG/LW_Graph.h
-	${LSTGX_SRC_ROOT}/LSTG/LW_Input.h
-	${LSTGX_SRC_ROOT}/LSTG/LW_Math.h
-	${LSTGX_SRC_ROOT}/LSTG/LW_Object.h
-	${LSTGX_SRC_ROOT}/LSTG/LW_Render.h
-	${LSTGX_SRC_ROOT}/LSTG/LW_Text.h
+	${LSTGX_SRC_ROOT}/LSTG/ObjectPool.hpp
 	${LSTGX_SRC_ROOT}/LSTG/Renderer.h
 	${LSTGX_SRC_ROOT}/LSTG/RenderMode.h
-	${LSTGX_SRC_ROOT}/LSTG/ResAnimation.h
-	${LSTGX_SRC_ROOT}/LSTG/ResAudio.h
-	${LSTGX_SRC_ROOT}/LSTG/ResBase.h
-	${LSTGX_SRC_ROOT}/LSTG/ResFont.h
-	${LSTGX_SRC_ROOT}/LSTG/ResFX.h
 	${LSTGX_SRC_ROOT}/LSTG/ResourceMgr.h
-	${LSTGX_SRC_ROOT}/LSTG/ResParticle.h
-	${LSTGX_SRC_ROOT}/LSTG/ResRenderTarget.h
-	${LSTGX_SRC_ROOT}/LSTG/ResSprite.h
-	${LSTGX_SRC_ROOT}/LSTG/ResTexture.h
-	${LSTGX_SRC_ROOT}/LSTG/UtilColor.h
-	${LSTGX_SRC_ROOT}/LSTG/UtilGLDefinition.h
-	${LSTGX_SRC_ROOT}/LSTG/Utility.h
-	${LSTGX_SRC_ROOT}/LSTG/UtilLua.h
-	${LSTGX_SRC_ROOT}/LSTG/UtilLuaConversion.h
-	${LSTGX_SRC_ROOT}/LSTG/UtilLuaRes.h
+	${LSTGX_SRC_ROOT}/LSTG/Component/ComponentData.h
+	${LSTGX_SRC_ROOT}/LSTG/Component/ComponentDataAni.h
+	${LSTGX_SRC_ROOT}/LSTG/Component/ComponentDataBlend.h
+	${LSTGX_SRC_ROOT}/LSTG/Component/ComponentDataColli.h
+	${LSTGX_SRC_ROOT}/LSTG/Component/ComponentDataLabel.h
+	${LSTGX_SRC_ROOT}/LSTG/Component/ComponentDataLight.h
+	${LSTGX_SRC_ROOT}/LSTG/Component/ComponentDataParticle.h
+	${LSTGX_SRC_ROOT}/LSTG/Component/ComponentDataTrasform.h
+	${LSTGX_SRC_ROOT}/LSTG/Component/ComponentDataVertex.h
+	${LSTGX_SRC_ROOT}/LSTG/Component/ComponentManager.h
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LuaWrapper.h
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LWBuiltInFunction.h
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LWColor.h
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LWProfiler.h
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LWRandomizer.h
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LW_Frame.h
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LW_Graph.h
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LW_Input.h
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LW_Math.h
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LW_Object.h
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LW_Render.h
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LW_Text.h
+	${LSTGX_SRC_ROOT}/LSTG/Object/GameClass.h
+	${LSTGX_SRC_ROOT}/LSTG/Object/GameObject.h
+	${LSTGX_SRC_ROOT}/LSTG/Object/GameObjectBentLaser.h
+	${LSTGX_SRC_ROOT}/LSTG/Object/GameObjectManager.h
+	${LSTGX_SRC_ROOT}/LSTG/Object/GameObjectPool.h
+	${LSTGX_SRC_ROOT}/LSTG/Object/GameObjectPropertyHash.h
+	${LSTGX_SRC_ROOT}/LSTG/Object/GameObjectSet.h
+	${LSTGX_SRC_ROOT}/LSTG/Resource/GameResources.h
+	${LSTGX_SRC_ROOT}/LSTG/Resource/ResAnimation.h
+	${LSTGX_SRC_ROOT}/LSTG/Resource/ResAudio.h
+	${LSTGX_SRC_ROOT}/LSTG/Resource/ResBase.h
+	${LSTGX_SRC_ROOT}/LSTG/Resource/ResFont.h
+	${LSTGX_SRC_ROOT}/LSTG/Resource/ResFX.h
+	${LSTGX_SRC_ROOT}/LSTG/Resource/ResParticle.h
+	${LSTGX_SRC_ROOT}/LSTG/Resource/ResRenderTarget.h
+	${LSTGX_SRC_ROOT}/LSTG/Resource/ResSprite.h
+	${LSTGX_SRC_ROOT}/LSTG/Resource/ResTexture.h
+	${LSTGX_SRC_ROOT}/LSTG/Symbol/GameObjectSymbol.h
+	${LSTGX_SRC_ROOT}/LSTG/Symbol/GOSymbolBoolean.h
+	${LSTGX_SRC_ROOT}/LSTG/Symbol/GOSymbolNumber.h
+	${LSTGX_SRC_ROOT}/LSTG/Util/UtilColor.h
+	${LSTGX_SRC_ROOT}/LSTG/Util/UtilGLDefinition.h
+	${LSTGX_SRC_ROOT}/LSTG/Util/Utility.h
+	${LSTGX_SRC_ROOT}/LSTG/Util/UtilLua.h
+	${LSTGX_SRC_ROOT}/LSTG/Util/UtilLuaConversion.h
+	${LSTGX_SRC_ROOT}/LSTG/Util/UtilLuaRes.h
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_BentLaser_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Buffer_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_configuration_auto.hpp
@@ -131,58 +131,59 @@ set(GAME_SOURCE
 	${LSTGX_SRC_ROOT}/Classes/XZipArchive.cpp
 	${LSTGX_SRC_ROOT}/LSTG/AppFrame.cpp
 	${LSTGX_SRC_ROOT}/LSTG/CollisionDetect.cpp
-	${LSTGX_SRC_ROOT}/LSTG/ComponentData.cpp
-	${LSTGX_SRC_ROOT}/LSTG/ComponentDataAni.cpp
-	${LSTGX_SRC_ROOT}/LSTG/ComponentDataBlend.cpp
-	${LSTGX_SRC_ROOT}/LSTG/ComponentDataColli.cpp
-	${LSTGX_SRC_ROOT}/LSTG/ComponentDataLabel.cpp
-	${LSTGX_SRC_ROOT}/LSTG/ComponentDataLight.cpp
-	${LSTGX_SRC_ROOT}/LSTG/ComponentDataParticle.cpp
-	${LSTGX_SRC_ROOT}/LSTG/ComponentDataTrasform.cpp
-	${LSTGX_SRC_ROOT}/LSTG/ComponentDataVertex.cpp
-	${LSTGX_SRC_ROOT}/LSTG/ComponentManager.cpp
-	${LSTGX_SRC_ROOT}/LSTG/GameClass.cpp
-	${LSTGX_SRC_ROOT}/LSTG/GameObject.cpp
-	${LSTGX_SRC_ROOT}/LSTG/GameObjectBentLaser.cpp
-	${LSTGX_SRC_ROOT}/LSTG/GameObjectManager.cpp
-	${LSTGX_SRC_ROOT}/LSTG/GameObjectPool.cpp
-	${LSTGX_SRC_ROOT}/LSTG/GameObjectPropertyHash.cpp
-	${LSTGX_SRC_ROOT}/LSTG/GameObjectSymbol.cpp
-	${LSTGX_SRC_ROOT}/LSTG/GOSymbolBoolean.cpp
-	${LSTGX_SRC_ROOT}/LSTG/GOSymbolNumber.cpp
 	${LSTGX_SRC_ROOT}/LSTG/InputManager.cpp
 	${LSTGX_SRC_ROOT}/LSTG/LogSystem.cpp
-	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper.cpp
-	${LSTGX_SRC_ROOT}/LSTG/LWBuiltInFunction.cpp
-	${LSTGX_SRC_ROOT}/LSTG/LWColor.cpp
-	${LSTGX_SRC_ROOT}/LSTG/LWProfiler.cpp
-	${LSTGX_SRC_ROOT}/LSTG/LWRandomizer.cpp
-	${LSTGX_SRC_ROOT}/LSTG/LW_Frame.cpp
-	${LSTGX_SRC_ROOT}/LSTG/LW_Graph.cpp
-	${LSTGX_SRC_ROOT}/LSTG/LW_Input.cpp
-	${LSTGX_SRC_ROOT}/LSTG/LW_Math.cpp
-	${LSTGX_SRC_ROOT}/LSTG/LW_Object.cpp
-	${LSTGX_SRC_ROOT}/LSTG/LW_Render.cpp
-	${LSTGX_SRC_ROOT}/LSTG/LW_Text.cpp
 	${LSTGX_SRC_ROOT}/LSTG/Renderer.cpp
 	${LSTGX_SRC_ROOT}/LSTG/RenderMode.cpp
-	${LSTGX_SRC_ROOT}/LSTG/ResAnimation.cpp
-	${LSTGX_SRC_ROOT}/LSTG/ResAudio.cpp
-	${LSTGX_SRC_ROOT}/LSTG/ResBase.cpp
-	${LSTGX_SRC_ROOT}/LSTG/ResFont.cpp
-	${LSTGX_SRC_ROOT}/LSTG/ResFX.cpp
 	${LSTGX_SRC_ROOT}/LSTG/ResourceMgr.cpp
-	${LSTGX_SRC_ROOT}/LSTG/ResParticle.cpp
-	${LSTGX_SRC_ROOT}/LSTG/ResRenderTarget.cpp
-	${LSTGX_SRC_ROOT}/LSTG/ResSprite.cpp
-	${LSTGX_SRC_ROOT}/LSTG/ResTexture.cpp
-	${LSTGX_SRC_ROOT}/LSTG/UtilColor.cpp
-	${LSTGX_SRC_ROOT}/LSTG/UtilGLDefinition.cpp
-	${LSTGX_SRC_ROOT}/LSTG/Utility.cpp
-	${LSTGX_SRC_ROOT}/LSTG/UtilLua.cpp
-	${LSTGX_SRC_ROOT}/LSTG/UtilLuaConversion.cpp
-	${LSTGX_SRC_ROOT}/LSTG/UtilLuaRes.cpp
-	${LSTGX_SRC_ROOT}/LSTG/UtilShader.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Component/ComponentData.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Component/ComponentDataAni.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Component/ComponentDataBlend.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Component/ComponentDataColli.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Component/ComponentDataLabel.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Component/ComponentDataLight.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Component/ComponentDataParticle.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Component/ComponentDataTrasform.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Component/ComponentDataVertex.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Component/ComponentManager.cpp
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LuaWrapper.cpp
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LWBuiltInFunction.cpp
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LWColor.cpp
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LWProfiler.cpp
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LWRandomizer.cpp
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LW_Frame.cpp
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LW_Graph.cpp
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LW_Input.cpp
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LW_Math.cpp
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LW_Object.cpp
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LW_Render.cpp
+	${LSTGX_SRC_ROOT}/LSTG/LuaWrapper/LW_Text.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Object/GameClass.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Object/GameObject.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Object/GameObjectBentLaser.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Object/GameObjectManager.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Object/GameObjectPool.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Object/GameObjectPropertyHash.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Object/GameObjectSet.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Resource/ResAnimation.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Resource/ResAudio.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Resource/ResBase.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Resource/ResFont.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Resource/ResFX.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Resource/ResParticle.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Resource/ResRenderTarget.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Resource/ResSprite.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Resource/ResTexture.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Symbol/GameObjectSymbol.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Symbol/GOSymbolBoolean.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Symbol/GOSymbolNumber.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Util/UtilColor.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Util/UtilGLDefinition.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Util/Utility.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Util/UtilLua.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Util/UtilLuaConversion.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Util/UtilLuaRes.cpp
+	${LSTGX_SRC_ROOT}/LSTG/Util/UtilShader.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_BentLaser_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Buffer_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_configuration_auto.cpp
