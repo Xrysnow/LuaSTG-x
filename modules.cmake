@@ -91,6 +91,8 @@ list(APPEND EXTERNAL_LIBS ext_cLaTeXMath)
 
 # lua
 
+add_subdirectory(${LSTGX_EXT_ROOT}/LuaExtensions/cjson)
+list(APPEND EXTERNAL_LIBS ext_cjson)
 add_subdirectory(${LSTGX_EXT_ROOT}/LuaExtensions/lfs)
 list(APPEND EXTERNAL_LIBS ext_lfs)
 add_subdirectory(${LSTGX_EXT_ROOT}/LuaExtensions/lpeg)
