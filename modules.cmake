@@ -6,26 +6,23 @@ set(LSTGX_EXT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/frameworks/external)
 
 # apple
 
-set(COREMEDIA_LIBRARY)
-set(SECURITY_LIBRARY)
-set(VIDEOTOOLBOX_LIBRARY)
-if(MACOSX OR IOS)
-	include_directories(/System/Library/Frameworks)
-	find_library(COREMEDIA_LIBRARY CoreMedia)
-	find_library(SECURITY_LIBRARY Security)
-	find_library(VIDEOTOOLBOX_LIBRARY VideoToolbox)
-endif()
-
 # ffmpeg, video
 
 set(CC_VIDEO_DEPEND_LIBS)
 add_subdirectory(${LSTGX_EXT_ROOT}/ffmpeg)
 list(APPEND CC_VIDEO_DEPEND_LIBS ext_ffmpeg)
-if(MACOSX OR IOS)
-	list(APPEND CC_VIDEO_DEPEND_LIBS ${COREMEDIA_LIBRARY})
-	list(APPEND CC_VIDEO_DEPEND_LIBS ${SECURITY_LIBRARY})
-	list(APPEND CC_VIDEO_DEPEND_LIBS ${VIDEOTOOLBOX_LIBRARY})
-	list(APPEND CC_VIDEO_DEPEND_LIBS bz2)
+if(APPLE)
+	# dylib for mac, framework for ios
+	target_link_libraries(${APP_NAME} ${FFMPEG_LIBRARY})
+	# if(MACOSX)
+		# copy to Frameworks, need to check sign option in Xcode project
+		target_sources(${APP_NAME} PUBLIC ${FFMPEG_LIBRARY})
+		set_source_files_properties(${FFMPEG_LIBRARY} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks HEADER_FILE_ONLY 1)
+		# set rpath
+		set_target_properties(${APP_NAME} PROPERTIES LINK_FLAGS "-Wl,-rpath,@loader_path/../Frameworks")
+	# elseif(IOS)
+		# set_target_properties(${APP_NAME} PROPERTIES XCODE_ATTRIBUTE_FRAMEWORK_SEARCH_PATHS ${FFMPEG_FRAMEWORK_PATH})
+	# endif()
 endif()
 
 add_subdirectory(${LSTGX_MOD_ROOT}/Video)
