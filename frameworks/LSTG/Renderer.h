@@ -194,5 +194,7 @@ namespace lstg
 		cocos2d::DrawNode* getDrawNode() const noexcept { return drawNode; }
 		const cocos2d::Mat4& getCurrentProjection() const noexcept { return currentProjection; }
 		cocos2d::Viewport getCurrentViewport() const noexcept { return currentVP; }
+
+		LabelPool& getLabelPool() noexcept { return labelPool; }
 	};
 }

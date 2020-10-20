@@ -13,25 +13,33 @@ LabelPool::~LabelPool()
 	clear();
 }
 
-Label* LabelPool::getWithResFont(ResFont* res)
+Label* LabelPool::getWithResFont(ResFont* res, const std::string& str)
 {
-	const auto name = res->getName();
-	Label* ret;
-	const auto it = idle.find(name);
+	if (!res)
+		return nullptr;
+	const auto it = idle.find(res);
 	if (it != idle.end())
 	{
 		if (!it->second.empty())
 		{
-			ret = it->second.back();
+			auto ret = it->second.back();
 			it->second.popBack();
 			ResFont::syncLabelSetting(res->getLabel(), ret);
 			return ret;
 		}
 	}
-	ret = res->createLabel();
+	auto ret = res->createLabel();
 	if(ret)
-		pool[name].pushBack(ret);
+		pool[res].pushBack(ret);
 	return ret;
+}
+
+void LabelPool::onResFontRemove(ResFont* res)
+{
+	if (!res)
+		return;
+	idle.erase(res);
+	pool.erase(res);
 }
 
 void LabelPool::restore()

@@ -6,6 +6,7 @@
 #include "LogSystem.h"
 #include "Renderer.h"
 #include "ResourceMgr.h"
+#include "LabelPool.h"
 #include "2d/CCFontFreeType.h"
 
 using namespace std;
@@ -227,6 +228,7 @@ ResFont::ResFont(const std::string& name, XLabel* label, LabelType type)
 
 ResFont::~ResFont()
 {
+	LRR.getLabelPool().onResFontRemove(this);
 	label->release();
 }
 

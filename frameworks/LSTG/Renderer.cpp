@@ -546,7 +546,7 @@ bool XRenderer::renderText(ResFont* p, const std::string& str,
 	updateRenderMode(p->getRenderMode());
 
 	// use temprary label
-	auto label = labelPool.getWithResFont(p);
+	auto label = labelPool.getWithResFont(p, str);
 	const auto ha = p->getHAlign();
 	const auto va = p->getVAlign();
 	label->setString(str);
