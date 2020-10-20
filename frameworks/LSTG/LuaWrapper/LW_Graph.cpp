@@ -151,7 +151,7 @@ LUA_REGISTER_FUNC_DEF(lstg, GetFrameBuffer)
 static set<int> MSAALevels = { 0,2,4,8,16 };
 LUA_REGISTER_FUNC_DEF(lstg, SetMSAALevel)
 {
-	const auto level = luaL_checkinteger(L, 1);
+	const auto level = (int)luaL_checkinteger(L, 1);
 	bool ok = false;
 	if (MSAALevels.find(level) != MSAALevels.end())
 	{
