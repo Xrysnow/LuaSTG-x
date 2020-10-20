@@ -30,28 +30,6 @@
 		lua_gettable(L, LUA_REGISTRYINDEX); \
 	} while (false)
 
-#define LIST_INSERT_BEFORE(target, p, field) \
-	do { \
-		p->p##field##Prev = (target)->p##field##Prev; \
-		p->p##field##Next = (target); \
-		p->p##field##Prev->p##field##Next = p; \
-		p->p##field##Next->p##field##Prev = p; \
-	} while(false)
-
-#define LIST_INSERT_AFTER(target, p, field) \
-	do { \
-		p->p##field##Prev = (target); \
-		p->p##field##Next = (target)->p##field##Next; \
-		p->p##field##Prev->p##field##Next = p; \
-		p->p##field##Next->p##field##Prev = p; \
-	} while(false)
-
-#define LIST_REMOVE(p, field) \
-	do { \
-		p->p##field##Prev->p##field##Next = p->p##field##Next; \
-		p->p##field##Next->p##field##Prev = p->p##field##Prev; \
-	} while(false)
-
 using namespace std;
 using namespace cocos2d;
 using namespace lstg;

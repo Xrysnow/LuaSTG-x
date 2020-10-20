@@ -77,8 +77,6 @@ namespace lstg
 
 		GameObject* getCurrentObject() const { return currentObj; }
 
-		bool CheckIsMainThread(lua_State* pL) const noexcept { return pL == L; }
-
 		size_t GetObjectCount() noexcept { return pool.size(); }
 
 		GameObject* GetPooledObject(size_t i) noexcept { return pool.atLua(i); }
