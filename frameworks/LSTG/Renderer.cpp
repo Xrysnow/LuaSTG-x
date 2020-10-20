@@ -239,6 +239,7 @@ bool XRenderer::beginScene()noexcept
 	LMP.reset();
 	//LMP.clear();// clear is painful
 	labelPool.restore();
+	renderTargetUsed.clear();
 
 	// Store glViewport, ProjectionMatrix; Load currentProjection
 	const auto f = [=]() {
@@ -601,6 +602,20 @@ bool XRenderer::pushRenderTarget(ResRenderTarget* p) noexcept
 		XERROR("RenderTexture is null");
 		return false;
 	}
+	for (auto& rrt : renderTargetStack)
+	{
+		if (rrt == p)
+		{
+			XERROR("RenderTarget is already in stack");
+			return false;
+		}
+	}
+	if (renderTargetUsed.find(p) != renderTargetUsed.end())
+	{
+		XERROR("RenderTarget is already used");
+		return false;
+	}
+	renderTargetUsed.insert(p);
 
 	flushTriangles();
 

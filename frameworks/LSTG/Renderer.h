@@ -56,6 +56,7 @@ namespace lstg
 
 		// PostEffect/RenderTarget
 		std::vector<ResRenderTarget*> renderTargetStack;
+		std::unordered_set<ResRenderTarget*> renderTargetUsed;
 		cocos2d::RenderTexture* tempRenderTexture = nullptr;
 
 		LabelPool labelPool;
