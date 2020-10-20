@@ -59,7 +59,7 @@ using namespace xmath;
 using namespace intersect;
 using namespace collision;
 
-bool lstg::CollisionCheck(GameObject* p1, GameObject* p2)noexcept
+bool lstg::CollisionCheck(GameObject* p1, GameObject* p2) noexcept
 {
 	// skip
 	if (!p1->colli || !p2->colli)
@@ -154,7 +154,7 @@ void GameObjectManager::freeObjectInternal(GameObject* p) noexcept
 	pool.free(p);
 }
 
-GameObject* GameObjectManager::freeObject(GameObject* p)noexcept
+GameObject* GameObjectManager::freeObject(GameObject* p) noexcept
 {
 	const auto it = objList.find(p);
 	GameObject* pRet = nullptr;
@@ -180,7 +180,7 @@ GameObject* GameObjectManager::freeObject(GameObject* p)noexcept
 	return pRet;
 }
 
-void GameObjectManager::DoFrame()noexcept
+void GameObjectManager::DoFrame() noexcept
 {
 	inDoFrame = true;
 	GETOBJTABLE;  // ot
@@ -580,11 +580,11 @@ void GameObjectManager::CollisionCheck3D(size_t groupA, size_t groupB) noexcept
 	}
 }
 
-void GameObjectManager::UpdateXY()noexcept
+void GameObjectManager::UpdateXY() noexcept
 {
 }
 
-void GameObjectManager::AfterFrame()noexcept
+void GameObjectManager::AfterFrame() noexcept
 {
 	GETOBJTABLE;
 	for (auto it = objList.begin(); it != objList.end();)
@@ -642,7 +642,7 @@ int GameObjectManager::RawNew(lua_State* L) noexcept
 	return 1;
 }
 
-int GameObjectManager::New(lua_State* L)noexcept
+int GameObjectManager::New(lua_State* L) noexcept
 {
 	if (!checkClass(L, 1))
 		return luaL_error(L, "invalid argument #1, luastg object class required for 'New'.");
@@ -854,23 +854,23 @@ int GameObjectManager::del_or_kill(lua_State* L, GAMEOBJECTSTATUS status, int ca
 	return luaL_error(L, "invalid argument #1");
 }
 
-int GameObjectManager::Del(lua_State* L)noexcept
+int GameObjectManager::Del(lua_State* L) noexcept
 {
 	return del_or_kill(L, STATUS_DEL, LGOBJ_CC_DEL);
 }
 
-int GameObjectManager::Kill(lua_State* L)noexcept
+int GameObjectManager::Kill(lua_State* L) noexcept
 {
 	return del_or_kill(L, STATUS_KILL, LGOBJ_CC_KILL);
 }
 
-int GameObjectManager::IsValid(lua_State* L)noexcept
+int GameObjectManager::IsValid(lua_State* L) noexcept
 {
 	lua_pushboolean(L, checkObject(L, -1) ? 1 : 0);
 	return 1;
 }
 
-bool GameObjectManager::Angle(size_t idA, size_t idB, double& out)noexcept
+bool GameObjectManager::Angle(size_t idA, size_t idB, double& out) noexcept
 {
 	const auto pA = pool.atLua(idA);
 	const auto pB = pool.atLua(idB);
@@ -880,7 +880,7 @@ bool GameObjectManager::Angle(size_t idA, size_t idB, double& out)noexcept
 	return true;
 }
 
-bool GameObjectManager::Dist(size_t idA, size_t idB, double& out)noexcept
+bool GameObjectManager::Dist(size_t idA, size_t idB, double& out) noexcept
 {
 	const auto pA = pool.atLua(idA);
 	const auto pB = pool.atLua(idB);
@@ -892,7 +892,7 @@ bool GameObjectManager::Dist(size_t idA, size_t idB, double& out)noexcept
 	return true;
 }
 
-bool GameObjectManager::GetV(size_t id, double& v, double& a)noexcept
+bool GameObjectManager::GetV(size_t id, double& v, double& a) noexcept
 {
 	const auto p = pool.atLua(id);
 	if (!p)
@@ -903,7 +903,7 @@ bool GameObjectManager::GetV(size_t id, double& v, double& a)noexcept
 	return true;
 }
 
-bool GameObjectManager::SetV(size_t id, double v, double a, bool updateRot)noexcept
+bool GameObjectManager::SetV(size_t id, double v, double a, bool updateRot) noexcept
 {
 	const auto p = pool.atLua(id);
 	if (!p)
@@ -942,7 +942,7 @@ bool GameObjectManager::SetLastXY(size_t id, double x, double y) noexcept
 	return true;
 }
 
-bool GameObjectManager::SetImgState(size_t id, RenderMode* m, const Color4B& c)noexcept
+bool GameObjectManager::SetImgState(size_t id, RenderMode* m, const Color4B& c) noexcept
 {
 	GameObject* p = pool.atLua(id);
 	if (!p)
@@ -973,7 +973,7 @@ bool GameObjectManager::SetImgState(size_t id, RenderMode* m, const Color4B& c)n
 }
 
 bool GameObjectManager::BoxCheck(size_t id,
-	double left, double right, double bottom, double top, bool& ret)noexcept
+	double left, double right, double bottom, double top, bool& ret) noexcept
 {
 	const auto p = pool.atLua(id);
 	if (!p)
@@ -982,7 +982,7 @@ bool GameObjectManager::BoxCheck(size_t id,
 	return true;
 }
 
-void GameObjectManager::ResetPool()noexcept
+void GameObjectManager::ResetPool() noexcept
 {
 	GETOBJTABLE;
 	for (auto&& p : objList)
@@ -1104,7 +1104,7 @@ bool GameObjectManager::DoDefaultRender(GameObject* p)
 	return true;
 }
 
-int GameObjectManager::NextObject(int groupId, int id)noexcept
+int GameObjectManager::NextObject(int groupId, int id) noexcept
 {
 	if (id < 0)
 		return -1;
@@ -1147,7 +1147,7 @@ int GameObjectManager::NextObject(int groupId, int id)noexcept
 	}
 }
 
-int GameObjectManager::NextObject(lua_State* L)noexcept
+int GameObjectManager::NextObject(lua_State* L) noexcept
 {
 	int g = luaL_checkinteger(L, 1);  // i(groupId)
 	const int id = luaL_checkinteger(L, 2);  // id
@@ -1161,7 +1161,7 @@ int GameObjectManager::NextObject(lua_State* L)noexcept
 	return 2;
 }
 
-int GameObjectManager::FirstObject(int groupId)noexcept
+int GameObjectManager::FirstObject(int groupId) noexcept
 {
 	// traverse all if not a valid group
 	if (!checkGroupID(groupId))
@@ -1180,7 +1180,7 @@ int GameObjectManager::FirstObject(int groupId)noexcept
 	}
 }
 
-int GameObjectManager::GetAttr(lua_State* L)noexcept
+int GameObjectManager::GetAttr(lua_State* L) noexcept
 {
 	lua_rawgeti(L, 1, 2);  // obj s(key) ... i(id)
 	auto id = size_t(lua_tonumber(L, -1));
@@ -1767,7 +1767,7 @@ int GameObjectManager::BindNode(lua_State* L) noexcept
 	return 0;
 }
 
-int GameObjectManager::GetObjectTable(lua_State* L)noexcept
+int GameObjectManager::GetObjectTable(lua_State* L) noexcept
 {
 	GETOBJTABLE;
 	return 1;

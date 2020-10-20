@@ -14,7 +14,7 @@ namespace lstg
 	class GameClass;
 	//struct GameObject;
 
-	bool CollisionCheck(GameObject* p1, GameObject* p2)noexcept;
+	bool CollisionCheck(GameObject* p1, GameObject* p2) noexcept;
 
 	struct less_obj
 	{
@@ -73,25 +73,25 @@ namespace lstg
 		void freeObjectInternal(GameObject* p) noexcept;
 	public:
 
-		GameObject* freeObject(GameObject* p)noexcept;
+		GameObject* freeObject(GameObject* p) noexcept;
 
 		GameObject* getCurrentObject() const { return currentObj; }
 
 		bool CheckIsMainThread(lua_State* pL) const noexcept { return pL == L; }
 
-		size_t GetObjectCount()noexcept { return pool.size(); }
+		size_t GetObjectCount() noexcept { return pool.size(); }
 
-		GameObject* GetPooledObject(size_t i)noexcept { return pool.atLua(i); }
+		GameObject* GetPooledObject(size_t i) noexcept { return pool.atLua(i); }
 
 		// invoke frame callback on all game objects
-		void DoFrame()noexcept;
+		void DoFrame() noexcept;
 
 		// invoke render callback on all game objects
 		void DoRender();
 
 		bool IsInBound(float x, float y) const noexcept
 		{
-			return _boundLeft < x&&x < _boundRight&&_boundBottom < y&&y < _boundTop;
+			return _boundLeft < x && x < _boundRight && _boundBottom < y && y < _boundTop;
 		}
 
 		void SetBound(lua_Number l, lua_Number r, lua_Number b, lua_Number t)noexcept
@@ -103,30 +103,30 @@ namespace lstg
 		}
 
 		// invoke del callback on all game objects that oob
-		void BoundCheck()noexcept;
+		void BoundCheck() noexcept;
 
 		/* collision check between two groups, will invoke callback of
 		 * object in groupA and pass object in groupB as parameter */
 		void CollisionCheck(size_t groupA, size_t groupB);
-		void CollisionCheck(GameObject* objectA, size_t groupB)noexcept;
-		void CollisionCheck(size_t groupA, GameObject* objectB)noexcept;
-		void CollisionCheck(GameObject* objectA, GameObject* objectB)noexcept;
+		void CollisionCheck(GameObject* objectA, size_t groupB) noexcept;
+		void CollisionCheck(size_t groupA, GameObject* objectB) noexcept;
+		void CollisionCheck(GameObject* objectA, GameObject* objectB) noexcept;
 
-		void CollisionCheck3D(size_t groupA, size_t groupB)noexcept;
+		void CollisionCheck3D(size_t groupA, size_t groupB) noexcept;
 
 		// @deprecated
-		void UpdateXY()noexcept;
+		void UpdateXY() noexcept;
 
 		// update timer, gc
-		void AfterFrame()noexcept;
+		void AfterFrame() noexcept;
 
-		int RawNew(lua_State* L)noexcept;
+		int RawNew(lua_State* L) noexcept;
 
 		// allocate and push a new object, invoke init callback
-		int New(lua_State* L)noexcept;
+		int New(lua_State* L) noexcept;
 
 		// clone object at idx and put result at stack top
-		int Clone(lua_State* L, int idx)noexcept;
+		int Clone(lua_State* L, int idx) noexcept;
 
 	private:
 
@@ -137,66 +137,65 @@ namespace lstg
 		int del_or_kill(lua_State* L, GAMEOBJECTSTATUS status, int callBackIdx);
 	public:
 		// trigger del event on object
-		int Del(lua_State* L)noexcept;
+		int Del(lua_State* L) noexcept;
 		// trigger kill event on object
-		int Kill(lua_State* L)noexcept;
+		int Kill(lua_State* L) noexcept;
 
-	public:
 		// check if object is valid
-		int IsValid(lua_State* L)noexcept;
+		int IsValid(lua_State* L) noexcept;
 
 		// get angle of two objects
-		bool Angle(size_t idA, size_t idB, double& out)noexcept;
+		bool Angle(size_t idA, size_t idB, double& out) noexcept;
 
 		// get distance of two objects
-		bool Dist(size_t idA, size_t idB, double& out)noexcept;
+		bool Dist(size_t idA, size_t idB, double& out) noexcept;
 
 		// get norm and angle of velocity
-		bool GetV(size_t id, double& v, double& a)noexcept;
+		bool GetV(size_t id, double& v, double& a) noexcept;
 
 		// set norm and angle of velocity
-		bool SetV(size_t id, double v, double a, bool updateRot)noexcept;
+		bool SetV(size_t id, double v, double a, bool updateRot) noexcept;
 
-		bool GetLastXY(size_t id, double& x, double& y)noexcept;
+		bool GetLastXY(size_t id, double& x, double& y) noexcept;
 
-		bool SetLastXY(size_t id, double x, double y)noexcept;
+		bool SetLastXY(size_t id, double x, double y) noexcept;
 
 		/* @deprecated (only for compatibility)
 		 * set RenderMode and color of the resource bind on object */
-		bool SetImgState(size_t id, RenderMode* m, const cocos2d::Color4B& c)noexcept;
+		bool SetImgState(size_t id, RenderMode* m, const cocos2d::Color4B& c) noexcept;
 
 		// check if object is in given bound
-		bool BoxCheck(size_t id, double left, double right, double bottom, double top, bool& ret)noexcept;
+		bool BoxCheck(size_t id, double left, double right, double bottom, double top, bool& ret) noexcept;
 
-		void ResetPool()noexcept;
+		void ResetPool() noexcept;
 
-		static void UpdateParticle(GameObject* p)noexcept;
-		bool UpdateParticle(size_t id)noexcept;
+		static void UpdateParticle(GameObject* p) noexcept;
+		bool UpdateParticle(size_t id) noexcept;
 
 		bool DoDefaultRender(size_t id);
 		static bool DoDefaultRender(GameObject* p);
 
 		// get id of next object, return -1 when failed
-		int NextObject(int groupId, int id)noexcept;
-		int NextObject(lua_State* L)noexcept;
+		int NextObject(int groupId, int id) noexcept;
+		int NextObject(lua_State* L) noexcept;
 
 		// get id of first object in group, return -1 when failed
-		int FirstObject(int groupId)noexcept;
+		int FirstObject(int groupId) noexcept;
 
 		// __index metamethod for game object
-		int GetAttr(lua_State* L)noexcept;
+		int GetAttr(lua_State* L) noexcept;
 
 		// __newindex metamethod for game object
 		int SetAttr(lua_State* L);
 
 		// bind a cocos2d::Node instance on the game object
-		int BindNode(lua_State* L)noexcept;
+		int BindNode(lua_State* L) noexcept;
 
 		// push internal object table
-		int GetObjectTable(lua_State* L)noexcept;
+		int GetObjectTable(lua_State* L) noexcept;
 
 		// for operations of particle pool on object
-		int GetParticlePool(lua_State* L)noexcept;
+		int GetParticlePool(lua_State* L) noexcept;
 	public:
 
 		void DrawGroupCollider(int groupId, const cocos2d::Color4B& fillColor,
