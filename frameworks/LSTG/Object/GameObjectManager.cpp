@@ -1782,11 +1782,10 @@ bool GameObjectManager::checkClass(lua_State* L, int idx)
 {
 	if (!lua_istable(L, idx))
 		return false;
-	lua_getfield(L, idx, "is_class");  // ... b
-	if (!lua_toboolean(L, -1))
-		return false;
+	lua_getfield(L, idx, "is_class");  // ... is_class
+	const auto v = lua_toboolean(L, -1);
 	lua_pop(L, 1);  // ...
-	return true;
+	return v;
 }
 
 GameObject* GameObjectManager::allocateObject()
