@@ -125,7 +125,7 @@ bool AppFrame::applicationDidFinishLaunching()
 		LERROR("can't start Lua VM");
 		return false;
 	}
-	LINFO("Lua VM version: %s", LVERSION_LUA);
+	LINFO("Lua VM version: %s", LUAJIT_VERSION);
 	lua_module_register(L);
 	LuaModuleRegistry::registerModules(L);
 	LuaModuleRegistry::registerFunctions(L);

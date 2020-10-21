@@ -43,11 +43,6 @@
 
 #define SAFE_DELETE(p) if(p){CC_SAFE_DELETE(p);}
 
-// version
-
-constexpr auto LVERSION = L"LuaSTG-x";
-constexpr auto LVERSION_LUA = LUAJIT_VERSION;
-
 // file names
 
 constexpr auto LLOGFILE = "lstg_log.txt";
