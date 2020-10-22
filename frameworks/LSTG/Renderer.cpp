@@ -103,10 +103,10 @@ bool XRenderer::init()
 
 bool XRenderer::end()
 {
-	//SAFE_DELETE(getInstance()->currentRoot);//note: do not delete
-	//SAFE_DELETE(getInstance()->movingNode);
-	SAFE_DELETE(getInstance()->drawNode);
-	SAFE_DELETE(getInstance()->movingCamera);
+	//CC_SAFE_DELETE(getInstance()->currentRoot);//note: do not delete
+	//CC_SAFE_DELETE(getInstance()->movingNode);
+	CC_SAFE_DELETE(getInstance()->drawNode);
+	CC_SAFE_DELETE(getInstance()->movingCamera);
 	CC_SAFE_RELEASE_NULL(getInstance()->tempRenderTexture);
 	CC_SAFE_RELEASE_NULL(getInstance()->commandBuffer);
 	RenderMode::modeMap.clear();

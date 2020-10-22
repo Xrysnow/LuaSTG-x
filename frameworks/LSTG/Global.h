@@ -41,8 +41,6 @@
 #define MAX_PATH 260
 #endif
 
-#define SAFE_DELETE(p) if(p){CC_SAFE_DELETE(p);}
-
 // file names
 
 constexpr auto LLOGFILE = "lstg_log.txt";
