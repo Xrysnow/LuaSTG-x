@@ -171,16 +171,16 @@ bool AppFrame::applicationDidFinishLaunching()
 	//	FU->addSearchPath("src/64bit");
 	//#endif
 
-	const auto fullPath = FU->fullPathForFilename("main.lua");
+	const auto fullPath = FU->fullPathForFilename(LLAUNCH_SCRIPT);
 	const auto data = FU->getDataFromFile(fullPath);
 	if(data.isNull())
 	{
-		XERROR("can't find main.lua");
+		XERROR("can't find launch script %s", LLAUNCH_SCRIPT);
 		return false;
 	}
 	XINFO("\n    execute %s", fullPath.c_str());
 
-	engine->executeScriptFile("main.lua");
+	engine->executeScriptFile(LLAUNCH_SCRIPT);
 	if (!Director::getInstance()->getOpenGLView())
 	{
 		XERROR("no view created");
