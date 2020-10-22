@@ -46,29 +46,31 @@
 // file names
 
 constexpr auto LLOGFILE = "lstg_log.txt";
-constexpr auto LLAUNCH_SCRIPT = L"launch";
-constexpr auto LCORE_SCRIPT = L"core.lua";
+constexpr auto LLAUNCH_SCRIPT = "main.lua";
 
 // global callback names
 
-constexpr auto LFUNC_GAMEINIT = "GameInit";
-constexpr auto LFUNC_FRAME = "FrameFunc";
-constexpr auto LFUNC_RENDER = "RenderFunc";
+//constexpr auto LFUNC_GAMEINIT = "GameInit";
+//constexpr auto LFUNC_FRAME = "FrameFunc";
+//constexpr auto LFUNC_RENDER = "RenderFunc";
 constexpr auto LFUNC_LOSEFOCUS = "FocusLoseFunc";
 constexpr auto LFUNC_GAINFOCUS = "FocusGainFunc";
+constexpr auto LFUNC_FINDRES = "FindResForObject";
 
 // object pool
 
-constexpr auto LGOBJ_MAXCNT = 32768;  // 最大对象数
-constexpr auto LGOBJ_MAXLASERNODE = 512;  // 曲线激光最大节点数
-constexpr auto LGOBJ_DEFAULTGROUP = 0;  // 默认组
-constexpr auto LGOBJ_GROUPCNT = 16;  // 碰撞组数
-
-constexpr auto LPARTICLE_MAXCNT = 500;  // max count for each particle pool
-
+// max object count
+constexpr auto LGOBJ_MAXCNT = 32768;
+// max node count for bent laser
+constexpr auto LGOBJ_MAXLASERNODE = 512;
+// group count
+constexpr auto LGOBJ_GROUPCNT = 16;
+// max count for each particle pool
+constexpr auto LPARTICLE_MAXCNT = 500;
+// type name for lua color class
 constexpr auto TYPENAME_COLOR = "lstgColor";
+// type name for lua rng class
 constexpr auto TYPENAME_RANDGEN = "lstgRand";
-constexpr auto TYPENAME_BENTLASER = "lstgBentLaserData";
 
 // callback index in lua class
 
@@ -81,12 +83,20 @@ constexpr auto LGOBJ_CC_KILL = 6;
 
 // math const
 
-constexpr auto LRAD2DEGREE = 57.29577951f; // rad to degree
-constexpr auto LDEGREE2RAD = 0.0174532925f; // degree to rad
-constexpr auto LPI_HALF = 1.5707963267f;  // PI*0.5
+// rad to degree
+constexpr auto LRAD2DEGREE = 57.29577951f;
+constexpr auto LRAD2DEGREE_D = 57.295779513082320876;
+// degree to rad
+constexpr auto LDEGREE2RAD = 0.0174532925f;
+constexpr auto LDEGREE2RAD_D = 0.017453292519943295769;
 
-// assert for pointer
-#define assert_ptr(p) if((p) == nullptr) {\
+// assert
+
+#define xassert(p) if(!(p)) {\
+	LogSystem::getInstance()->Log(LogType::Error, "unexpected error in %s (%s, line %d)",\
+	__FUNCTION__, __FILE__, __LINE__);\
+	CCASSERT(p, "unexpected error"); }
+#define xassert_ptr(p) if((p) == nullptr) {\
 	LogSystem::getInstance()->Log(LogType::Error, "unexpected nullptr in %s (%s, line %d)",\
 	__FUNCTION__, __FILE__, __LINE__);\
 	CCASSERT(p, "unexpected nullptr"); }
