@@ -161,6 +161,7 @@ void ResParticle::ParticlePool::update(float delta)
 			tInst.vecLocation.x += _rand.getRandFloat(-2.0f, 2.0f);
 			tInst.vecLocation.y += _rand.getRandFloat(-2.0f, 2.0f);
 
+			constexpr auto LPI_HALF = 1.5707963267f;  // PI*0.5
 			const float ang = /* pInfo.Direction */ (rotation - float(LPI_HALF)) - float(LPI_HALF) +
 				_rand.getRandFloat(0, pInfo.Spread) - pInfo.Spread / 2.0f;
 			tInst.vecVelocity.x = cos(ang);
