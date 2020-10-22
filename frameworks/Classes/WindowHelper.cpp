@@ -10,12 +10,12 @@
 using namespace std;
 using namespace lstg;
 using namespace cocos2d;
- 
+
 WindowHelper* WindowHelper::getInstance()
 {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 	auto view = dynamic_cast<GLViewImpl*>(Director::getInstance()->getOpenGLView());
-	assert_ptr(view);
+	CC_ASSERT(view);
 	static WindowHelperWin32 instance(
 		view,
 		view->getWin32Window());

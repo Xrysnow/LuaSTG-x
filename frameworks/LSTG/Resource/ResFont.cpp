@@ -178,7 +178,7 @@ Label* ResFont::createLabel()
 		XERROR("Unexpected LabelType.");
 		ret = Label::create();
 	}
-	assert_ptr(ret);
+	CC_ASSERT(ret);
 	syncLabelSetting(getLabel(), ret);
 	return ret;
 }
