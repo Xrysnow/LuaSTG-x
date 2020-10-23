@@ -55,4 +55,5 @@ namespace lstg
 	void InitGameObjectPropertyHash();
 	GameObjectProperty GameObjectPropertyHash(const char* key);
 	GameObjectProperty GameObjectPropertyHash(lua_State* L, int lo, const char** str);
+	std::unordered_map<std::string, GameObjectProperty> GetGameObjectPropertyMap();
 }

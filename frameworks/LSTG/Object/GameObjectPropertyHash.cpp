@@ -94,3 +94,8 @@ GameObjectProperty lstg::GameObjectPropertyHash(lua_State* L, int lo, const char
 		return it->second;
 	return GameObjectProperty::_KEY_NOT_FOUND;
 }
+
+std::unordered_map<std::string, GameObjectProperty> lstg::GetGameObjectPropertyMap()
+{
+	return prop_map;
+}
