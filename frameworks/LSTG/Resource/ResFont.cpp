@@ -21,7 +21,6 @@ void ResFont::setRenderMode(RenderMode* m)
 void ResFont::setColor(const Color4B& c)
 {
 	label->setBlendColor(c);
-	const auto type = label->getLabelType();
 	if (labelType == LabelType::TTF || labelType == LabelType::SYSTEM)
 		label->setTextColor(c);
 	textColor = c;
