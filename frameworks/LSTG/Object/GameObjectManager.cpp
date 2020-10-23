@@ -388,7 +388,7 @@ void GameObjectManager::CollisionCheck(size_t groupA, size_t groupB)
 			to_colli_lhs.reserve(nobj);
 			to_colli_rhs.clear();
 			to_colli_rhs.reserve(nobj);
-
+			// store objects to check
 			for (auto&& pA : colliList[groupA])
 			{
 				if (pA->colli)
@@ -403,6 +403,7 @@ void GameObjectManager::CollisionCheck(size_t groupA, size_t groupB)
 					}
 				}
 			}
+			// note that order should be kept
 			const auto size = to_colli_lhs.size();
 			auto dat_l = to_colli_lhs.data();
 			auto dat_r = to_colli_rhs.data();
@@ -1960,11 +1961,8 @@ bool GameObjectManager::setObjectResource(GameObject* p, lua_State* L, int idx)
 	Resource* res = nullptr;
 	if (type == LUA_TSTRING)
 	{
+		// search name in lua
 		const auto name = lua_tostring(L, idx);
-		//res = LRES.FindSprite(name);
-		//if (!res)res = LRES.FindAnimation(name);
-		//if (!res)res = LRES.FindParticle(name);
-		//if (!res)res = LRES.FindFont(name);
 		lua_getglobal(L, "FindResForObject");
 		if (!lua_isfunction(L, -1))
 		{

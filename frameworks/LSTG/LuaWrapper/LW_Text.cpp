@@ -65,7 +65,7 @@ LUA_REGISTER_FUNC_DEF(lstg, RenderTTF)
 			p,
 			luaL_checkstring(L, 2),
 			rect,
-			//warning: In lstg, this size is 0.5x
+			//warning: in lstg, this size is 0.5x
 			L_IMG_FACTOR * float(luaL_optnumber(L, 9, 1.0))*0.5,
 			halign,
 			valign,
