@@ -92,13 +92,7 @@ namespace lstg
 			return _boundLeft < x && x < _boundRight && _boundBottom < y && y < _boundTop;
 		}
 
-		void SetBound(lua_Number l, lua_Number r, lua_Number b, lua_Number t)noexcept
-		{
-			_boundLeft = l;
-			_boundRight = r;
-			_boundBottom = b;
-			_boundTop = t;
-		}
+		void SetBound(lua_Number l, lua_Number r, lua_Number b, lua_Number t) noexcept;
 
 		// invoke del callback on all game objects that oob
 		void BoundCheck() noexcept;

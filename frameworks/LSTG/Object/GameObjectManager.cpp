@@ -316,7 +316,15 @@ void GameObjectManager::DoRender()
 	inDoRender = false;
 }
 
-void GameObjectManager::BoundCheck()noexcept
+void GameObjectManager::SetBound(lua_Number l, lua_Number r, lua_Number b, lua_Number t) noexcept
+{
+	_boundLeft = l;
+	_boundRight = r;
+	_boundBottom = b;
+	_boundTop = t;
+}
+
+void GameObjectManager::BoundCheck() noexcept
 {
 	GETOBJTABLE;  // ot
 	const auto ot_idx = lua_gettop(L);
