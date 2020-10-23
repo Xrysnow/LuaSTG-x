@@ -5,9 +5,9 @@
 
 #include "platform/CCPlatformMacros.h"
 #if CC_64BITS && CC_TARGET_PLATFORM != CC_PLATFORM_WIN32
-#define HASH_OFFSET -3
+#define HASH_OFFSET (-3)
 #else
-#define HASH_OFFSET -2
+#define HASH_OFFSET (-2)
 #endif
 
 using namespace std;
