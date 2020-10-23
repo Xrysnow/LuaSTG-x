@@ -304,7 +304,7 @@ ParticleSystemQuad* ResParticle::newCocosParticle()
 	ret->setTangentialAccel((info.TangentialAccelMax + info.TangentialAccelMin) / 2);
 	ret->setTangentialAccelVar((info.TangentialAccelMax - info.TangentialAccelMin) / 2);
 
-	const auto rect = bindSprite->getTextureRect();
+	const auto& rect = bindSprite->getTextureRect();
 	const auto size = (rect.size.width + rect.size.height) / 2;
 	ret->setStartSize(info.SizeStart * size);
 	ret->setStartSizeVar(info.SizeVar * size);
