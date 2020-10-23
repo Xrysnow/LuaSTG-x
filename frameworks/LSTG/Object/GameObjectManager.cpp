@@ -452,7 +452,8 @@ void GameObjectManager::CollisionCheck(size_t groupA, size_t groupB)
 
 void GameObjectManager::CollisionCheck(GameObject* objectA, size_t groupB) noexcept
 {
-	if (!objectA)return;
+	if (!objectA)
+		return;
 	const auto groupA = objectA->cm->getDataColli()->group;
 	if (!checkGroupID(groupA) || !checkGroupID(groupB))
 		luaL_error(L, "Invalid collision group.");
@@ -477,7 +478,8 @@ void GameObjectManager::CollisionCheck(GameObject* objectA, size_t groupB) noexc
 
 void GameObjectManager::CollisionCheck(size_t groupA, GameObject* objectB) noexcept
 {
-	if (!objectB)return;
+	if (!objectB)
+		return;
 	const auto groupB = objectB->cm->getDataColli()->group;
 	if (!checkGroupID(groupA) || !checkGroupID(groupB))
 		luaL_error(L, "Invalid collision group.");
@@ -503,7 +505,8 @@ void GameObjectManager::CollisionCheck(size_t groupA, GameObject* objectB) noexc
 
 void GameObjectManager::CollisionCheck(GameObject* objectA, GameObject* objectB) noexcept
 {
-	if (!objectA || !objectB) return;
+	if (!objectA || !objectB)
+		return;
 	if (::CollisionCheck(objectA, objectB) && objectA != objectB)
 	{
 		GETOBJTABLE;  // ot
