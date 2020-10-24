@@ -32,8 +32,9 @@ void ResFont::enableOutline(const Color4B& color, int size)
 	{
 		if (size < 0)
 			size = 2;
-		config.outlineSize = size;
 		label->enableOutline(color, size);
+		config.outlineSize = size;
+		outlineColor = color;
 		_isOutlined = true;
 	}
 }
