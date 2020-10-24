@@ -395,7 +395,7 @@ string ResFont::HGE2BMF(const string& data, string& outTexName)
 	float maxX = 0.f;
 	float maxY = 0.f;
 	float maxH = 0.f;
-	for (auto i : tOutputCharset)
+	for (auto& i : tOutputCharset)
 	{
 		const auto xx = i.second.GlyphPos.getMaxX();
 		const auto yy = i.second.GlyphPos.getMaxY();
