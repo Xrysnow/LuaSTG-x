@@ -1986,11 +1986,19 @@ bool GameObjectManager::setObjectResource(GameObject* p, lua_State* L, int idx)
 	}
 	else if (type == LUA_TUSERDATA)
 	{
-		res = Resource::fromLua(L, idx, ResourceType::Sprite);
-		if (!res)res = Resource::fromLua(L, idx, ResourceType::Animation);
-		if (!res)res = Resource::fromLua(L, idx, ResourceType::Particle);
-		if (!res)res = Resource::fromLua(L, idx, ResourceType::Font);
-		if (!res)res = Resource::fromLua(L, idx, ResourceType::Texture);
+		for (auto& t : {
+			ResourceType::Sprite,
+			ResourceType::Animation,
+			ResourceType::Particle,
+			ResourceType::Font,
+			ResourceType::Texture,
+		})
+		{
+			if (!res)
+				res = Resource::fromLua(L, idx, t);
+			else
+				break;
+		}
 		if (!res)
 			return false;
 	}
