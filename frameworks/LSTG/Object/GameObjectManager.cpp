@@ -820,7 +820,7 @@ int GameObjectManager::del_or_kill(lua_State* L, GAMEOBJECTSTATUS status, int ca
 	{
 		const auto group = lua_tointeger(L, 1);
 		if (!checkGroupID(group))
-			return luaL_error(L, "Invalid collision group");
+			return luaL_error(L, "invalid collision group %d", group);
 		// note: no extra param
 		lua_settop(L, 0);
 		GetObjectTable(L); // ot
