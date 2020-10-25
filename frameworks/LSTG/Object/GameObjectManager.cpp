@@ -992,14 +992,16 @@ void GameObjectManager::ResetPool() noexcept
 
 void GameObjectManager::UpdateParticle(GameObject* p) noexcept
 {
-	if (!p) return;
+	if (!p)
+		return;
 	p->cm->updateParticle();
 }
 
 bool GameObjectManager::UpdateParticle(size_t id) noexcept
 {
 	auto p = pool.atLua(id);
-	if (!p)return false;
+	if (!p)
+		return false;
 	UpdateParticle(p);
 	return true;
 }
