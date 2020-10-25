@@ -1963,7 +1963,7 @@ bool GameObjectManager::setObjectResource(GameObject* p, lua_State* L, int idx)
 	{
 		// search name in lua
 		const auto name = lua_tostring(L, idx);
-		lua_getglobal(L, "FindResForObject");
+		lua_getglobal(L, LFUNC_FINDRES);
 		if (!lua_isfunction(L, -1))
 		{
 			lua_pop(L, 1);
