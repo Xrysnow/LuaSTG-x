@@ -24,12 +24,6 @@
 #undef max
 #endif
 
-#define GETOBJTABLE \
-	do { \
-		lua_pushlightuserdata(L, (void*)&LAPP); \
-		lua_gettable(L, LUA_REGISTRYINDEX); \
-	} while (false)
-
 using namespace std;
 using namespace cocos2d;
 using namespace lstg;
@@ -143,7 +137,7 @@ GameObject* GameObjectManager::freeObject(GameObject* p) noexcept
 	renderList.erase(p);
 	colliList[p->cm->getDataColli()->group].erase(p);
 	// delete from obj table
-	GETOBJTABLE;  // ot
+	GetObjectTable(L);  // ot
 	lua_pushnil(L);  // ot nil
 	lua_rawseti(L, -2, p->luaID + 1);  // ot
 	lua_pop(L, 1);
@@ -161,7 +155,7 @@ GameObject* GameObjectManager::freeObject(GameObject* p) noexcept
 void GameObjectManager::DoFrame() noexcept
 {
 	inDoFrame = true;
-	GETOBJTABLE;  // ot
+	GetObjectTable(L);  // ot
 	uint32_t last_classID = 0;
 
 	for (auto&& p : objList)
@@ -262,7 +256,7 @@ void GameObjectManager::DoRender()
 			lights.push_back(o->cm->getLightSource());
 	}
 
-	GETOBJTABLE;  // ot
+	GetObjectTable(L);  // ot
 
 	uint32_t last_classID = 0;
 	for (auto&& p : renderList)
@@ -326,7 +320,7 @@ void GameObjectManager::SetBound(lua_Number l, lua_Number r, lua_Number b, lua_N
 
 void GameObjectManager::BoundCheck() noexcept
 {
-	GETOBJTABLE;  // ot
+	GetObjectTable(L);  // ot
 	const auto ot_idx = lua_gettop(L);
 	if (LTHP.empty())
 	{
@@ -363,7 +357,7 @@ void GameObjectManager::CollisionCheck(size_t groupA, size_t groupB)
 	if (!checkGroupID(groupA) || !checkGroupID(groupB))
 		luaL_error(L, "Invalid collision group.");
 
-	GETOBJTABLE;  // groupA groupB ot
+	GetObjectTable(L);  // groupA groupB ot
 	const auto ot_idx = lua_gettop(L);
 
 	if (groupA != groupB)
@@ -459,7 +453,7 @@ void GameObjectManager::CollisionCheck(GameObject* objectA, size_t groupB) noexc
 	if (!checkGroupID(groupA) || !checkGroupID(groupB))
 		luaL_error(L, "Invalid collision group.");
 	const auto pA = objectA;
-	GETOBJTABLE;  // ot
+	GetObjectTable(L);  // ot
 	lua_rawgeti(L, -1, pA->luaID + 1);  // ot objA
 	lua_rawgeti(L, -1, 1);  // ot objA cls
 	lua_rawgeti(L, -1, LGOBJ_CC_COLLI);  // ot objA cls f(colli)
@@ -485,7 +479,7 @@ void GameObjectManager::CollisionCheck(size_t groupA, GameObject* objectB) noexc
 	if (!checkGroupID(groupA) || !checkGroupID(groupB))
 		luaL_error(L, "Invalid collision group.");
 	const auto pB = objectB;
-	GETOBJTABLE;  // ot
+	GetObjectTable(L);  // ot
 	lua_rawgeti(L, -1, pB->luaID + 1);  // ot objB
 	for (auto&& pA : colliList[groupA])
 	{
@@ -510,7 +504,7 @@ void GameObjectManager::CollisionCheck(GameObject* objectA, GameObject* objectB)
 		return;
 	if (::CollisionCheck(objectA, objectB) && objectA != objectB)
 	{
-		GETOBJTABLE;  // ot
+		GetObjectTable(L);  // ot
 		lua_rawgeti(L, -1, objectA->luaID + 1);  // ot objA
 		lua_rawgeti(L, -1, 1);  // ot objA cls
 		lua_rawgeti(L, -1, LGOBJ_CC_COLLI);  // ot objA cls f(colli)
@@ -525,7 +519,7 @@ void GameObjectManager::CollisionCheck3D(size_t groupA, size_t groupB) noexcept
 {
 	if (!checkGroupID(groupA) || !checkGroupID(groupB))
 		luaL_error(L, "Invalid collision group.");
-	GETOBJTABLE;  // ot
+	GetObjectTable(L);  // ot
 	if (groupA != groupB)
 	{
 		for (auto&& pA : colliList[groupA])
@@ -576,7 +570,7 @@ void GameObjectManager::UpdateXY() noexcept
 
 void GameObjectManager::AfterFrame() noexcept
 {
-	GETOBJTABLE;
+	GetObjectTable(L);
 	for (auto it = objList.begin(); it != objList.end();)
 	{
 		const auto p = *it;
@@ -612,7 +606,7 @@ int GameObjectManager::RawNew(lua_State* L) noexcept
 	// obj[2]=id
 	// setmetatable(obj, ot["mt"])
 	// ot[id+1]=obj
-	GETOBJTABLE;  // cls ... ot
+	GetObjectTable(L);  // cls ... ot
 	lua_createtable(L, 2, 0);  // cls ... ot obj
 	lua_pushvalue(L, 1);  // cls ... ot obj cls
 	lua_rawseti(L, -2, 1);  // cls ... ot obj  // set class
@@ -653,7 +647,7 @@ int GameObjectManager::New(lua_State* L) noexcept
 	// ot[id+1]=obj
 	// class.init(obj, ...)
 
-	GETOBJTABLE;  // cls ... ot
+	GetObjectTable(L);  // cls ... ot
 	lua_createtable(L, 2, 0);  // cls ... ot obj
 	lua_pushvalue(L, 1);  // cls ... ot obj cls
 	lua_rawseti(L, -2, 1);  // cls ... ot obj  // set class
@@ -713,7 +707,7 @@ int GameObjectManager::Clone(lua_State* L, int idx) noexcept { return 0; }
 //	// setmetatable(obj, ot["mt"])
 //	// ot[id+1]=obj
 //
-//	GETOBJTABLE;  // ... ot
+//	GetObjectTable(L);  // ... ot
 //	lua_createtable(L, 2, 0);  // ... ot obj
 //	if (idx < 0)idx = idx - 2;
 //	lua_rawgeti(L, idx, 1);  // ... ot obj class
@@ -829,7 +823,7 @@ int GameObjectManager::del_or_kill(lua_State* L, GAMEOBJECTSTATUS status, int ca
 			return luaL_error(L, "Invalid collision group");
 		// note: no extra param
 		lua_settop(L, 0);
-		GETOBJTABLE; // ot
+		GetObjectTable(L); // ot
 		for (auto&&p : colliList[group])
 		{
 			if (p->status == STATUS_DEFAULT)
@@ -974,7 +968,7 @@ bool GameObjectManager::BoxCheck(size_t id,
 
 void GameObjectManager::ResetPool() noexcept
 {
-	GETOBJTABLE;
+	GetObjectTable(L);
 	for (auto&& p : objList)
 	{
 		freeObjectInternal(p);
@@ -1145,7 +1139,7 @@ int GameObjectManager::NextObject(lua_State* L) noexcept
 		return 0;
 
 	lua_pushinteger(L, NextObject(g, id));  // ??? i(next)
-	GETOBJTABLE;  // ??? i(next) ot
+	GetObjectTable(L);  // ??? i(next) ot
 	lua_rawgeti(L, -1, id + 1);  // ??? i(next) ot obj
 	lua_remove(L, -2);  // ??? i(next) obj
 	return 2;
@@ -1759,7 +1753,12 @@ int GameObjectManager::BindNode(lua_State* L) noexcept
 
 int GameObjectManager::GetObjectTable(lua_State* L) noexcept
 {
-	GETOBJTABLE;
+	lua_pushlightuserdata(L, (void*)&LAPP);
+	lua_gettable(L, LUA_REGISTRYINDEX);
+#if 0
+	if (!lua_istable(L, -1))
+		return luaL_error(L, "invalid object table");
+#endif
 	return 1;
 }
 
@@ -1842,7 +1841,7 @@ void GameObjectManager::pushObject(lua_State* L, GameObject* obj)
 {
 	if (obj&&obj->status != STATUS_FREE)
 	{
-		GETOBJTABLE;
+		GetObjectTable(L);
 		lua_rawgeti(L, -1, obj->luaID + 1);
 		lua_remove(L, -2);
 	}
@@ -1859,7 +1858,7 @@ void GameObjectManager::pushGroup(lua_State* L, size_t group)
 	}
 	else
 	{
-		GETOBJTABLE;
+		GetObjectTable(L);
 		lua_createtable(L, GetObjectCount() / 2, 0); // ... ot t
 		size_t idx = 1;
 		for (auto&& p : colliList[group])
@@ -1901,7 +1900,7 @@ GameObject* GameObjectManager::checkObject(lua_State* L, int idx)
 	if (!p)
 		return nullptr;
 
-	GETOBJTABLE;  // ... ot
+	GetObjectTable(L);  // ... ot
 	lua_rawgeti(L, -1, lua_Integer(id + 1));  // ... ot obj
 	if (idx < 0)
 		idx = idx - 2;
