@@ -24,7 +24,7 @@ Label* LabelPool::getWithResFont(ResFont* res, const std::string& str)
 		{
 			auto ret = it->second.back();
 			it->second.popBack();
-			ResFont::syncLabelSetting(res->getLabel(), ret);
+			res->syncLabelSetting(ret);
 			return ret;
 		}
 	}

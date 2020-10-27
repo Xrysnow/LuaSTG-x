@@ -112,7 +112,7 @@ namespace lstg {
 		std::unordered_map<std::string, std::string> getInfo() const override;
 
 		cocos2d::Label* createLabel();
-		static void syncLabelSetting(XLabel* src, cocos2d::Label* target);
+		void syncLabelSetting(cocos2d::Label* target);
 
 		ResFont(const std::string& name, XLabel* label, LabelType type);
 		~ResFont();

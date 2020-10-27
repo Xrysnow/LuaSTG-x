@@ -179,18 +179,30 @@ Label* ResFont::createLabel()
 		ret = Label::create();
 	}
 	CC_ASSERT(ret);
-	syncLabelSetting(getLabel(), ret);
+	syncLabelSetting(ret);
 	return ret;
 }
 
-void ResFont::syncLabelSetting(XLabel* src, Label* target)
+void ResFont::syncLabelSetting(Label* target)
 {
-	if (!src || !target)return;
+	auto src = label;
+	if (!src || !target)
+		return;
 	const auto type = src->getLabelType();
 	if (type == XLabel::LabelType::TTF || type == XLabel::LabelType::STRING_TEXTURE)
 		target->setTextColor(src->getTextColor());
 	if (src->isShadowEnabled())
 		target->enableShadow(Color4B(src->getShadowColor()), src->getShadowOffset(), src->getShadowBlurRadius());
+	else
+		target->disableEffect(LabelEffect::SHADOW);
+	if (_isGlowed)
+		target->enableGlow(glowColor);
+	else
+		target->disableEffect(LabelEffect::GLOW);
+	if (_isOutlined)
+		target->enableOutline(outlineColor, config.outlineSize);
+	else
+		target->disableEffect(LabelEffect::OUTLINE);
 	target->setAlignment(src->getHorizontalAlignment(), src->getVerticalAlignment());
 	target->setMaxLineWidth(src->getMaxLineWidth());
 	if (type == XLabel::LabelType::BMFONT)
@@ -212,10 +224,22 @@ void ResFont::syncLabelSetting(XLabel* src, Label* target)
 	target->setOpacityModifyRGB(src->isOpacityModifyRGB());
 
 	target->setAnchorPoint(src->getAnchorPoint());
-	if (src->isItalics())target->enableItalics();
-	if (src->isBold())target->enableBold();
-	if (src->isUnderlined())target->enableUnderline();
-	if (src->isStrikethrough())target->enableStrikethrough();
+	if (src->isItalics())
+		target->enableItalics();
+	else
+		target->disableEffect(LabelEffect::ITALICS);
+	if (src->isBold())
+		target->enableBold();
+	else
+		target->disableEffect(LabelEffect::BOLD);
+	if (src->isUnderlined())
+		target->enableUnderline();
+	else
+		target->disableEffect(LabelEffect::UNDERLINE);
+	if (src->isStrikethrough())
+		target->enableStrikethrough();
+	else
+		target->disableEffect(LabelEffect::STRIKETHROUGH);
 }
 
 ResFont::ResFont(const std::string& name, XLabel* label, LabelType type)
