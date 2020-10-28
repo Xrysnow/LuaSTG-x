@@ -558,12 +558,17 @@ bool XRenderer::renderText(ResFont* p, const std::string& str,
 		label->setDimensions(width, height);
 	label->setScale(scaleX, scaleY);//TODO: setFontSize
 	label->setPosition(x, y);
-	label->setBlendFunc(currentRenderMode->getBlendFunc());
+	const auto func = currentRenderMode->getBlendFunc();
+	label->setBlendFunc(func);
 	if (p->getLabelType() == ResFont::LabelType::TTF)
 	{
 		// for TTF
-		label->enableOutline(p->getOutlineColor(), p->getOutlineSize());
-		label->setTextColor(p->getColor());
+		for (int i = 0; i < label->getStringLength(); ++i)
+		{
+			auto sp = label->getLetter(i);
+			if (sp)
+				sp->setBlendFunc(func);
+		}
 	}
 	else
 	{
@@ -571,7 +576,7 @@ bool XRenderer::renderText(ResFont* p, const std::string& str,
 		label->setOpacity(p->getColor().a);
 		label->setColor(Color3B(p->getColor()));
 	}
-	//label->setProgramState(currentRenderMode->getProgramState());// Label uses shader for effects
+	//label->setProgramState(currentRenderMode->getProgramState());// shader is used for effects
 
 	//label->visit(pRenderer, Mat4::IDENTITY, 0);
 	const auto& proj = Director::getInstance()->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
