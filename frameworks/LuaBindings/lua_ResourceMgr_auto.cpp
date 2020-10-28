@@ -1194,103 +1194,6 @@ int lua_x_ResourceMgr_ResourceMgr_loadResourcePack(lua_State* tolua_S)
 
     return 0;
 }
-int lua_x_ResourceMgr_ResourceMgr_setGlobalImageScaleFactor(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::ResourceMgr* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.ResourceMgr",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::ResourceMgr*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_ResourceMgr_ResourceMgr_setGlobalImageScaleFactor'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        double arg0;
-
-        ok &= luaval_to_number(tolua_S, 2,&arg0, "lstg.ResourceMgr:setGlobalImageScaleFactor");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_ResourceMgr_ResourceMgr_setGlobalImageScaleFactor'", nullptr);
-            return 0;
-        }
-        cobj->setGlobalImageScaleFactor(arg0);
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResourceMgr:setGlobalImageScaleFactor",argc, 1);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_ResourceMgr_ResourceMgr_setGlobalImageScaleFactor'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_x_ResourceMgr_ResourceMgr_getGlobalImageScaleFactor(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::ResourceMgr* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.ResourceMgr",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::ResourceMgr*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_ResourceMgr_ResourceMgr_getGlobalImageScaleFactor'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
-    {
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_ResourceMgr_ResourceMgr_getGlobalImageScaleFactor'", nullptr);
-            return 0;
-        }
-        double ret = cobj->getGlobalImageScaleFactor();
-        tolua_pushnumber(tolua_S,(lua_Number)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.ResourceMgr:getGlobalImageScaleFactor",argc, 0);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_ResourceMgr_ResourceMgr_getGlobalImageScaleFactor'.",&tolua_err);
-#endif
-
-    return 0;
-}
 int lua_x_ResourceMgr_ResourceMgr_loadLocalFileAndCache(lua_State* tolua_S)
 {
     int argc = 0;
@@ -2192,8 +2095,6 @@ int lua_register_x_ResourceMgr_ResourceMgr(lua_State* tolua_S)
         tolua_function(tolua_S,"addResourcePack",lua_x_ResourceMgr_ResourceMgr_addResourcePack);
         tolua_function(tolua_S,"isLocalFileCached",lua_x_ResourceMgr_ResourceMgr_isLocalFileCached);
         tolua_function(tolua_S,"loadResourcePack",lua_x_ResourceMgr_ResourceMgr_loadResourcePack);
-        tolua_function(tolua_S,"setGlobalImageScaleFactor",lua_x_ResourceMgr_ResourceMgr_setGlobalImageScaleFactor);
-        tolua_function(tolua_S,"getGlobalImageScaleFactor",lua_x_ResourceMgr_ResourceMgr_getGlobalImageScaleFactor);
         tolua_function(tolua_S,"loadLocalFileAndCache",lua_x_ResourceMgr_ResourceMgr_loadLocalFileAndCache);
         tolua_function(tolua_S,"getStringFromFile",lua_x_ResourceMgr_ResourceMgr_getStringFromFile);
         tolua_function(tolua_S,"getResourcePacks",lua_x_ResourceMgr_ResourceMgr_getResourcePacks);

@@ -349,7 +349,7 @@ void ComponentManager::applyResAnimation(ResAnimation* res)
 	}
 	if (colli)
 	{
-		const auto factor = L_IMG_FACTOR;
+		const auto factor = L_CLD_FACTOR;
 		colli->a = res->getHalfSizeX()*factor;
 		colli->b = res->getHalfSizeY()*factor;
 		colli->type = res->getColliderType();
@@ -368,7 +368,7 @@ void ComponentManager::applyResSprite(ResSprite* res)
 	}
 	if (colli)
 	{
-		const auto factor = L_IMG_FACTOR;
+		const auto factor = L_CLD_FACTOR;
 		colli->a = res->getHalfSizeX()*factor;
 		colli->b = res->getHalfSizeY()*factor;
 		colli->type = res->getColliderType();
@@ -387,7 +387,7 @@ void ComponentManager::applyResParticle(ResParticle* res)
 	}
 	if (colli)
 	{
-		const auto factor = L_IMG_FACTOR;
+		const auto factor = L_CLD_FACTOR;
 		colli->a = res->getHalfSizeX()*factor;
 		colli->b = res->getHalfSizeY()*factor;
 		colli->type = res->getColliderType();

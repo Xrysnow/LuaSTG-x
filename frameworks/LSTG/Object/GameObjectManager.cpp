@@ -1267,10 +1267,10 @@ int GameObjectManager::GetAttr(lua_State* L) noexcept
 		lua_rawgeti(L, 1, 1);
 		break;
 	case GameObjectProperty::A:
-		lua_pushnumber(L, cm->getDataColli()->a / L_IMG_FACTOR);
+		lua_pushnumber(L, cm->getDataColli()->a / colliderScale);
 		break;
 	case GameObjectProperty::B:
-		lua_pushnumber(L, cm->getDataColli()->b / L_IMG_FACTOR);
+		lua_pushnumber(L, cm->getDataColli()->b / colliderScale);
 		break;
 	case GameObjectProperty::RECT:
 		lua::ColliderType_to_luaval(L, cm->getDataColli()->type);
@@ -1551,7 +1551,7 @@ int GameObjectManager::SetAttr(lua_State* L)
 			const auto v = luaL_checknumber(L, 3);
 			if (v < 0.0)
 				return luaL_error(L, "invalid negative value for property 'a': %f", v);
-			cm->getDataColli()->a = v * L_IMG_FACTOR;
+			cm->getDataColli()->a = (float)v * colliderScale;
 			cm->updateColli();
 		}
 		break;
@@ -1560,7 +1560,7 @@ int GameObjectManager::SetAttr(lua_State* L)
 			const auto v = luaL_checknumber(L, 3);
 			if (v < 0.0)
 				return luaL_error(L, "invalid negative value for property 'b': %f", v);
-			cm->getDataColli()->b = v * L_IMG_FACTOR;
+			cm->getDataColli()->b = (float)v * colliderScale;
 			cm->updateColli();
 		}
 		break;

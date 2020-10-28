@@ -5,7 +5,6 @@
 #include "../Classes/XBuffer.h"
 
 #define LRES (*lstg::ResourceMgr::getInstance())
-#define L_IMG_FACTOR LRES.getGlobalImageScaleFactor()
 
 namespace lstg
 {
@@ -97,9 +96,6 @@ namespace lstg
 	public:
 
 		static ResourceMgr* getInstance();
-
-		float getGlobalImageScaleFactor() const noexcept;
-		void setGlobalImageScaleFactor(float v) noexcept;
 
 		Buffer* loadLocalFileAndCache(const std::string& fpath);
 		std::string getStringFromLocalFile(const std::string& fpath);

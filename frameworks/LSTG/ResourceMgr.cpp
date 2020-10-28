@@ -282,16 +282,6 @@ ResourceMgr* ResourceMgr::getInstance()
 	return &ins;
 }
 
-float ResourceMgr::getGlobalImageScaleFactor() const noexcept
-{
-	return globalImageScaleFactor;
-}
-
-void ResourceMgr::setGlobalImageScaleFactor(float v) noexcept
-{
-	globalImageScaleFactor = v;
-}
-
 Buffer* ResourceMgr::loadLocalFileAndCache(const std::string& fpath)
 {
 	lock_guard<mutex> lock(mut);

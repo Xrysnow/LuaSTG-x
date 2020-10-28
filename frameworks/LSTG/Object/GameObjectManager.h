@@ -5,6 +5,9 @@
 #include "GameClass.h"
 #include "GameObjectPool.h"
 
+#define L_IMG_FACTOR LPOOL.getImageScale()
+#define L_CLD_FACTOR LPOOL.getColliderScale()
+
 namespace lstg
 {
 	namespace symbol
@@ -51,6 +54,9 @@ namespace lstg
 		lua_Number _boundRight = 100.f;
 		lua_Number _boundTop = 100.f;
 		lua_Number _boundBottom = -100.f;
+		// collider scale factor
+		float colliderScale = 1.0f;
+		float imageScale = 1.0f;
 
 		GameObject* currentObj = nullptr;
 		bool inDoFrame = false;
@@ -96,6 +102,11 @@ namespace lstg
 
 		// invoke del callback on all game objects that oob
 		void BoundCheck() noexcept;
+
+		void setColliderScale(float v) noexcept { colliderScale = v; }
+		float getColliderScale() const noexcept { return colliderScale; }
+		void setImageScale(float v) noexcept { imageScale = v; }
+		float getImageScale() const noexcept { return imageScale; }
 
 		/* collision check between two groups, will invoke callback of
 		 * object in groupA and pass object in groupB as parameter */
