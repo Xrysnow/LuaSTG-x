@@ -49,20 +49,28 @@ LUA_REGISTER_MODULE(cc_controller_manual, register_all_cocos2dx_controller_manua
 
 #include "../Audio/lua_audio_auto.hpp"
 LUA_REGISTER_MODULE(x_Audio, register_all_cc_audio);
+
 #ifndef LSTGX_NO_VIDEO
 	#include "../Video/lua_video_auto.hpp"
 	LUA_REGISTER_MODULE(cc_video, register_all_cc_video);
 #endif
+
 #ifndef LSTGX_NO_LIVE2D
 	#include "../Live2D/lua_live2d_auto.hpp"
 	LUA_REGISTER_MODULE(cc_l2d, register_all_live2d);
 #endif
+
 #include "../reader/lua-bindings/creator_reader_bindings.hpp"
 LUA_REGISTER_MODULE(cc_creator_reader, register_creator_reader_module);
+
 extern "C" int luaopen_lfs(lua_State *L);
 LUA_REGISTER_MODULE_DEF(lfs) { luaopen_lfs(L); lua_pop(L, 3); return 0; }
+
 #include "lptree.h"
 LUA_REGISTER_MODULE_DEF(lpeg) { luaopen_lpeg(L); lua_pop(L, 2); return 0; }
+
+extern "C" int luaopen_cjson(lua_State * L);
+LUA_REGISTER_MODULE_DEF(cjson) { luaopen_cjson(L); lua_setglobal(L, "cjson"); return 0; }
 
 #include "../imgui/lua-bindings/imgui_lua.hpp"
 LUA_REGISTER_MODULE(imgui, luaopen_imgui);
