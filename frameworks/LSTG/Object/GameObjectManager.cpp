@@ -1196,10 +1196,10 @@ int GameObjectManager::GetAttr(lua_State* L) noexcept
 	switch (GameObjectPropertyHash(key))
 	{
 	case GameObjectProperty::ROT:
-		lua_pushnumber(L, pool.rot[id] * LRAD2DEGREE);
+		lua_pushnumber(L, pool.rot[id] * LRAD2DEGREE_D);
 		break;
 	case GameObjectProperty::OMEGA:
-		lua_pushnumber(L, pool.omega[id] * LRAD2DEGREE);
+		lua_pushnumber(L, pool.omega[id] * LRAD2DEGREE_D);
 		break;
 	case GameObjectProperty::TIMER:
 		lua_pushinteger(L, p->timer);
