@@ -31,6 +31,26 @@ LUA_REGISTER_FUNC_DEF(lstg, ObjRender)
 	LPOOL.DoRender();
 	return 0;
 }
+LUA_REGISTER_FUNC_DEF(lstg, SetGlobalImageScale)
+{
+	LPOOL.setImageScale(luaL_checknumber(L, 1));
+	return 0;
+}
+LUA_REGISTER_FUNC_DEF(lstg, GetGlobalImageScale)
+{
+	lua_pushnumber(L, LPOOL.getImageScale());
+	return 1;
+}
+LUA_REGISTER_FUNC_DEF(lstg, SetGlobalColliderScale)
+{
+	LPOOL.setColliderScale(luaL_checknumber(L, 1));
+	return 0;
+}
+LUA_REGISTER_FUNC_DEF(lstg, GetGlobalColliderScale)
+{
+	lua_pushnumber(L, LPOOL.getColliderScale());
+	return 1;
+}
 LUA_REGISTER_FUNC_DEF(lstg, BoundCheck)
 {
 	LPOOL.BoundCheck();
