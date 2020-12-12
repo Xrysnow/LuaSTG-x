@@ -18,8 +18,10 @@ ResFX::ResFX(const std::string& name, RenderMode* m)
 	renderMode = m;
 	renderMode->retain();
 	program = renderMode->getProgram();
-	auto infos = program->getAllActiveUniformInfo(backend::ShaderStage::VERTEX_AND_FRAGMENT);
-	for (auto& it : infos)
+	// ShaderStage::VERTEX_AND_FRAGMENT is not valid for metal
+	for (const auto& it : program->getAllActiveUniformInfo(ShaderStage::FRAGMENT))
+		uniforms[it.first] = program->getUniformLocation(it.first);
+	for (const auto& it : program->getAllActiveUniformInfo(ShaderStage::VERTEX))
 		uniforms[it.first] = program->getUniformLocation(it.first);
 	state = renderMode->getDefaultProgramState();
 }
