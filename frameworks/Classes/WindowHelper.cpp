@@ -21,7 +21,7 @@ WindowHelper* WindowHelper::getInstance()
 		view->getWin32Window());
 #elif (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)||(CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
 	auto view = dynamic_cast<GLViewImpl*>(Director::getInstance()->getOpenGLView());
-	assert_ptr(view);
+	assert(view);
 	static WindowHelperDesktop instance(view);
 #else
 	static WindowHelper instance;
