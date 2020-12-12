@@ -104,6 +104,7 @@ bool AppFrame::applicationDidFinishLaunching()
 	char tmp[32];
 	::strftime(tmp, sizeof(tmp), "%H:%M:%S", ::localtime(&t));
 	LINFO("=== Application start at: %s ===", tmp);
+	LINFO("Build date: %s", getBuildDate());
 	LINFO("CPU name: %s", infoware::cpu::model_name().c_str());
 	const auto mem_info = infoware::system::memory();
 	constexpr uint64_t mem_factor = 1024 * 1024;
