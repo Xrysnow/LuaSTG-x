@@ -100,6 +100,19 @@ static int register_all_packages()
 }
 bool AppFrame::applicationDidFinishLaunching()
 {
+#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+	XFileUtils::start();
+#endif
+
+#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
+	FileUtils::getInstance()->setWritablePath("./");
+#elif CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+        const auto wp = FileUtils::getInstance()->getWritablePath() + "lstg/";
+	if (FileUtils::getInstance()->isDirectoryExist(wp))
+		FileUtils::getInstance()->setWritablePath(wp);
+#elif CC_TARGET_PLATFORM == CC_PLATFORM_LINUX
+#endif
+
 	auto t = ::time(nullptr);
 	char tmp[32];
 	::strftime(tmp, sizeof(tmp), "%H:%M:%S", ::localtime(&t));
@@ -114,9 +127,7 @@ bool AppFrame::applicationDidFinishLaunching()
 
 	// default FPS is set in lua
 	//Director::getInstance()->setAnimationInterval(1.0 / 60.0f);
-#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-	XFileUtils::start();
-#endif
+
 	// register lua module
 	auto engine = LuaEngine::getInstance();
 	auto stack = engine->getLuaStack();
@@ -299,12 +310,12 @@ bool AppFrame::frameInit()noexcept
 	const auto wHelper = WindowHelper::getInstance();
 	//TODO: Mac & Linux
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
-	FileUtils::getInstance()->setWritablePath("./");
 	auto winhelper = (WindowHelperWin32*)wHelper;
 	winhelper->SetHideIME(true);
 #elif CC_TARGET_PLATFORM == CC_PLATFORM_MAC
 #elif CC_TARGET_PLATFORM == CC_PLATFORM_LINUX
 #endif
+
 #ifdef CC_PLATFORM_PC
 	WindowHelperDesktop::getInstance()->setTitle("LuaSTG-x");
 #endif
