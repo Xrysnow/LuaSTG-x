@@ -1,25 +1,6 @@
 ﻿#include "XLatex.h"
 #include "2d/CCFontFreeType.h"
 #include "Util/Utility.h"
-#include "../external/cLaTeXMath/src/src/config.h"
-#ifdef __OS_Android__
-#undef __OS_Android__
-#endif
-#ifdef __OS_Linux__
-#undef __OS_Linux__
-#endif
-#ifdef __OS_Windows__
-#undef __OS_Windows__
-#endif
-#ifdef __USE_SAMPLES
-#undef __USE_SAMPLES
-#endif
-#ifdef DEBUG
-#undef DEBUG
-#endif
-#ifdef UNICODE
-#undef UNICODE
-#endif
 #include "../external/cLaTeXMath/src/src/latex.h"
 
 using namespace lstg;
