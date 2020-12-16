@@ -21,10 +21,6 @@ LuaSTG-x is a multi-platform game engine based on [cocos2d-x](https://github.com
    - If your target is IOS platform, you can search for a bash script that helps to configure cmake.
    - If your target is macOS/IOS platform, you need to open `project setting -> TARGETS -> LuaSTG-x -> Build Phases -> Copy Files` and check `Code Sigh On Copy` for frameworks.
 
-        $ mkdir build
-        $ cd build
-        $ cmake ..
-
 5. Compile with your target compiler.
 
 ## Build Requirements
