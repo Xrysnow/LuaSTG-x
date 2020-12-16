@@ -85,7 +85,7 @@ LuaSTG-x\
 │　　├ [ImGuiColorTextEdit](https://github.com/Xrysnow/ImGuiColorTextEdit)\
 │　　└ [implot](https://github.com/epezent/implot)\
 ├　[cocos2d-x-live2d](https://github.com/Xrysnow/cocos2d-x-live2d)\
-│　├ [CubismNativeFramework](https://github.com/Xrysnow/CubismNativeFramework)\
+│　├ [CubismNativeFramework](https://github.com/Live2D/CubismNativeFramework)\
 │　└ [Cubism SDK for Native](https://www.live2d.com/en/download/cubism-sdk/download-native)\
 ├　[cocos2d-x-video](https://github.com/Xrysnow/cocos2d-x-video)\
 │　　└ [FFmpeg](http://ffmpeg.org) (in lstgx_external)\
