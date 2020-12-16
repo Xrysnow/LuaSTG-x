@@ -13,9 +13,13 @@ LuaSTG-x is a multi-platform game engine based on [cocos2d-x](https://github.com
         $ cd LuaSTG-x/frameworks/cocos2d-x/external
         $ git clone https://github.com/Xrysnow/cocos2d-x-3rd-party-libs-bin.git
 
-3. Download extra files from Cubism SDK ([instructions](https://github.com/Xrysnow/cocos2d-x-live2d)).
+3. Download extra files from Cubism SDK if you need liv2d module. ([Instructions](https://github.com/Xrysnow/cocos2d-x-live2d)).
 
-4. Generate project using CMake ([instructions](https://github.com/cocos2d/cocos2d-x/blob/v4/cmake/README.md)). Or open `frameworks/runtime-src/proj.android` with Android Studio if your target is Android platform.
+4. Generate project using CMake ([instructions](https://github.com/cocos2d/cocos2d-x/blob/v4/cmake/README.md)).
+   - If your target is Android platform, just open `frameworks/runtime-src/proj.android` with Android Studio.
+   - If your target is macOS platform, add `-GXcode` parameter to cmake.
+   - If your target is IOS platform, you can search for a bash script that helps to configure cmake.
+   - If your target is macOS/IOS platform, you need to open `project setting -> TARGETS -> LuaSTG-x -> Build Phases -> Copy Files` and check `Code Sigh On Copy` for frameworks.
 
         $ mkdir build
         $ cd build
@@ -25,7 +29,7 @@ LuaSTG-x is a multi-platform game engine based on [cocos2d-x](https://github.com
 
 ## Build Requirements
 
-- CMake 3.10+
+- CMake 3.15+
 - Android Studio 3.3.0+ and NDK r16+
 - OS X 10.9+ and Xcode 9+
 - or Linux with CC supports c++11
@@ -35,9 +39,9 @@ LuaSTG-x is a multi-platform game engine based on [cocos2d-x](https://github.com
 
 Runtime requirements is actually decided by your compiler, but in most cases they should satisfy these conditions:
 
-- Android 4.0+
+- Android 5.0+
 - iOS 8.0+
-- OS X v10.9+
+- OS X 10.9+
 - Windows 7+ and visual c++ runtime
 
 ## Main Features
