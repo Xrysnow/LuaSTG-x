@@ -4,6 +4,8 @@
 #include "../external/cLaTeXMath/src/src/latex.h"
 
 using namespace lstg;
+using namespace std;
+using namespace tex;
 
 bool cmpTTFConfig(const cocos2d::TTFConfig& c1, const cocos2d::TTFConfig& c2)
 {
