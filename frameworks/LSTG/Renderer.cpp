@@ -188,7 +188,7 @@ void XRenderer::setOffscreen(bool b) noexcept
 		bUseFrameBuffer = true;
 }
 
-void XRenderer::pushCallbackCommend(const std::function<void()>& f)noexcept
+void XRenderer::pushCallbackCommand(const std::function<void()>& f)noexcept
 {
 	auto cmd = LMP.getCallbackCommand();
 	cmd->init(0.f);
@@ -199,7 +199,7 @@ void XRenderer::pushCallbackCommend(const std::function<void()>& f)noexcept
 	addCommand(cmd);
 }
 
-void XRenderer::pushCallbackCommend(RenderQueue::QUEUE_GROUP group, float globalZOrder,
+void XRenderer::pushCallbackCommand(RenderQueue::QUEUE_GROUP group, float globalZOrder,
 	const std::function<void()>& f) noexcept
 {
 	auto cmd = LMP.getCallbackCommand();
@@ -248,7 +248,7 @@ bool XRenderer::beginScene()noexcept
 		Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, currentProjection);
 	};
 	// todo: maybe GLOBAL_NEG?
-	pushCallbackCommend(f);
+	pushCallbackCommand(f);
 
 	setProgramStateDirty();
 	frameBufferStart();
@@ -287,7 +287,7 @@ bool XRenderer::endScene()noexcept
 		//commandBuffer->setViewport(storeViewport.x, storeViewport.y, storeViewport.w, storeViewport.h);
 		Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, storeProjection);
 	};
-	pushCallbackCommend(f);
+	pushCallbackCommand(f);
 
 #ifdef MT_UpdateVerts
 	updateBatchedVerts();
@@ -318,12 +318,12 @@ void XRenderer::renderClear(const Color4F& c)noexcept
 	{
 		// note: will clear all if not set scissor
 		const auto vp = currentVP;
-		pushCallbackCommend([=]()
+		pushCallbackCommand([=]()
 		{
 			commandBuffer->setScissorRect(true, (float)vp.x, (float)vp.y, (float)vp.w, (float)vp.h);
 		});
 		pRenderer->clear(ClearFlag::ALL, c, 1.f, 0, 0.f);
-		pushCallbackCommend([=]()
+		pushCallbackCommand([=]()
 		{
 			commandBuffer->setScissorRect(false, 0, 0, 0, 0);
 		});
@@ -337,7 +337,7 @@ bool XRenderer::setViewport(double left, double right, double bottom, double top
 	const int y = std::min(bottom, top);
 	const unsigned int w = std::max(left, right) - x;
 	const unsigned int h = std::max(bottom, top) - y;
-	pushCallbackCommend([=]() {
+	pushCallbackCommand([=]() {
 		pRenderer->setViewPort(x, y, w, h);
 		//commandBuffer->setViewport(x, y, w, h);
 	});
@@ -354,7 +354,7 @@ void XRenderer::setOrtho(float left, float right, float bottom, float top)noexce
 	CC_ASSERT(bottom != top);
 	Mat4::createOrthographicOffCenter(left, right, bottom, top, -1024.f, 1024.f, &currentProjection);
 	auto mt = currentProjection;
-	pushCallbackCommend([mt]()
+	pushCallbackCommand([mt]()
 	{
 		Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, mt);
 	});
@@ -376,7 +376,7 @@ void XRenderer::setPerspective(float eyeX, float eyeY, float eyeZ,
 	currentProjection = movingCamera->getViewProjectionMatrix();
 
 	auto mt = currentProjection;
-	pushCallbackCommend([mt]()
+	pushCallbackCommand([mt]()
 	{
 		Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, mt);
 	});
@@ -631,7 +631,7 @@ bool XRenderer::pushRenderTarget(ResRenderTarget* p) noexcept
 	// when RenderTexture::begin is called, since we deferred
 	// loading matrix, we need to set it again.
 	auto mt = currentProjection;
-	pushCallbackCommend([mt]()
+	pushCallbackCommand([mt]()
 	{
 		Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, mt);
 	});
@@ -683,7 +683,7 @@ bool XRenderer::postEffect(ResRenderTarget* p, ResFX* shader, RenderMode* blend)
 
 	// here RenderTexture will always fill screen
 	auto size = sp->getTexture()->getContentSizeInPixels();
-	pushCallbackCommend([=]()
+	pushCallbackCommand([=]()
 	{
 		pRenderer->setViewPort(0, 0, size.width, size.height);
 		// see ResRenderTarget::checkTarget
@@ -710,7 +710,7 @@ bool XRenderer::postEffect(ResRenderTarget* p, ResFX* shader, RenderMode* blend)
 	addCommand(cmd);
 
 	const auto mt = currentProjection;
-	pushCallbackCommend([=]()
+	pushCallbackCommand([=]()
 	{
 		// RenderTexture::onEnd will restore viewport to default, set again
 		pRenderer->setViewPort(currentVP.x, currentVP.y, currentVP.w, currentVP.h);
@@ -937,7 +937,7 @@ void XRenderer::frameBufferStart()
 		frameBuffer->setGlobalZOrder(std::numeric_limits<float>::lowest());
 		frameBuffer->beginWithClear(0, 0, 0, 0);
 		auto mt = currentProjection;
-		pushCallbackCommend([mt]()
+		pushCallbackCommand([mt]()
 		{
 			Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, mt);
 		});
@@ -957,7 +957,7 @@ void XRenderer::frameBufferEnd()
 		_lastFrameSize = size;
 		Mat4::createOrthographicOffCenter(0, size.width, 0, size.height, -1024.f, 1024.f, &_FBProjection);
 	}
-	pushCallbackCommend([=]()
+	pushCallbackCommand([=]()
 	{
 		pRenderer->setViewPort(0, 0, size.width, size.height);
 		Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, _FBProjection);
@@ -1019,7 +1019,7 @@ RenderTexture* XRenderer::copyFrameBuffer(bool transparent)
 	tmpRT->beginWithClear(0, 0, 0, transparent ? 0 : 1);
 	renderFrameBuffer(1.f, true);
 	tmpRT->end();
-	pushCallbackCommend([=]()
+	pushCallbackCommand([=]()
 	{
 		tmpRT->release();
 	});

@@ -1069,17 +1069,17 @@ bool GameObjectManager::DoDefaultRender(GameObject* p)
 			};
 			if (zorder != 0.f)
 			{
-				LRR.pushCallbackCommend(QUEUE_GROUP::GLOBALZ_NEG, zorder, f1);
+				LRR.pushCallbackCommand(QUEUE_GROUP::GLOBALZ_NEG, zorder, f1);
 				node->visit();
-				LRR.pushCallbackCommend(QUEUE_GROUP::GLOBALZ_NEG, zorder, f2);
+				LRR.pushCallbackCommand(QUEUE_GROUP::GLOBALZ_NEG, zorder, f2);
 			}
 			else
 			{
-				LRR.pushCallbackCommend(QUEUE_GROUP::OPAQUE_3D, zorder, f1);
-				LRR.pushCallbackCommend(QUEUE_GROUP::TRANSPARENT_3D, zorder, f1);
+				LRR.pushCallbackCommand(QUEUE_GROUP::OPAQUE_3D, zorder, f1);
+				LRR.pushCallbackCommand(QUEUE_GROUP::TRANSPARENT_3D, zorder, f1);
 				node->visit();
-				LRR.pushCallbackCommend(QUEUE_GROUP::OPAQUE_3D, zorder, f2);
-				LRR.pushCallbackCommend(QUEUE_GROUP::TRANSPARENT_3D, zorder, f2);
+				LRR.pushCallbackCommand(QUEUE_GROUP::OPAQUE_3D, zorder, f2);
+				LRR.pushCallbackCommand(QUEUE_GROUP::TRANSPARENT_3D, zorder, f2);
 			}
 		}
 		else

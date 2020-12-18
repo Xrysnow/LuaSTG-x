@@ -88,8 +88,8 @@ namespace lstg
 		void setOffscreen(bool b) noexcept;
 		bool isOffscreen() const noexcept { return bOffscreen; }
 
-		void pushCallbackCommend(const std::function<void()>& f)noexcept;
-		void pushCallbackCommend(
+		void pushCallbackCommand(const std::function<void()>& f)noexcept;
+		void pushCallbackCommand(
 			cocos2d::RenderQueue::QUEUE_GROUP group,
 			float globalZOrder,
 			const std::function<void()>& f)noexcept;
