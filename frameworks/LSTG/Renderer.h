@@ -115,6 +115,8 @@ namespace lstg
 		void setPerspective(float eyeX, float eyeY, float eyeZ, float atX, float atY, float atZ,
 			float upX, float upY, float upZ, float fovy, float aspect, float zn, float zf)noexcept;
 
+		void setProjection(const cocos2d::Mat4& proj);
+
 		/******************************************************************************/
 
 		/**

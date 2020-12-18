@@ -373,12 +373,16 @@ void XRenderer::setPerspective(float eyeX, float eyeY, float eyeZ,
 	movingCamera->initPerspective(fovy*LRAD2DEGREE, -aspect, zn, zf);
 	movingCamera->setPosition3D(Vec3(eyeX, eyeY, eyeZ));
 	movingCamera->lookAt(Vec3(atX, atY, atZ), Vec3(upX, upY, upZ));
-	currentProjection = movingCamera->getViewProjectionMatrix();
 
-	auto mt = currentProjection;
-	pushCallbackCommand([mt]()
+	setProjection(movingCamera->getViewProjectionMatrix());
+}
+
+void XRenderer::setProjection(const Mat4& proj)
+{
+	currentProjection = proj;
+	pushCallbackCommand([=]()
 	{
-		Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, mt);
+		Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, proj);
 	});
 	setProgramStateDirty();
 }
