@@ -159,6 +159,7 @@ void XRenderer::setAALevel(int lv)noexcept
 		break;
 	case 16:
 		optAALevel = lv;
+		break;
 	default:
 		LWARNING("SetAALevel: invalid value");
 		break;
