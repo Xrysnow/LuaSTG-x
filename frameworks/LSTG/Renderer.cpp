@@ -309,9 +309,7 @@ void XRenderer::renderClear(const Color4F& c)noexcept
 {
 	if (!renderTargetStack.empty())
 	{
-		// wrong code:
-		//   auto r = renderTargetStack.back();
-		//   r->clear(c.r, c.g, c.b, c.a);
+		// note: do not use RenderTexture::clear here
 		// RenderTexture::clear calls begin + end,
 		// but here is between begin and end.
 		pRenderer->clear(ClearFlag::COLOR, c, 1.f, 0, 0.f);
