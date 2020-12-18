@@ -45,6 +45,10 @@ namespace lstg
 		cocos2d::Camera* movingCamera = nullptr;
 
 		cocos2d::DrawNode* drawNode = nullptr;
+		cocos2d::Sprite* clearRect = nullptr;
+		cocos2d::V3F_C4B_T2F_Quad clearRectQuad;
+		cocos2d::Mat4 clearRectProj;
+		RenderMode clearRectRenderMode;
 
 		bool bUseFrameBuffer = true;
 		cocos2d::RenderTexture* frameBuffer = nullptr;

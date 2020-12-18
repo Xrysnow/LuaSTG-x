@@ -83,6 +83,23 @@ bool XRenderer::init()
 	p->movingCamera = Camera::create();
 	p->movingCamera->retain();
 	p->tempRenderTexture = nullptr;//note: init in PostEffectCapture
+	p->clearRect = Sprite::createWithTexture(nullptr, Rect(0, 0, 2, 2));
+	p->clearRect->retain();
+	p->clearRectQuad = p->clearRect->getQuad();
+	p->clearRectQuad.bl.vertices.set(0, 0, 1024.f);
+	p->clearRectQuad.br.vertices.set(1, 0, 1024.f);
+	p->clearRectQuad.tl.vertices.set(0, 1, 1024.f);
+	p->clearRectQuad.tr.vertices.set(1, 1, 1024.f);
+	Mat4::createOrthographicOffCenter(0, 1, 0, 1, -1024.f, 1024.f, &p->clearRectProj);
+
+	auto& rm = p->clearRectRenderMode;
+	rm.init("", backend::BlendOperation::ADD,
+		backend::BlendFactor::ONE, backend::BlendFactor::ZERO,
+		p->clearRect->getProgramState()->getProgram());
+	rm.desc.sourceRGBBlendFactor = backend::BlendFactor::ONE;
+	rm.desc.destinationRGBBlendFactor = backend::BlendFactor::ZERO;
+	rm.desc.sourceAlphaBlendFactor = backend::BlendFactor::ONE;
+	rm.desc.destinationAlphaBlendFactor = backend::BlendFactor::ZERO;
 
 	const auto program = backend::ProgramCache::getInstance()->getBuiltinProgram(
 		backend::ProgramType::POSITION_TEXTURE_COLOR);
@@ -108,6 +125,7 @@ bool XRenderer::end()
 	CC_SAFE_DELETE(getInstance()->drawNode);
 	CC_SAFE_DELETE(getInstance()->movingCamera);
 	CC_SAFE_RELEASE_NULL(getInstance()->tempRenderTexture);
+	CC_SAFE_RELEASE_NULL(getInstance()->clearRect);
 	CC_SAFE_RELEASE_NULL(getInstance()->commandBuffer);
 	RenderMode::modeMap.clear();
 	RenderMode::modeVector.clear();
@@ -316,6 +334,7 @@ void XRenderer::renderClear(const Color4F& c)noexcept
 	}
 	else
 	{
+#ifndef CC_USE_METAL
 		// note: will clear all if not set scissor
 		const auto vp = currentVP;
 		pushCallbackCommand([=]()
@@ -327,6 +346,21 @@ void XRenderer::renderClear(const Color4F& c)noexcept
 		{
 			commandBuffer->setScissorRect(false, 0, 0, 0, 0);
 		});
+#else
+		const auto projBak = currentProjection;
+		setProjection(clearRectProj);
+
+		const auto c4b = Color4B(c);
+		clearRectQuad.bl.colors = c4b;
+		clearRectQuad.br.colors = c4b;
+		clearRectQuad.tl.colors = c4b;
+		clearRectQuad.tr.colors = c4b;
+
+		updateRenderMode(&clearRectRenderMode);
+		renderTexture(clearRect->getTexture(), &clearRectQuad);
+
+		setProjection(projBak);
+#endif
 	}
 }
 
