@@ -198,10 +198,10 @@ static int color_meta_index(lua_State* L)noexcept
 	lua_getmetatable(L, 1); // t k mt
 	lua_rawgeti(L, -1, COLOR_IDX_METHOD); // t k mt methods
 	lua_pushvalue(L, 2); // t k mt methods k
-	lua_rawget(L, -2); // t k mt methods k f
+	lua_rawget(L, -2); // t k mt methods f
 	if (!lua_isnil(L, -1))
 		return 1;
-	lua_pop(L, 3); // t k mt
+	lua_pop(L, 2); // t k mt
 	lua_rawgeti(L, -1, COLOR_IDX_GETTER); // t k mt getters
 	lua_pushvalue(L, 2); // t k mt getters k
 	lua_rawget(L, -2); // t k mt getters k f
@@ -244,11 +244,11 @@ static int color_meta_newindex(lua_State* L)noexcept
 	lua_getmetatable(L, 1);
 	lua_rawgeti(L, -1, COLOR_IDX_SETTER); // t k v mt setters
 	lua_pushvalue(L, 2); // t k v mt setters k
-	lua_rawget(L, -2); // t k v mt setters k f
+	lua_rawget(L, -2); // t k v mt setters f
 	if (!lua_isnil(L, -1))
 	{
-		lua_pushvalue(L, 1); // t k v mt setters k f t
-		lua_pushvalue(L, 3); // t k v mt setters k f t v
+		lua_pushvalue(L, 1); // t k v mt setters f t
+		lua_pushvalue(L, 3); // t k v mt setters f t v
 		lua_call(L, 2, 0);
 		return 0;
 	}
