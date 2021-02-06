@@ -161,7 +161,7 @@ static int color_getter_argb(lua_State* L)noexcept
 static int color_setter_argb(lua_State* L)noexcept
 {
 	const auto p = checkcolor(L, 1);
-	const uint32_t val = luaL_checknumber(L, 2);
+	const uint32_t val = (uint32_t)luaL_checknumber(L, 2);
 	p->r = val >> 16;
 	p->g = val >> 8;
 	p->b = val;
@@ -328,7 +328,7 @@ LUA_REGISTER_FUNC_DEF(lstg, Color)
 		if (top == 1)
 		{
 			// note: luaL_checkinteger return signed int, should use luaL_checknumber
-			const uint32_t val = luaL_checknumber(L, 1);
+			const uint32_t val = (uint32_t)luaL_checknumber(L, 1);
 			c.r = val >> 16;
 			c.g = val >> 8;
 			c.b = val;
