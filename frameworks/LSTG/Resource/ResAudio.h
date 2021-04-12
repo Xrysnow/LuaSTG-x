@@ -10,7 +10,9 @@ namespace lstg
 		public Resource
 	{
 	protected:
+		// note: decoderBufferSize should >= bufferCopySize
 		static constexpr size_t bufferCopySize = 4096;
+		static constexpr size_t decoderBufferSize = 4096;
 		audio::Source* source = nullptr;
 		StreamMemory* stream = nullptr;
 		std::string path;

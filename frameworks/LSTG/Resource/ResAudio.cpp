@@ -104,7 +104,10 @@ size_t ResAudio::fillBufferCopy()
 	const auto off = source->getBufferOffset();
 	const auto curr = source->tell();
 	if (curr > off)
-		offset = (curr - off)*source->getBytesPerFrame();
+		offset = (curr - off) * source->getBytesPerFrame();
+	// offset should be limited
+	if (offset > decoderBufferSize - bufferCopySize)
+		offset = decoderBufferSize - bufferCopySize;
 	return source->copyBuffer((char*)bufferCopy.data(), bufferCopy.size(), offset);
 }
 
@@ -114,7 +117,8 @@ size_t ResAudio::fillWavValue()
 		return 0;
 	wavValue.fill(0.f);
 	const auto size = fillBufferCopy();
-	if (size == 0)return 0;
+	if (size == 0)
+		return 0;
 	const auto nBA = source->getBytesPerFrame();
 	const auto nCh = source->getChannelCount();
 	const auto factor = 1u << (nBA / nCh * 8 - 1);
@@ -128,7 +132,7 @@ size_t ResAudio::fillWavValue()
 				break;
 			int64_t val = 0;
 			for (size_t j = 0; j < nBA; ++j)
-				val += bufferCopy[j + i * nBA] << (j * 8);
+				val += int64_t(bufferCopy[j + i * nBA]) << (j * 8);
 			if (val > factor - 1)
 				val = val - factor * 2;
 			wavValue[i] = double(val) / factor * fftWindow[i];
@@ -155,7 +159,7 @@ size_t ResAudio::fillWavValue()
 			// only calculate channel 0
 			int64_t val = 0;
 			for (size_t j = 0; j < nBA / nCh; ++j)
-				val ^= bufferCopy[j + i * nBA] << (j * 8);
+				val ^= int64_t(bufferCopy[j + i * nBA]) << (j * 8);
 			if (val > factor - 1)
 				val = val - factor * 2;
 			wavValue[i] = double(val) / factor * fftWindow[i];
@@ -203,7 +207,7 @@ bool ResAudio::init(StreamMemory* _data)
 	auto s = XAudioStream::create(stream);
 	if (!s)
 		return false;
-	auto d = audio::Decoder::createFromStream(s, 4096, audio::Decoder::getDecoderTypeFromPath(path));
+	auto d = audio::Decoder::createFromStream(s, decoderBufferSize, audio::Decoder::getDecoderTypeFromPath(path));
 	if (!d)
 	{
 		XINFO("failed to create Decoder");
