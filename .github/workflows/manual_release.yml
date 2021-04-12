@@ -1,8 +1,7 @@
 name: Manual Release
 
 on:
-  repository_dispatch:
-    types: manual_release
+  workflow_dispatch:
 
 jobs:
   pre:
