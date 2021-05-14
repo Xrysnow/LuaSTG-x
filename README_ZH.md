@@ -1,6 +1,6 @@
 # LuaSTG-x
 
-## [English Readme](README.md) | [中文简介](README_ZH.md)
+### [English Readme](README.md) | [中文简介](README_ZH.md)
 
 ---
 
@@ -9,8 +9,6 @@ LuaSTG-x 是一个基于 [cocos2d-x](https://github.com/cocos2d/cocos2d-x) 和 [
 ---
 
 ## [图片演示](https://github.com/Xrysnow/LuaSTG-x/wiki/%E5%9B%BE%E7%89%87%E6%BC%94%E7%A4%BA) | [核心API手册（英文）](https://github.com/Xrysnow/LuaSTG-x/wiki/Core_API_Manual) | [更新日志](https://github.com/Xrysnow/LuaSTG-x/wiki/%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97)
-
----
 
 ## 下载
 
