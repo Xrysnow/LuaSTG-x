@@ -39,11 +39,11 @@ Full release download:
 
 ## Build Instructions
 
-1. Clone the repo and submodules from GitHub (or download from release).
+1. Clone the repo and submodules from GitHub (or download from [release page](https://github.com/Xrysnow/LuaSTG-x/releases)).
 
         $ git clone --recursive https://github.com/Xrysnow/LuaSTG-x.git
 
-2. Clone external libraries into `frameworks/cocos2d-x/external` (or download from release).
+2. Clone external libraries into `frameworks/cocos2d-x/external` (or download from [release page](https://github.com/Xrysnow/cocos2d-x-3rd-party-libs-bin/releases)).
 
         $ cd LuaSTG-x/frameworks/cocos2d-x/external
         $ git clone https://github.com/Xrysnow/cocos2d-x-3rd-party-libs-bin.git
