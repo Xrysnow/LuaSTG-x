@@ -29,24 +29,24 @@ ZipArchive::~ZipArchive()
 	CC_SAFE_DELETE(archive);
 }
 
-bool ZipArchive::init(const std::string& path, const std::string& password)
+bool ZipArchive::init(const std::string& path, const std::string& password, Encryption encryptionMethod)
 {
-	archive = new (std::nothrow) libzippp::ZipArchive(path, password);
+	archive = new (std::nothrow) libzippp::ZipArchive(path, password, encryptionMethod);
 	return archive;
 }
 
-bool ZipArchive::initWithBuffer(Buffer* buffer, OpenMode mode, bool checkConsistency)
+bool ZipArchive::initWithBuffer(Buffer* buffer_, OpenMode mode, bool checkConsistency)
 {
-	if (!buffer)
+	if (!buffer_)
 		return false;
-	archive = libzippp::ZipArchive::fromBuffer((const char*)buffer->data(), buffer->size(), mode, checkConsistency);
+	archive = libzippp::ZipArchive::fromBuffer((const char*)buffer_->data(), buffer_->size(), mode, checkConsistency);
 	return archive;
 }
 
-ZipArchive* ZipArchive::create(const std::string& path, const std::string& password)
+ZipArchive* ZipArchive::create(const std::string& path, const std::string& password, Encryption encryptionMethod)
 {
 	const auto ret = new (std::nothrow) ZipArchive();
-	if (ret && ret->init(path, password))
+	if (ret && ret->init(path, password, encryptionMethod))
 	{
 		ret->autorelease();
 		return ret;
@@ -110,11 +110,21 @@ Buffer* ZipArchive::readEntry(const std::string& entry, State state)
 	const auto e = getEntry(entry, state);
 	if (e.isNull())
 		return nullptr;
+	const auto size = e.getSize();
+	if (size > std::numeric_limits<size_t>::max())
+	{
+		lastError = getLibZipppError(LIBZIPPP_ERROR_MEMORY_ALLOCATION);
+		return nullptr;
+	}
 	auto b = Buffer::create();
-	b->reserve(e.getSize());
-	auto buf = BufferStreamBuf(b);
-	std::ostream os(&buf);
-	const auto ret = archive->readEntry(getEntry(entry, state), os, state);
+	b->reserve((size_t)size);
+	const std::function<bool(const void*, libzippp_uint64)> readFunc =
+		[=](const void* data, libzippp_uint64 size_)
+	{
+		b->insert_data(b->size(), (const char*)data, (size_t)size_);
+		return true;
+	};
+	const auto ret = archive->readEntry(getEntry(entry, state), readFunc, state);
 	if (ret != LIBZIPPP_OK)
 	{
 		lastError = getLibZipppError(ret);
