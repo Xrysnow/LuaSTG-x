@@ -1,7 +1,4 @@
-#ifndef __x_ZipArchive_h__
-#define __x_ZipArchive_h__
-#include "base/ccConfig.h"
-
+#pragma once
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -12,4 +9,3 @@ extern "C" {
 
 int register_all_x_ZipArchive(lua_State* tolua_S);
 
-#endif // __x_ZipArchive_h__

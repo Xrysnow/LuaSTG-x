@@ -2,318 +2,169 @@
 #include "../LSTG/LogSystem.h"
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
+#include "Util/UtilLuaConversion.h"
+using lstg::lua::luaval_to_native;
+using lstg::lua::native_to_luaval;
 
-int lua_x_LogSystem_LogSystem_write(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::LogSystem* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
+#ifndef LUA_CHECK_COBJ_TYPE
+	#ifdef LUA_DEBUG
+		#define LUA_CHECK_COBJ_TYPE(L, TYPE, NAME) if(!tolua_isusertype((L), 1, (TYPE), 0, nullptr)) { return luaL_error((L), "invalid 'cobj' in '%s': '%s', expects '%s'", NAME, tolua_typename((L), 1), (TYPE)); }
+	#else
+		#define LUA_CHECK_COBJ_TYPE(L, TYPE, NAME) (void)(TYPE);
+	#endif
+#endif
+#ifndef LUA_CHECK_COBJ
+	#ifdef LUA_DEBUG
+		#define LUA_CHECK_COBJ(L, COBJ, NAME) if(!(COBJ)) { return luaL_error((L), "invalid 'cobj' in '%s'", NAME); }
+	#else
+		#define LUA_CHECK_COBJ(L, COBJ, NAME)
+	#endif
+#endif
+#ifndef LUA_CHECK_PARAMETER
+	#define LUA_CHECK_PARAMETER(L, OK, NAME) if(!(OK)) { return luaL_error((L), "invalid arguments in '%s'", NAME); }
+#endif
+#ifndef LUA_PARAMETER_ERROR
+	#define LUA_PARAMETER_ERROR(L, NAME, ARGC, EXPECT) return luaL_error((L), "wrong number of arguments in '%s': %d, expects %s", NAME, (ARGC), EXPECT);
 #endif
 
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.LogSystem",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::LogSystem*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_LogSystem_LogSystem_write'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        std::string arg0;
-
-        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.LogSystem:write");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_LogSystem_LogSystem_write'", nullptr);
-            return 0;
-        }
-        bool ret = cobj->write(arg0);
-        tolua_pushboolean(tolua_S,(bool)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.LogSystem:write",argc, 1);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_LogSystem_LogSystem_write'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_x_LogSystem_LogSystem_setConsoleLevel(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::LogSystem* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.LogSystem",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::LogSystem*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_LogSystem_LogSystem_setConsoleLevel'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        int arg0;
-
-        ok &= luaval_to_int32(tolua_S, 2,(int *)&arg0, "lstg.LogSystem:setConsoleLevel");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_LogSystem_LogSystem_setConsoleLevel'", nullptr);
-            return 0;
-        }
-        cobj->setConsoleLevel(arg0);
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.LogSystem:setConsoleLevel",argc, 1);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_LogSystem_LogSystem_setConsoleLevel'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_x_LogSystem_LogSystem_writeLine(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::LogSystem* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.LogSystem",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::LogSystem*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_LogSystem_LogSystem_writeLine'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        std::string arg0;
-
-        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.LogSystem:writeLine");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_LogSystem_LogSystem_writeLine'", nullptr);
-            return 0;
-        }
-        bool ret = cobj->writeLine(arg0);
-        tolua_pushboolean(tolua_S,(bool)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.LogSystem:writeLine",argc, 1);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_LogSystem_LogSystem_writeLine'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_x_LogSystem_LogSystem_getPath(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::LogSystem* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.LogSystem",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::LogSystem*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_LogSystem_LogSystem_getPath'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
-    {
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_LogSystem_LogSystem_getPath'", nullptr);
-            return 0;
-        }
-        std::string ret = cobj->getPath();
-        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.LogSystem:getPath",argc, 0);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_LogSystem_LogSystem_getPath'.",&tolua_err);
-#endif
-
-    return 0;
-}
 int lua_x_LogSystem_LogSystem_changePath(lua_State* tolua_S)
 {
-    int argc = 0;
-    lstg::LogSystem* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.LogSystem",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::LogSystem*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_LogSystem_LogSystem_changePath'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        std::string arg0;
-
-        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "lstg.LogSystem:changePath");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_LogSystem_LogSystem_changePath'", nullptr);
-            return 0;
-        }
-        bool ret = cobj->changePath(arg0);
-        tolua_pushboolean(tolua_S,(bool)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.LogSystem:changePath",argc, 1);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_LogSystem_LogSystem_changePath'.",&tolua_err);
-#endif
-
-    return 0;
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "lstg.LogSystem";
+	constexpr auto LUA_FNAME = "lstg.LogSystem:changePath";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	auto cobj = (lstg::LogSystem*)tolua_tousertype(tolua_S, 1, nullptr);
+	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 1) {
+		std::string arg0;
+		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = cobj->changePath(arg0);
+		tolua_pushboolean(tolua_S, (bool)ret);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
 }
 int lua_x_LogSystem_LogSystem_getInstance(lua_State* tolua_S)
 {
-    int argc = 0;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertable(tolua_S,1,"lstg.LogSystem",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    argc = lua_gettop(tolua_S) - 1;
-
-    if (argc == 0)
-    {
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_LogSystem_LogSystem_getInstance'", nullptr);
-            return 0;
-        }
-        lstg::LogSystem* ret = lstg::LogSystem::getInstance();
-        object_to_luaval<lstg::LogSystem>(tolua_S, "lstg.LogSystem",(lstg::LogSystem*)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.LogSystem:getInstance",argc, 0);
-    return 0;
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_LogSystem_LogSystem_getInstance'.",&tolua_err);
-#endif
-    return 0;
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "lstg.LogSystem";
+	constexpr auto LUA_FNAME = "lstg.LogSystem:getInstance";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 0) {
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = lstg::LogSystem::getInstance();
+		native_to_luaval(tolua_S, ret);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
+}
+int lua_x_LogSystem_LogSystem_getPath(lua_State* tolua_S)
+{
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "lstg.LogSystem";
+	constexpr auto LUA_FNAME = "lstg.LogSystem:getPath";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	auto cobj = (lstg::LogSystem*)tolua_tousertype(tolua_S, 1, nullptr);
+	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 0) {
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = cobj->getPath();
+		lua_pushlstring(tolua_S, ret.c_str(), ret.length());
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
+}
+int lua_x_LogSystem_LogSystem_setConsoleLevel(lua_State* tolua_S)
+{
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "lstg.LogSystem";
+	constexpr auto LUA_FNAME = "lstg.LogSystem:setConsoleLevel";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	auto cobj = (lstg::LogSystem*)tolua_tousertype(tolua_S, 1, nullptr);
+	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 1) {
+		int arg0;
+		ok &= luaval_to_int32(tolua_S, 2, &arg0, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		cobj->setConsoleLevel(arg0);
+		lua_settop(tolua_S, 1);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
+}
+int lua_x_LogSystem_LogSystem_write(lua_State* tolua_S)
+{
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "lstg.LogSystem";
+	constexpr auto LUA_FNAME = "lstg.LogSystem:write";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	auto cobj = (lstg::LogSystem*)tolua_tousertype(tolua_S, 1, nullptr);
+	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 1) {
+		std::string arg0;
+		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = cobj->write(arg0);
+		tolua_pushboolean(tolua_S, (bool)ret);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
+}
+int lua_x_LogSystem_LogSystem_writeLine(lua_State* tolua_S)
+{
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "lstg.LogSystem";
+	constexpr auto LUA_FNAME = "lstg.LogSystem:writeLine";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	auto cobj = (lstg::LogSystem*)tolua_tousertype(tolua_S, 1, nullptr);
+	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 1) {
+		std::string arg0;
+		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = cobj->writeLine(arg0);
+		tolua_pushboolean(tolua_S, (bool)ret);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
 }
 static int lua_x_LogSystem_LogSystem_finalize(lua_State* tolua_S)
 {
-    printf("luabindings: finalizing LUA object (LogSystem)");
-    return 0;
+	return 0;
 }
 
 int lua_register_x_LogSystem_LogSystem(lua_State* tolua_S)
 {
-    tolua_usertype(tolua_S,"lstg.LogSystem");
-    tolua_cclass(tolua_S,"LogSystem","lstg.LogSystem","",nullptr);
+	tolua_usertype(tolua_S, "lstg.LogSystem");
+	tolua_cclass(tolua_S, "LogSystem", "lstg.LogSystem", "", nullptr);
 
-    tolua_beginmodule(tolua_S,"LogSystem");
-        tolua_function(tolua_S,"write",lua_x_LogSystem_LogSystem_write);
-        tolua_function(tolua_S,"setConsoleLevel",lua_x_LogSystem_LogSystem_setConsoleLevel);
-        tolua_function(tolua_S,"writeLine",lua_x_LogSystem_LogSystem_writeLine);
-        tolua_function(tolua_S,"getPath",lua_x_LogSystem_LogSystem_getPath);
-        tolua_function(tolua_S,"changePath",lua_x_LogSystem_LogSystem_changePath);
-        tolua_function(tolua_S,"getInstance", lua_x_LogSystem_LogSystem_getInstance);
-    tolua_endmodule(tolua_S);
-    std::string typeName = typeid(lstg::LogSystem).name();
-    g_luaType[typeName] = "lstg.LogSystem";
-    g_typeCast["LogSystem"] = "lstg.LogSystem";
-    return 1;
+	tolua_beginmodule(tolua_S, "LogSystem");
+		tolua_function(tolua_S, "changePath", lua_x_LogSystem_LogSystem_changePath);
+		tolua_function(tolua_S, "getPath", lua_x_LogSystem_LogSystem_getPath);
+		tolua_function(tolua_S, "setConsoleLevel", lua_x_LogSystem_LogSystem_setConsoleLevel);
+		tolua_function(tolua_S, "write", lua_x_LogSystem_LogSystem_write);
+		tolua_function(tolua_S, "writeLine", lua_x_LogSystem_LogSystem_writeLine);
+		tolua_function(tolua_S, "getInstance", lua_x_LogSystem_LogSystem_getInstance);
+	tolua_endmodule(tolua_S);
+	std::string typeName = typeid(lstg::LogSystem).name();
+	g_luaType[typeName] = "lstg.LogSystem";
+	g_typeCast["LogSystem"] = "lstg.LogSystem";
+	return 1;
 }
-TOLUA_API int register_all_x_LogSystem(lua_State* tolua_S)
+
+int register_all_x_LogSystem(lua_State* tolua_S)
 {
 	tolua_open(tolua_S);
-	
-	tolua_module(tolua_S,"lstg",0);
-	tolua_beginmodule(tolua_S,"lstg");
+
+	tolua_module(tolua_S, "lstg", 0);
+	tolua_beginmodule(tolua_S, "lstg");
 
 	lua_register_x_LogSystem_LogSystem(tolua_S);
 

@@ -1,7 +1,4 @@
-#include "base/ccConfig.h"
-#ifndef __x_StopWatch_h__
-#define __x_StopWatch_h__
-
+#pragma once
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -12,4 +9,3 @@ extern "C" {
 
 int register_all_x_StopWatch(lua_State* tolua_S);
 
-#endif // __x_StopWatch_h__

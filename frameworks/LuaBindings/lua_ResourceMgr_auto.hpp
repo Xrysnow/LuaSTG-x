@@ -1,7 +1,4 @@
-#include "base/ccConfig.h"
-#ifndef __x_ResourceMgr_h__
-#define __x_ResourceMgr_h__
-
+#pragma once
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -12,4 +9,3 @@ extern "C" {
 
 int register_all_x_ResourceMgr(lua_State* tolua_S);
 
-#endif // __x_ResourceMgr_h__

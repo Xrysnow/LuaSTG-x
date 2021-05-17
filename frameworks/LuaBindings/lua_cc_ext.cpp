@@ -3,216 +3,161 @@
 #include "../Classes/XBuffer.h"
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
-#include "Util/UtilLuaConversion.h"
 #include "Util/Utility.h"
+#include "Util/UtilLuaConversion.h"
+using lstg::lua::luaval_to_native;
+using lstg::lua::native_to_luaval;
+
+#ifndef LUA_CHECK_COBJ_TYPE
+	#ifdef LUA_DEBUG
+		#define LUA_CHECK_COBJ_TYPE(L, TYPE, NAME) if(!tolua_isusertype((L), 1, (TYPE), 0, nullptr)) { return luaL_error((L), "invalid 'cobj' in '%s': '%s', expects '%s'", NAME, tolua_typename((L), 1), (TYPE)); }
+	#else
+		#define LUA_CHECK_COBJ_TYPE(L, TYPE, NAME) (void)(TYPE);
+	#endif
+#endif
+#ifndef LUA_CHECK_COBJ
+	#ifdef LUA_DEBUG
+		#define LUA_CHECK_COBJ(L, COBJ, NAME) if(!(COBJ)) { return luaL_error((L), "invalid 'cobj' in '%s'", NAME); }
+	#else
+		#define LUA_CHECK_COBJ(L, COBJ, NAME)
+	#endif
+#endif
+#ifndef LUA_CHECK_PARAMETER
+	#define LUA_CHECK_PARAMETER(L, OK, NAME) if(!(OK)) { return luaL_error((L), "invalid arguments in '%s'", NAME); }
+#endif
+#ifndef LUA_PARAMETER_ERROR
+	#define LUA_PARAMETER_ERROR(L, NAME, ARGC, EXPECT) return luaL_error((L), "wrong number of arguments in '%s': %d, expects %s", NAME, (ARGC), EXPECT);
+#endif
 
 int lua_cc_ext_Image_initWithImageData(lua_State* tolua_S)
 {
-    int argc = 0;
-    cocos2d::Image* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-    if (!tolua_isusertype(tolua_S,1,"cc.Image",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (cocos2d::Image*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cc_ext_Image_initWithImageData'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        lstg::Buffer* arg0;
-
-        ok &= lstg::lua::luaval_to_native(tolua_S, 2, &arg0, "cc.Image:initWithImageData");
-		if(!arg0) ok = false;
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_cc_ext_Image_initWithImageData'", nullptr);
-            return 0;
-        }
-        bool ret = cobj->initWithImageData(arg0->data(), arg0->size());
-        tolua_pushboolean(tolua_S,(bool)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Image:initWithImageData",argc, 1);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_cc_ext_Image_initWithImageData'.",&tolua_err);
-    return 0;
-#endif
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "cc.Image";
+	constexpr auto LUA_FNAME = "cc.Image:initWithImageData";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	auto cobj = (cocos2d::Image*)tolua_tousertype(tolua_S, 1, nullptr);
+	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 1) {
+		lstg::Buffer* arg0;
+		ok &= luaval_to_native(tolua_S, 2, &arg0, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = cobj->initWithImageData(arg0->data(), arg0->size());
+		tolua_pushboolean(tolua_S, (bool)ret);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
 }
 int lua_cc_ext_Image_initWithRawData(lua_State* tolua_S)
 {
-    int argc = 0;
-    cocos2d::Image* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-    if (!tolua_isusertype(tolua_S,1,"cc.Image",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (cocos2d::Image*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cc_ext_Image_initWithRawData'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 4) 
-    {
-        lstg::Buffer* arg0;
-        int arg1;
-        int arg2;
-        int arg3;
-
-        ok &= lstg::lua::luaval_to_native(tolua_S, 2, &arg0, "cc.Image:initWithRawData");
-		if(!arg0) ok = false;
-
-        ok &= luaval_to_int32(tolua_S, 3,(int *)&arg1, "cc.Image:initWithRawData");
-
-        ok &= luaval_to_int32(tolua_S, 4,(int *)&arg2, "cc.Image:initWithRawData");
-
-        ok &= luaval_to_int32(tolua_S, 5,(int *)&arg3, "cc.Image:initWithRawData");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_cc_ext_Image_initWithRawData'", nullptr);
-            return 0;
-        }
-        bool ret = cobj->initWithRawData(arg0->data(), arg0->size(), arg1, arg2, arg3);
-        tolua_pushboolean(tolua_S,(bool)ret);
-        return 1;
-    }
-    if (argc == 5) 
-    {
-        lstg::Buffer* arg0;
-        int arg1;
-        int arg2;
-        int arg3;
-        bool arg4;
-
-        ok &= lstg::lua::luaval_to_native(tolua_S, 2, &arg0, "cc.Image:initWithRawData");
-
-        ok &= luaval_to_int32(tolua_S, 3,(int *)&arg1, "cc.Image:initWithRawData");
-
-        ok &= luaval_to_int32(tolua_S, 4,(int *)&arg2, "cc.Image:initWithRawData");
-
-        ok &= luaval_to_int32(tolua_S, 5,(int *)&arg3, "cc.Image:initWithRawData");
-
-        ok &= luaval_to_boolean(tolua_S, 6,&arg4, "cc.Image:initWithRawData");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_cc_ext_Image_initWithRawData'", nullptr);
-            return 0;
-        }
-        bool ret = cobj->initWithRawData(arg0->data(), arg0->size(), arg1, arg2, arg3, arg4);
-        tolua_pushboolean(tolua_S,(bool)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Image:initWithRawData",argc, 4);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_cc_ext_Image_initWithRawData'.",&tolua_err);
-    return 0;
-#endif
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "cc.Image";
+	constexpr auto LUA_FNAME = "cc.Image:initWithRawData";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	auto cobj = (cocos2d::Image*)tolua_tousertype(tolua_S, 1, nullptr);
+	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 4) {
+		lstg::Buffer* arg0;
+		int arg1;
+		int arg2;
+		int arg3;
+		ok &= luaval_to_native(tolua_S, 2, &arg0, LUA_FNAME);
+		ok &= luaval_to_int32(tolua_S, 3, &arg1, LUA_FNAME);
+		ok &= luaval_to_int32(tolua_S, 4, &arg2, LUA_FNAME);
+		ok &= luaval_to_int32(tolua_S, 5, &arg3, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = cobj->initWithRawData(arg0->data(), arg0->size(), arg1, arg2, arg3);
+		tolua_pushboolean(tolua_S, (bool)ret);
+		return 1;
+	}
+	if (argc == 5) {
+		lstg::Buffer* arg0;
+		int arg1;
+		int arg2;
+		int arg3;
+		bool arg4;
+		ok &= luaval_to_native(tolua_S, 2, &arg0, LUA_FNAME);
+		ok &= luaval_to_int32(tolua_S, 3, &arg1, LUA_FNAME);
+		ok &= luaval_to_int32(tolua_S, 4, &arg2, LUA_FNAME);
+		ok &= luaval_to_int32(tolua_S, 5, &arg3, LUA_FNAME);
+		ok &= luaval_to_boolean(tolua_S, 6, &arg4, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = cobj->initWithRawData(arg0->data(), arg0->size(), arg1, arg2, arg3, arg4);
+		tolua_pushboolean(tolua_S, (bool)ret);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "4 to 5");
 }
 int lua_cc_ext_Image_initWithSVGFile(lua_State* tolua_S)
 {
-	int argc = 0;
-	cocos2d::Image* cobj = nullptr;
 	bool ok = true;
-#if COCOS2D_DEBUG >= 1
-	tolua_Error tolua_err;
-	if (!tolua_isusertype(tolua_S, 1, "cc.Image", 0, &tolua_err)) goto tolua_lerror;
-#endif
-	cobj = (cocos2d::Image*)tolua_tousertype(tolua_S, 1, nullptr);
-#if COCOS2D_DEBUG >= 1
-	if (!cobj)
-	{
-		tolua_error(tolua_S, "invalid 'cobj' in function 'lua_cc_ext_Image_initWithSVGFile'", nullptr);
-		return 0;
-	}
-#endif
-	argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1)
-	{
+	constexpr auto LUA_OBJ_TYPE = "cc.Image";
+	constexpr auto LUA_FNAME = "cc.Image:initWithSVGFile";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	auto cobj = (cocos2d::Image*)tolua_tousertype(tolua_S, 1, nullptr);
+	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 1) {
 		std::string arg0;
-
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, "cc.Image:initWithSVGFile");
-		if (!ok)
-		{
-			tolua_error(tolua_S, "invalid arguments in function 'lua_cc_ext_Image_initWithSVGFile'", nullptr);
-			return 0;
-		}
-		bool ret = lstg::initImageWithSVG(cobj, arg0, cocos2d::Size());
+		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = lstg::initImageWithSVG(cobj, arg0, cocos2d::Size());
 		tolua_pushboolean(tolua_S, (bool)ret);
 		return 1;
 	}
-	if (argc == 2)
-	{
+	if (argc == 2) {
 		std::string arg0;
-		cocos2d::Size arg1;
-
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, "cc.Image:initWithSVGFile");
-
-		ok &= luaval_to_size(tolua_S, 3, &arg1, "cc.Image:initWithSVGFile");
-		if (!ok)
-		{
-			tolua_error(tolua_S, "invalid arguments in function 'lua_cc_ext_Image_initWithSVGFile'", nullptr);
-			return 0;
-		}
-		bool ret = lstg::initImageWithSVG(cobj, arg0, arg1);
+		double arg1;
+		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 3, &arg1, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = lstg::initImageWithSVG(cobj, arg0, arg1);
 		tolua_pushboolean(tolua_S, (bool)ret);
 		return 1;
 	}
-	luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Image:initWithSVGFile", argc, 1);
-	return 0;
-#if COCOS2D_DEBUG >= 1
-	tolua_lerror:
-				tolua_error(tolua_S, "#ferror in function 'lua_cc_ext_Image_initWithSVGFile'.", &tolua_err);
-				return 0;
-#endif
+	if (argc == 3) {
+		std::string arg0;
+		double arg1;
+		std::string arg2;
+		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 3, &arg1, LUA_FNAME);
+		ok &= luaval_to_std_string(tolua_S, 4, &arg2, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = lstg::initImageWithSVG(cobj, arg0, arg1, arg2);
+		tolua_pushboolean(tolua_S, (bool)ret);
+		return 1;
+	}
+	if (argc == 4) {
+		std::string arg0;
+		double arg1;
+		std::string arg2;
+		double arg3;
+		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 3, &arg1, LUA_FNAME);
+		ok &= luaval_to_std_string(tolua_S, 4, &arg2, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 5, &arg3, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = lstg::initImageWithSVG(cobj, arg0, arg1, arg2, arg3);
+		tolua_pushboolean(tolua_S, (bool)ret);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1 to 4");
 }
 
 int lua_cc_ext_Texture2D_newImage(lua_State* tolua_S)
 {
-	int argc = 0;
-	cocos2d::Texture2D* cobj = nullptr;
 	bool ok = true;
-#if COCOS2D_DEBUG >= 1
-	tolua_Error tolua_err;
-	if (!tolua_isusertype(tolua_S, 1, "cc.Texture2D", 0, &tolua_err)) goto tolua_lerror;
-#endif
-	cobj = (cocos2d::Texture2D*)tolua_tousertype(tolua_S, 1, nullptr);
-#if COCOS2D_DEBUG >= 1
-	if (!cobj)
-	{
-		tolua_error(tolua_S, "invalid 'cobj' in function 'lua_cc_ext_Texture2D_newImage'", nullptr);
-		return 0;
-	}
-#endif
-	argc = lua_gettop(tolua_S) - 1;
+	constexpr auto LUA_OBJ_TYPE = "cc.Texture2D";
+	constexpr auto LUA_FNAME = "cc.Texture2D:newImage";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	auto cobj = (cocos2d::Texture2D*)tolua_tousertype(tolua_S, 1, nullptr);
+	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
 	do {
 		if (argc == 0) {
-			cocos2d::Image* ret = lstg::getTextureImage(cobj);
-			object_to_luaval<cocos2d::Image>(tolua_S, "cc.Image", (cocos2d::Image*)ret);
+			auto ret = lstg::getTextureImage(cobj);
+			native_to_luaval(tolua_S, ret);
 			return 1;
 		}
 	} while (false);
@@ -220,10 +165,10 @@ int lua_cc_ext_Texture2D_newImage(lua_State* tolua_S)
 	do {
 		if (argc == 1) {
 			bool arg0;
-			ok &= luaval_to_boolean(tolua_S, 2, &arg0, "cc.Texture2D:newImage");
+			ok &= luaval_to_boolean(tolua_S, 2, &arg0, LUA_FNAME);
 			if (!ok) { break; }
-			cocos2d::Image* ret = lstg::getTextureImage(cobj, arg0);
-			object_to_luaval<cocos2d::Image>(tolua_S, "cc.Image", (cocos2d::Image*)ret);
+			auto ret = lstg::getTextureImage(cobj, arg0);
+			native_to_luaval(tolua_S, ret);
 			return 1;
 		}
 	} while (false);
@@ -231,19 +176,19 @@ int lua_cc_ext_Texture2D_newImage(lua_State* tolua_S)
 	do {
 		if (argc == 4) {
 			unsigned int arg0;
-			ok &= luaval_to_uint32(tolua_S, 2, &arg0, "cc.Texture2D:newImage");
+			ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
 			if (!ok) { break; }
 			unsigned int arg1;
-			ok &= luaval_to_uint32(tolua_S, 3, &arg1, "cc.Texture2D:newImage");
+			ok &= luaval_to_uint32(tolua_S, 3, &arg1, LUA_FNAME);
 			if (!ok) { break; }
 			unsigned int arg2;
-			ok &= luaval_to_uint32(tolua_S, 4, &arg2, "cc.Texture2D:newImage");
+			ok &= luaval_to_uint32(tolua_S, 4, &arg2, LUA_FNAME);
 			if (!ok) { break; }
 			unsigned int arg3;
-			ok &= luaval_to_uint32(tolua_S, 5, &arg3, "cc.Texture2D:newImage");
+			ok &= luaval_to_uint32(tolua_S, 5, &arg3, LUA_FNAME);
 			if (!ok) { break; }
-			cocos2d::Image* ret = lstg::getTextureImage(cobj, arg0, arg1, arg2, arg3);
-			object_to_luaval<cocos2d::Image>(tolua_S, "cc.Image", (cocos2d::Image*)ret);
+			auto ret = lstg::getTextureImage(cobj, arg0, arg1, arg2, arg3);
+			native_to_luaval(tolua_S, ret);
 			return 1;
 		}
 	} while (false);
@@ -251,85 +196,71 @@ int lua_cc_ext_Texture2D_newImage(lua_State* tolua_S)
 	do {
 		if (argc == 5) {
 			unsigned int arg0;
-			ok &= luaval_to_uint32(tolua_S, 2, &arg0, "cc.Texture2D:newImage");
+			ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
 			if (!ok) { break; }
 			unsigned int arg1;
-			ok &= luaval_to_uint32(tolua_S, 3, &arg1, "cc.Texture2D:newImage");
+			ok &= luaval_to_uint32(tolua_S, 3, &arg1, LUA_FNAME);
 			if (!ok) { break; }
 			unsigned int arg2;
-			ok &= luaval_to_uint32(tolua_S, 4, &arg2, "cc.Texture2D:newImage");
+			ok &= luaval_to_uint32(tolua_S, 4, &arg2, LUA_FNAME);
 			if (!ok) { break; }
 			unsigned int arg3;
-			ok &= luaval_to_uint32(tolua_S, 5, &arg3, "cc.Texture2D:newImage");
+			ok &= luaval_to_uint32(tolua_S, 5, &arg3, LUA_FNAME);
 			if (!ok) { break; }
 			bool arg4;
-			ok &= luaval_to_boolean(tolua_S, 6, &arg4, "cc.Texture2D:newImage");
+			ok &= luaval_to_boolean(tolua_S, 6, &arg4, LUA_FNAME);
 			if (!ok) { break; }
-			cocos2d::Image* ret = lstg::getTextureImage(cobj, arg0, arg1, arg2, arg3, arg4);
-			object_to_luaval<cocos2d::Image>(tolua_S, "cc.Image", (cocos2d::Image*)ret);
+			auto ret = lstg::getTextureImage(cobj, arg0, arg1, arg2, arg3, arg4);
+			native_to_luaval(tolua_S, ret);
 			return 1;
 		}
 	} while (false);
 	ok = true;
-	luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Texture2D:newImage", argc, 4);
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "4");
+}
+static int lua_cc_ext_Texture2D_finalize(lua_State* tolua_S)
+{
 	return 0;
-#if COCOS2D_DEBUG >= 1
-	tolua_lerror:
-				tolua_error(tolua_S, "#ferror in function 'lua_cc_ext_Texture2D_newImage'.", &tolua_err);
-				return 0;
-#endif
+}
+
+int lua_register_cc_ext_Texture2D(lua_State* tolua_S)
+{
+	tolua_usertype(tolua_S, "cc.Texture2D");
+	tolua_cclass(tolua_S, "Texture2D", "cc.Texture2D", "cc.Ref", nullptr);
+
+	tolua_beginmodule(tolua_S, "Texture2D");
+		tolua_function(tolua_S, "newImage", lua_cc_ext_Texture2D_newImage);
+	tolua_endmodule(tolua_S);
+	std::string typeName = typeid(cocos2d::Texture2D).name();
+	g_luaType[typeName] = "cc.Texture2D";
+	g_typeCast["Texture2D"] = "cc.Texture2D";
+	return 1;
 }
 
 int lua_cc_ext_Sprite_newImage(lua_State* tolua_S)
 {
-	int argc = 0;
-	cocos2d::Sprite* cobj = nullptr;
 	bool ok = true;
-#if COCOS2D_DEBUG >= 1
-	tolua_Error tolua_err;
-	if (!tolua_isusertype(tolua_S, 1, "cc.Sprite", 0, &tolua_err)) goto tolua_lerror;
-#endif
-	cobj = (cocos2d::Sprite*)tolua_tousertype(tolua_S, 1, nullptr);
-#if COCOS2D_DEBUG >= 1
-	if (!cobj)
-	{
-		tolua_error(tolua_S, "invalid 'cobj' in function 'lua_cc_ext_Sprite_newImage'", nullptr);
-		return 0;
-	}
-#endif
-	argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0)
-	{
-		if (!ok)
-		{
-			tolua_error(tolua_S, "invalid arguments in function 'lua_cc_ext_Sprite_newImage'", nullptr);
-			return 0;
-		}
-		cocos2d::Image* ret = lstg::getSpriteImage(cobj);
-		object_to_luaval<cocos2d::Image>(tolua_S, "cc.Image", (cocos2d::Image*)ret);
+	constexpr auto LUA_OBJ_TYPE = "cc.Sprite";
+	constexpr auto LUA_FNAME = "cc.Sprite:newImage";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	auto cobj = (cocos2d::Sprite*)tolua_tousertype(tolua_S, 1, nullptr);
+	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 0) {
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = lstg::getSpriteImage(cobj);
+		native_to_luaval(tolua_S, ret);
 		return 1;
 	}
-	if (argc == 1)
-	{
+	if (argc == 1) {
 		bool arg0;
-
-		ok &= luaval_to_boolean(tolua_S, 2, &arg0, "cc.Sprite:newImage");
-		if (!ok)
-		{
-			tolua_error(tolua_S, "invalid arguments in function 'lua_cc_ext_Sprite_newImage'", nullptr);
-			return 0;
-		}
-		cocos2d::Image* ret = lstg::getSpriteImage(cobj, arg0);
-		object_to_luaval<cocos2d::Image>(tolua_S, "cc.Image", (cocos2d::Image*)ret);
+		ok &= luaval_to_boolean(tolua_S, 2, &arg0, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = lstg::getSpriteImage(cobj, arg0);
+		native_to_luaval(tolua_S, ret);
 		return 1;
 	}
-	luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Sprite:newImage", argc, 0);
-	return 0;
-#if COCOS2D_DEBUG >= 1
-	tolua_lerror:
-				tolua_error(tolua_S, "#ferror in function 'lua_cc_ext_Sprite_newImage'.", &tolua_err);
-				return 0;
-#endif
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0 to 1");
 }
 
 int register_all_cc_ext(lua_State* tolua_S)

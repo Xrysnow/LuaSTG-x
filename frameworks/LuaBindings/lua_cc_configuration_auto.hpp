@@ -1,7 +1,4 @@
-#include "base/ccConfig.h"
-#ifndef __cocos2dx_configuration_h__
-#define __cocos2dx_configuration_h__
-
+#pragma once
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -10,7 +7,5 @@ extern "C" {
 }
 #endif
 
-int register_all_cocos2dx_configuration(lua_State* tolua_S);
+int register_all_cc_configuration(lua_State* tolua_S);
 
-
-#endif // __cocos2dx_configuration_h__

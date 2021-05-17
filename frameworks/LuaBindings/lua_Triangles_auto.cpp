@@ -2,803 +2,421 @@
 #include "../Classes/XTriangles.h"
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
-#include "Util/UtilLua.h"
-#define printf(...)
+#include "Util/UtilLuaConversion.h"
+using lstg::lua::luaval_to_native;
+using lstg::lua::native_to_luaval;
 #define color4b_to_luaval lstg::lua::_color4b_to_luaval
 #define luaval_to_color4b lstg::lua::_luaval_to_color4b
 
-int lua_x_Triangles_Triangles_setVertex(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::Triangles* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
+#ifndef LUA_CHECK_COBJ_TYPE
+	#ifdef LUA_DEBUG
+		#define LUA_CHECK_COBJ_TYPE(L, TYPE, NAME) if(!tolua_isusertype((L), 1, (TYPE), 0, nullptr)) { return luaL_error((L), "invalid 'cobj' in '%s': '%s', expects '%s'", NAME, tolua_typename((L), 1), (TYPE)); }
+	#else
+		#define LUA_CHECK_COBJ_TYPE(L, TYPE, NAME) (void)(TYPE);
+	#endif
+#endif
+#ifndef LUA_CHECK_COBJ
+	#ifdef LUA_DEBUG
+		#define LUA_CHECK_COBJ(L, COBJ, NAME) if(!(COBJ)) { return luaL_error((L), "invalid 'cobj' in '%s'", NAME); }
+	#else
+		#define LUA_CHECK_COBJ(L, COBJ, NAME)
+	#endif
+#endif
+#ifndef LUA_CHECK_PARAMETER
+	#define LUA_CHECK_PARAMETER(L, OK, NAME) if(!(OK)) { return luaL_error((L), "invalid arguments in '%s'", NAME); }
+#endif
+#ifndef LUA_PARAMETER_ERROR
+	#define LUA_PARAMETER_ERROR(L, NAME, ARGC, EXPECT) return luaL_error((L), "wrong number of arguments in '%s': %d, expects %s", NAME, (ARGC), EXPECT);
 #endif
 
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.Triangles",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::Triangles*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Triangles_Triangles_setVertex'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 7) 
-    {
-        unsigned int arg0;
-        double arg1;
-        double arg2;
-        double arg3;
-        double arg4;
-        double arg5;
-        cocos2d::Color4B arg6;
-
-        ok &= luaval_to_uint32(tolua_S, 2,&arg0, "lstg.Triangles:setVertex");
-
-        ok &= luaval_to_number(tolua_S, 3,&arg1, "lstg.Triangles:setVertex");
-
-        ok &= luaval_to_number(tolua_S, 4,&arg2, "lstg.Triangles:setVertex");
-
-        ok &= luaval_to_number(tolua_S, 5,&arg3, "lstg.Triangles:setVertex");
-
-        ok &= luaval_to_number(tolua_S, 6,&arg4, "lstg.Triangles:setVertex");
-
-        ok &= luaval_to_number(tolua_S, 7,&arg5, "lstg.Triangles:setVertex");
-
-        ok &=luaval_to_color4b(tolua_S, 8, &arg6, "lstg.Triangles:setVertex");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Triangles_Triangles_setVertex'", nullptr);
-            return 0;
-        }
-        cobj->setVertex(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.Triangles:setVertex",argc, 7);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Triangles_Triangles_setVertex'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_x_Triangles_Triangles_setIndex(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::Triangles* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.Triangles",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::Triangles*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Triangles_Triangles_setIndex'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
-    {
-        unsigned int arg0;
-        unsigned short arg1;
-
-        ok &= luaval_to_uint32(tolua_S, 2,&arg0, "lstg.Triangles:setIndex");
-
-        ok &= luaval_to_ushort(tolua_S, 3, &arg1, "lstg.Triangles:setIndex");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Triangles_Triangles_setIndex'", nullptr);
-            return 0;
-        }
-        cobj->setIndex(arg0, arg1);
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.Triangles:setIndex",argc, 2);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Triangles_Triangles_setIndex'.",&tolua_err);
-#endif
-
-    return 0;
-}
 int lua_x_Triangles_Triangles_clone(lua_State* tolua_S)
 {
-    int argc = 0;
-    lstg::Triangles* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.Triangles",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::Triangles*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Triangles_Triangles_clone'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
-    {
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Triangles_Triangles_clone'", nullptr);
-            return 0;
-        }
-        lstg::Triangles* ret = cobj->clone();
-        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.Triangles",(lstg::Triangles*)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.Triangles:clone",argc, 0);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Triangles_Triangles_clone'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_x_Triangles_Triangles_setVertexCoords(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::Triangles* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.Triangles",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::Triangles*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Triangles_Triangles_setVertexCoords'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 3) 
-    {
-        unsigned int arg0;
-        double arg1;
-        double arg2;
-
-        ok &= luaval_to_uint32(tolua_S, 2,&arg0, "lstg.Triangles:setVertexCoords");
-
-        ok &= luaval_to_number(tolua_S, 3,&arg1, "lstg.Triangles:setVertexCoords");
-
-        ok &= luaval_to_number(tolua_S, 4,&arg2, "lstg.Triangles:setVertexCoords");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Triangles_Triangles_setVertexCoords'", nullptr);
-            return 0;
-        }
-        cobj->setVertexCoords(arg0, arg1, arg2);
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.Triangles:setVertexCoords",argc, 3);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Triangles_Triangles_setVertexCoords'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_x_Triangles_Triangles_getIndexCount(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::Triangles* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.Triangles",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::Triangles*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Triangles_Triangles_getIndexCount'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
-    {
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Triangles_Triangles_getIndexCount'", nullptr);
-            return 0;
-        }
-        unsigned int ret = cobj->getIndexCount();
-        tolua_pushnumber(tolua_S,(lua_Number)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.Triangles:getIndexCount",argc, 0);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Triangles_Triangles_getIndexCount'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_x_Triangles_Triangles_setVertexPosition(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::Triangles* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.Triangles",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::Triangles*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Triangles_Triangles_setVertexPosition'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 4) 
-    {
-        unsigned int arg0;
-        double arg1;
-        double arg2;
-        double arg3;
-
-        ok &= luaval_to_uint32(tolua_S, 2,&arg0, "lstg.Triangles:setVertexPosition");
-
-        ok &= luaval_to_number(tolua_S, 3,&arg1, "lstg.Triangles:setVertexPosition");
-
-        ok &= luaval_to_number(tolua_S, 4,&arg2, "lstg.Triangles:setVertexPosition");
-
-        ok &= luaval_to_number(tolua_S, 5,&arg3, "lstg.Triangles:setVertexPosition");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Triangles_Triangles_setVertexPosition'", nullptr);
-            return 0;
-        }
-        cobj->setVertexPosition(arg0, arg1, arg2, arg3);
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.Triangles:setVertexPosition",argc, 4);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Triangles_Triangles_setVertexPosition'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_x_Triangles_Triangles_getVertexCount(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::Triangles* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.Triangles",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::Triangles*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Triangles_Triangles_getVertexCount'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
-    {
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Triangles_Triangles_getVertexCount'", nullptr);
-            return 0;
-        }
-        unsigned int ret = cobj->getVertexCount();
-        tolua_pushnumber(tolua_S,(lua_Number)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.Triangles:getVertexCount",argc, 0);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Triangles_Triangles_getVertexCount'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_x_Triangles_Triangles_setAllVertexColor(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::Triangles* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.Triangles",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::Triangles*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Triangles_Triangles_setAllVertexColor'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        cocos2d::Color4B arg0;
-
-        ok &=luaval_to_color4b(tolua_S, 2, &arg0, "lstg.Triangles:setAllVertexColor");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Triangles_Triangles_setAllVertexColor'", nullptr);
-            return 0;
-        }
-        cobj->setAllVertexColor(arg0);
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.Triangles:setAllVertexColor",argc, 1);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Triangles_Triangles_setAllVertexColor'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_x_Triangles_Triangles_setVertexColor(lua_State* tolua_S)
-{
-    int argc = 0;
-    lstg::Triangles* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"lstg.Triangles",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (lstg::Triangles*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_x_Triangles_Triangles_setVertexColor'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
-    {
-        unsigned int arg0;
-        cocos2d::Color4B arg1;
-
-        ok &= luaval_to_uint32(tolua_S, 2,&arg0, "lstg.Triangles:setVertexColor");
-
-        ok &=luaval_to_color4b(tolua_S, 3, &arg1, "lstg.Triangles:setVertexColor");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Triangles_Triangles_setVertexColor'", nullptr);
-            return 0;
-        }
-        cobj->setVertexColor(arg0, arg1);
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "lstg.Triangles:setVertexColor",argc, 2);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Triangles_Triangles_setVertexColor'.",&tolua_err);
-#endif
-
-    return 0;
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "lstg.Triangles";
+	constexpr auto LUA_FNAME = "lstg.Triangles:clone";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	auto cobj = (lstg::Triangles*)tolua_tousertype(tolua_S, 1, nullptr);
+	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 0) {
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = cobj->clone();
+		native_to_luaval(tolua_S, ret);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
 }
 int lua_x_Triangles_Triangles_create(lua_State* tolua_S)
 {
-    int argc = 0;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertable(tolua_S,1,"lstg.Triangles",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    argc = lua_gettop(tolua_S) - 1;
-
-    if (argc == 2)
-    {
-        unsigned int arg0;
-        unsigned int arg1;
-        ok &= luaval_to_uint32(tolua_S, 2,&arg0, "lstg.Triangles:create");
-        ok &= luaval_to_uint32(tolua_S, 3,&arg1, "lstg.Triangles:create");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Triangles_Triangles_create'", nullptr);
-            return 0;
-        }
-        lstg::Triangles* ret = lstg::Triangles::create(arg0, arg1);
-        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.Triangles",(lstg::Triangles*)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.Triangles:create",argc, 2);
-    return 0;
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Triangles_Triangles_create'.",&tolua_err);
-#endif
-    return 0;
-}
-int lua_x_Triangles_Triangles_createQuad(lua_State* tolua_S)
-{
-    int argc = 0;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertable(tolua_S,1,"lstg.Triangles",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    argc = lua_gettop(tolua_S) - 1;
-
-    if (argc == 1)
-    {
-        cocos2d::Vec2 arg0;
-        ok &= luaval_to_vec2(tolua_S, 2, &arg0, "lstg.Triangles:createQuad");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Triangles_Triangles_createQuad'", nullptr);
-            return 0;
-        }
-        lstg::Triangles* ret = lstg::Triangles::createQuad(arg0);
-        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.Triangles",(lstg::Triangles*)ret);
-        return 1;
-    }
-    if (argc == 2)
-    {
-        cocos2d::Vec2 arg0;
-        cocos2d::Rect arg1;
-        ok &= luaval_to_vec2(tolua_S, 2, &arg0, "lstg.Triangles:createQuad");
-        ok &= luaval_to_rect(tolua_S, 3, &arg1, "lstg.Triangles:createQuad");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Triangles_Triangles_createQuad'", nullptr);
-            return 0;
-        }
-        lstg::Triangles* ret = lstg::Triangles::createQuad(arg0, arg1);
-        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.Triangles",(lstg::Triangles*)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.Triangles:createQuad",argc, 1);
-    return 0;
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Triangles_Triangles_createQuad'.",&tolua_err);
-#endif
-    return 0;
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "lstg.Triangles";
+	constexpr auto LUA_FNAME = "lstg.Triangles:create";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 2) {
+		unsigned int arg0;
+		unsigned int arg1;
+		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
+		ok &= luaval_to_uint32(tolua_S, 3, &arg1, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = lstg::Triangles::create(arg0, arg1);
+		native_to_luaval(tolua_S, ret);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2");
 }
 int lua_x_Triangles_Triangles_createCircle(lua_State* tolua_S)
 {
-    int argc = 0;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertable(tolua_S,1,"lstg.Triangles",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    argc = lua_gettop(tolua_S) - 1;
-
-    if (argc == 3)
-    {
-        unsigned int arg0;
-        unsigned int arg1;
-        double arg2;
-        ok &= luaval_to_uint32(tolua_S, 2,&arg0, "lstg.Triangles:createCircle");
-        ok &= luaval_to_uint32(tolua_S, 3,&arg1, "lstg.Triangles:createCircle");
-        ok &= luaval_to_number(tolua_S, 4,&arg2, "lstg.Triangles:createCircle");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Triangles_Triangles_createCircle'", nullptr);
-            return 0;
-        }
-        lstg::Triangles* ret = lstg::Triangles::createCircle(arg0, arg1, arg2);
-        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.Triangles",(lstg::Triangles*)ret);
-        return 1;
-    }
-    if (argc == 4)
-    {
-        unsigned int arg0;
-        unsigned int arg1;
-        double arg2;
-        cocos2d::Rect arg3;
-        ok &= luaval_to_uint32(tolua_S, 2,&arg0, "lstg.Triangles:createCircle");
-        ok &= luaval_to_uint32(tolua_S, 3,&arg1, "lstg.Triangles:createCircle");
-        ok &= luaval_to_number(tolua_S, 4,&arg2, "lstg.Triangles:createCircle");
-        ok &= luaval_to_rect(tolua_S, 5, &arg3, "lstg.Triangles:createCircle");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Triangles_Triangles_createCircle'", nullptr);
-            return 0;
-        }
-        lstg::Triangles* ret = lstg::Triangles::createCircle(arg0, arg1, arg2, arg3);
-        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.Triangles",(lstg::Triangles*)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.Triangles:createCircle",argc, 3);
-    return 0;
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Triangles_Triangles_createCircle'.",&tolua_err);
-#endif
-    return 0;
-}
-int lua_x_Triangles_Triangles_createSector(lua_State* tolua_S)
-{
-    int argc = 0;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertable(tolua_S,1,"lstg.Triangles",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    argc = lua_gettop(tolua_S) - 1;
-
-    if (argc == 5)
-    {
-        unsigned int arg0;
-        unsigned int arg1;
-        double arg2;
-        double arg3;
-        double arg4;
-        ok &= luaval_to_uint32(tolua_S, 2,&arg0, "lstg.Triangles:createSector");
-        ok &= luaval_to_uint32(tolua_S, 3,&arg1, "lstg.Triangles:createSector");
-        ok &= luaval_to_number(tolua_S, 4,&arg2, "lstg.Triangles:createSector");
-        ok &= luaval_to_number(tolua_S, 5,&arg3, "lstg.Triangles:createSector");
-        ok &= luaval_to_number(tolua_S, 6,&arg4, "lstg.Triangles:createSector");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Triangles_Triangles_createSector'", nullptr);
-            return 0;
-        }
-        lstg::Triangles* ret = lstg::Triangles::createSector(arg0, arg1, arg2, arg3, arg4);
-        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.Triangles",(lstg::Triangles*)ret);
-        return 1;
-    }
-    if (argc == 6)
-    {
-        unsigned int arg0;
-        unsigned int arg1;
-        double arg2;
-        double arg3;
-        double arg4;
-        cocos2d::Rect arg5;
-        ok &= luaval_to_uint32(tolua_S, 2,&arg0, "lstg.Triangles:createSector");
-        ok &= luaval_to_uint32(tolua_S, 3,&arg1, "lstg.Triangles:createSector");
-        ok &= luaval_to_number(tolua_S, 4,&arg2, "lstg.Triangles:createSector");
-        ok &= luaval_to_number(tolua_S, 5,&arg3, "lstg.Triangles:createSector");
-        ok &= luaval_to_number(tolua_S, 6,&arg4, "lstg.Triangles:createSector");
-        ok &= luaval_to_rect(tolua_S, 7, &arg5, "lstg.Triangles:createSector");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Triangles_Triangles_createSector'", nullptr);
-            return 0;
-        }
-        lstg::Triangles* ret = lstg::Triangles::createSector(arg0, arg1, arg2, arg3, arg4, arg5);
-        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.Triangles",(lstg::Triangles*)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.Triangles:createSector",argc, 5);
-    return 0;
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Triangles_Triangles_createSector'.",&tolua_err);
-#endif
-    return 0;
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "lstg.Triangles";
+	constexpr auto LUA_FNAME = "lstg.Triangles:createCircle";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 3) {
+		unsigned int arg0;
+		unsigned int arg1;
+		double arg2;
+		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
+		ok &= luaval_to_uint32(tolua_S, 3, &arg1, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 4, &arg2, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = lstg::Triangles::createCircle(arg0, arg1, arg2);
+		native_to_luaval(tolua_S, ret);
+		return 1;
+	}
+	if (argc == 4) {
+		unsigned int arg0;
+		unsigned int arg1;
+		double arg2;
+		cocos2d::Rect arg3;
+		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
+		ok &= luaval_to_uint32(tolua_S, 3, &arg1, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 4, &arg2, LUA_FNAME);
+		ok &= luaval_to_rect(tolua_S, 5, &arg3, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = lstg::Triangles::createCircle(arg0, arg1, arg2, arg3);
+		native_to_luaval(tolua_S, ret);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "3 to 4");
 }
 int lua_x_Triangles_Triangles_createGrid(lua_State* tolua_S)
 {
-    int argc = 0;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertable(tolua_S,1,"lstg.Triangles",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    argc = lua_gettop(tolua_S) - 1;
-
-    if (argc == 3)
-    {
-        unsigned int arg0;
-        unsigned int arg1;
-        cocos2d::Vec2 arg2;
-        ok &= luaval_to_uint32(tolua_S, 2,&arg0, "lstg.Triangles:createGrid");
-        ok &= luaval_to_uint32(tolua_S, 3,&arg1, "lstg.Triangles:createGrid");
-        ok &= luaval_to_vec2(tolua_S, 4, &arg2, "lstg.Triangles:createGrid");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Triangles_Triangles_createGrid'", nullptr);
-            return 0;
-        }
-        lstg::Triangles* ret = lstg::Triangles::createGrid(arg0, arg1, arg2);
-        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.Triangles",(lstg::Triangles*)ret);
-        return 1;
-    }
-    if (argc == 4)
-    {
-        unsigned int arg0;
-        unsigned int arg1;
-        cocos2d::Vec2 arg2;
-        cocos2d::Rect arg3;
-        ok &= luaval_to_uint32(tolua_S, 2,&arg0, "lstg.Triangles:createGrid");
-        ok &= luaval_to_uint32(tolua_S, 3,&arg1, "lstg.Triangles:createGrid");
-        ok &= luaval_to_vec2(tolua_S, 4, &arg2, "lstg.Triangles:createGrid");
-        ok &= luaval_to_rect(tolua_S, 5, &arg3, "lstg.Triangles:createGrid");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_x_Triangles_Triangles_createGrid'", nullptr);
-            return 0;
-        }
-        lstg::Triangles* ret = lstg::Triangles::createGrid(arg0, arg1, arg2, arg3);
-        object_to_luaval<lstg::Triangles>(tolua_S, "lstg.Triangles",(lstg::Triangles*)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "lstg.Triangles:createGrid",argc, 3);
-    return 0;
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_x_Triangles_Triangles_createGrid'.",&tolua_err);
-#endif
-    return 0;
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "lstg.Triangles";
+	constexpr auto LUA_FNAME = "lstg.Triangles:createGrid";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 3) {
+		unsigned int arg0;
+		unsigned int arg1;
+		cocos2d::Vec2 arg2;
+		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
+		ok &= luaval_to_uint32(tolua_S, 3, &arg1, LUA_FNAME);
+		ok &= luaval_to_vec2(tolua_S, 4, &arg2, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = lstg::Triangles::createGrid(arg0, arg1, arg2);
+		native_to_luaval(tolua_S, ret);
+		return 1;
+	}
+	if (argc == 4) {
+		unsigned int arg0;
+		unsigned int arg1;
+		cocos2d::Vec2 arg2;
+		cocos2d::Rect arg3;
+		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
+		ok &= luaval_to_uint32(tolua_S, 3, &arg1, LUA_FNAME);
+		ok &= luaval_to_vec2(tolua_S, 4, &arg2, LUA_FNAME);
+		ok &= luaval_to_rect(tolua_S, 5, &arg3, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = lstg::Triangles::createGrid(arg0, arg1, arg2, arg3);
+		native_to_luaval(tolua_S, ret);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "3 to 4");
+}
+int lua_x_Triangles_Triangles_createQuad(lua_State* tolua_S)
+{
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "lstg.Triangles";
+	constexpr auto LUA_FNAME = "lstg.Triangles:createQuad";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 1) {
+		cocos2d::Vec2 arg0;
+		ok &= luaval_to_vec2(tolua_S, 2, &arg0, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = lstg::Triangles::createQuad(arg0);
+		native_to_luaval(tolua_S, ret);
+		return 1;
+	}
+	if (argc == 2) {
+		cocos2d::Vec2 arg0;
+		cocos2d::Rect arg1;
+		ok &= luaval_to_vec2(tolua_S, 2, &arg0, LUA_FNAME);
+		ok &= luaval_to_rect(tolua_S, 3, &arg1, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = lstg::Triangles::createQuad(arg0, arg1);
+		native_to_luaval(tolua_S, ret);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1 to 2");
+}
+int lua_x_Triangles_Triangles_createSector(lua_State* tolua_S)
+{
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "lstg.Triangles";
+	constexpr auto LUA_FNAME = "lstg.Triangles:createSector";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 5) {
+		unsigned int arg0;
+		unsigned int arg1;
+		double arg2;
+		double arg3;
+		double arg4;
+		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
+		ok &= luaval_to_uint32(tolua_S, 3, &arg1, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 4, &arg2, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 5, &arg3, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 6, &arg4, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = lstg::Triangles::createSector(arg0, arg1, arg2, arg3, arg4);
+		native_to_luaval(tolua_S, ret);
+		return 1;
+	}
+	if (argc == 6) {
+		unsigned int arg0;
+		unsigned int arg1;
+		double arg2;
+		double arg3;
+		double arg4;
+		cocos2d::Rect arg5;
+		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
+		ok &= luaval_to_uint32(tolua_S, 3, &arg1, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 4, &arg2, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 5, &arg3, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 6, &arg4, LUA_FNAME);
+		ok &= luaval_to_rect(tolua_S, 7, &arg5, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = lstg::Triangles::createSector(arg0, arg1, arg2, arg3, arg4, arg5);
+		native_to_luaval(tolua_S, ret);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "5 to 6");
+}
+int lua_x_Triangles_Triangles_getIndexCount(lua_State* tolua_S)
+{
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "lstg.Triangles";
+	constexpr auto LUA_FNAME = "lstg.Triangles:getIndexCount";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	auto cobj = (lstg::Triangles*)tolua_tousertype(tolua_S, 1, nullptr);
+	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 0) {
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = cobj->getIndexCount();
+		tolua_pushnumber(tolua_S, (lua_Number)ret);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
+}
+int lua_x_Triangles_Triangles_getVertexCount(lua_State* tolua_S)
+{
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "lstg.Triangles";
+	constexpr auto LUA_FNAME = "lstg.Triangles:getVertexCount";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	auto cobj = (lstg::Triangles*)tolua_tousertype(tolua_S, 1, nullptr);
+	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 0) {
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		auto ret = cobj->getVertexCount();
+		tolua_pushnumber(tolua_S, (lua_Number)ret);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
+}
+int lua_x_Triangles_Triangles_setAllVertexColor(lua_State* tolua_S)
+{
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "lstg.Triangles";
+	constexpr auto LUA_FNAME = "lstg.Triangles:setAllVertexColor";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	auto cobj = (lstg::Triangles*)tolua_tousertype(tolua_S, 1, nullptr);
+	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 1) {
+		cocos2d::Color4B arg0;
+		ok &=luaval_to_color4b(tolua_S, 2, &arg0, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		cobj->setAllVertexColor(arg0);
+		lua_settop(tolua_S, 1);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
+}
+int lua_x_Triangles_Triangles_setIndex(lua_State* tolua_S)
+{
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "lstg.Triangles";
+	constexpr auto LUA_FNAME = "lstg.Triangles:setIndex";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	auto cobj = (lstg::Triangles*)tolua_tousertype(tolua_S, 1, nullptr);
+	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 2) {
+		unsigned int arg0;
+		unsigned short arg1;
+		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
+		ok &= luaval_to_ushort(tolua_S, 3, &arg1, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		cobj->setIndex(arg0, arg1);
+		lua_settop(tolua_S, 1);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2");
+}
+int lua_x_Triangles_Triangles_setVertex(lua_State* tolua_S)
+{
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "lstg.Triangles";
+	constexpr auto LUA_FNAME = "lstg.Triangles:setVertex";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	auto cobj = (lstg::Triangles*)tolua_tousertype(tolua_S, 1, nullptr);
+	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 7) {
+		unsigned int arg0;
+		double arg1;
+		double arg2;
+		double arg3;
+		double arg4;
+		double arg5;
+		cocos2d::Color4B arg6;
+		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 3, &arg1, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 4, &arg2, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 5, &arg3, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 6, &arg4, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 7, &arg5, LUA_FNAME);
+		ok &=luaval_to_color4b(tolua_S, 8, &arg6, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		cobj->setVertex(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+		lua_settop(tolua_S, 1);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "7");
+}
+int lua_x_Triangles_Triangles_setVertexColor(lua_State* tolua_S)
+{
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "lstg.Triangles";
+	constexpr auto LUA_FNAME = "lstg.Triangles:setVertexColor";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	auto cobj = (lstg::Triangles*)tolua_tousertype(tolua_S, 1, nullptr);
+	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 2) {
+		unsigned int arg0;
+		cocos2d::Color4B arg1;
+		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
+		ok &=luaval_to_color4b(tolua_S, 3, &arg1, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		cobj->setVertexColor(arg0, arg1);
+		lua_settop(tolua_S, 1);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2");
+}
+int lua_x_Triangles_Triangles_setVertexCoords(lua_State* tolua_S)
+{
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "lstg.Triangles";
+	constexpr auto LUA_FNAME = "lstg.Triangles:setVertexCoords";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	auto cobj = (lstg::Triangles*)tolua_tousertype(tolua_S, 1, nullptr);
+	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 3) {
+		unsigned int arg0;
+		double arg1;
+		double arg2;
+		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 3, &arg1, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 4, &arg2, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		cobj->setVertexCoords(arg0, arg1, arg2);
+		lua_settop(tolua_S, 1);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "3");
+}
+int lua_x_Triangles_Triangles_setVertexPosition(lua_State* tolua_S)
+{
+	bool ok = true;
+	constexpr auto LUA_OBJ_TYPE = "lstg.Triangles";
+	constexpr auto LUA_FNAME = "lstg.Triangles:setVertexPosition";
+	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
+	auto cobj = (lstg::Triangles*)tolua_tousertype(tolua_S, 1, nullptr);
+	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
+	const int argc = lua_gettop(tolua_S) - 1;
+	if (argc == 4) {
+		unsigned int arg0;
+		double arg1;
+		double arg2;
+		double arg3;
+		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 3, &arg1, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 4, &arg2, LUA_FNAME);
+		ok &= luaval_to_number(tolua_S, 5, &arg3, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		cobj->setVertexPosition(arg0, arg1, arg2, arg3);
+		lua_settop(tolua_S, 1);
+		return 1;
+	}
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "4");
 }
 static int lua_x_Triangles_Triangles_finalize(lua_State* tolua_S)
 {
-    printf("luabindings: finalizing LUA object (Triangles)");
-    return 0;
+	return 0;
 }
 
 int lua_register_x_Triangles_Triangles(lua_State* tolua_S)
 {
-    tolua_usertype(tolua_S,"lstg.Triangles");
-    tolua_cclass(tolua_S,"Triangles","lstg.Triangles","cc.Ref",nullptr);
+	tolua_usertype(tolua_S, "lstg.Triangles");
+	tolua_cclass(tolua_S, "Triangles", "lstg.Triangles", "cc.Ref", nullptr);
 
-    tolua_beginmodule(tolua_S,"Triangles");
-        tolua_function(tolua_S,"setVertex",lua_x_Triangles_Triangles_setVertex);
-        tolua_function(tolua_S,"setIndex",lua_x_Triangles_Triangles_setIndex);
-        tolua_function(tolua_S,"clone",lua_x_Triangles_Triangles_clone);
-        tolua_function(tolua_S,"setVertexCoords",lua_x_Triangles_Triangles_setVertexCoords);
-        tolua_function(tolua_S,"getIndexCount",lua_x_Triangles_Triangles_getIndexCount);
-        tolua_function(tolua_S,"setVertexPosition",lua_x_Triangles_Triangles_setVertexPosition);
-        tolua_function(tolua_S,"getVertexCount",lua_x_Triangles_Triangles_getVertexCount);
-        tolua_function(tolua_S,"setAllVertexColor",lua_x_Triangles_Triangles_setAllVertexColor);
-        tolua_function(tolua_S,"setVertexColor",lua_x_Triangles_Triangles_setVertexColor);
-        tolua_function(tolua_S,"create", lua_x_Triangles_Triangles_create);
-        tolua_function(tolua_S,"createQuad", lua_x_Triangles_Triangles_createQuad);
-        tolua_function(tolua_S,"createCircle", lua_x_Triangles_Triangles_createCircle);
-        tolua_function(tolua_S,"createSector", lua_x_Triangles_Triangles_createSector);
-        tolua_function(tolua_S,"createGrid", lua_x_Triangles_Triangles_createGrid);
-    tolua_endmodule(tolua_S);
-    std::string typeName = typeid(lstg::Triangles).name();
-    g_luaType[typeName] = "lstg.Triangles";
-    g_typeCast["Triangles"] = "lstg.Triangles";
-    return 1;
+	tolua_beginmodule(tolua_S, "Triangles");
+		tolua_function(tolua_S, "clone", lua_x_Triangles_Triangles_clone);
+		tolua_function(tolua_S, "getIndexCount", lua_x_Triangles_Triangles_getIndexCount);
+		tolua_function(tolua_S, "getVertexCount", lua_x_Triangles_Triangles_getVertexCount);
+		tolua_function(tolua_S, "setAllVertexColor", lua_x_Triangles_Triangles_setAllVertexColor);
+		tolua_function(tolua_S, "setIndex", lua_x_Triangles_Triangles_setIndex);
+		tolua_function(tolua_S, "setVertex", lua_x_Triangles_Triangles_setVertex);
+		tolua_function(tolua_S, "setVertexColor", lua_x_Triangles_Triangles_setVertexColor);
+		tolua_function(tolua_S, "setVertexCoords", lua_x_Triangles_Triangles_setVertexCoords);
+		tolua_function(tolua_S, "setVertexPosition", lua_x_Triangles_Triangles_setVertexPosition);
+		tolua_function(tolua_S, "create", lua_x_Triangles_Triangles_create);
+		tolua_function(tolua_S, "createCircle", lua_x_Triangles_Triangles_createCircle);
+		tolua_function(tolua_S, "createGrid", lua_x_Triangles_Triangles_createGrid);
+		tolua_function(tolua_S, "createQuad", lua_x_Triangles_Triangles_createQuad);
+		tolua_function(tolua_S, "createSector", lua_x_Triangles_Triangles_createSector);
+	tolua_endmodule(tolua_S);
+	std::string typeName = typeid(lstg::Triangles).name();
+	g_luaType[typeName] = "lstg.Triangles";
+	g_typeCast["Triangles"] = "lstg.Triangles";
+	return 1;
 }
-TOLUA_API int register_all_x_Triangles(lua_State* tolua_S)
+
+int register_all_x_Triangles(lua_State* tolua_S)
 {
 	tolua_open(tolua_S);
-	
-	tolua_module(tolua_S,"lstg",0);
-	tolua_beginmodule(tolua_S,"lstg");
+
+	tolua_module(tolua_S, "lstg", 0);
+	tolua_beginmodule(tolua_S, "lstg");
 
 	lua_register_x_Triangles_Triangles(tolua_S);
 
