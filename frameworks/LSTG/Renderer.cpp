@@ -299,7 +299,6 @@ bool XRenderer::endScene()noexcept
 	drawNode->draw(pRenderer, Mat4::IDENTITY, 0);
 
 	frameBufferEnd();
-	bRenderStarted = false;
 	// restore Viewport, ProjectionMatrix
 	const auto f = [=]() {
 		pRenderer->setViewPort(storeViewport.x, storeViewport.y, storeViewport.w, storeViewport.h);
@@ -311,6 +310,7 @@ bool XRenderer::endScene()noexcept
 #ifdef MT_UpdateVerts
 	updateBatchedVerts();
 #endif
+	bRenderStarted = false;
 	for (auto& t : batchTaskInfo)
 	{
 		auto& cmd = t.cmd;
