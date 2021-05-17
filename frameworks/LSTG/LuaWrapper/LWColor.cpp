@@ -221,7 +221,7 @@ static int color_meta_newindex(lua_State* L)noexcept
 	const auto k0 = k[0];
 	if (k0 != '\0'&&k[1] == '\0')
 	{
-		const uint8_t v = luaL_checkinteger(L, 3);
+		const uint8_t v = (uint8_t)luaL_checkinteger(L, 3);
 		switch (k0)
 		{
 		case 'r':
