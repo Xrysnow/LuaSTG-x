@@ -55,6 +55,7 @@ namespace lstg
 		void insert(size_t pos, Buffer* other, size_t first, size_t last);
 		void insert_value(size_t pos, size_t count, uint8_t value);
 		void insert_values(size_t pos, const std::vector<uint8_t>& values);
+		void insert_data(size_t pos, const char* data, size_t size);
 		void erase(size_t first, size_t last);
 		void push_back(uint8_t value);
 		void pop_back();

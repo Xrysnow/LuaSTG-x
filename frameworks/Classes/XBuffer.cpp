@@ -250,6 +250,15 @@ void Buffer::insert_values(size_t pos, const std::vector<uint8_t>& values)
 	buffer.insert(buffer.begin() + pos, values.begin(), values.end());
 }
 
+void Buffer::insert_data(size_t pos, const char* data, size_t size)
+{
+	if (!isWritable() || !canAppend)
+		return;
+	if (!check_pos(pos) || !data || !size)
+		return;
+	buffer.insert(buffer.begin() + pos, (const uint8_t*)data, (const uint8_t*)data + size);
+}
+
 void Buffer::erase(size_t first, size_t last)
 {
 	if (!isWritable() || !canShrink)
