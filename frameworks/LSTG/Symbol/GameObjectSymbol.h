@@ -87,7 +87,23 @@ namespace lstg
 			virtual void _setBoolean(bool v){}
 		};
 
+		typedef float (*PNumberGetter) (GameObject* o);
+		typedef bool (*PBooleanGetter) (GameObject* o);
+		typedef void (*PNumberSetter) (GameObject* o, float v);
+		typedef void (*PBooleanSetter) (GameObject* o, bool v);
+		PNumberGetter GetPropertyNumberGetter(GameObjectProperty property);
+		PBooleanGetter GetPropertyBooleanGetter(GameObjectProperty property);
+		PNumberSetter GetPropertyNumberSetter(GameObjectProperty property);
+		PBooleanSetter GetPropertyBooleanSetter(GameObjectProperty property);
+
+		float BooleanToNumber(bool v);
+		bool NumberToBoolean(float v);
+
 		ComputeNode::Type GetGamePropertyType(GameObjectProperty p);
+		bool IsValidNumberProperty(GameObject* obj, GameObjectProperty p);
+		bool IsValidBooleanProperty(GameObject* obj, GameObjectProperty p);
+		bool GetGamePropertyNumberValue(GameObject*obj, GameObjectProperty p, float* out);
+		bool GetGamePropertyBooleanValue(GameObject*obj, GameObjectProperty p, bool* out);
 		std::function<float()> GetGamePropertyNumber(GameObjectProperty p);
 		std::function<bool()> GetGamePropertyBoolean(GameObjectProperty p);
 		std::function<void()> SetGamePropertyByNode(GameObjectProperty p, ComputeNode* node);

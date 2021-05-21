@@ -16,38 +16,267 @@ using namespace cocos2d;
 static std::vector<GameObject*> currentObjs;
 
 #define CREATE_CHECK(p, _cond) if (_cond){(p)->autorelease();return (p);} CC_SAFE_DELETE(p); return nullptr;
+#define PROP(O, P) O->cm->pool->P[O->id]
 
-#ifndef DISABLE_SYMBOL
+struct PropertyNumberGetter
+{
+	static float X(GameObject* obj) { return (float)PROP(obj, x); }
+	static float Y(GameObject* obj) { return (float)PROP(obj, y); }
+	static float DX(GameObject* obj) { return (float)PROP(obj, dx); }
+	static float DY(GameObject* obj) { return (float)PROP(obj, dy); }
+	static float ROT(GameObject* obj) { return (float)PROP(obj, rot); }
+	static float OMEGA(GameObject* obj) { return (float)PROP(obj, omega); }
+	static float TIMER(GameObject* obj) { return (float)obj->timer; }
+	static float VX(GameObject* obj) { return (float)PROP(obj, vx); }
+	static float VY(GameObject* obj) { return (float)PROP(obj, vy); }
+	static float AX(GameObject* obj) { return (float)PROP(obj, ax); }
+	static float AY(GameObject* obj) { return (float)PROP(obj, ay); }
+	static float LAYER(GameObject* obj) { return (float)obj->layer; }
+	static float GROUP(GameObject* obj) { return (float)obj->cm->getDataColli()->group; }
+	static float HSCALE(GameObject* obj) { return (float)PROP(obj, hscale); }
+	static float VSCALE(GameObject* obj) { return (float)PROP(obj, vscale); }
+	static float A(GameObject* obj) {
+		return (float)obj->cm->getDataColli()->a / LPOOL.getColliderScale();
+	}
+	static float B(GameObject* obj) {
+		return (float)obj->cm->getDataColli()->b / LPOOL.getColliderScale();
+	}
+	static float RECT(GameObject* obj) {
+		return (float)obj->cm->getDataColli()->type;
+	}
+	static float ANI(GameObject* obj) {
+		return (float)obj->cm->getAniTimer();
+	}
+	static float _A(GameObject* obj) {
+		if (obj->cls->extProperty)
+			return (float)obj->cm->getColorA();
+		return 0;
+	}
+	static float _R(GameObject* obj) {
+		if (obj->cls->extProperty)
+			return (float)obj->cm->getColorR();
+		return 0;
+	}
+	static float _G(GameObject* obj) {
+		if (obj->cls->extProperty)
+			return (float)obj->cm->getColorG();
+		return 0;
+	}
+	static float _B(GameObject* obj) {
+		if (obj->cls->extProperty)
+			return (float)obj->cm->getColorB();
+		return 0;
+	}
+	static float Z(GameObject* obj) {
+		if (obj->cls->is3D)
+			return (float)obj->cm->getDataTrasform()->z;
+		return 0;
+	}
+	static float DZ(GameObject* obj) {
+		if (obj->cls->is3D)
+			return (float)obj->cm->getDataTrasform()->dz;
+		return 0;
+	}
+	static float VZ(GameObject* obj) {
+		if (obj->cls->is3D)
+			return (float)obj->cm->getDataTrasform()->vz;
+		return 0;
+	}
+	static float AZ(GameObject* obj) {
+		if (obj->cls->is3D)
+			return (float)obj->cm->getDataTrasform()->az;
+		return 0;
+	}
+	static float ZSCALE(GameObject* obj) {
+		if (obj->cls->is3D)
+			return (float)obj->cm->getDataTrasform()->zscale;
+		return 0;
+	}
+};
+struct PropertyBooleanGetter
+{
+	static bool HIDE(GameObject* obj) { return obj->hide; }
+	static bool BOUND(GameObject* obj) { return obj->bound; }
+	static bool NAVI(GameObject* obj) { return PROP(obj, navi); }
+	static bool COLLI(GameObject* obj) { return obj->colli; }
+};
+struct PropertyNumberSetter
+{
+	static void X(GameObject* obj, float value) { obj->cm->setX(value); }
+	static void Y(GameObject* obj, float value) { obj->cm->setY(value); }
+	static void ROT(GameObject* obj, float value) { obj->cm->setRot(value); }
+	static void OMEGA(GameObject* obj, float value) { PROP(obj, omega) = value; }
+	static void TIMER(GameObject* obj, float value) { obj->timer = value; }
+	static void VX(GameObject* obj, float value) { PROP(obj, vx) = value; }
+	static void VY(GameObject* obj, float value) { PROP(obj, vy) = value; }
+	static void AX(GameObject* obj, float value) { PROP(obj, ax) = value; }
+	static void AY(GameObject* obj, float value) { PROP(obj, ay) = value; }
+	static void LAYER(GameObject* obj, float value) {
+		LPOOL.setObjectLayer(obj, value);
+	}
+	static void GROUP(GameObject* obj, float value) {
+		LPOOL.setObjectGroup(obj, value);
+	}
+	static void HSCALE(GameObject* obj, float value) { obj->cm->setHScale(value); }
+	static void VSCALE(GameObject* obj, float value) { obj->cm->setVScale(value); }
+	static void A(GameObject* obj, float value) {
+		obj->cm->setColliA(value * LPOOL.getColliderScale());
+	}
+	static void B(GameObject* obj, float value) {
+		obj->cm->setColliB(value * LPOOL.getColliderScale());
+	}
+	static void RECT(GameObject* obj, float value) {
+		obj->cm->getDataColli()->type = (decltype(obj->cm->getDataColli()->type))value;
+	}
+	static void ANI(GameObject* obj, float value) {
+		obj->cm->setAniTimer(value);
+	}
+	static void _A(GameObject* obj, float value) { obj->cm->setColorA(value); }
+	static void _R(GameObject* obj, float value) { obj->cm->setColorR(value); }
+	static void _G(GameObject* obj, float value) { obj->cm->setColorG(value); }
+	static void _B(GameObject* obj, float value) { obj->cm->setColorB(value); }
+	static void Z(GameObject* obj, float value) {
+		if (obj->cls->is3D) {
+			obj->cm->getDataTrasform()->z = value;
+			obj->cm->setTransformDirty(true);
+		}
+	}
+	static void VZ(GameObject* obj, float value) {
+		if (obj->cls->is3D) {
+			obj->cm->getDataTrasform()->vz = value;
+		}
+	}
+	static void AZ(GameObject* obj, float value) {
+		if (obj->cls->is3D) {
+			obj->cm->getDataTrasform()->az = value;
+		}
+	}
+	static void ZSCALE(GameObject* obj, float value) {
+		if (obj->cls->is3D) {
+			obj->cm->getDataTrasform()->zscale = value;
+			obj->cm->setTransformDirty(true);
+		}
+	}
+};
+struct PropertyBooleanSetter
+{
+	static void HIDE(GameObject* obj, bool value) { obj->hide = value; }
+	static void BOUND(GameObject* obj, bool value) { obj->bound = value; }
+	static void NAVI(GameObject* obj, bool value) { PROP(obj, navi) = value; }
+	static void COLLI(GameObject* obj, bool value) { obj->colli = value; }
+};
 
-#define GET_PROPERTY_TRANS(_P) [](){\
-	const auto o = getCurrentGameObject();\
-	return o ? o->cm->pool->_P[o->id] : 0.f; }
-#define GET_PROPERTY_COLLI(_P) [](){\
-	return getCurrentGameObject() ? getCurrentGameObject()->cm->getDataColli()->_P : 0.f; }
-#define GET_PROPERTY_OBJ_NUMBER(_P) [](){\
-	return getCurrentGameObject() ? getCurrentGameObject()->_P : 0.f; }
+typedef float (*PPropertyNumberGetter) (GameObject* o);
+typedef bool (*PPropertyBooleanGetter) (GameObject* o);
+typedef void (*PPropertyNumberSetter) (GameObject* o, float v);
+typedef void (*PPropertyBooleanSetter) (GameObject* o, bool v);
 
-#define GET_PROPERTY_BOOLEAN_NUMBER(_P) [](){\
-	return getCurrentGameObject() ? float(int(getCurrentGameObject()->_P)) : 0.f; }
-#define GET_PROPERTY_OBJ_BOOLEAN(_P) [](){\
-	return getCurrentGameObject() ? getCurrentGameObject()->_P : false; }
+PPropertyNumberGetter symbol::GetPropertyNumberGetter(GameObjectProperty property)
+{
+	switch (property)
+	{
+	case GameObjectProperty::X: return PropertyNumberGetter::X;
+	case GameObjectProperty::Y: return PropertyNumberGetter::Y;
+	case GameObjectProperty::DX: return PropertyNumberGetter::DX;
+	case GameObjectProperty::DY: return PropertyNumberGetter::DY;
+	case GameObjectProperty::ROT: return PropertyNumberGetter::ROT;
+	case GameObjectProperty::OMEGA: return PropertyNumberGetter::OMEGA;
+	case GameObjectProperty::TIMER: return PropertyNumberGetter::TIMER;
+	case GameObjectProperty::VX: return PropertyNumberGetter::VX;
+	case GameObjectProperty::VY: return PropertyNumberGetter::VY;
+	case GameObjectProperty::AX: return PropertyNumberGetter::AX;
+	case GameObjectProperty::AY: return PropertyNumberGetter::AY;
+	case GameObjectProperty::LAYER: return PropertyNumberGetter::LAYER;
+	case GameObjectProperty::GROUP: return PropertyNumberGetter::GROUP;
+	case GameObjectProperty::HSCALE: return PropertyNumberGetter::HSCALE;
+	case GameObjectProperty::VSCALE: return PropertyNumberGetter::VSCALE;
+	case GameObjectProperty::A: return PropertyNumberGetter::A;
+	case GameObjectProperty::B: return PropertyNumberGetter::B;
+	case GameObjectProperty::RECT: return PropertyNumberGetter::RECT;
+	case GameObjectProperty::ANI: return PropertyNumberGetter::ANI;
+	case GameObjectProperty::_A: return PropertyNumberGetter::_A;
+	case GameObjectProperty::_R: return PropertyNumberGetter::_R;
+	case GameObjectProperty::_G: return PropertyNumberGetter::_G;
+	case GameObjectProperty::_B: return PropertyNumberGetter::_B;
+	case GameObjectProperty::Z: return PropertyNumberGetter::Z;
+	case GameObjectProperty::DZ: return PropertyNumberGetter::DZ;
+	case GameObjectProperty::VZ: return PropertyNumberGetter::VZ;
+	case GameObjectProperty::AZ: return PropertyNumberGetter::AZ;
+	case GameObjectProperty::ZSCALE: return PropertyNumberGetter::ZSCALE;
+	default: ;
+	}
+	return nullptr;
+}
+PPropertyBooleanGetter symbol::GetPropertyBooleanGetter(GameObjectProperty property)
+{
+	switch (property)
+	{
+	case GameObjectProperty::HIDE: return PropertyBooleanGetter::HIDE;
+	case GameObjectProperty::BOUND: return PropertyBooleanGetter::BOUND;
+	case GameObjectProperty::NAVI: return PropertyBooleanGetter::NAVI;
+	case GameObjectProperty::COLLI: return PropertyBooleanGetter::COLLI;
+	default:;
+	}
+	return nullptr;
+}
+PPropertyNumberSetter symbol::GetPropertyNumberSetter(GameObjectProperty property)
+{
+	switch (property)
+	{
+	case GameObjectProperty::X: return PropertyNumberSetter::X;
+	case GameObjectProperty::Y: return PropertyNumberSetter::Y;
+	//case GameObjectProperty::DX: return PropertyNumberSetter::DX;
+	//case GameObjectProperty::DY: return PropertyNumberSetter::DY;
+	case GameObjectProperty::ROT: return PropertyNumberSetter::ROT;
+	case GameObjectProperty::OMEGA: return PropertyNumberSetter::OMEGA;
+	case GameObjectProperty::TIMER: return PropertyNumberSetter::TIMER;
+	case GameObjectProperty::VX: return PropertyNumberSetter::VX;
+	case GameObjectProperty::VY: return PropertyNumberSetter::VY;
+	case GameObjectProperty::AX: return PropertyNumberSetter::AX;
+	case GameObjectProperty::AY: return PropertyNumberSetter::AY;
+	case GameObjectProperty::LAYER: return PropertyNumberSetter::LAYER;
+	case GameObjectProperty::GROUP: return PropertyNumberSetter::GROUP;
+	case GameObjectProperty::HSCALE: return PropertyNumberSetter::HSCALE;
+	case GameObjectProperty::VSCALE: return PropertyNumberSetter::VSCALE;
+	case GameObjectProperty::A: return PropertyNumberSetter::A;
+	case GameObjectProperty::B: return PropertyNumberSetter::B;
+	case GameObjectProperty::RECT: return PropertyNumberSetter::RECT;
+	case GameObjectProperty::ANI: return PropertyNumberSetter::ANI;
+	case GameObjectProperty::_A: return PropertyNumberSetter::_A;
+	case GameObjectProperty::_R: return PropertyNumberSetter::_R;
+	case GameObjectProperty::_G: return PropertyNumberSetter::_G;
+	case GameObjectProperty::_B: return PropertyNumberSetter::_B;
+	case GameObjectProperty::Z: return PropertyNumberSetter::Z;
+	//case GameObjectProperty::DZ: return PropertyNumberSetter::DZ;
+	case GameObjectProperty::VZ: return PropertyNumberSetter::VZ;
+	case GameObjectProperty::AZ: return PropertyNumberSetter::AZ;
+	case GameObjectProperty::ZSCALE: return PropertyNumberSetter::ZSCALE;
+	default: ;
+	}
+	return nullptr;
+}
+PPropertyBooleanSetter symbol::GetPropertyBooleanSetter(GameObjectProperty property)
+{
+	switch (property)
+	{
+	case GameObjectProperty::HIDE: return PropertyBooleanSetter::HIDE;
+	case GameObjectProperty::BOUND: return PropertyBooleanSetter::BOUND;
+	case GameObjectProperty::NAVI: return PropertyBooleanSetter::NAVI;
+	case GameObjectProperty::COLLI: return PropertyBooleanSetter::COLLI;
+	default:;
+	}
+	return nullptr;
+}
 
-#define GET_PROPERTY_TRANS_BOOLEAN(_P) [](){\
-	const auto o = getCurrentGameObject();\
-	return o ? (o->cm->pool->_P[o->id] != 0.f) : false; }
+float symbol::BooleanToNumber(bool v)
+{
+	return v ? 1.f : 0.f;
+}
 
-#define SET_PROPERTY_TRANS(_P) [node](){\
-	const auto o = getCurrentGameObject();\
-	if(o) o->cm->pool->_P[o->id] = node->getNumber(); }
-#define SET_PROPERTY_COLLI(_P) [node](){\
-	if(getCurrentGameObject()) getCurrentGameObject()->cm->getDataColli()->_P = node->getNumber(); }
-#define SET_PROPERTY_OBJ(_P) [node](){\
-	if(getCurrentGameObject()) getCurrentGameObject()->_P = node->getNumber(); }
-
-#define SET_PROPERTY_BOOLEAN(_P) [node](){\
-	if(getCurrentGameObject()) getCurrentGameObject()->_P = node->getBoolean(); }
-
-#endif
+bool symbol::NumberToBoolean(float v)
+{
+	return v != 0.f;
+}
 
 //
 
@@ -85,19 +314,100 @@ Operand::Type symbol::GetGamePropertyType(GameObjectProperty p)
 	case GameObjectProperty::B:
 	case GameObjectProperty::RECT:
 	case GameObjectProperty::ANI:
+	case GameObjectProperty::_A:
+	case GameObjectProperty::_R:
+	case GameObjectProperty::_G:
+	case GameObjectProperty::_B:
+	case GameObjectProperty::Z:
+	case GameObjectProperty::DZ:
+	case GameObjectProperty::VZ:
+	case GameObjectProperty::AZ:
+	case GameObjectProperty::ZSCALE:
 		return Operand::Type::Number;
 	case GameObjectProperty::HIDE:
 	case GameObjectProperty::BOUND:
 	case GameObjectProperty::NAVI:
 	case GameObjectProperty::COLLI:
 		return Operand::Type::Boolean;
-	case GameObjectProperty::STATUS:
-	case GameObjectProperty::CLASS:
-	case GameObjectProperty::IMG:
-	case GameObjectProperty::_KEY_NOT_FOUND:
-	default:
-		return Operand::Type::OprandTypeNum;
+	default:;
 	}
+	return Operand::Type::OprandTypeNum;
+}
+
+bool symbol::IsValidNumberProperty(GameObject* obj, GameObjectProperty p)
+{
+	switch (p)
+	{
+	case GameObjectProperty::X:
+	case GameObjectProperty::Y:
+	case GameObjectProperty::DX:
+	case GameObjectProperty::DY:
+	case GameObjectProperty::ROT:
+	case GameObjectProperty::OMEGA:
+	case GameObjectProperty::TIMER:
+	case GameObjectProperty::VX:
+	case GameObjectProperty::VY:
+	case GameObjectProperty::AX:
+	case GameObjectProperty::AY:
+	case GameObjectProperty::LAYER:
+	case GameObjectProperty::GROUP:
+	case GameObjectProperty::HSCALE:
+	case GameObjectProperty::VSCALE:
+	case GameObjectProperty::A:
+	case GameObjectProperty::B:
+	case GameObjectProperty::RECT:
+	case GameObjectProperty::ANI:
+		return true;
+	case GameObjectProperty::_A:
+	case GameObjectProperty::_R:
+	case GameObjectProperty::_G:
+	case GameObjectProperty::_B:
+		return obj->cls->extProperty;
+	case GameObjectProperty::Z:
+	case GameObjectProperty::DZ:
+	case GameObjectProperty::VZ:
+	case GameObjectProperty::AZ:
+	case GameObjectProperty::ZSCALE:
+		return obj->cls->is3D;
+	default:;
+	}
+	return false;
+}
+
+bool symbol::IsValidBooleanProperty(GameObject* obj, GameObjectProperty p)
+{
+	switch (p)
+	{
+	case GameObjectProperty::HIDE:
+	case GameObjectProperty::BOUND:
+	case GameObjectProperty::NAVI:
+	case GameObjectProperty::COLLI:
+		return true;
+	default:;
+	}
+	return false;
+}
+
+bool symbol::GetGamePropertyNumberValue(GameObject* obj, GameObjectProperty p, float* out)
+{
+	if (!obj || !out)
+		return false;
+	const auto getter = GetPropertyNumberGetter(p);
+	if (!getter)
+		return false;
+	*out = getter(obj);
+	return true;
+}
+
+bool symbol::GetGamePropertyBooleanValue(GameObject* obj, GameObjectProperty p, bool* out)
+{
+	if (!obj || !out)
+		return false;
+	const auto getter = GetPropertyBooleanGetter(p);
+	if (!getter)
+		return false;
+	*out = getter(obj);
+	return true;
 }
 
 std::function<float()> symbol::GetGamePropertyNumber(GameObjectProperty p)
@@ -105,39 +415,23 @@ std::function<float()> symbol::GetGamePropertyNumber(GameObjectProperty p)
 #ifdef DISABLE_SYMBOL
 	return nullptr;
 #else
-	switch (p)
+	const auto number_getter = GetPropertyNumberGetter(p);
+	if (number_getter)
 	{
-	case GameObjectProperty::X: return GET_PROPERTY_TRANS(x);
-	case GameObjectProperty::Y: return GET_PROPERTY_TRANS(y);
-	case GameObjectProperty::DX: return GET_PROPERTY_TRANS(dx);
-	case GameObjectProperty::DY: return GET_PROPERTY_TRANS(dy);
-	case GameObjectProperty::ROT: return GET_PROPERTY_TRANS(rot);
-	case GameObjectProperty::OMEGA: return GET_PROPERTY_TRANS(omega);
-	case GameObjectProperty::TIMER: return GET_PROPERTY_OBJ_NUMBER(timer);
-	case GameObjectProperty::VX: return GET_PROPERTY_TRANS(vx);
-	case GameObjectProperty::VY: return GET_PROPERTY_TRANS(vy);
-	case GameObjectProperty::AX: return GET_PROPERTY_TRANS(ax);
-	case GameObjectProperty::AY: return GET_PROPERTY_TRANS(ay);
-	case GameObjectProperty::LAYER: return GET_PROPERTY_OBJ_NUMBER(layer);
-	case GameObjectProperty::GROUP: return GET_PROPERTY_COLLI(group);
-	case GameObjectProperty::HSCALE: return GET_PROPERTY_TRANS(hscale);
-	case GameObjectProperty::VSCALE: return GET_PROPERTY_TRANS(vscale);
-	case GameObjectProperty::A: return GET_PROPERTY_COLLI(a);
-	case GameObjectProperty::B: return GET_PROPERTY_COLLI(b);
-	case GameObjectProperty::ANI: return GET_PROPERTY_OBJ_NUMBER(ani_timer);
-	case GameObjectProperty::RECT: return []()
-	{
-		return getCurrentGameObject() ? int(getCurrentGameObject()->cm->getDataColli()->type) : 0.f;
-	};
-
-	case GameObjectProperty::HIDE: return GET_PROPERTY_BOOLEAN_NUMBER(hide);
-	case GameObjectProperty::BOUND: return GET_PROPERTY_BOOLEAN_NUMBER(bound);
-	case GameObjectProperty::NAVI: return GET_PROPERTY_TRANS(navi);
-	case GameObjectProperty::COLLI: return GET_PROPERTY_BOOLEAN_NUMBER(colli);
-
-	default:
-		return nullptr;
+		return [=]()
+		{
+			return number_getter(getCurrentGameObject());
+		};
 	}
+	const auto boolean_getter = GetPropertyBooleanGetter(p);
+	if (boolean_getter)
+	{
+		return [=]()
+		{
+			return boolean_getter(getCurrentGameObject()) ? 1.f : 0.f;
+		};
+	}
+	return nullptr;
 #endif
 }
 
@@ -146,39 +440,27 @@ std::function<bool()> symbol::GetGamePropertyBoolean(GameObjectProperty p)
 #ifdef DISABLE_SYMBOL
 	return nullptr;
 #else
-	switch (p)
+	switch (GetGamePropertyType(p))
 	{
-	case GameObjectProperty::X: return GET_PROPERTY_TRANS_BOOLEAN(x);
-	case GameObjectProperty::Y: return GET_PROPERTY_TRANS_BOOLEAN(y);
-	case GameObjectProperty::DX: return GET_PROPERTY_TRANS_BOOLEAN(dx);
-	case GameObjectProperty::DY: return GET_PROPERTY_TRANS_BOOLEAN(dy);
-	case GameObjectProperty::ROT: return GET_PROPERTY_TRANS_BOOLEAN(rot);
-	case GameObjectProperty::OMEGA: return GET_PROPERTY_TRANS_BOOLEAN(omega);
-	case GameObjectProperty::TIMER: return GET_PROPERTY_OBJ_BOOLEAN(timer);
-	case GameObjectProperty::VX: return GET_PROPERTY_TRANS_BOOLEAN(vx);
-	case GameObjectProperty::VY: return GET_PROPERTY_TRANS_BOOLEAN(vy);
-	case GameObjectProperty::AX: return GET_PROPERTY_TRANS_BOOLEAN(ax);
-	case GameObjectProperty::AY: return GET_PROPERTY_TRANS_BOOLEAN(ay);
-	case GameObjectProperty::LAYER: return GET_PROPERTY_OBJ_BOOLEAN(layer);
-	case GameObjectProperty::GROUP: return GET_PROPERTY_COLLI(group);
-	case GameObjectProperty::HSCALE: return GET_PROPERTY_TRANS_BOOLEAN(hscale);
-	case GameObjectProperty::VSCALE: return GET_PROPERTY_TRANS_BOOLEAN(vscale);
-	case GameObjectProperty::A: return GET_PROPERTY_COLLI(a);
-	case GameObjectProperty::B: return GET_PROPERTY_COLLI(b);
-	case GameObjectProperty::ANI: return GET_PROPERTY_OBJ_BOOLEAN(ani_timer);
-	case GameObjectProperty::RECT: return []()
-	{
-		return getCurrentGameObject() ? int(getCurrentGameObject()->cm->getDataColli()->type) != 0 : false;
-	};
-
-	case GameObjectProperty::HIDE: return GET_PROPERTY_OBJ_BOOLEAN(hide);
-	case GameObjectProperty::BOUND: return GET_PROPERTY_OBJ_BOOLEAN(bound);
-	case GameObjectProperty::NAVI: return GET_PROPERTY_TRANS_BOOLEAN(navi);
-	case GameObjectProperty::COLLI: return GET_PROPERTY_OBJ_BOOLEAN(colli);
-
-	default:
-		return nullptr;
+	case ComputeNode::Type::Number:
+		return [=]()
+		{
+			float v = 0;
+			GetGamePropertyNumberValue(getCurrentGameObject(), p, &v);
+			return v != 0.f;
+		};
+	case ComputeNode::Type::Boolean:
+		return [=]()
+		{
+			bool v = false;
+			GetGamePropertyBooleanValue(getCurrentGameObject(), p, &v);
+			return v;
+		};
+	case ComputeNode::Type::String:
+	case ComputeNode::Type::OprandTypeNum:
+	default:;
 	}
+	return nullptr;
 #endif
 }
 
@@ -187,39 +469,27 @@ std::function<void()> symbol::SetGamePropertyByNode(GameObjectProperty p, Comput
 #ifdef DISABLE_SYMBOL
 	return nullptr;
 #else
-	switch (p)
+	const auto number_setter = GetPropertyNumberSetter(p);
+	if (number_setter)
 	{
-	case GameObjectProperty::X: return SET_PROPERTY_TRANS(x);
-	case GameObjectProperty::Y: return SET_PROPERTY_TRANS(y);
-	case GameObjectProperty::DX: return SET_PROPERTY_TRANS(dx);
-	case GameObjectProperty::DY: return SET_PROPERTY_TRANS(dy);
-	case GameObjectProperty::ROT: return SET_PROPERTY_TRANS(rot);
-	case GameObjectProperty::OMEGA: return SET_PROPERTY_TRANS(omega);
-	case GameObjectProperty::TIMER: return SET_PROPERTY_OBJ(timer);
-	case GameObjectProperty::VX: return SET_PROPERTY_TRANS(vx);
-	case GameObjectProperty::VY: return SET_PROPERTY_TRANS(vy);
-	case GameObjectProperty::AX: return SET_PROPERTY_TRANS(ax);
-	case GameObjectProperty::AY: return SET_PROPERTY_TRANS(ay);
-	case GameObjectProperty::LAYER: return SET_PROPERTY_OBJ(layer);
-	case GameObjectProperty::GROUP: return SET_PROPERTY_COLLI(group);
-	case GameObjectProperty::HSCALE: return SET_PROPERTY_TRANS(hscale);
-	case GameObjectProperty::VSCALE: return SET_PROPERTY_TRANS(vscale);
-	case GameObjectProperty::A: return SET_PROPERTY_COLLI(a);
-	case GameObjectProperty::B: return SET_PROPERTY_COLLI(b);
-	case GameObjectProperty::ANI: return SET_PROPERTY_OBJ(ani_timer);
-	case GameObjectProperty::RECT: return [node]()
-	{
-		if(getCurrentGameObject()) getCurrentGameObject()->cm->getDataColli()->type = (XColliderType)int(node->getNumber());
-	};
-
-	case GameObjectProperty::HIDE: return SET_PROPERTY_BOOLEAN(hide);
-	case GameObjectProperty::BOUND: return SET_PROPERTY_BOOLEAN(bound);
-	case GameObjectProperty::NAVI: return SET_PROPERTY_TRANS(navi);
-	case GameObjectProperty::COLLI: return SET_PROPERTY_BOOLEAN(colli);
-
-	default:
-		return nullptr;
+		return [=]()
+		{
+			const auto o = getCurrentGameObject();
+			if (o)
+				number_setter(o, node->getNumber());
+		};
 	}
+	const auto boolean_setter = GetPropertyBooleanSetter(p);
+	if (boolean_setter)
+	{
+		return [=]()
+		{
+			const auto o = getCurrentGameObject();
+			if (o)
+				boolean_setter(o, node->getNumber() != 0.f);
+		};
+	}
+	return nullptr;
 #endif
 }
 
