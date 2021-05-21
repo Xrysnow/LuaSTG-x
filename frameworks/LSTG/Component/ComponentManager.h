@@ -88,6 +88,7 @@ inline void set##funName(varType var) \
 		void updateAni();
 		// [par] update col_r
 		void updateColli();
+
 		// [par]
 		void updateParticle();
 		// [par]
@@ -118,5 +119,25 @@ inline void set##funName(varType var) \
 		void renderTexture(ResTexture* res);
 
 		void drawCollider(const cocos2d::Color4B& color);
+
+		void setX(float value);
+		void setY(float value);
+		void setRot(float value);
+		void setHScale(float value);
+		void setVScale(float value);
+		void setZ(float value);
+		void setZScale(float value);
+		bool setColliA(float value);
+		bool setColliB(float value);
+		void setAniTimer(int32_t value);
+		int32_t getAniTimer() const;
+		void setColorA(uint8_t value);
+		void setColorR(uint8_t value);
+		void setColorG(uint8_t value);
+		void setColorB(uint8_t value);
+		uint8_t getColorA();
+		uint8_t getColorR();
+		uint8_t getColorG();
+		uint8_t getColorB();
 	};
 }

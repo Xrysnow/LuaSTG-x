@@ -622,3 +622,152 @@ void ComponentManager::drawCollider(const Color4B& color)
 	default:;
 	}
 }
+
+void ComponentManager::setX(float value)
+{
+	PROP(x) = value;
+	setTransformDirty(true);
+}
+
+void ComponentManager::setY(float value)
+{
+	PROP(y) = value;
+	setTransformDirty(true);
+}
+
+void ComponentManager::setRot(float value)
+{
+	PROP(rot) = value;
+	setTransformDirty(true);
+}
+
+void ComponentManager::setHScale(float value)
+{
+	PROP(hscale) = value;
+	setTransformDirty(true);
+}
+
+void ComponentManager::setVScale(float value)
+{
+	PROP(vscale) = value;
+	setTransformDirty(true);
+}
+
+void ComponentManager::setZ(float value)
+{
+	if (obj->cls->is3D)
+	{
+		getDataTrasform()->z = value;
+		setTransformDirty(true);
+	}
+}
+
+void ComponentManager::setZScale(float value)
+{
+	if (obj->cls->is3D)
+	{
+		getDataTrasform()->zscale = value;
+		setTransformDirty(true);
+	}
+}
+
+bool ComponentManager::setColliA(float value)
+{
+	if (value < 0.f)
+		return false;
+	getDataColli()->a = value;
+	updateColli();
+	return true;
+}
+
+bool ComponentManager::setColliB(float value)
+{
+	if (value < 0.f)
+		return false;
+	getDataColli()->b = value;
+	updateColli();
+	return true;
+}
+
+void ComponentManager::setAniTimer(int32_t value)
+{
+	if (getDataAni())
+		getDataAni()->timer = value;
+	else
+		obj->ani_timer = value;
+}
+
+int32_t ComponentManager::getAniTimer() const
+{
+	if (getDataAni())
+		return getDataAni()->timer;
+	return obj->ani_timer;
+}
+
+void ComponentManager::setColorA(uint8_t value)
+{
+	if (obj->cls->extProperty)
+	{
+		const auto b = getOrCreateBlend();
+		b->blendColor.a = value;
+		b->useColor = true;
+	}
+}
+
+void ComponentManager::setColorR(uint8_t value)
+{
+	if (obj->cls->extProperty)
+	{
+		const auto b = getOrCreateBlend();
+		b->blendColor.r = value;
+		b->useColor = true;
+	}
+}
+
+void ComponentManager::setColorG(uint8_t value)
+{
+	if (obj->cls->extProperty)
+	{
+		const auto b = getOrCreateBlend();
+		b->blendColor.g = value;
+		b->useColor = true;
+	}
+}
+
+void ComponentManager::setColorB(uint8_t value)
+{
+	if (obj->cls->extProperty)
+	{
+		const auto b = getOrCreateBlend();
+		b->blendColor.b = value;
+		b->useColor = true;
+	}
+}
+
+uint8_t ComponentManager::getColorA()
+{
+	if (obj->cls->extProperty)
+		return getOrCreateBlend()->blendColor.a;
+	return 0;
+}
+
+uint8_t ComponentManager::getColorR()
+{
+	if (obj->cls->extProperty)
+		return getOrCreateBlend()->blendColor.r;
+	return 0;
+}
+
+uint8_t ComponentManager::getColorG()
+{
+	if (obj->cls->extProperty)
+		return getOrCreateBlend()->blendColor.g;
+	return 0;
+}
+
+uint8_t ComponentManager::getColorB()
+{
+	if (obj->cls->extProperty)
+		return getOrCreateBlend()->blendColor.b;
+	return 0;
+}
