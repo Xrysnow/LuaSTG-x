@@ -1282,10 +1282,7 @@ int GameObjectManager::GetAttr(lua_State* L) noexcept
 			lua_pushnil(L);
 		break;
 	case GameObjectProperty::ANI:
-		if (cm->getDataAni())
-			lua_pushinteger(L, cm->getDataAni()->timer);
-		else
-			lua_pushinteger(L, p->ani_timer);
+		lua_pushinteger(L, cm->getAniTimer());
 		break;
 	case GameObjectProperty::RES:
 		if (isExtProperty(p))
@@ -1335,37 +1332,25 @@ int GameObjectManager::GetAttr(lua_State* L) noexcept
 		break;
 	case GameObjectProperty::_A:
 		if (isExtProperty(p))
-		{
-			const auto blend = p->cm->getOrCreateBlend();
-			lua_pushinteger(L, blend->blendColor.a);
-		}
+			lua_pushinteger(L, p->cm->getColorA());
 		else
 			lua_pushnil(L);
 		break;
 	case GameObjectProperty::_R:
 		if (isExtProperty(p))
-		{
-			const auto blend = p->cm->getOrCreateBlend();
-			lua_pushinteger(L, blend->blendColor.r);
-		}
+			lua_pushinteger(L, p->cm->getColorR());
 		else
 			lua_pushnil(L);
 		break;
 	case GameObjectProperty::_G:
 		if (isExtProperty(p))
-		{
-			const auto blend = p->cm->getOrCreateBlend();
-			lua_pushinteger(L, blend->blendColor.g);
-		}
+			lua_pushinteger(L, p->cm->getColorG());
 		else
 			lua_pushnil(L);
 		break;
 	case GameObjectProperty::_B:
 		if (isExtProperty(p))
-		{
-			const auto blend = p->cm->getOrCreateBlend();
-			lua_pushinteger(L, blend->blendColor.b);
-		}
+			lua_pushinteger(L, p->cm->getColorB());
 		else
 			lua_pushnil(L);
 		break;
@@ -1453,14 +1438,12 @@ int GameObjectManager::SetAttr(lua_State* L)
 	// shortcut for x, y
 	if (key[0] == 'x' && key[1] == '\0')
 	{
-		pool.x[id] = luaL_checknumber(L, 3);
-		p->cm->setTransformDirty(true);
+		p->cm->setX(luaL_checknumber(L, 3));
 		return 0;
 	}
 	if (key[0] == 'y' && key[1] == '\0')
 	{
-		pool.y[id] = luaL_checknumber(L, 3);
-		p->cm->setTransformDirty(true);
+		p->cm->setY(luaL_checknumber(L, 3));
 		return 0;
 	}
 	// others
@@ -1472,8 +1455,7 @@ int GameObjectManager::SetAttr(lua_State* L)
 	case GameObjectProperty::DY:
 		return luaL_error(L, "property 'dy' is readonly");
 	case GameObjectProperty::ROT:
-		pool.rot[id] = luaL_checknumber(L, 3) * LDEGREE2RAD;
-		p->cm->setTransformDirty(true);
+		p->cm->setRot(luaL_checknumber(L, 3) * LDEGREE2RAD);
 		break;
 	case GameObjectProperty::OMEGA:
 		pool.omega[id] = luaL_checknumber(L, 3) * LDEGREE2RAD;
@@ -1525,12 +1507,10 @@ int GameObjectManager::SetAttr(lua_State* L)
 		} while (false);
 		break;
 	case GameObjectProperty::HSCALE:
-		pool.hscale[id] = luaL_checknumber(L, 3);
-		p->cm->setTransformDirty(true);
+		p->cm->setHScale(luaL_checknumber(L, 3));
 		break;
 	case GameObjectProperty::VSCALE:
-		pool.vscale[id] = luaL_checknumber(L, 3);
-		p->cm->setTransformDirty(true);
+		p->cm->setVScale(luaL_checknumber(L, 3));
 		break;
 	case GameObjectProperty::CLASS:
 		{
@@ -1549,19 +1529,15 @@ int GameObjectManager::SetAttr(lua_State* L)
 	case GameObjectProperty::A:
 		{
 			const auto v = luaL_checknumber(L, 3);
-			if (v < 0.0)
+			if (!cm->setColliA((float)v * colliderScale))
 				return luaL_error(L, "invalid negative value for property 'a': %f", v);
-			cm->getDataColli()->a = (float)v * colliderScale;
-			cm->updateColli();
 		}
 		break;
 	case GameObjectProperty::B:
 		{
 			const auto v = luaL_checknumber(L, 3);
-			if (v < 0.0)
+			if (!cm->setColliB((float)v * colliderScale))
 				return luaL_error(L, "invalid negative value for property 'b': %f", v);
-			cm->getDataColli()->b = (float)v * colliderScale;
-			cm->updateColli();
 		}
 		break;
 	case GameObjectProperty::RECT:
@@ -1574,10 +1550,7 @@ int GameObjectManager::SetAttr(lua_State* L)
 			return luaL_error(L, "can't set resource");
 		break;
 	case GameObjectProperty::ANI:
-		if (cm->getDataAni())
-			cm->getDataAni()->timer = luaL_checknumber(L, 3);
-		else
-			p->ani_timer = luaL_checknumber(L, 3);
+		cm->setAniTimer(luaL_checkinteger(L, 3));
 		break;
 	case GameObjectProperty::RES:
 		if (!setObjectResource(p, L, 3))
@@ -1628,20 +1601,19 @@ int GameObjectManager::SetAttr(lua_State* L)
 			lua_rawset(L, 1);
 		break;
 
-#define  SET_COLOR_VALUE(_P) if (isExtProperty(p)){\
-			const auto blend = p->cm->getOrCreateBlend();\
-			blend->blendColor._P = luaL_checkinteger(L, 3);\
-			blend->useColor = true;\
-		}else lua_rawset(L, 1); break;
+#define  SET_COLOR_VALUE(_P)\
+	if (isExtProperty(p)){\
+		p->cm->setColor##_P(luaL_checkinteger(L, 3));\
+	} else lua_rawset(L, 1); break;
 
 	case GameObjectProperty::_A:
-		SET_COLOR_VALUE(a);
+		SET_COLOR_VALUE(A);
 	case GameObjectProperty::_R:
-		SET_COLOR_VALUE(r);
+		SET_COLOR_VALUE(R);
 	case GameObjectProperty::_G:
-		SET_COLOR_VALUE(g);
+		SET_COLOR_VALUE(G);
 	case GameObjectProperty::_B:
-		SET_COLOR_VALUE(b);
+		SET_COLOR_VALUE(B);
 	case GameObjectProperty::LIGHT:
 		if (isExtProperty(p))
 		{
@@ -1685,10 +1657,11 @@ int GameObjectManager::SetAttr(lua_State* L)
 	case GameObjectProperty::Z:
 		if (isExtProperty3D(p))
 		{
-			cm->getDataTrasform()->z = luaL_checknumber(L, 3);
-			p->cm->setTransformDirty(true);
+			p->cm->setZ(luaL_checknumber(L, 3));
 		}
-		else lua_rawset(L, 1); break;
+		else
+			lua_rawset(L, 1);
+		break;
 	case GameObjectProperty::DZ:
 		if (isExtProperty3D(p))
 			return luaL_error(L, "property 'dz' is readonly");
@@ -1702,10 +1675,11 @@ int GameObjectManager::SetAttr(lua_State* L)
 	case GameObjectProperty::ZSCALE:
 		if (isExtProperty3D(p))
 		{
-			cm->getDataTrasform()->zscale = luaL_checknumber(L, 3);
-			p->cm->setTransformDirty(true);
+			p->cm->setZScale(luaL_checknumber(L, 3));
 		}
-		else lua_rawset(L, 1); break;
+		else
+			lua_rawset(L, 1);
+		break;
 	case GameObjectProperty::QUAT:
 		if (isExtProperty3D(p))
 		{
