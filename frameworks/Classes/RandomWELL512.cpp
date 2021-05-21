@@ -5,33 +5,33 @@ using namespace lstg;
 
 RandomWELL512::RandomWELL512()
 {
-	setSeed(uint32_t(time(nullptr)));
+	seed(default_seed);
 }
 
-RandomWELL512::RandomWELL512(uint32_t seed)
+RandomWELL512::RandomWELL512(uint32_t seed_)
 {
-	setSeed(seed);
+	seed(seed_);
 }
 
-RandomWELL512::~RandomWELL512()
+void RandomWELL512::seed(result_type seed_) noexcept
 {
+	_seed = seed_;
+	index = 0;
+	const unsigned int mask = ~0u;
+	state[0] = seed_ & mask;
+	for (int i = 1; i < 16; ++i)
+		state[i] = (1812433253UL * (state[i - 1] ^ (state[i - 1] >> 30)) + i) & mask;
+}
+
+void RandomWELL512::discard(unsigned long long nskip) noexcept
+{
+	for (; 0 < nskip; --nskip)
+		this->operator()();
 }
 
 uint32_t RandomWELL512::getSeed() const
 {
-	return seed;
-}
-
-void RandomWELL512::setSeed(uint32_t newSeed)
-{
-	seed = newSeed;
-	index = 0;
-	const unsigned int mask = ~0u;
-	state[0] = newSeed & mask;
-	for (int i = 1; i < 16; ++i)
-	{
-		state[i] = (1812433253UL * (state[i - 1] ^ (state[i - 1] >> 30)) + i) & mask;
-	}
+	return _seed;
 }
 
 uint32_t RandomWELL512::getRandUInt()
@@ -62,5 +62,11 @@ float RandomWELL512::getRandFloat()
 
 float RandomWELL512::getRandFloat(float lo, float hi)
 {
-	return getRandFloat()*(hi - lo) + lo;
+	return getRandFloat() * (hi - lo) + lo;
+}
+
+bool lstg::operator==(const RandomWELL512& lhs, const RandomWELL512& rhs) noexcept
+{
+	return lhs.index == rhs.index &&
+		std::memcmp(lhs.state, rhs.state, sizeof(lhs.state)) == 0;
 }
