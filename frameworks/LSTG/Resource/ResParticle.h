@@ -115,7 +115,7 @@ namespace lstg {
 			ResParticle* getResource()const noexcept { return _res; }
 			size_t getAliveCount()const noexcept { return numAlive; }
 
-			void setSeed(uint32_t seed)noexcept { _rand.setSeed(seed); }
+			void setSeed(uint32_t seed)noexcept { _rand.seed(seed); }
 			uint32_t getSeed()const noexcept { return _rand.getSeed(); }
 			RenderMode* getRenderMode()const noexcept { return renderMode; }
 			void setRenderMode(RenderMode* m) noexcept;

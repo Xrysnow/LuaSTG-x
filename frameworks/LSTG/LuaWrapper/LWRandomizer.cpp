@@ -13,7 +13,7 @@ LUA_REGISTER_MODULE_DEF(lstg_Random)
 		static int Seed(lua_State* L)noexcept
 		{
 			auto p = check_rng(L, 1);
-			p->setSeed(uint32_t(luaL_checknumber(L, 2)));
+			p->seed(uint32_t(luaL_checknumber(L, 2)));
 			return 0;
 		}
 		static int GetSeed(lua_State* L)noexcept
