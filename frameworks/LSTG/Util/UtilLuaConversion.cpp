@@ -1,10 +1,55 @@
 ﻿#include "UtilLuaConversion.h"
+#include "tolua_fix.h"
 
 using namespace std;
 using namespace lstg::lua;
 
-#define TEST(_T) { _T v; to_native<_T>::F(L, 1, &v); to_lua<_T>::F(L, v); }
+static std::unordered_map<std::string, int> LuaRefFunctionMap;
 
+int lstg::lua::luafunction_to_handler(lua_State* L, int lo, const char* fName)
+{
+	const int handler = toluafix_ref_function(L, lo, 0);
+	if (handler == 0)
+		return 0;
+	std::string key;
+	if (fName)
+		key = fName;
+	if (!key.empty())
+	{
+		key += "::" + std::to_string(lo);
+		const auto old = LuaRefFunctionMap.find(key);
+		if (old != LuaRefFunctionMap.end())
+			toluafix_remove_function_by_refid(L, old->second);
+		LuaRefFunctionMap[key] = handler;
+	}
+	return handler;
+}
+
+int lstg::lua::query_luafunction_handler(lua_State* L, int lo, const char* fName)
+{
+	std::string key;
+	if (fName)
+		key = fName;
+	if (!key.empty())
+	{
+		key += "::" + std::to_string(lo);
+		const auto it = LuaRefFunctionMap.find(key);
+		if (it != LuaRefFunctionMap.end())
+			return it->second;
+	}
+	return 0;
+}
+
+void lstg::lua::handler_to_luafunction(lua_State* L, int handler)
+{
+	if (handler != 0)
+		toluafix_get_function_by_refid(L, handler);
+	else
+		lua_pushnil(L);
+}
+
+#if 0
+#define TEST(_T) { _T v; to_native<_T>::F(L, 1, &v); to_lua<_T>::F(L, v); }
 void test(lua_State* L)
 {
 	TEST(int8_t);
@@ -61,4 +106,9 @@ void test(lua_State* L)
 	{ using type = std::tuple<>; TEST(type); }
 	{ using type = std::tuple<cocos2d::Node*>; TEST(type); }
 	{ using type = std::tuple<cocos2d::Node*, cocos2d::Color4B>; TEST(type); }
+	{ using type = std::function<void()>; { type v; to_native<type>::F(L, 1, &v); }; }
+	{ using type = std::function<std::string()>; { type v; to_native<type>::F(L, 1, &v); }; }
+	{ using type = std::function<void(const std::string&)>; type v; to_native<type>::F(L, 1, &v); }
+	{ using type = std::function<int(const std::string&,int)>; type v; to_native<type>::F(L, 1, &v); }
 }
+#endif

@@ -376,6 +376,9 @@ namespace lstg
 			return ret;
 		}
 
+		int luafunction_to_handler(lua_State* L, int lo, const char* fName);
+		int query_luafunction_handler(lua_State* L, int lo, const char* fName);
+
 #undef CHECK_TO_NATIVE
 #undef TO_NATIVE_BASIC
 #undef TO_NATIVE_BASIC_PTR
@@ -643,6 +646,80 @@ namespace lstg
 			to_lua<T>::F(L, inValue);
 			lua_settable(L, lo);
 		}
+
+		void handler_to_luafunction(lua_State* L, int handler);
+
+		template<size_t Index, typename Targ = void, typename... Targs>
+		struct _to_lua_function_helper {
+			static void F(lua_State* L, Targ&& arg, Targs&&... args) {
+				native_to_luaval(L, arg);
+				_to_lua_function_helper<Index - 1, Targs...>::F(L, std::forward<Targs>(args)...);
+			}
+		};
+
+		template<>
+		struct _to_lua_function_helper<0> {
+			static void F(lua_State* L) {
+			}
+		};
+
+		template<typename R, typename... Targs>
+		struct to_native<std::function<R(Targs...)>> {
+			static bool F(lua_State* L, int lo, std::function<R(Targs...)>* outValue, const char* fName = "") {
+				const auto top = lua_gettop(L);
+				if (nullptr == L || nullptr == outValue || top < lo)
+					return false;
+				if (lua_isnil(L, lo)) {
+					*outValue = nullptr;
+					return true;
+				}
+				const int handler = luafunction_to_handler(L, lo, fName);
+				if (handler == 0)
+					return false;
+				*outValue = [=](Targs... args)
+				{
+					R ret = {};
+					handler_to_luafunction(L, handler);
+					if (!lua_isfunction(L, -1)) {
+						lua_pop(L, 1);
+						return ret;
+					}
+					_to_lua_function_helper<sizeof...(Targs), Targs...>::F(L, std::forward<Targs>(args)...);
+					lua_call(L, sizeof...(Targs), 1);
+					if (!luaval_to_native(L, -1, &ret, fName))
+						luaL_error(L, "invalid return value in handler (%s)", fName);
+					return ret;
+				};
+				return true;
+			}
+		};
+
+		template<typename... Targs>
+		struct to_native<std::function<void(Targs...)>> {
+			static bool F(lua_State* L, int lo, std::function<void(Targs...)>* outValue, const char* fName = "") {
+				const auto top = lua_gettop(L);
+				if (nullptr == L || nullptr == outValue || top < lo)
+					return false;
+				if (lua_isnil(L, lo)) {
+					*outValue = nullptr;
+					return true;
+				}
+				const int handler = luafunction_to_handler(L, lo, fName);
+				if (handler == 0)
+					return false;
+				*outValue = [=](Targs... args)
+				{
+					handler_to_luafunction(L, handler);
+					if (!lua_isfunction(L, -1)) {
+						lua_pop(L, 1);
+						return;
+					}
+					_to_lua_function_helper<sizeof...(Targs), Targs...>::F(L, std::forward<Targs>(args)...);
+					lua_call(L, sizeof...(Targs), 0);
+				};
+				return true;
+			}
+		};
 
 #undef TO_LUA_BASIC
 #undef TO_LUA_BASIC_P
