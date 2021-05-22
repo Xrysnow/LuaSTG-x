@@ -526,7 +526,8 @@ namespace lstg
 				lua_getfield(L, LUA_REGISTRYINDEX, className.c_str());
 				if (lua_isnil(L, -1)) // leave nil on stack
 					return;
-;				tolua_pushusertype(L, (void*)inValue, className.c_str());
+				tolua_pushusertype(L, (void*)inValue, className.c_str());
+				lua_remove(L, -2);
 			}
 		};
 
