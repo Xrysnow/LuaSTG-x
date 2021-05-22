@@ -13,15 +13,15 @@ using namespace std;
 using namespace lstg;
 using namespace cocos2d;
 
-#define IMPL_BASIC_TO_NATIVE(_F, _T) bool lua::_F(lua_State* L, int lo, _T* outValue, const char* funcName){\
+#define IMPL_BASIC_TO_NATIVE(_F, _T) bool lua::_##_F(lua_State* L, int lo, _T* outValue, const char* funcName){\
 	return ::_F(L, lo, outValue, funcName); }
 IMPL_BASIC_TO_NATIVE(luaval_to_boolean, bool);
 IMPL_BASIC_TO_NATIVE(luaval_to_number, double);
-IMPL_BASIC_TO_NATIVE(luaval_to_std_string, std::string);
+//IMPL_BASIC_TO_NATIVE(luaval_to_std_string, std::string);
 IMPL_BASIC_TO_NATIVE(luaval_to_rect, Rect);
 IMPL_BASIC_TO_NATIVE(luaval_to_size, Size);
 IMPL_BASIC_TO_NATIVE(luaval_to_color3b, Color3B);
-IMPL_BASIC_TO_NATIVE(luaval_to_color4b, Color4B);
+//IMPL_BASIC_TO_NATIVE(luaval_to_color4b, Color4B);
 IMPL_BASIC_TO_NATIVE(luaval_to_color4f, Color4F);
 IMPL_BASIC_TO_NATIVE(luaval_to_physics_material, cocos2d::PhysicsMaterial);
 IMPL_BASIC_TO_NATIVE(luaval_to_affinetransform, AffineTransform);
@@ -39,7 +39,7 @@ IMPL_BASIC_TO_NATIVE(luaval_to_texparams, cocos2d::Texture2D::TexParams);
 IMPL_BASIC_TO_NATIVE(luaval_to_v3f_c4b_t2f, cocos2d::V3F_C4B_T2F);
 IMPL_BASIC_TO_NATIVE(luaval_to_tex2f, cocos2d::Tex2F);
 
-#define IMPL_BASIC_FROM_NATIVE(_F, _T) void lua::_F(lua_State* L, const _T& inValue){\
+#define IMPL_BASIC_FROM_NATIVE(_F, _T) void lua::_##_F(lua_State* L, const _T& inValue){\
 	::_F(L, inValue); }
 IMPL_BASIC_FROM_NATIVE(vec2_to_luaval, cocos2d::Vec2);
 IMPL_BASIC_FROM_NATIVE(vec3_to_luaval, cocos2d::Vec3);
@@ -47,7 +47,7 @@ IMPL_BASIC_FROM_NATIVE(vec4_to_luaval, cocos2d::Vec4);
 IMPL_BASIC_FROM_NATIVE(size_to_luaval, cocos2d::Size);
 IMPL_BASIC_FROM_NATIVE(rect_to_luaval, cocos2d::Rect);
 IMPL_BASIC_FROM_NATIVE(color3b_to_luaval, cocos2d::Color3B);
-IMPL_BASIC_FROM_NATIVE(color4b_to_luaval, cocos2d::Color4B);
+//IMPL_BASIC_FROM_NATIVE(color4b_to_luaval, cocos2d::Color4B);
 IMPL_BASIC_FROM_NATIVE(color4f_to_luaval, cocos2d::Color4F);
 IMPL_BASIC_FROM_NATIVE(affinetransform_to_luaval, cocos2d::AffineTransform);
 IMPL_BASIC_FROM_NATIVE(physics_material_to_luaval, cocos2d::PhysicsMaterial);

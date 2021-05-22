@@ -29,14 +29,14 @@ namespace lstg
 
 		//
 
-#define DECL_BASIC_TO_NATIVE(_F, _T) bool _F(lua_State* L, int lo, _T* outValue, const char* funcName = "");
+#define DECL_BASIC_TO_NATIVE(_F, _T) bool _##_F(lua_State* L, int lo, _T* outValue, const char* funcName = "");
 		DECL_BASIC_TO_NATIVE(luaval_to_boolean, bool);
 		DECL_BASIC_TO_NATIVE(luaval_to_number, double);
-		DECL_BASIC_TO_NATIVE(luaval_to_std_string, std::string);
+		//DECL_BASIC_TO_NATIVE(luaval_to_std_string, std::string);
 		DECL_BASIC_TO_NATIVE(luaval_to_size, cocos2d::Size);
 		DECL_BASIC_TO_NATIVE(luaval_to_rect, cocos2d::Rect);
 		DECL_BASIC_TO_NATIVE(luaval_to_color3b, cocos2d::Color3B);
-		DECL_BASIC_TO_NATIVE(luaval_to_color4b, cocos2d::Color4B);
+		//DECL_BASIC_TO_NATIVE(luaval_to_color4b, cocos2d::Color4B);
 		DECL_BASIC_TO_NATIVE(luaval_to_color4f, cocos2d::Color4F);
 		DECL_BASIC_TO_NATIVE(luaval_to_physics_material, cocos2d::PhysicsMaterial);
 		DECL_BASIC_TO_NATIVE(luaval_to_affinetransform, cocos2d::AffineTransform);
@@ -56,14 +56,14 @@ namespace lstg
 		DECL_BASIC_TO_NATIVE(luaval_to_uniformLocation, cocos2d::backend::UniformLocation);
 #undef DECL_BASIC_TO_NATIVE
 
-#define DECL_BASIC_FROM_NATIVE(_F, _T) void _F(lua_State* L, const _T& inValue);
+#define DECL_BASIC_FROM_NATIVE(_F, _T) void _##_F(lua_State* L, const _T& inValue);
 		DECL_BASIC_FROM_NATIVE(vec2_to_luaval, cocos2d::Vec2);
 		DECL_BASIC_FROM_NATIVE(vec3_to_luaval, cocos2d::Vec3);
 		DECL_BASIC_FROM_NATIVE(vec4_to_luaval, cocos2d::Vec4);
 		DECL_BASIC_FROM_NATIVE(size_to_luaval, cocos2d::Size);
 		DECL_BASIC_FROM_NATIVE(rect_to_luaval, cocos2d::Rect);
 		DECL_BASIC_FROM_NATIVE(color3b_to_luaval, cocos2d::Color3B);
-		DECL_BASIC_FROM_NATIVE(color4b_to_luaval, cocos2d::Color4B);
+		//DECL_BASIC_FROM_NATIVE(color4b_to_luaval, cocos2d::Color4B);
 		DECL_BASIC_FROM_NATIVE(color4f_to_luaval, cocos2d::Color4F);
 		DECL_BASIC_FROM_NATIVE(affinetransform_to_luaval, cocos2d::AffineTransform);
 		DECL_BASIC_FROM_NATIVE(physics_material_to_luaval, cocos2d::PhysicsMaterial);

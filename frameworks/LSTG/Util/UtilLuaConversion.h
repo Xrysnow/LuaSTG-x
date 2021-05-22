@@ -100,8 +100,8 @@ namespace lstg
 		TO_NATIVE_UNSIGNED(uint32_t);
 		TO_NATIVE_UNSIGNED(uint64_t);
 
-		TO_NATIVE_BASIC(luaval_to_boolean, bool);
-		TO_NATIVE_BASIC(luaval_to_number, double);
+		TO_NATIVE_BASIC(_luaval_to_boolean, bool);
+		TO_NATIVE_BASIC(_luaval_to_number, double);
 
 		TO_NATIVE_BASIC_PTR(bool);
 		TO_NATIVE_BASIC_PTR(char);
@@ -116,25 +116,25 @@ namespace lstg
 		TO_NATIVE_BASIC_PTR(float);
 		TO_NATIVE_BASIC_PTR(double);
 		//
-		TO_NATIVE_BASIC(luaval_to_vec2, cocos2d::Vec2);
-		TO_NATIVE_BASIC(luaval_to_vec3, cocos2d::Vec3);
-		TO_NATIVE_BASIC(luaval_to_vec4, cocos2d::Vec4);
-		TO_NATIVE_BASIC(luaval_to_size, cocos2d::Size);
-		TO_NATIVE_BASIC(luaval_to_rect, cocos2d::Rect);
-		TO_NATIVE_BASIC(luaval_to_color3b, cocos2d::Color3B);
-		TO_NATIVE_BASIC(luaval_to_color4b, cocos2d::Color4B);
-		TO_NATIVE_BASIC(luaval_to_color4f, cocos2d::Color4F);
-		TO_NATIVE_BASIC(luaval_to_mat4, cocos2d::Mat4);
-		TO_NATIVE_BASIC(luaval_to_affinetransform, cocos2d::AffineTransform);
-		TO_NATIVE_BASIC(luaval_to_fontdefinition, cocos2d::FontDefinition);
-		TO_NATIVE_BASIC(luaval_to_blendfunc, cocos2d::BlendFunc);
-		TO_NATIVE_BASIC(luaval_to_ttfconfig, cocos2d::TTFConfig);
-		TO_NATIVE_BASIC(luaval_to_ccvalue, cocos2d::Value);
-		TO_NATIVE_BASIC(luaval_to_mesh_vertex_attrib, cocos2d::MeshVertexAttrib);
-		TO_NATIVE_BASIC(luaval_to_quaternion, cocos2d::Quaternion);
-		//TO_NATIVE_BASIC(luaval_to_texparams, cocos2d::Texture2D::TexParams); // use SamplerDescriptor
-		//TO_NATIVE_BASIC(luaval_to_v3f_c4b_t2f, cocos2d::V3F_C4B_T2F);
-		//TO_NATIVE_BASIC(luaval_to_tex2f, cocos2d::Tex2F);
+		TO_NATIVE_BASIC(_luaval_to_vec2, cocos2d::Vec2);
+		TO_NATIVE_BASIC(_luaval_to_vec3, cocos2d::Vec3);
+		TO_NATIVE_BASIC(_luaval_to_vec4, cocos2d::Vec4);
+		TO_NATIVE_BASIC(_luaval_to_size, cocos2d::Size);
+		TO_NATIVE_BASIC(_luaval_to_rect, cocos2d::Rect);
+		TO_NATIVE_BASIC(_luaval_to_color3b, cocos2d::Color3B);
+		TO_NATIVE_BASIC(_luaval_to_color4b, cocos2d::Color4B);
+		TO_NATIVE_BASIC(_luaval_to_color4f, cocos2d::Color4F);
+		TO_NATIVE_BASIC(_luaval_to_mat4, cocos2d::Mat4);
+		TO_NATIVE_BASIC(_luaval_to_affinetransform, cocos2d::AffineTransform);
+		TO_NATIVE_BASIC(_luaval_to_fontdefinition, cocos2d::FontDefinition);
+		TO_NATIVE_BASIC(_luaval_to_blendfunc, cocos2d::BlendFunc);
+		TO_NATIVE_BASIC(_luaval_to_ttfconfig, cocos2d::TTFConfig);
+		TO_NATIVE_BASIC(_luaval_to_ccvalue, cocos2d::Value);
+		TO_NATIVE_BASIC(_luaval_to_mesh_vertex_attrib, cocos2d::MeshVertexAttrib);
+		TO_NATIVE_BASIC(_luaval_to_quaternion, cocos2d::Quaternion);
+		//TO_NATIVE_BASIC(_luaval_to_texparams, cocos2d::Texture2D::TexParams); // use SamplerDescriptor
+		//TO_NATIVE_BASIC(_luaval_to_v3f_c4b_t2f, cocos2d::V3F_C4B_T2F);
+		//TO_NATIVE_BASIC(_luaval_to_tex2f, cocos2d::Tex2F);
 		//
 		TO_NATIVE_BASIC(luaval_to_V3F_C4B_T2F_Quad, cocos2d::V3F_C4B_T2F_Quad);
 		TO_NATIVE_BASIC(luaval_to_UniformLocation, cocos2d::backend::UniformLocation);
@@ -440,23 +440,23 @@ namespace lstg
 		TO_LUA_BASIC_PTR(float);
 		TO_LUA_BASIC_PTR(double);
 
-		TO_LUA_BASIC(vec2_to_luaval, cocos2d::Vec2);
-		TO_LUA_BASIC(vec3_to_luaval, cocos2d::Vec3);
-		TO_LUA_BASIC(vec4_to_luaval, cocos2d::Vec4);
-		TO_LUA_BASIC(size_to_luaval, cocos2d::Size);
-		TO_LUA_BASIC(rect_to_luaval, cocos2d::Rect);
-		TO_LUA_BASIC(color3b_to_luaval, cocos2d::Color3B);
-		TO_LUA_BASIC(color4b_to_luaval, cocos2d::Color4B);
-		TO_LUA_BASIC(color4f_to_luaval, cocos2d::Color4F);
-		TO_LUA_BASIC(mat4_to_luaval, cocos2d::Mat4);
-		TO_LUA_BASIC(affinetransform_to_luaval, cocos2d::AffineTransform);
-		TO_LUA_BASIC(fontdefinition_to_luaval, cocos2d::FontDefinition);
-		TO_LUA_BASIC(blendfunc_to_luaval, cocos2d::BlendFunc);
-		TO_LUA_BASIC(ttfconfig_to_luaval, cocos2d::TTFConfig);
-		TO_LUA_BASIC(ccvalue_to_luaval, cocos2d::Value);
-		TO_LUA_BASIC(mesh_vertex_attrib_to_luaval, cocos2d::MeshVertexAttrib);
-		TO_LUA_BASIC(quaternion_to_luaval, cocos2d::Quaternion);
-		//TO_LUA_BASIC(texParams_to_luaval, cocos2d::Texture2D::TexParams); // use SamplerDescriptor
+		TO_LUA_BASIC(_vec2_to_luaval, cocos2d::Vec2);
+		TO_LUA_BASIC(_vec3_to_luaval, cocos2d::Vec3);
+		TO_LUA_BASIC(_vec4_to_luaval, cocos2d::Vec4);
+		TO_LUA_BASIC(_size_to_luaval, cocos2d::Size);
+		TO_LUA_BASIC(_rect_to_luaval, cocos2d::Rect);
+		TO_LUA_BASIC(_color3b_to_luaval, cocos2d::Color3B);
+		TO_LUA_BASIC(_color4b_to_luaval, cocos2d::Color4B);
+		TO_LUA_BASIC(_color4f_to_luaval, cocos2d::Color4F);
+		TO_LUA_BASIC(_mat4_to_luaval, cocos2d::Mat4);
+		TO_LUA_BASIC(_affinetransform_to_luaval, cocos2d::AffineTransform);
+		TO_LUA_BASIC(_fontdefinition_to_luaval, cocos2d::FontDefinition);
+		TO_LUA_BASIC(_blendfunc_to_luaval, cocos2d::BlendFunc);
+		TO_LUA_BASIC(_ttfconfig_to_luaval, cocos2d::TTFConfig);
+		TO_LUA_BASIC(_ccvalue_to_luaval, cocos2d::Value);
+		TO_LUA_BASIC(_mesh_vertex_attrib_to_luaval, cocos2d::MeshVertexAttrib);
+		TO_LUA_BASIC(_quaternion_to_luaval, cocos2d::Quaternion);
+		//TO_LUA_BASIC(_texParams_to_luaval, cocos2d::Texture2D::TexParams); // use SamplerDescriptor
 		//
 		TO_LUA_BASIC(V3F_C4B_T2F_Quad_to_luaval, cocos2d::V3F_C4B_T2F_Quad);
 		TO_LUA_BASIC(UniformLocation_to_luaval, cocos2d::backend::UniformLocation);
