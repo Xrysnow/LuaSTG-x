@@ -247,3 +247,20 @@ LUA_REGISTER_FUNC_DEF(lstg, RC4XOR)
 	}
 	return 1;
 }
+
+LUA_REGISTER_FUNC_DEF(lstg, MD5Hash)
+{
+	size_t size = 0;
+	const void* data = lua::luaval_to_const_data(L, 1, 2, &size);
+	if (data && size != 0)
+	{
+		const auto ret = MD5Hash(data, size);
+		if (!ret.empty())
+		{
+			lua_pushlstring(L, ret.data(), ret.size());
+			return 1;
+		}
+	}
+	lua_pushnil(L);
+	return 1;
+}
