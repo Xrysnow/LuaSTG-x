@@ -232,30 +232,18 @@ LUA_REGISTER_FUNC_DEF(lstg, RC4XOR)
 {
 	size_t key_size = 0;
 	const auto key = luaL_checklstring(L, 1, &key_size);
-	const auto type = lua_type(L, 2);
-	if (type == LUA_TSTRING)
+	size_t size = 0;
+	const void* data = lua::luaval_to_const_data(L, 2, 3, &size);
+	if (data && size != 0)
 	{
-		size_t size = 0;
-		const auto str = lua_tolstring(L, 2, &size);
 		vector<char> ret;
 		ret.resize(size);
-		RC4XOR({ key, key_size }, str, size, ret.data());
+		RC4XOR({ key, key_size }, data, size, ret.data());
 		lua_pushlstring(L, ret.data(), ret.size());
-		return 1;
 	}
-	if (type == lua::LUA_TCDATA)
+	else
 	{
-		void* p = nullptr;
-		lua::luaval_to_cptr(L, 2, &p);
-		if (p)
-		{
-			const auto size = luaL_checkinteger(L, 2);
-			vector<char> ret;
-			ret.resize(size);
-			RC4XOR({ key, key_size }, p, size, ret.data());
-			lua_pushlstring(L, ret.data(), ret.size());
-			return 1;
-		}
+		lua_pushnil(L);
 	}
-	return luaL_error(L, "invalid parameter #1");
+	return 1;
 }
