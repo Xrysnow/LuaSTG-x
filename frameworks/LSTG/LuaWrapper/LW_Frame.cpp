@@ -264,3 +264,41 @@ LUA_REGISTER_FUNC_DEF(lstg, MD5Hash)
 	lua_pushnil(L);
 	return 1;
 }
+
+LUA_REGISTER_FUNC_DEF(lstg, Base64Decode)
+{
+	size_t size = 0;
+	const void* data = lua::luaval_to_const_data(L, 1, 2, &size);
+	if (data && size != 0)
+	{
+		unsigned char* decoded = nullptr;
+		const int length = cocos2d::base64Decode((const unsigned char*)data, (unsigned)size, &decoded);
+		if (decoded)
+		{			
+			lua_pushlstring(L, (const char*)decoded, length);
+			free(decoded);
+			return 1;
+		}
+	}
+	lua_pushnil(L);
+	return 1;
+}
+
+LUA_REGISTER_FUNC_DEF(lstg, Base64Encode)
+{
+	size_t size = 0;
+	const void* data = lua::luaval_to_const_data(L, 1, 2, &size);
+	if (data && size != 0)
+	{
+		char* encoded = nullptr;
+		const int length = cocos2d::base64Encode((const unsigned char*)data, (unsigned)size, &encoded);
+		if (encoded)
+		{			
+			lua_pushlstring(L, encoded, length);
+			free(encoded);
+			return 1;
+		}
+	}
+	lua_pushnil(L);
+	return 1;
+}
