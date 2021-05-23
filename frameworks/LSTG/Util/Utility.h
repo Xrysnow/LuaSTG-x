@@ -107,6 +107,7 @@ namespace lstg
 	uint32_t XXHash32(const void* data, size_t size, uint32_t seed = 0);
 	uint64_t XXHash64(const void* data, size_t size, uint64_t seed = 0);
 	void RC4XOR(const std::string& key, const void* data, size_t size, void* out);
+	std::string MD5Hash(const void* data, size_t size);
 
 	// RC4 cryption
 	class RC4

@@ -810,6 +810,31 @@ void lstg::RC4XOR(const std::string& key, const void* data, size_t size, void* o
 	rc4((const uint8_t*)data, size, (uint8_t*)out);
 }
 
+#include "md5/md5.h"
+std::string lstg::MD5Hash(const void* data, size_t size)
+{
+	if (!data || size == 0)
+		return "";
+	constexpr unsigned int MD5_DIGEST_LENGTH = 16;
+	md5_state_t state;
+	md5_byte_t digest[MD5_DIGEST_LENGTH];
+	char hexOutput[(MD5_DIGEST_LENGTH << 1) + 1] = { 0 };
+	md5_init(&state);
+	size_t remain = size;
+	auto current = (const md5_byte_t*)data;
+	while (remain > std::numeric_limits<int>::max())
+	{
+		md5_append(&state, (const md5_byte_t*)current, std::numeric_limits<int>::max());
+		current += std::numeric_limits<int>::max();
+		remain -= std::numeric_limits<int>::max();
+	}
+	md5_append(&state, (const md5_byte_t*)current, remain);
+	md5_finish(&state, digest);
+	for (int di = 0; di < 16; ++di)
+		sprintf(hexOutput + di * 2, "%02x", digest[di]);
+	return hexOutput;
+}
+
 void RC4::operator()(const uint8_t* input, size_t inputlen, uint8_t* output)
 {
 	uint8_t Scpy[256];
