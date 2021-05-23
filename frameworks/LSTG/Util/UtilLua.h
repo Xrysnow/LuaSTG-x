@@ -144,6 +144,8 @@ namespace lstg
 		/** Push Ref object with its real type (needs RTTI). */
 		void ref_type_to_luaval(lua_State* L, cocos2d::Ref* ref, const char* typeID = nullptr);
 
+		const void* luaval_to_const_data(lua_State* L, int lo, int lo_size, size_t* outSize);
+
 		template <class T>
 		void ref_vector_to_luaval(lua_State* L, const std::vector<T*>& inValue) {
 			static_assert(std::is_base_of<cocos2d::Ref, T>::value, "");

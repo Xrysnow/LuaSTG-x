@@ -8,6 +8,7 @@
 #include "LuaWrapper/LuaWrapper.h"
 #include "LuaWrapper/LWColor.h"
 #include "Resource/ResFX.h"
+#include "../../Classes/XBuffer.h"
 
 using namespace std;
 using namespace lstg;
@@ -718,6 +719,40 @@ void lua::ref_type_to_luaval(lua_State* L, Ref* ref, const char* typeID)
 	{
 		lua_pushnil(L);
 	}
+}
+
+const void* lua::luaval_to_const_data(lua_State* L, int lo, int lo_size, size_t* outSize)
+{
+	const void* data = nullptr;
+	size_t size = 0;
+	const auto type = lua_type(L, lo);
+	if (type == LUA_TSTRING)
+	{
+		data = lua_tolstring(L, lo, &size);
+	}
+	else if (type == lua::LUA_TCDATA)
+	{
+		void* p = nullptr;
+		luaval_to_cptr(L, lo, &p);
+		if (p)
+		{
+			data = p;
+			const auto size_ = luaL_checkinteger(L, lo_size);
+			if (size_ > 0)
+				size = size_;
+		}
+	}
+	else
+	{
+		Buffer* buf = nullptr;
+		if (luaval_to_native(L, lo, &buf) && buf)
+		{
+			data = buf->data();
+			size = buf->size();
+		}
+	}
+	*outSize = size;
+	return data;
 }
 
 std::vector<float> lua::getArray(lua_State* L, int lo, const char* field)
