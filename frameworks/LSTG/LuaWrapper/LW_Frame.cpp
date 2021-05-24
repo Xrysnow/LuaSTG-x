@@ -34,7 +34,10 @@ LUA_REGISTER_FUNC_DEF(lstg, SetVsync)
 
 LUA_REGISTER_FUNC_DEF(lstg, SystemLog)
 {
-	LLOGGER.writeLine(string("[LOG] ") + luaL_checkstring(L, 1));
+	static std::string prefix = "[LOG] ";
+	size_t size;
+	const auto s = luaL_checklstring(L, 1, &size);
+	LLOGGER.writeLine(prefix + std::string(s, size));
 	return 0;
 }
 
