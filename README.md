@@ -33,7 +33,7 @@ Full release download:
 - [LuaSTG-x Lua API Document](https://xrysnow.github.io/lstgx_Doc)
 - [Baidu Tieba](https://tieba.baidu.com/f?kw=luastg)
 - [LuaSTG Wiki Site](http://en.luastg.shoutwiki.com/wiki/Main_Page)
-- [Bullet Hell Engines Discord Channel](https://discordapp.com/invite/TYvazgV)
+- [Bullet Hell Engines Discord Channel](https://discord.gg/4wNvvPHxeU)
 
 ## Build Instructions
 

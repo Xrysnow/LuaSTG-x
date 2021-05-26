@@ -33,7 +33,7 @@ LuaSTG-x 是一个基于 [cocos2d-x](https://github.com/cocos2d/cocos2d-x) 和 [
 - [LuaSTG-x Lua API 文档](https://xrysnow.github.io/lstgx_Doc)
 - [百度贴吧](https://tieba.baidu.com/f?kw=luastg)
 - [LuaSTG Wiki 网站](http://en.luastg.shoutwiki.com/wiki/Main_Page)
-- [Bullet Hell Engines Discord 频道](https://discordapp.com/invite/TYvazgV)
+- [Bullet Hell Engines Discord 频道](https://discord.gg/4wNvvPHxeU)
 
 ## 编译指南
 
