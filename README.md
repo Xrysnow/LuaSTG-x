@@ -8,7 +8,7 @@ LuaSTG-x is a multi-platform game engine based on [cocos2d-x](https://github.com
 
 ---
 
-## [Gallery](https://github.com/Xrysnow/LuaSTG-x/wiki/Gallery) | [Core API Manual](https://github.com/Xrysnow/LuaSTG-x/wiki/Core_API_Manual) | [Changelog (Chinese)](https://github.com/Xrysnow/LuaSTG-x/wiki/%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97)
+## [Gallery](https://github.com/Xrysnow/LuaSTG-x/wiki/Gallery) | [Core API Manual](https://github.com/Xrysnow/LuaSTG-x/wiki/Core_API_Manual) | [Changelog](https://github.com/Xrysnow/LuaSTG-x/wiki/Changelog)
 
 ## Download
 
