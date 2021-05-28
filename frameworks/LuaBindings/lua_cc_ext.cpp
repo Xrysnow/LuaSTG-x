@@ -107,14 +107,28 @@ int lua_cc_ext_Image_initWithSVGFile(lua_State* tolua_S)
 		return 1;
 	}
 	if (argc == 2) {
-		std::string arg0;
-		double arg1;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_number(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = lstg::initImageWithSVG(cobj, arg0, arg1);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
+		if (lua_isnumber(tolua_S, 3))
+		{
+			std::string arg0;
+			double arg1;
+			ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
+			ok &= luaval_to_number(tolua_S, 3, &arg1, LUA_FNAME);
+			LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+			auto ret = lstg::initImageWithSVG(cobj, arg0, arg1);
+			tolua_pushboolean(tolua_S, (bool)ret);
+			return 1;
+		}
+		else
+		{
+			std::string arg0;
+			cocos2d::Size arg1;
+			ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
+			ok &= luaval_to_size(tolua_S, 3, &arg1, LUA_FNAME);
+			LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+			auto ret = lstg::initImageWithSVG(cobj, arg0, arg1);
+			tolua_pushboolean(tolua_S, (bool)ret);
+			return 1;
+		}
 	}
 	if (argc == 3) {
 		std::string arg0;
