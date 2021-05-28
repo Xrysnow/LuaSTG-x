@@ -40,6 +40,13 @@ LUA_REGISTER_MODULE(x_WindowHelper, register_all_x_WindowHelper);
 #include "lua_ZipArchive_auto.hpp"
 LUA_REGISTER_MODULE(x_ZipArchive, register_all_x_ZipArchive);
 
+#ifndef LSTGX_NO_FAIRY_GUI
+	#include "lua_cc_fairygui_auto.hpp"
+	LUA_REGISTER_MODULE(cc_fairygui, register_all_cc_fairygui);
+	#include "lua_cc_fairygui_manual.hpp"
+	LUA_REGISTER_MODULE(cc_fairygui_manual, register_all_cc_fairygui_manual);
+#endif
+
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_ANDROID) && (CC_TARGET_PLATFORM != CC_PLATFORM_IOS)
 #include "lua_cc_controller_auto.hpp"
 LUA_REGISTER_MODULE(cc_controller, register_all_cocos2dx_controller);
@@ -48,7 +55,7 @@ LUA_REGISTER_MODULE(cc_controller_manual, register_all_cocos2dx_controller_manua
 #endif
 
 #include "../Audio/lua_audio_auto.hpp"
-LUA_REGISTER_MODULE(x_Audio, register_all_cc_audio);
+LUA_REGISTER_MODULE(cc_audio, register_all_cc_audio);
 
 #ifndef LSTGX_NO_VIDEO
 	#include "../Video/lua_video_auto.hpp"
@@ -74,3 +81,13 @@ LUA_REGISTER_MODULE_DEF(cjson) { luaopen_cjson(L); lua_setglobal(L, "cjson"); re
 
 #include "../imgui/lua-bindings/imgui_lua.hpp"
 LUA_REGISTER_MODULE(imgui, luaopen_imgui);
+
+#ifndef LSTGX_NO_YASIO
+	#include "yasio/bindings/lyasio.hpp"
+	LUA_REGISTER_MODULE_DEF(yasio) { luaregister_yasio(L); return 0; }
+#endif
+
+#ifndef LSTGX_NO_YUESCRIPT
+	extern "C" int luaopen_yue(lua_State * L);
+	LUA_REGISTER_MODULE(yue, luaopen_yue);
+#endif
