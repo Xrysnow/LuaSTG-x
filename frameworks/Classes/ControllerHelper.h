@@ -24,11 +24,11 @@ namespace lstg
 		ConnectCallBack _onDisconnect;
 	public:
 
-		void setOnKeyDown(KeyCallBack f);
-		void setOnKeyUp(KeyCallBack f);
-		void setOnAxisEvent(KeyCallBack f);
-		void setOnConnect(ConnectCallBack f);
-		void setOnDisconnect(ConnectCallBack f);
+		void setOnKeyDown(const KeyCallBack& f);
+		void setOnKeyUp(const KeyCallBack& f);
+		void setOnAxisEvent(const KeyCallBack& f);
+		void setOnConnect(const ConnectCallBack& f);
+		void setOnDisconnect(const ConnectCallBack& f);
 	protected:
 
 		void onKeyDown(cocos2d::Controller* controller, int keyCode, cocos2d::Event* event);

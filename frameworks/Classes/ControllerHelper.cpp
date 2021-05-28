@@ -52,27 +52,27 @@ void ControllerHelper::end()
 	Controller::stopDiscoveryController();
 }
 
-void ControllerHelper::setOnKeyDown(KeyCallBack f)
+void ControllerHelper::setOnKeyDown(const KeyCallBack &f)
 {
 	_onKeyDown = f;
 }
 
-void ControllerHelper::setOnKeyUp(KeyCallBack f)
+void ControllerHelper::setOnKeyUp(const KeyCallBack& f)
 {
 	_onKeyUp = f;
 }
 
-void ControllerHelper::setOnAxisEvent(KeyCallBack f)
+void ControllerHelper::setOnAxisEvent(const KeyCallBack& f)
 {
 	_onAxisEvent = f;
 }
 
-void ControllerHelper::setOnConnect(ConnectCallBack f)
+void ControllerHelper::setOnConnect(const ConnectCallBack& f)
 {
 	_onConnect = f;
 }
 
-void ControllerHelper::setOnDisconnect(ConnectCallBack f)
+void ControllerHelper::setOnDisconnect(const ConnectCallBack& f)
 {
 	_onDisconnect = f;
 }
@@ -81,7 +81,7 @@ void ControllerHelper::onKeyDown(Controller* controller, int keyCode, Event* /*e
 {
 	if (_onKeyDown)
 	{
-		const auto s = controller->getKeyStatus(keyCode);
+		const auto& s = controller->getKeyStatus(keyCode);
 		_onKeyDown(controller, keyCode, s.value, s.isPressed, s.isAnalog);
 	}
 }
@@ -90,7 +90,7 @@ void ControllerHelper::onKeyUp(Controller* controller, int keyCode, Event* /*eve
 {
 	if (_onKeyUp)
 	{
-		const auto s = controller->getKeyStatus(keyCode);
+		const auto& s = controller->getKeyStatus(keyCode);
 		_onKeyUp(controller, keyCode, s.value, s.isPressed, s.isAnalog);
 	}
 }
@@ -99,7 +99,7 @@ void ControllerHelper::onAxisEvent(Controller* controller, int keyCode, Event* /
 {
 	if (_onAxisEvent)
 	{
-		const auto s = controller->getKeyStatus(keyCode);
+		const auto& s = controller->getKeyStatus(keyCode);
 		_onAxisEvent(controller, keyCode, s.value, s.isPressed, s.isAnalog);
 	}
 }
