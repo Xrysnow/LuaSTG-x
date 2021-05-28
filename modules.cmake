@@ -8,26 +8,29 @@ set(LSTGX_EXT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/frameworks/external)
 
 # ffmpeg, video
 
-set(CC_VIDEO_DEPEND_LIBS)
-add_subdirectory(${LSTGX_EXT_ROOT}/ffmpeg)
-if(APPLE)
-	include_directories(${LSTGX_EXT_ROOT}/ffmpeg/include)
-	#target_link_libraries(${APP_NAME} ${FFMPEG_LIBRARY})
-	target_link_options(${APP_NAME} PRIVATE -F ${FFMPEG_FRAMEWORK_PATH})
-	target_link_options(${APP_NAME} PRIVATE -framework libffmpeg.4.dylib)
-	# copy to Frameworks, need to check sign option in Xcode project
-	target_sources(${APP_NAME} PUBLIC ${FFMPEG_LIBRARY})
-	set_source_files_properties(${FFMPEG_LIBRARY} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks HEADER_FILE_ONLY 1)
-	set_target_properties(${APP_NAME} PROPERTIES XCODE_ATTRIBUTE_FRAMEWORK_SEARCH_PATHS ${FFMPEG_FRAMEWORK_PATH})
-	# set rpath
-	target_link_options(${APP_NAME} PRIVATE -Wl,-rpath,@loader_path/../Frameworks/${FFMPEG_FRAMEWORK})
-	# set_target_properties(${APP_NAME} PROPERTIES LINK_FLAGS "-Wl,-rpath,@loader_path/../Frameworks/${FFMPEG_FRAMEWORK}")
+if(NOT LSTGX_NO_VIDEO)
+	set(CC_VIDEO_DEPEND_LIBS)
+	add_subdirectory(${LSTGX_EXT_ROOT}/ffmpeg)
+	if(APPLE)
+		include_directories(${LSTGX_EXT_ROOT}/ffmpeg/include)
+		#target_link_libraries(${APP_NAME} ${FFMPEG_LIBRARY})
+		target_link_options(${APP_NAME} PRIVATE -F ${FFMPEG_FRAMEWORK_PATH})
+		target_link_options(${APP_NAME} PRIVATE -framework libffmpeg.4.dylib)
+		# copy to Frameworks, need to check sign option in Xcode project
+		target_sources(${APP_NAME} PUBLIC ${FFMPEG_LIBRARY})
+		set_source_files_properties(${FFMPEG_LIBRARY} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks HEADER_FILE_ONLY 1)
+		set_target_properties(${APP_NAME} PROPERTIES XCODE_ATTRIBUTE_FRAMEWORK_SEARCH_PATHS ${FFMPEG_FRAMEWORK_PATH})
+		# set rpath
+		target_link_options(${APP_NAME} PRIVATE -Wl,-rpath,@loader_path/../Frameworks/${FFMPEG_FRAMEWORK})
+		# set_target_properties(${APP_NAME} PROPERTIES LINK_FLAGS "-Wl,-rpath,@loader_path/../Frameworks/${FFMPEG_FRAMEWORK}")
+	else()
+		list(APPEND CC_VIDEO_DEPEND_LIBS ext_ffmpeg)
+	endif()
+	add_subdirectory(${LSTGX_MOD_ROOT}/Video)
+	list(APPEND EXTERNAL_LIBS cc_video)
 else()
-	list(APPEND CC_VIDEO_DEPEND_LIBS ext_ffmpeg)
+	target_compile_definitions(${APP_NAME} PUBLIC LSTGX_NO_VIDEO)
 endif()
-
-add_subdirectory(${LSTGX_MOD_ROOT}/Video)
-list(APPEND EXTERNAL_LIBS cc_video)
 
 # ogg, OpenalSoft, audio
 
@@ -75,8 +78,12 @@ list(APPEND EXTERNAL_LIBS cc_imgui)
 
 # Live2D
 
-add_subdirectory(${LSTGX_MOD_ROOT}/Live2D)
-list(APPEND EXTERNAL_LIBS cc_live2d)
+if(NOT LSTGX_NO_LIVE2D)
+	add_subdirectory(${LSTGX_MOD_ROOT}/Live2D)
+	list(APPEND EXTERNAL_LIBS cc_live2d)
+else()
+	target_compile_definitions(${APP_NAME} PUBLIC LSTGX_NO_LIVE2D)
+endif()
 
 # math
 
@@ -121,10 +128,44 @@ if(WINDOWS OR LINUX OR MACOSX)
 	list(APPEND EXTERNAL_LIBS ext_NativeFileDialog)
 endif()
 
+# FairyGUI
+
+if(NOT LSTGX_NO_FAIRY_GUI)	
+	add_subdirectory(${LSTGX_EXT_ROOT}/FairyGUI)
+	list(APPEND EXTERNAL_LIBS ext_FairyGUI)
+else()
+	target_compile_definitions(${APP_NAME} PUBLIC LSTGX_NO_FAIRY_GUI)
+endif()
+
+# yasio
+
+if(NOT LSTGX_NO_YASIO)	
+	add_subdirectory(${LSTGX_EXT_ROOT}/yasio)
+	list(APPEND EXTERNAL_LIBS ext_yasio)
+else()
+	target_compile_definitions(${APP_NAME} PUBLIC LSTGX_NO_YASIO)
+endif()
+
+# Yuescript
+
+if(NOT LSTGX_NO_YUESCRIPT)	
+	add_subdirectory(${LSTGX_EXT_ROOT}/Yuescript)
+	list(APPEND EXTERNAL_LIBS ext_Yuescript)
+else()
+	target_compile_definitions(${APP_NAME} PUBLIC LSTGX_NO_YUESCRIPT)
+endif()
+
 # windows
 
 if(WINDOWS)
 	list(APPEND EXTERNAL_LIBS imm32.lib)
+	# ANGLE
+	if(LSTGX_USE_ANGLE)
+		add_subdirectory(${LSTGX_EXT_ROOT}/ANGLE)
+		target_include_directories(cocos2d PUBLIC ${LSTGX_EXT_ROOT}/ANGLE/include)
+		target_compile_definitions(cocos2d PUBLIC CC_USE_ANGLE)
+		list(APPEND EXTERNAL_LIBS ext_ANGLE ext_ANGLE_es2)
+	endif()
 endif()
 
 target_link_libraries(${APP_NAME} ${EXTERNAL_LIBS})

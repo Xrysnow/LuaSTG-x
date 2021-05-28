@@ -27,6 +27,15 @@ set(APP_NAME LuaSTG-x)
 
 project(${APP_NAME})
 
+option(LSTGX_NO_LIVE2D    "No live2d module"    OFF)
+option(LSTGX_NO_VIDEO     "No video module"     OFF)
+option(LSTGX_NO_FAIRY_GUI "No FairyGUI module"  OFF)
+option(LSTGX_NO_YASIO     "No YASIO module"     OFF)
+option(LSTGX_NO_YUESCRIPT "No Yuescript module" OFF)
+option(LSTGX_USE_ANGLE    "Use angle on windows" ON)
+
+set(CC_USE_ANGLE LSTGX_USE_ANGLE)
+
 if(XCODE)
     if(NOT DEFINED CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET)
         set(CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET 8.0)

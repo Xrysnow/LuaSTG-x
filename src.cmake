@@ -222,6 +222,17 @@ set(GAME_INCLUDE
 	${LSTGX_SRC_ROOT}/Video
 )
 
+if(NOT LSTGX_NO_FAIRY_GUI)
+	list(APPEND GAME_HEADER
+		${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_fairygui_auto.hpp
+		${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_fairygui_manual.hpp
+	)
+	list(APPEND GAME_SOURCE
+		${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_fairygui_auto.cpp
+		${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_fairygui_manual.cpp
+	)
+endif()
+
 if(ANDROID)
 	list(APPEND GAME_SOURCE ${RUNTIME_SRC_ROOT}/proj.android/app/jni/hellolua/main.cpp)
 elseif(LINUX)
