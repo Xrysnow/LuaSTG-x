@@ -47,7 +47,9 @@ ControllerHelper::KeyCallBack getKeyCallBack(LUA_FUNCTION handler)
 	return [=](Controller* controller, int keyCode, float value, bool isPressed, bool isAnalog)
 	{
 		const auto state = LuaEngine::getInstance()->getLuaStack()->getLuaState();
-		object_to_luaval(state, "cc.Controller", controller);
+		//object_to_luaval(state, "cc.Controller", controller);
+		// push id instead of object for better performance
+		lua_pushinteger(state, controller->getDeviceId());
 		lua_pushinteger(state, keyCode);
 		lua_pushnumber(state, value);
 		lua_pushboolean(state, isPressed);
