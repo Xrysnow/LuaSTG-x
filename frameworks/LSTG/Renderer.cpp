@@ -92,23 +92,24 @@ bool XRenderer::init()
 	p->clearRectQuad.tr.vertices.set(1, 1, 1024.f);
 	Mat4::createOrthographicOffCenter(0, 1, 0, 1, -1024.f, 1024.f, &p->clearRectProj);
 
-	auto& rm = p->clearRectRenderMode;
-	rm.init("", backend::BlendOperation::ADD,
+	auto rm = new RenderMode();
+	rm->init(":RendererClearRect:", backend::BlendOperation::ADD,
 		backend::BlendFactor::ONE, backend::BlendFactor::ZERO,
 		p->clearRect->getProgramState()->getProgram());
-	rm.desc.sourceRGBBlendFactor = backend::BlendFactor::ONE;
-	rm.desc.destinationRGBBlendFactor = backend::BlendFactor::ZERO;
-	rm.desc.sourceAlphaBlendFactor = backend::BlendFactor::ONE;
-	rm.desc.destinationAlphaBlendFactor = backend::BlendFactor::ZERO;
+	rm->desc.sourceRGBBlendFactor = backend::BlendFactor::ONE;
+	rm->desc.destinationRGBBlendFactor = backend::BlendFactor::ZERO;
+	rm->desc.sourceAlphaBlendFactor = backend::BlendFactor::ONE;
+	rm->desc.destinationAlphaBlendFactor = backend::BlendFactor::ZERO;
+	p->clearRectRenderMode = rm;
 
 	const auto program = backend::ProgramCache::getInstance()->getBuiltinProgram(
 		backend::ProgramType::POSITION_TEXTURE_COLOR);
-	RenderMode::Default->init("DEFAULT",
+	RenderMode::getDefault()->init("DEFAULT",
 		backend::BlendOperation::ADD,
 		backend::BlendFactor::SRC_ALPHA,
 		backend::BlendFactor::ONE_MINUS_SRC_ALPHA,
 		program);
-	p->currentRenderMode = RenderMode::Default;
+	p->currentRenderMode = RenderMode::getDefault();
 	p->currentProjection = director->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
 	director->setProjection(Director::Projection::_2D);
 	director->setDisplayStats(false);
@@ -124,11 +125,13 @@ bool XRenderer::end()
 	//CC_SAFE_DELETE(getInstance()->movingNode);
 	CC_SAFE_DELETE(getInstance()->drawNode);
 	CC_SAFE_DELETE(getInstance()->movingCamera);
+	CC_SAFE_DELETE(getInstance()->clearRectRenderMode);
 	CC_SAFE_RELEASE_NULL(getInstance()->tempRenderTexture);
 	CC_SAFE_RELEASE_NULL(getInstance()->clearRect);
 	CC_SAFE_RELEASE_NULL(getInstance()->commandBuffer);
 	RenderMode::modeMap.clear();
 	RenderMode::modeVector.clear();
+	RenderMode::destructDefault();
 	return true;
 }
 
@@ -1024,7 +1027,7 @@ void XRenderer::renderFrameBuffer(float scale, bool copy)
 	if (!copy)
 	{
 		cmd->init(0.f, tex,
-			RenderMode::Default, RenderMode::Default->tempraryProgramState());
+			RenderMode::getDefault(), RenderMode::getDefault()->tempraryProgramState());
 		*cmd->getTri() = p->getPolygonInfo().triangles;
 		*cmd->getMV() = p->getNodeToParentTransform();
 	}
@@ -1035,7 +1038,7 @@ void XRenderer::renderFrameBuffer(float scale, bool copy)
 		tr.m[5] = -1.f;
 		tr.m[13] = _lastFBSize.height;
 		cmd->init(0.f, tex,
-			RenderMode::Default, RenderMode::Default->tempraryProgramState());
+			RenderMode::getDefault(), RenderMode::getDefault()->tempraryProgramState());
 		*cmd->getTri() = p->getPolygonInfo().triangles;
 		*cmd->getMV() = tr;
 	}

@@ -6,6 +6,11 @@ using namespace lstg;
 using namespace cocos2d;
 using namespace backend;
 
+XTrianglesCommand::XTrianglesCommand()
+{
+	_renderMode = RenderMode::getDefault();
+}
+
 void XTrianglesCommand::init(float globalOrder, Texture2D* texture,
 	RenderMode* renderMode, ProgramState* programState)
 {

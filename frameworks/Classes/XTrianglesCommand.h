@@ -9,6 +9,8 @@ namespace lstg
 	class XTrianglesCommand : public cocos2d::TrianglesCommand
 	{
 	public:
+		XTrianglesCommand();
+
 		void init(float globalOrder, cocos2d::Texture2D* texture,
 			RenderMode* renderMode, cocos2d::backend::ProgramState* programState);
 		//TODO: setExternalMV
@@ -19,7 +21,7 @@ namespace lstg
 		void copyProperties(XTrianglesCommand* other) const;
 
 	protected:
-		RenderMode* _renderMode = RenderMode::Default;
+		RenderMode* _renderMode = nullptr;
 
 	/*
 		XTrianglesCommand();

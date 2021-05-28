@@ -22,7 +22,7 @@ namespace lstg {
 			cocos2d::Vec2 Advance;     // brush advance (pixel)
 		};
 	private:
-		RenderMode* renderMode = RenderMode::Default;
+		RenderMode* renderMode = RenderMode::getDefault();
 		cocos2d::Color4B textColor = cocos2d::Color4B::WHITE;
 		cocos2d::Color4B outlineColor = cocos2d::Color4B(0, 0, 0, 0xFF);
 		cocos2d::Color4B glowColor = cocos2d::Color4B::WHITE;

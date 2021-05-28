@@ -68,7 +68,7 @@ namespace lstg
 		std::shared_ptr<void> pool = nullptr;
 
 	public:
-		static RenderMode* Default;
+		static RenderMode* getDefault();
 		static RenderMode* getByName(const std::string& name);
 		static RenderMode* getByID(size_t idx);
 		static size_t getIDByName(const std::string& name);
@@ -77,8 +77,8 @@ namespace lstg
 	protected:
 		static void addMode(RenderMode* mode);
 		static void clearModes();
+		static void destructDefault();
 
-		static RenderMode _Default;
 		static std::vector<RenderMode*> modeVector;
 		static cocos2d::Map<std::string, RenderMode*> modeMap;
 

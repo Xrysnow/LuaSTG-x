@@ -124,7 +124,7 @@ bool ResRenderTarget::render(ResFX* shader, RenderMode* blend)
 		return false;
 	}
 	if (!blend)
-		blend = RenderMode::Default;
+		blend = RenderMode::getDefault();
 	return LRR.postEffect(this, shader, blend);
 }
 

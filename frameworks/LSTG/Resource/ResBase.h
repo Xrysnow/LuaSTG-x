@@ -104,7 +104,7 @@ namespace lstg
 	{
 	protected:
 		cocos2d::V3F_C4B_T2F_Quad vertex;
-		RenderMode* renderMode = RenderMode::Default;
+		RenderMode* renderMode = RenderMode::getDefault();
 	public:
 		virtual void setVertex(const cocos2d::V3F_C4B_T2F_Quad& v) { vertex = v; }
 		virtual cocos2d::V3F_C4B_T2F_Quad& getVertex() { return vertex; }

@@ -48,7 +48,7 @@ namespace lstg
 		cocos2d::Sprite* clearRect = nullptr;
 		cocos2d::V3F_C4B_T2F_Quad clearRectQuad;
 		cocos2d::Mat4 clearRectProj;
-		RenderMode clearRectRenderMode;
+		RenderMode* clearRectRenderMode = nullptr;
 
 		bool bUseFrameBuffer = true;
 		cocos2d::RenderTexture* frameBuffer = nullptr;

@@ -71,7 +71,7 @@ namespace lstg {
 			ParticleInfo particleInfo;
 			RandomWELL512 _rand;
 
-			RenderMode* renderMode = RenderMode::Default;
+			RenderMode* renderMode = RenderMode::getDefault();
 			Status status = Status::Alive;  // 状态
 			cocos2d::Vec2 center;  // 中心
 			cocos2d::Vec2 prevCenter;  // 上一个中心

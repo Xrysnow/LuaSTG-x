@@ -1044,7 +1044,7 @@ bool GameObjectManager::DoDefaultRender(GameObject* p)
 	if (p->cm->getBindNode())
 	{
 		LRR.flushTriangles();
-		LRR.updateRenderMode(RenderMode::Default);
+		LRR.updateRenderMode(RenderMode::getDefault());
 		//LRR.pushDummyCommand();
 		const auto node = p->cm->getBindNode();
 		const auto sp3d = dynamic_cast<Sprite3D*>(node);

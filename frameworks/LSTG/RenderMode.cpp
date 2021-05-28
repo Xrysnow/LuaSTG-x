@@ -10,9 +10,7 @@ using namespace lstg;
 using namespace cocos2d;
 using namespace backend;
 
-RenderMode RenderMode::_Default = {};
-RenderMode* RenderMode::Default = &_Default;
-
+static RenderMode* RenderModeDefault = nullptr;
 std::vector<RenderMode*> RenderMode::modeVector;
 Map<std::string, RenderMode*> RenderMode::modeMap;
 
@@ -47,6 +45,20 @@ RenderMode::~RenderMode()
 	//	LMP.removeProgramStatePool(_program);
 	CC_SAFE_RELEASE(_program);
 	CC_SAFE_RELEASE(defaultState);
+}
+
+RenderMode* RenderMode::getDefault()
+{
+	if (!RenderModeDefault)
+		RenderModeDefault = new RenderMode();
+        assert(RenderModeDefault);
+	return RenderModeDefault;
+}
+
+void RenderMode::destructDefault()
+{
+	delete RenderModeDefault;
+	RenderModeDefault = nullptr;
 }
 
 RenderMode* RenderMode::create(const std::string& name, BlendOperation blendOp,
@@ -282,7 +294,7 @@ RenderMode* RenderMode::getByID(size_t idx)
 {
 	if (0 < idx && idx <= modeVector.size())
 		return modeVector[idx - 1];
-	return Default;
+	return getDefault();
 }
 
 size_t RenderMode::getIDByName(const std::string& name)

@@ -117,7 +117,7 @@ void ComponentManager::updateCommandSprite(ResSprite* res)
 void ComponentManager::updateCommandTexture(ResTexture* res)
 {
 	if (!vert) return;
-	auto renderMode = RenderMode::Default;
+	auto renderMode = RenderMode::getDefault();
 	if (blend)
 	{
 		if (blend->renderMode)
@@ -151,7 +151,7 @@ void ComponentManager::reset()
 	}
 	if (blend)
 	{
-		blend->renderMode = RenderMode::Default;
+		blend->renderMode = RenderMode::getDefault();
 		blend->blendColor = Color4B::WHITE;
 		blend->useColor = false;
 	}
@@ -501,7 +501,7 @@ void ComponentManager::renderLabel()
 		}
 		else
 		{
-			LRR.updateRenderMode(RenderMode::Default);
+			LRR.updateRenderMode(RenderMode::getDefault());
 		}
 		//TODO: check
 		lb->visit(LRR.getRenderer(), xtcmd.getModelView(), Node::FLAGS_TRANSFORM_DIRTY);
