@@ -52,7 +52,7 @@ int32_t Random::randInt(int32_t a, int32_t b)
 		return a + int32_t(well512.getRandUInt(uint32_t(b - a)));
 	if (a > b)
 		std::swap(a, b);
-	const std::uniform_int_distribution<int32_t> uniform_int(a, b);
+	std::uniform_int_distribution<int32_t> uniform_int(a, b);
 	SWITCH_TYPE(_type, uniform_int);
 	return 0;
 }
@@ -86,84 +86,84 @@ int32_t Random::randSign()
 
 int64_t Random::uniform_int(int64_t a, int64_t b)
 {
-	const std::uniform_int_distribution<int64_t> dist(a, b);
+	std::uniform_int_distribution<int64_t> dist(a, b);
 	SWITCH_TYPE(_type, dist);
 	return 0;
 }
 
 bool Random::bernoulli(double p)
 {
-	const std::bernoulli_distribution dist(p);
+	std::bernoulli_distribution dist(p);
 	SWITCH_TYPE(_type, dist);
 	return false;
 }
 
 int32_t Random::binomial(int32_t t, double p)
 {
-	const std::binomial_distribution<int32_t> dist(t, p);
+	std::binomial_distribution<int32_t> dist(t, p);
 	SWITCH_TYPE(_type, dist);
 	return 0;
 }
 
 int32_t Random::negative_binomial(int32_t k, double p)
 {
-	const std::negative_binomial_distribution<int32_t> dist(k, p);
+	std::negative_binomial_distribution<int32_t> dist(k, p);
 	SWITCH_TYPE(_type, dist);
 	return 0;
 }
 
 int32_t Random::geometric(double p)
 {
-	const std::geometric_distribution<int32_t> dist(p);
+	std::geometric_distribution<int32_t> dist(p);
 	SWITCH_TYPE(_type, dist);
 	return 0;
 }
 
 int32_t Random::poisson(double mean)
 {
-	const std::poisson_distribution<int32_t> dist(mean);
+	std::poisson_distribution<int32_t> dist(mean);
 	SWITCH_TYPE(_type, dist);
 	return 0;
 }
 
 double Random::extreme_value(double a, double b)
 {
-	const std::extreme_value_distribution<double> dist(a, b);
+	std::extreme_value_distribution<double> dist(a, b);
 	SWITCH_TYPE(_type, dist);
 	return 0;
 }
 
 double Random::chi_squared(double n)
 {
-	const std::chi_squared_distribution<double> dist(n);
+	std::chi_squared_distribution<double> dist(n);
 	SWITCH_TYPE(_type, dist);
 	return 0;
 }
 
 double Random::cauchy(double a, double b)
 {
-	const std::cauchy_distribution<double> dist(a, b);
+	std::cauchy_distribution<double> dist(a, b);
 	SWITCH_TYPE(_type, dist);
 	return 0;
 }
 
 double Random::fisher_f(double m, double n)
 {
-	const std::fisher_f_distribution<double> dist(m, n);
+	std::fisher_f_distribution<double> dist(m, n);
 	SWITCH_TYPE(_type, dist);
 	return 0;
 }
 
 double Random::student_t(double n)
 {
-	const std::student_t_distribution<double> dist(n);
+	std::student_t_distribution<double> dist(n);
 	SWITCH_TYPE(_type, dist);
 	return 0;
 }
 
 int32_t Random::discrete(const std::vector<double>& weights)
 {
-	const std::discrete_distribution<int32_t> dist(weights.begin(), weights.end());
+	std::discrete_distribution<int32_t> dist(weights.begin(), weights.end());
 	SWITCH_TYPE(_type, dist);
 	return 0;
 }
@@ -172,7 +172,7 @@ double Random::piecewise_constant(const std::vector<double>& sequence, const std
 {
 	if (sequence.size() != weights.size() + 1)
 		return 0;
-	const std::piecewise_constant_distribution<double> dist(sequence.begin(), sequence.end(), weights.begin());
+	std::piecewise_constant_distribution<double> dist(sequence.begin(), sequence.end(), weights.begin());
 	SWITCH_TYPE(_type, dist);
 	return 0;
 }
@@ -181,7 +181,7 @@ double Random::piecewise_linear(const std::vector<double>& sequence, const std::
 {
 	if (sequence.size() != weights.size())
 		return 0;
-	const std::piecewise_linear_distribution<double> dist(sequence.begin(), sequence.end(), weights.begin());
+	std::piecewise_linear_distribution<double> dist(sequence.begin(), sequence.end(), weights.begin());
 	SWITCH_TYPE(_type, dist);
 	return 0;
 }
