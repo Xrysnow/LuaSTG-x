@@ -1,4 +1,5 @@
 ﻿#include "XTriangles.h"
+#include <cstring>
 
 #define CREATE(_init) auto ret = new (std::nothrow) Triangles(); \
 if (ret&&ret->_init){ ret->autorelease(); return ret; } \

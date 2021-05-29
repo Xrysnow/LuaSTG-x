@@ -1,5 +1,6 @@
 #include "XStream.h"
 #include <algorithm>
+#include <cstring>
 
 using namespace std;
 using namespace lstg;

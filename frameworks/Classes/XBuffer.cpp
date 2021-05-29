@@ -1,4 +1,5 @@
 ﻿#include "XBuffer.h"
+#include <cstring>
 
 using namespace lstg;
 

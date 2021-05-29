@@ -1,5 +1,6 @@
 ﻿#include "RandomWELL512.h"
 #include <ctime>
+#include <cstring>
 
 using namespace lstg;
 
