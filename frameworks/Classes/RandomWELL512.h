@@ -12,9 +12,9 @@ namespace lstg
 		static constexpr result_type default_seed = 1u;
 
 		template <class Seed_seq>
-		using Enable_if_seed_seq_t = std::enable_if_t<
+		using Enable_if_seed_seq_t = typename std::enable_if<
 			!std::is_convertible<typename std::remove_cv<Seed_seq>::type, result_type>::value &&
-			!std::is_same<typename std::remove_cv<Seed_seq>::type, RandomWELL512>::value, int>;
+			!std::is_same<typename std::remove_cv<Seed_seq>::type, RandomWELL512>::value, int>::type;
 
 		template <class Seed_seq>
 		static constexpr result_type _seed_seq_to_seed(Seed_seq& seq) {
