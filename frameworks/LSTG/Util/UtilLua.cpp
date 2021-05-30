@@ -820,7 +820,7 @@ int lua::pushCArray(lua_State* L, lua_Number* arr, uint32_t size)
 			void* p;
 			if (luaval_to_cptr(L, -1, &p))
 			{
-				memcpy(p, arr, size * sizeof(lua_Number));
+				std::memcpy(p, arr, size * sizeof(lua_Number));
 				return 1;
 			}
 			else

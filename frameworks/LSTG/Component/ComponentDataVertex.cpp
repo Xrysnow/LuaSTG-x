@@ -1,4 +1,5 @@
 ﻿#include "ComponentDataVertex.h"
+#include <cstring>
 
 lstg::ComponentDataVertex::ComponentDataVertex()
 {
@@ -43,7 +44,7 @@ bool lstg::ComponentDataVertex::init(ResTexture* res)
 	CC_SAFE_DELETE_ARRAY(tri.indices);
 	tri.verts = new cocos2d::V3F_C4B_T2F[tri.vertCount];
 	tri.indices = new unsigned short[tri.indexCount];
-	memcpy(tri.verts, xtri->getVertexData(), sizeof(cocos2d::V3F_C4B_T2F)*tri.vertCount);
-	memcpy(tri.indices, xtri->getIndexData(), sizeof(unsigned short)*tri.indexCount);
+	std::memcpy(tri.verts, xtri->getVertexData(), sizeof(cocos2d::V3F_C4B_T2F)*tri.vertCount);
+	std::memcpy(tri.indices, xtri->getIndexData(), sizeof(unsigned short)*tri.indexCount);
 	return true;
 }

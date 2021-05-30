@@ -4,6 +4,7 @@
 #include "LogSystem.h"
 #include "../Classes/MemPoolManager.h"
 #include "Renderer.h"
+#include <cstring>
 
 using namespace std;
 using namespace lstg;
@@ -182,10 +183,10 @@ void RenderMode::setUniformBuffer(const std::string& buffer)
 	if (buffer.size() != fragUniformBufferSize + vertUniformBufferSize)
 		return;
 	if (fragUniformBuffer)
-		memcpy(fragUniformBuffer,
+		std::memcpy(fragUniformBuffer,
 			buffer.c_str(), fragUniformBufferSize);
 	if (vertUniformBuffer)
-		memcpy(vertUniformBuffer,
+		std::memcpy(vertUniformBuffer,
 			buffer.c_str() + fragUniformBufferSize, vertUniformBufferSize);
 }
 
@@ -264,9 +265,9 @@ void RenderMode::syncUniform(ProgramState* state)
 	state->getVertexUniformBuffer(&vBuffer, vSize);
 	assert(fSize == fragUniformBufferSize && vSize == vertUniformBufferSize);
 	if (fBuffer)
-		memcpy(fBuffer, fragUniformBuffer, fragUniformBufferSize);
+		std::memcpy(fBuffer, fragUniformBuffer, fragUniformBufferSize);
 	if (vBuffer)
-		memcpy(vBuffer, vertUniformBuffer, vertUniformBufferSize);
+		std::memcpy(vBuffer, vertUniformBuffer, vertUniformBufferSize);
 }
 
 void RenderMode::setUniform(const std::string& name, const void* data, size_t size)

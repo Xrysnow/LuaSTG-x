@@ -4,6 +4,7 @@
 #include "renderer/backend/Device.h"
 #include <locale>
 #include <codecvt>
+#include <cstring>
 
 using namespace std;
 using namespace lstg;
@@ -838,7 +839,7 @@ std::string lstg::MD5Hash(const void* data, size_t size)
 void RC4::operator()(const uint8_t* input, size_t inputlen, uint8_t* output)
 {
 	uint8_t Scpy[256];
-	memcpy(Scpy, S, sizeof(S));
+	std::memcpy(Scpy, S, sizeof(S));
 	for (size_t i = 0, j = 0; i < inputlen; i++)
 	{
 		const size_t i2 = (i + 1) % 256;

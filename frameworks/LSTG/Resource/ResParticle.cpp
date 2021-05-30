@@ -2,6 +2,7 @@
 #include "AppFrame.h"
 #include "Util/Utility.h"
 #include "Renderer.h"
+#include <cstring>
 
 using namespace std;
 using namespace cocos2d;
@@ -108,7 +109,7 @@ void ResParticle::ParticlePool::update(float delta)
 		{
 			--numAlive;
 			if (numAlive > i + 1)
-				memcpy(&tInst, &particlePool[numAlive], sizeof(ParticleInstance));
+				std::memcpy(&tInst, &particlePool[numAlive], sizeof(ParticleInstance));
 			continue;
 		}
 
@@ -400,7 +401,7 @@ ResParticle* ResParticle::create(const std::string& name, const std::string& pat
 	try
 	{
 		ParticleInfo tInfo{};
-		memcpy(&tInfo, data->data(), sizeof(ParticleInfo));
+		std::memcpy(&tInfo, data->data(), sizeof(ParticleInfo));
 		tInfo.BlendInfo = (tInfo.BlendInfo >> 16) & 0x00000003;
 		//TODO: move to lua
 		auto blend = RenderMode::getByName("add+alpha");
