@@ -97,6 +97,9 @@ string XFileUtils::fullPathForFilename(const string& filename) const
 	{
 		return filename;
 	}
+	// fullPathForDirectory is not public
+	if (!filename.empty() && filename[filename.size() - 1] == '/')
+		return _FileUtilsBase::fullPathForDirectory(filename);
 	return _FileUtilsBase::fullPathForFilename(filename);
 }
 
