@@ -20,7 +20,7 @@ using lstg::lua::native_to_luaval;
 	#ifdef LUA_DEBUG
 		#define LUA_CHECK_COBJ(L, COBJ, NAME) if(!(COBJ)) { return luaL_error((L), "invalid 'cobj' in '%s'", NAME); }
 	#else
-		#define LUA_CHECK_COBJ()
+		#define LUA_CHECK_COBJ(L, COBJ, NAME)
 	#endif
 #endif
 #ifndef LUA_CHECK_PARAMETER
