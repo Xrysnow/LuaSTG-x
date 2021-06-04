@@ -113,6 +113,8 @@ bool AppFrame::applicationDidFinishLaunching()
 #elif CC_TARGET_PLATFORM == CC_PLATFORM_LINUX
 #endif
 
+	LLOGGER.setConsoleLevel(2);
+
 	auto t = ::time(nullptr);
 	char tmp[32];
 	::strftime(tmp, sizeof(tmp), "%H:%M:%S", ::localtime(&t));
