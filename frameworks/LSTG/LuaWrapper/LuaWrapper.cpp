@@ -187,7 +187,7 @@ end
 
 	for(auto& it : ffi_func)
 	{
-		if (luaL_dostring(L, it.second.c_str()) == 0)
+		if (!luaL_dostring(L, it.second.c_str()))
 			lua_setfield(L, LUA_REGISTRYINDEX, it.first.c_str());
 		else
 		{
