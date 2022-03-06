@@ -85,9 +85,9 @@ void ResFX::setColor(const std::string& uniform, const Color4B& value)
 	renderMode->setColor(uniform, value);
 }
 
-void ResFX::setTexture(const std::string& uniform, Texture2D* value)
+void ResFX::setTexture(const std::string& uniform, uint32_t slot, Texture2D* value)
 {
-	renderMode->setTexture(uniform, value);
+	renderMode->setTexture(uniform, slot, value);
 }
 
 std::unordered_map<std::string, std::string> ResFX::getInfo() const

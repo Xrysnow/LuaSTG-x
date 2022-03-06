@@ -171,11 +171,11 @@ void RenderMode::setColor(const std::string& uniform, const Color4B& value)
 	setUniform(uniform, &v, sizeof(v));
 }
 
-void RenderMode::setTexture(const std::string& uniform, Texture2D* value)
+void RenderMode::setTexture(const std::string& uniform, uint32_t slot, Texture2D* value)
 {
 	const auto it = locations.find(uniform);
 	if (it != locations.end() && value)
-		defaultState->setTexture(it->second, 0, value->getBackendTexture());
+		defaultState->setTexture(it->second, slot, value->getBackendTexture());
 }
 
 void RenderMode::setUniformBuffer(const std::string& buffer)
@@ -268,6 +268,15 @@ void RenderMode::syncUniform(ProgramState* state)
 		std::memcpy(fBuffer, fragUniformBuffer, fragUniformBufferSize);
 	if (vBuffer)
 		std::memcpy(vBuffer, vertUniformBuffer, vertUniformBufferSize);
+	// sync texture
+	// warining! warining! warining! warining! warining! warining!
+	// this is totally hacking! we remove the 'const' qualifier and modify data directly
+	using TextureInfoMap = std::unordered_map<int, cocos2d::backend::TextureInfo>;
+	TextureInfoMap fTex = defaultState->getFragmentTextureInfos();
+	TextureInfoMap vTex = defaultState->getVertexTextureInfos();
+	(TextureInfoMap&)(state->getFragmentTextureInfos()) = std::move(fTex);
+	(TextureInfoMap&)(state->getVertexTextureInfos()) = std::move(vTex);
+	// warining! warining! warining! warining! warining! warining!
 }
 
 void RenderMode::setUniform(const std::string& name, const void* data, size_t size)
