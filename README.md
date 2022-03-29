@@ -44,7 +44,7 @@ Full release download:
 2. Clone external libraries into `frameworks/cocos2d-x/external` (or download from [release page](https://github.com/Xrysnow/cocos2d-x-3rd-party-libs-bin/releases)).
 
         $ cd LuaSTG-x/frameworks/cocos2d-x/external
-        $ git clone https://github.com/Xrysnow/cocos2d-x-3rd-party-libs-bin.git
+        $ git clone --recursive https://github.com/Xrysnow/cocos2d-x-3rd-party-libs-bin.git
 
 3. Download extra files from Cubism SDK if you need live2d module. ([instructions](https://github.com/Xrysnow/cocos2d-x-live2d)).
 

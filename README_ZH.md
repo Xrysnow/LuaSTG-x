@@ -44,7 +44,7 @@ LuaSTG-x 是一个基于 [cocos2d-x](https://github.com/cocos2d/cocos2d-x) 和 [
 2. 克隆外部库至 `frameworks/cocos2d-x/external` （或从 [release 页面](https://github.com/Xrysnow/cocos2d-x-3rd-party-libs-bin/releases) 下载）
 
         $ cd LuaSTG-x/frameworks/cocos2d-x/external
-        $ git clone https://github.com/Xrysnow/cocos2d-x-3rd-party-libs-bin.git
+        $ git clone --recursive https://github.com/Xrysnow/cocos2d-x-3rd-party-libs-bin.git
 
 3. 若需要使用 live2d 模块，请下载 Cubism SDK （[指南](https://github.com/Xrysnow/cocos2d-x-live2d)）
 
