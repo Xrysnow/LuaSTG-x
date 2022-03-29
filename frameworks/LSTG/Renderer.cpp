@@ -114,7 +114,7 @@ bool XRenderer::init()
 	director->setProjection(Director::Projection::_2D);
 	director->setDisplayStats(false);
 
-	p->commandBuffer = backend::Device::getInstance()->newCommandBuffer();
+	p->commandBuffer = p->pRenderer->getCommandBuffer();
 
 	return true;
 }
@@ -340,7 +340,7 @@ void XRenderer::renderClear(const Color4F& c)noexcept
 	}
 	else
 	{
-#ifndef CC_USE_METAL
+#if !defined(CC_USE_METAL) && !defined(CC_USE_GFX)
 		// note: will clear all if not set scissor
 		const auto vp = currentVP;
 		pushCallbackCommand([=]()
@@ -362,7 +362,7 @@ void XRenderer::renderClear(const Color4F& c)noexcept
 		clearRectQuad.tl.colors = c4b;
 		clearRectQuad.tr.colors = c4b;
 
-		updateRenderMode(&clearRectRenderMode);
+		updateRenderMode(clearRectRenderMode);
 		renderTexture(clearRect->getTexture(), &clearRectQuad);
 
 		setProjection(projBak);
