@@ -50,9 +50,10 @@ Full release download:
 
 4. Generate project using CMake ([instructions](https://github.com/cocos2d/cocos2d-x/blob/v4/cmake/README.md)).
    - If your target is Android platform, just open `frameworks/runtime-src/proj.android` with Android Studio.
-   - If your target is macOS platform, add `-GXcode` parameter to cmake.
-   - If your target is IOS platform, you can search for a bash script that helps to configure cmake.
+   - If your target is macOS platform, add `-GXcode` parameter to CMake.
+   - If your target is IOS platform, you can search for a bash script that helps to configure CMake.
    - If your target is macOS/IOS platform, you need to open `project setting -> TARGETS -> LuaSTG-x -> Build Phases -> Copy Files` and check `Code Sigh On Copy` for frameworks.
+   - If your target is Linux platform, you need to execute `frameworks/cocos2d-x/install-deps-linux.sh` before using CMake. It's recommended to add `-GNinja` parameter to use `ninja` since default `make` is very slow.
 
 5. Compile with your target compiler.
 
@@ -80,17 +81,22 @@ LuaSTG-x\
 ├　[lstgx_Audio](https://github.com/Xrysnow/lstgx_Audio)\
 │　　└ [openal-soft](https://github.com/kcat/openal-soft) (in lstgx_external)\
 ├　[lstgx_external](https://github.com/Xrysnow/lstgx_external)\
+│　　├ [ANGLE](https://github.com/google/angle) (optional)\
 │　　├ [BurstLinker](https://github.com/Xrysnow/BurstLinker)\
+│　　├ [cLaTeXMath](https://github.com/NanoMichael/cLaTeXMath)\
+│　　├ [FairyGUI](https://github.com/fairygui/FairyGUI-cocos2dx) (optional)\
+│　　├ [FFmpeg](http://ffmpeg.org) (optional)\
+│　　├ [libzippp](https://github.com/ctabin/libzippp)\
+│　　│　└ [libzip](https://github.com/nih-at/libzip)\
+│　　├ [Lua CJSON](https://kyne.com.au/~mark/software/lua-cjson.php)\
 │　　├ [luafilesystem](http://keplerproject.github.io/luafilesystem)\
 │　　├ [LPeg](http://www.inf.puc-rio.br/~roberto/lpeg)\
+│　　├ [nanosvg](https://github.com/memononen/nanosvg)\
 │　　├ [NativeFileDialog](https://github.com/mlabbe/nativefiledialog)\
 │　　├ [libogg](https://xiph.org/ogg)\
 │　　├ [openal-soft](https://github.com/kcat/openal-soft)\
-│　　├ [cLaTeXMath](https://github.com/NanoMichael/cLaTeXMath)\
-│　　├ [FFmpeg](http://ffmpeg.org)\
-│　　├ [nanosvg](https://github.com/memononen/nanosvg)\
-│　　└ [libzippp](https://github.com/ctabin/libzippp)\
-│　　　└ [libzip](https://github.com/nih-at/libzip)\
+│　　├ [yasio](https://github.com/yasio/yasio) (optional)\
+│　　└ [Yuescript](https://github.com/pigpigyyy/Yuescript) (optional)\
 ├　[lstgx_Math](https://github.com/Xrysnow/lstgx_Math)\
 ├　[lstgx_LuaCore](https://github.com/Xrysnow/lstgx_LuaCore)\
 ├　[cocos2d-x-imgui](https://github.com/Xrysnow/cocos2d-x-imgui)\
@@ -98,7 +104,7 @@ LuaSTG-x\
 │　　├ [imgui_markdown](https://github.com/juliettef/imgui_markdown)\
 │　　├ [ImGuiColorTextEdit](https://github.com/Xrysnow/ImGuiColorTextEdit)\
 │　　└ [implot](https://github.com/epezent/implot)\
-├　[cocos2d-x-live2d](https://github.com/Xrysnow/cocos2d-x-live2d)\
+├　[cocos2d-x-live2d](https://github.com/Xrysnow/cocos2d-x-live2d) (optional)\
 │　├ [CubismNativeFramework](https://github.com/Live2D/CubismNativeFramework)\
 │　└ [Cubism SDK for Native](https://www.live2d.com/en/download/cubism-sdk/download-native)\
 ├　[cocos2d-x-video](https://github.com/Xrysnow/cocos2d-x-video)\
