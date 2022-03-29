@@ -4,6 +4,9 @@
 #include "LogSystem.h"
 #include "../Classes/MemPoolManager.h"
 #include "Renderer.h"
+#ifdef CC_USE_GFX
+#include "renderer/backend/gfx/ProgramGFX.h"
+#endif
 #include <cstring>
 
 using namespace std;
@@ -268,6 +271,20 @@ void RenderMode::syncUniform(ProgramState* state)
 		std::memcpy(fBuffer, fragUniformBuffer, fragUniformBufferSize);
 	if (vBuffer)
 		std::memcpy(vBuffer, vertUniformBuffer, vertUniformBufferSize);
+
+#ifdef CC_USE_GFX
+	auto p = static_cast<ProgramGFX*>(state->getProgram());
+	CC_ASSERT(p);
+	if (p)
+	{
+		auto dst = p->getState(state);
+		CC_ASSERT(dst);
+		dst->setAllBuffer(vertUniformBuffer, vertUniformBufferSize);
+		auto src = p->getState(defaultState);
+		CC_ASSERT(src);
+		src->syncTextures(dst);
+	}
+#endif
 }
 
 void RenderMode::setUniform(const std::string& name, const void* data, size_t size)
