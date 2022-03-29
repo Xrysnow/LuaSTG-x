@@ -272,6 +272,21 @@ void RenderMode::syncUniform(ProgramState* state)
 	if (vBuffer)
 		std::memcpy(vBuffer, vertUniformBuffer, vertUniformBufferSize);
 
+	for (auto&& it : state->getVertexTextureInfos())
+	{
+		UniformLocation loc;
+		loc.shaderStage = ShaderStage::VERTEX;
+		loc.location[0] = it.first;
+		defaultState->setTextureArray(loc, it.second.slot, it.second.textures);
+	}
+	for (auto&& it : state->getFragmentTextureInfos())
+	{
+		UniformLocation loc;
+		loc.shaderStage = ShaderStage::FRAGMENT;
+		loc.location[1] = it.first;
+		defaultState->setTextureArray(loc, it.second.slot, it.second.textures);
+	}
+
 #ifdef CC_USE_GFX
 	auto p = static_cast<ProgramGFX*>(state->getProgram());
 	CC_ASSERT(p);
