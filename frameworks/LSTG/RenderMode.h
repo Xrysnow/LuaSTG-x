@@ -35,7 +35,7 @@ namespace lstg
 		void setVec4(const std::string& uniform, const cocos2d::Vec4& value);
 		void setMat4(const std::string& uniform, const cocos2d::Mat4& value);
 		void setColor(const std::string& uniform, const cocos2d::Color4B& value);
-		void setTexture(const std::string& uniform, cocos2d::Texture2D* value);
+		void setTexture(const std::string& uniform, uint32_t slot, cocos2d::Texture2D* value);
 
 		void setUniformBuffer(const std::string& buffer);
 		std::string getUniformBuffer() const;

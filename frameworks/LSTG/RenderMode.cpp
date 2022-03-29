@@ -174,11 +174,11 @@ void RenderMode::setColor(const std::string& uniform, const Color4B& value)
 	setUniform(uniform, &v, sizeof(v));
 }
 
-void RenderMode::setTexture(const std::string& uniform, Texture2D* value)
+void RenderMode::setTexture(const std::string& uniform, uint32_t slot, Texture2D* value)
 {
 	const auto it = locations.find(uniform);
 	if (it != locations.end() && value)
-		defaultState->setTexture(it->second, 0, value->getBackendTexture());
+		defaultState->setTexture(it->second, slot, value->getBackendTexture());
 }
 
 void RenderMode::setUniformBuffer(const std::string& buffer)

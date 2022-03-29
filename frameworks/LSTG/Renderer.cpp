@@ -132,6 +132,8 @@ bool XRenderer::end()
 	RenderMode::modeMap.clear();
 	RenderMode::modeVector.clear();
 	RenderMode::destructDefault();
+	auto p = getInstance();
+	p->labelPool.clear();
 	return true;
 }
 

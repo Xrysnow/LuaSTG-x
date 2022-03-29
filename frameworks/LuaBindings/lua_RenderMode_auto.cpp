@@ -410,7 +410,20 @@ int lua_x_RenderMode_RenderMode_setTexture(lua_State* tolua_S)
 		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
 		ok &= luaval_to_native(tolua_S, 3, &arg1, LUA_FNAME);
 		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->setTexture(arg0, arg1);
+		cobj->setTexture(arg0, 0, arg1);
+		lua_settop(tolua_S, 1);
+		return 1;
+	}
+	else if (argc == 3)
+	{
+		std::string arg0;
+		cocos2d::Texture2D* arg1;
+		uint32_t arg2;
+		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
+		ok &= luaval_to_native(tolua_S, 3, &arg1, LUA_FNAME);
+		ok &= luaval_to_uint32(tolua_S, 4, &arg2, LUA_FNAME);
+		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
+		cobj->setTexture(arg0, arg2, arg1);
 		lua_settop(tolua_S, 1);
 		return 1;
 	}
