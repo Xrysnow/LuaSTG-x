@@ -130,7 +130,7 @@ endif()
 
 # FairyGUI
 
-if(NOT LSTGX_NO_FAIRY_GUI)	
+if(NOT LSTGX_NO_FAIRY_GUI)
 	add_subdirectory(${LSTGX_EXT_ROOT}/FairyGUI)
 	list(APPEND EXTERNAL_LIBS ext_FairyGUI)
 else()
@@ -139,7 +139,7 @@ endif()
 
 # yasio
 
-if(NOT LSTGX_NO_YASIO)	
+if(NOT LSTGX_NO_YASIO)
 	add_subdirectory(${LSTGX_EXT_ROOT}/yasio)
 	list(APPEND EXTERNAL_LIBS ext_yasio)
 else()
@@ -148,7 +148,7 @@ endif()
 
 # Yuescript
 
-if(NOT LSTGX_NO_YUESCRIPT)	
+if(NOT LSTGX_NO_YUESCRIPT)
 	add_subdirectory(${LSTGX_EXT_ROOT}/Yuescript)
 	list(APPEND EXTERNAL_LIBS ext_Yuescript)
 else()
@@ -168,4 +168,8 @@ if(WINDOWS)
 	endif()
 endif()
 
-target_link_libraries(${APP_NAME} ${EXTERNAL_LIBS})
+if(LINUX)
+	target_link_libraries(${APP_NAME} ${EXTERNAL_LIBS} -Wl,--rpath=.)
+else()
+	target_link_libraries(${APP_NAME} ${EXTERNAL_LIBS})
+endif()
