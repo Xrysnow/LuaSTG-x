@@ -409,7 +409,7 @@ void GameObjectBentLaser::renderWithTexture2D(Texture2D* tex, RenderMode* blend,
 		LaserNode& cur = queue[i];
 		LaserNode& next = queue[i + 1];
 
-		// === 计算最左侧的两个点 ===
+		// skip close nodes
 		float lenOffsetA = cur.dLength;
 		if (lenOffsetA < 0.0001f && i + 1 != queue.size() - 1)
 		{
@@ -418,12 +418,12 @@ void GameObjectBentLaser::renderWithTexture2D(Texture2D* tex, RenderMode* blend,
 			continue;
 		}
 
-		// 计算宽度上的扩展长度(旋转270度)
 		auto& offsetA_Norm = cur.dNormalized;
 		auto& expandVec = cur.expandVec;
 
-		if (i == i_start)  // 如果是第一个节点，则其宽度扩展使用expandVec计算
+		if (i == i_start)
 		{
+			// use half_width for the first node
 			const float expX = expandVec.x * renderScale * cur.half_width;
 			const float expY = expandVec.y * renderScale * cur.half_width;
 			vt0->vertices.x = cur.pos.x + expX;
@@ -433,7 +433,7 @@ void GameObjectBentLaser::renderWithTexture2D(Texture2D* tex, RenderMode* blend,
 			vt3->vertices.y = cur.pos.y - expY;
 			vt3->texCoords.u = tex_left;
 		}
-		else if (!skip_copy)  // 否则，拷贝1和2
+		else if (!skip_copy)
 		{
 			vt0->vertices.x = vt1->vertices.x;
 			vt0->vertices.y = vt1->vertices.y;
@@ -444,10 +444,10 @@ void GameObjectBentLaser::renderWithTexture2D(Texture2D* tex, RenderMode* blend,
 		}
 		skip_copy = false;
 
-		// === 计算最右侧的两个点 ===
 		tVecLength += lenOffsetA;
-		if (i == queue.size() - 2)  // 这是最后两个节点，则其宽度扩展使用expandVec计算
+		if (i == queue.size() - 2)
 		{
+			// last two nodes
 			if (lenOffsetA > 0.0001f)
 			{
 				const float expX = expandVec.x * renderScale * next.half_width;
@@ -459,12 +459,9 @@ void GameObjectBentLaser::renderWithTexture2D(Texture2D* tex, RenderMode* blend,
 				vt2->vertices.y = next.pos.y + expY;
 				vt2->texCoords.u = tex_left + tex_width;
 
-				//const Vec2 v0(vt0->vertices.x, vt0->vertices.y);
-				//const Vec2 v1(vt1->vertices.x, vt1->vertices.y);
-				//const Vec2 v2(vt2->vertices.x, vt2->vertices.y);
-				//const Vec2 v3(vt3->vertices.x, vt3->vertices.y);
-				//const float cross1 = (v1 - v0).dot(v2 - v3);
-				//const float cross2 = (v2 - v0).dot(v1 - v3);
+				// fix if crossed
+				// cross1 = (v1 - v0).dot(v2 - v3);
+				// cross2 = (v2 - v0).dot(v1 - v3);
 				const float cross1 =
 					(vt1->vertices.x - vt0->vertices.x)*(vt2->vertices.x - vt3->vertices.x) +
 					(vt1->vertices.y - vt0->vertices.y)*(vt2->vertices.y - vt3->vertices.y);
@@ -488,15 +485,18 @@ void GameObjectBentLaser::renderWithTexture2D(Texture2D* tex, RenderMode* blend,
 				vt2->texCoords.u = tex_left + tex_width;
 			}
 		}
-		else  // 否则，参考第三个点
+		else
 		{
 			float expX, expY;
 			auto angleBisect = offsetA_Norm - next.dNormalized;
 			const float angleBisectLen = angleBisect.length();
 
-			if (angleBisectLen < 1e-3f)  // 几乎在一条直线上
+			if (angleBisectLen < 1e-3f
+				&& colorMode == ColorMode::Normal
+				&& std::abs(cur.half_width - next.half_width) < 1e-3f)
 			{
-				skip_copy = true; // TODO: this will affect vert color
+				// nearly a line, no vert color, no width change
+				skip_copy = true;
 				continue;
 			}
 			else if (angleBisectLen > 1.99998f)
@@ -504,7 +504,7 @@ void GameObjectBentLaser::renderWithTexture2D(Texture2D* tex, RenderMode* blend,
 				expX = expandVec.x * renderScale * next.half_width;
 				expY = expandVec.y * renderScale * next.half_width;
 			}
-			else // 计算角平分线到角两边距离为next.half_width * scale的偏移量
+			else
 			{
 				angleBisect = angleBisect / angleBisectLen;
 				const float expandDelta = renderScale * next.half_width;
@@ -512,7 +512,7 @@ void GameObjectBentLaser::renderWithTexture2D(Texture2D* tex, RenderMode* blend,
 				expY = angleBisect.y * expandDelta;
 			}
 
-			// 设置顶点
+			// set verts
 			const float u = tex_left + tVecLength / laserLength * tex_width;
 			vt1->vertices.x = next.pos.x - expX;
 			vt1->vertices.y = next.pos.y - expY;
@@ -521,15 +521,9 @@ void GameObjectBentLaser::renderWithTexture2D(Texture2D* tex, RenderMode* blend,
 			vt2->vertices.y = next.pos.y + expY;
 			vt2->texCoords.u = u;
 
-			// 修正交叉的情况
-			// note: here is dot product
-
-			//const Vec2 v0(vt0->vertices.x, vt0->vertices.y);
-			//const Vec2 v1(vt1->vertices.x, vt1->vertices.y);
-			//const Vec2 v2(vt2->vertices.x, vt2->vertices.y);
-			//const Vec2 v3(vt3->vertices.x, vt3->vertices.y);
-			//const float cross1 = (v1 - v0).dot(v2 - v3);
-			//const float cross2 = (v2 - v0).dot(v1 - v3);
+			// fix if crossed
+			// cross1 = (v1 - v0).dot(v2 - v3);
+			// cross2 = (v2 - v0).dot(v1 - v3);
 			const float cross1 =
 				(vt1->vertices.x - vt0->vertices.x)*(vt2->vertices.x - vt3->vertices.x) +
 				(vt1->vertices.y - vt0->vertices.y)*(vt2->vertices.y - vt3->vertices.y);
