@@ -144,6 +144,7 @@ namespace lstg
 		TO_NATIVE_BASIC(luaval_to_BlendDescriptor, cocos2d::backend::BlendDescriptor);
 		TO_NATIVE_BASIC(luaval_to_RenderMode, RenderMode*);
 		TO_NATIVE_BASIC(luaval_to_ColliderType, XColliderType);
+		TO_NATIVE_BASIC(luaval_to_GameObject, GameObject*);
 
 		template<>
 		struct to_native<float> {
@@ -469,6 +470,7 @@ namespace lstg
 		TO_LUA_BASIC(BlendDescriptor_to_luaval, cocos2d::backend::BlendDescriptor);
 		TO_LUA_BASIC_P(RenderMode_to_luaval, RenderMode);
 		TO_LUA_BASIC(ColliderType_to_luaval, XColliderType);
+		TO_LUA_BASIC_P(GameObject_to_luaval, GameObject);
 
 		template<>
 		struct to_lua<bool> {
