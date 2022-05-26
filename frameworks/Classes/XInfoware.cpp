@@ -48,7 +48,7 @@ uint64_t detail::xgetbv(uint32_t x)
 	return _xgetbv(x);
 #elif !defined(ARCH_ARM)
 	std::uint32_t eax, edx;
-	__asm__ __volatile__("xgetbv" : "=a"(eax), "=d"(edx) : "c"(index));
+	__asm__ __volatile__("xgetbv" : "=a"(eax), "=d"(edx) : "c"(x));
 	return ((uint64_t)edx << 32) | eax;
 #else
 	return 0;
