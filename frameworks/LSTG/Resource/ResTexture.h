@@ -12,6 +12,7 @@ namespace lstg {
 		Triangles* xtri = nullptr;
 	public:
 		cocos2d::Texture2D* getTexture() const { return texture; }
+		bool isTextureFlipped();
 
 		Triangles* getTriangles() const { return xtri; }
 		void setTriangles(Triangles* tri);

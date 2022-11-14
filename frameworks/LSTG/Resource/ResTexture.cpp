@@ -7,6 +7,12 @@ using namespace std;
 using namespace cocos2d;
 using namespace lstg;
 
+bool ResTexture::isTextureFlipped()
+{
+	return XRenderer::isRenderTargetFlipped() &&
+		texture->getBackendTexture()->getTextureUsage() == TextureUsage::RENDER_TARGET;
+}
+
 void ResTexture::setTriangles(Triangles* tri)
 {
 	CC_SAFE_RELEASE(xtri);
