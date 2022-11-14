@@ -8,6 +8,9 @@
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
 #include <EGL/egl.h>
 #endif
+#ifdef CC_USE_GFX
+#include "gfx-base/GFXDevice.h"
+#endif
 
 //#ifdef CC_PLATFORM_PC
 //#define BATCH_COMMAND
@@ -135,6 +138,16 @@ bool XRenderer::end()
 	auto p = getInstance();
 	p->labelPool.clear();
 	return true;
+}
+
+bool XRenderer::isRenderTargetFlipped()
+{
+#if defined(CC_USE_GFX)
+	const auto api = cc::gfx::Device::getInstance()->getGfxAPI();
+	if (api == cc::gfx::API::VULKAN || api == cc::gfx::API::METAL)
+		return true;
+#endif
+	return false;
 }
 
 void XRenderer::updateRenderMode(RenderMode* m)

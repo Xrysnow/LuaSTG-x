@@ -18,6 +18,7 @@ namespace lstg
 	public:
 		static bool init();
 		static bool end();
+		static bool isRenderTargetFlipped();
 		
 		static unsigned short* quadIndices9;
 		static unsigned short* quadIndices512;
