@@ -442,20 +442,19 @@ void XRenderer::setProjection(const Mat4& proj)
 
 /******************************************************************************/
 
-bool XRenderer::render(Sprite* p, V3F_C4B_T2F_Quad* quad,
+bool XRenderer::render(Sprite* p, const V3F_C4B_T2F_Quad* quad,
 	float x, float y, float rot, float hscale, float vscale, float z)noexcept
 {
 	auto cmd = LMP.getXTrianglesCommand();
 	const auto tr = cmd->getTri();
+	auto q = LMP.getQuad();
 	if (quad)
 	{
-		auto q = LMP.getQuad();
 		*q = *quad;
 		tr->verts = (V3F_C4B_T2F*)q;
 	}
 	else
 	{
-		auto q = LMP.getQuad();
 		*q = p->getQuad();
 		tr->verts = (V3F_C4B_T2F*)q;
 	}
@@ -530,7 +529,7 @@ bool XRenderer::render(ResParticle::ParticlePool* p, float hscale, float vscale)
 	return true;
 }
 
-bool XRenderer::renderTexture(Texture2D* t, V3F_C4B_T2F_Quad* quad)noexcept
+bool XRenderer::renderTexture(Texture2D* t, const V3F_C4B_T2F_Quad* quad)noexcept
 {
 	auto cmd = LMP.getXTrianglesCommand();
 	auto q = LMP.getQuad();
@@ -556,7 +555,7 @@ bool XRenderer::renderTexture(Texture2D* t, const TrianglesCommand::Triangles& t
 	return true;
 }
 
-bool XRenderer::renderTexture(ResTexture* p, V3F_C4B_T2F_Quad* quad)noexcept
+bool XRenderer::renderTexture(ResTexture* p, const V3F_C4B_T2F_Quad* quad)noexcept
 {
 	return renderTexture(p->getTexture(), quad);
 }

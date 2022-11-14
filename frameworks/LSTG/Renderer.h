@@ -136,7 +136,7 @@ namespace lstg
 		 * \param z z value
 		 * \return true
 		 */
-		bool render(cocos2d::Sprite* p, cocos2d::V3F_C4B_T2F_Quad* quad, float x, float y, float rot = 0,
+		bool render(cocos2d::Sprite* p, const cocos2d::V3F_C4B_T2F_Quad* quad, float x, float y, float rot = 0,
 			float hscale = 1, float vscale = 1, float z = 0.5)noexcept;
 
 		// render ResSprite
@@ -155,9 +155,9 @@ namespace lstg
 		bool render(ResParticle::ParticlePool* p, float hscale = 1, float vscale = 1)noexcept;
 
 		// render texture TODO: 顶点顺序不同
-		bool renderTexture(cocos2d::Texture2D* t, cocos2d::V3F_C4B_T2F_Quad* quad)noexcept;
+		bool renderTexture(cocos2d::Texture2D* t, const cocos2d::V3F_C4B_T2F_Quad* quad)noexcept;
 		bool renderTexture(cocos2d::Texture2D* t, const cocos2d::TrianglesCommand::Triangles& triangles)noexcept;
-		bool renderTexture(ResTexture* p, cocos2d::V3F_C4B_T2F_Quad* quad)noexcept;
+		bool renderTexture(ResTexture* p, const cocos2d::V3F_C4B_T2F_Quad* quad)noexcept;
 
 		// TODO: render video
 

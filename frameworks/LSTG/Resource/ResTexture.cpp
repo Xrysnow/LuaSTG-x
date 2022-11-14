@@ -16,17 +16,15 @@ void ResTexture::setTriangles(Triangles* tri)
 
 bool ResTexture::render(const V3F_C4B_T2F_Quad& quad)
 {
-	const auto q = LMP.getQuad();
-	*q = quad;
-	return LRR.renderTexture(this, q);
+	return LRR.renderTexture(this, &quad);
 }
 
 bool ResTexture::render(RenderMode* blend, const V3F_C4B_T2F_Quad& quad)
 {
-	const auto q = LMP.getQuad();
-	*q = quad;
+	if (!blend)
+		return false;
 	LRR.updateRenderMode(blend);
-	return LRR.renderTexture(this, q);
+	return LRR.renderTexture(this, &quad);
 }
 
 std::unordered_map<std::string, std::string> ResTexture::getInfo() const
