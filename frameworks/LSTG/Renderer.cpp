@@ -458,6 +458,13 @@ bool XRenderer::render(Sprite* p, const V3F_C4B_T2F_Quad* quad,
 		*q = p->getQuad();
 		tr->verts = (V3F_C4B_T2F*)q;
 	}
+	// flip render target when necessary
+	if (p->getTexture()->getBackendTexture()->getTextureUsage() == TextureUsage::RENDER_TARGET
+		&& isRenderTargetFlipped())
+	{
+		std::swap(q->tl.texCoords, q->bl.texCoords);
+		std::swap(q->tr.texCoords, q->br.texCoords);
+	}
 	tr->indices = quadIndices9;
 	tr->vertCount = 4;
 	tr->indexCount = 6;
@@ -534,6 +541,13 @@ bool XRenderer::renderTexture(Texture2D* t, const V3F_C4B_T2F_Quad* quad)noexcep
 	auto cmd = LMP.getXTrianglesCommand();
 	auto q = LMP.getQuad();
 	*q = *quad;
+	// flip render target when necessary
+	if (t->getBackendTexture()->getTextureUsage() == TextureUsage::RENDER_TARGET
+		&& isRenderTargetFlipped())
+	{
+		std::swap(q->tl.texCoords, q->bl.texCoords);
+		std::swap(q->tr.texCoords, q->br.texCoords);
+	}
 	const auto tri = cmd->getTri();
 	tri->verts = (V3F_C4B_T2F*)q;
 	tri->indices = quadIndices9;
@@ -547,6 +561,7 @@ bool XRenderer::renderTexture(Texture2D* t, const V3F_C4B_T2F_Quad* quad)noexcep
 
 bool XRenderer::renderTexture(Texture2D* t, const TrianglesCommand::Triangles& triangles) noexcept
 {
+	//NOTE: this dose not fix flipped render target
 	auto cmd = LMP.getXTrianglesCommand();
 	setXTCommand(cmd, t);
 	*cmd->getTri() = triangles;
@@ -758,6 +773,7 @@ bool XRenderer::postEffect(ResRenderTarget* p, ResFX* shader, RenderMode* blend)
 	const auto state = shader->getRenderMode()->tempraryProgramState();
 	cmd->init(0.f, sp->getTexture(), blend, state);
 	*cmd->getTri() = sp->getPolygonInfo().triangles;
+	//NOTE: no need to flip here
 	*cmd->getMV() = sp->getNodeToParentTransform();
 	state->setTexture(state->getUniformLocation(backend::TEXTURE),
 		0, sp->getTexture()->getBackendTexture());
