@@ -77,10 +77,10 @@ list(APPEND EXTERNAL_LIBS creator_reader)
 add_subdirectory(${LSTGX_EXT_ROOT}/BurstLinker)
 list(APPEND EXTERNAL_LIBS ext_BurstLinker)
 
-# cLaTeXMath
+# MicroTeX
 
-add_subdirectory(${LSTGX_EXT_ROOT}/cLaTeXMath)
-list(APPEND EXTERNAL_LIBS ext_cLaTeXMath)
+add_subdirectory(${LSTGX_EXT_ROOT}/MicroTeX)
+list(APPEND EXTERNAL_LIBS ext_MicroTeX)
 
 # lua
 
