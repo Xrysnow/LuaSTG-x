@@ -59,20 +59,22 @@ Full release download:
 
 ## Build Requirements
 
-- CMake 3.15+
-- Android Studio 3.3.0+ and NDK r16+
-- OS X 10.9+ and Xcode 9+
-- or Linux with CC supports c++11
-- or Windows 7+ and VS 2019+
+- CMake 3.20+
+- Android Studio 2020.3.1+ and NDK r22+
+- Linux with compiler supports C++17 (Clang is recommended)
+- macOS 11.3+ and Xcode 13+
+- Windows 7+ and VS 2019+
 
 ## Runtime Requirements
 
 Runtime requirements is actually decided by your compiler, but in most cases they should satisfy these conditions:
 
 - Android 5.0+
-- iOS 8.0+
-- OS X 10.9+
+- iOS 13+
+- macOS 10.15+
 - Windows 7+ and visual c++ runtime
+
+Note that iOS 13+ and macOS 10.15+ is always required for `std::filesystem` ([source](https://developer.apple.com/documentation/xcode-release-notes/xcode-11-release-notes)).
 
 ## Dependency Graph
 
