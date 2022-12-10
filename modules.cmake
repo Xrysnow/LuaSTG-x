@@ -36,33 +36,10 @@ endif()
 
 set(CC_AUDIO_DEPEND_LIBS)
 
-if(WINDOWS)
-	include_directories(${LSTGX_EXT_ROOT}/OggDecoder/include)
-elseif(ANDROID)
-	add_subdirectory(${LSTGX_EXT_ROOT}/OggDecoder)
-	list(APPEND CC_AUDIO_DEPEND_LIBS ext_ogg ext_ogg_vorbis ext_ogg_vorbisfile ext_ogg_vorbisenc)
-else()
-	add_subdirectory(${LSTGX_EXT_ROOT}/OggDecoder)
-	list(APPEND CC_AUDIO_DEPEND_LIBS ext_ogg)
-endif()
+# in cocos/external
+list(APPEND CC_AUDIO_DEPEND_LIBS ext_ogg)
 
-if(WINDOWS)
-	include_directories(${LSTGX_EXT_ROOT}/OpenalSoft/include)
-elseif(ANDROID OR LINUX)
-	add_subdirectory(${LSTGX_EXT_ROOT}/OpenalSoft)
-	list(APPEND CC_AUDIO_DEPEND_LIBS ext_al)
-else()
-	add_subdirectory(${LSTGX_EXT_ROOT}/OpenalSoft)
-	include_directories(${LSTGX_EXT_ROOT}/OpenalSoft/include)
-	target_link_libraries(${APP_NAME} ${ALSOFT_OPENAL_LIBRARY})
-	# copy to Frameworks, need to check sign option in Xcode project
-	target_sources(${APP_NAME} PUBLIC ${ALSOFT_OPENAL_LIBRARY})
-	set_source_files_properties(${ALSOFT_OPENAL_LIBRARY} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks HEADER_FILE_ONLY 1)
-	set_target_properties(${APP_NAME} PROPERTIES XCODE_ATTRIBUTE_FRAMEWORK_SEARCH_PATHS ${ALSOFT_FRAMEWORK_PATH})
-	# set rpath
-	target_link_options(${APP_NAME} PRIVATE -Wl,-rpath,@loader_path/../Frameworks)
-	#set_target_properties(${APP_NAME} PROPERTIES LINK_FLAGS "-Wl,-rpath,@loader_path/../Frameworks")
-endif()
+list(APPEND CC_AUDIO_DEPEND_LIBS OpenAL)
 
 if(MACOSX OR IOS)
 	list(APPEND CC_AUDIO_DEPEND_LIBS ${COREMEDIA_LIBRARY})
