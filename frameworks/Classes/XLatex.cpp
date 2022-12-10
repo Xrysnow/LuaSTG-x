@@ -1,7 +1,10 @@
 ﻿#include "XLatex.h"
 #include "2d/CCFontFreeType.h"
 #include "Util/Utility.h"
-#include "../external/cLaTeXMath/src/src/latex.h"
+#ifdef TRANSPARENT
+#undef TRANSPARENT
+#endif
+#include "../external/MicroTeX/src/src/latex.h"
 
 using namespace lstg;
 using namespace std;
