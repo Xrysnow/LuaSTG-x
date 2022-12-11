@@ -41,12 +41,12 @@ Texture2D* ResRenderTarget::getTexture()
 	return nullptr;
 }
 
-Texture2D* ResRenderTarget::copyTexture()
+Texture2D* ResRenderTarget::copyTexture(bool flip)
 {
 	auto tex = new Texture2D();
 	tex->autorelease();
 	Image* img = nullptr;
-	target->newImage([&](Image* i) { img = i; }, false);
+	target->newImage([&](Image* i) { img = i; }, flip);
 	if (img)
 	{
 		tex->initWithImage(img, backend::PixelFormat::RGBA8888);
@@ -105,7 +105,7 @@ bool ResRenderTarget::pop()
 {
 	if (!pushed)
 		return false;
-	// TODO: check if the poped is this
+	//TODO: check if the poped is this
 	pushed = !LRR.popRenderTarget();
 	return !pushed;
 }

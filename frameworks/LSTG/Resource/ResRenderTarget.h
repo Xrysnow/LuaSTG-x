@@ -21,7 +21,7 @@ namespace lstg {
 
 		cocos2d::RenderTexture* getTarget();
 		cocos2d::Texture2D* getTexture();
-		cocos2d::Texture2D* copyTexture();
+		cocos2d::Texture2D* copyTexture(bool flip = false);
 		bool checkTarget();
 		bool push();
 		bool pop();
