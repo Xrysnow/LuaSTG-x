@@ -113,7 +113,7 @@ bool AppFrame::applicationDidFinishLaunching()
 #elif CC_TARGET_PLATFORM == CC_PLATFORM_LINUX
 #endif
 
-	LLOGGER.setConsoleLevel(2);
+	LLOGGER.setConsoleLevel(3);
 
 	auto t = ::time(nullptr);
 	char tmp[32];
@@ -322,12 +322,15 @@ bool AppFrame::frameInit()noexcept
 	WindowHelperDesktop::getInstance()->setTitle("LuaSTG-x");
 #endif
 
-	// configuration info
-	//LINFO("Cocos2dx Configuration Info:%s", Configuration::getInstance()->getInfo().c_str());
-
-	audio::setLoggingFunction([](const std::string& s) { LLOGGER.writeLine(s); });
+	audio::setLoggingFunction([](const std::string& s)
+	{
+		LLOGGER.Log(LogType::Information, "%s", s.c_str());
+	});
 #ifndef LSTGX_NO_VIDEO
-	video::setLoggingFunction([](const std::string& s) { LLOGGER.writeLine(s); });
+	video::setLoggingFunction([](const std::string& s)
+	{
+		LLOGGER.Log(LogType::Information, "%s", s.c_str());
+	});
 #endif
 
 	// audio engine
