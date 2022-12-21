@@ -1,6 +1,6 @@
 # LuaSTG-x
 
-### [English Readme](README.md) | [中文简介](README_ZH.md)
+### [English Readme](README.md) | 中文简介
 
 ---
 
@@ -59,39 +59,45 @@ LuaSTG-x 是一个基于 [cocos2d-x](https://github.com/cocos2d/cocos2d-x) 和 [
 
 ## 编译要求
 
-- CMake 3.15+
-- Android Studio 3.3.0+ 和 NDK r16+
-- OS X 10.9+ 和 Xcode 9+
-- 或编译器支持 c++11 的 Linux
-- 或 Windows 7+ 和 VS 2019+
+- CMake 3.20+
+- Android Studio 2020.3.1+ 和 NDK r22+
+- 编译器支持 C++17 的 Linux (推荐使用Clang)
+- macOS 11.3+ 和 Xcode 13+
+- Windows 7+ 和 VS 2019+
 
 ## 运行要求
 
 运行要求实际上由编译器决定，但大多数情况下应满足如下要求：
 
 - Android 5.0+
-- iOS 8.0+
-- OS X 10.9+
+- iOS 13+
+- macOS 10.15+
 - Windows 7+ 和 visual c++ 运行时
 
 ## 依赖图
 
 LuaSTG-x\
 ├　[cocos2d-x](https://github.com/Xrysnow/cocos2d-x)\
+│　　└ [cocos2d-x-3rd-party-libs-bin](https://github.com/Xrysnow/cocos2d-x-3rd-party-libs-bin)\
+│　　　　├ [cocos2d-x-gfx](https://github.com/Xrysnow/cocos2d-x-gfx)\
+│　　　　└ [openal-soft](https://github.com/kcat/openal-soft)\
 ├　[lstgx_Audio](https://github.com/Xrysnow/lstgx_Audio)\
-│　　└ [openal-soft](https://github.com/kcat/openal-soft) （在 lstgx_external 中）\
+│　　└ [openal-soft](https://github.com/kcat/openal-soft) (in cocos2d-x-3rd-party-libs-bin)\
 ├　[lstgx_external](https://github.com/Xrysnow/lstgx_external)\
+│　　├ [ANGLE](https://github.com/google/angle) (optional)\
 │　　├ [BurstLinker](https://github.com/Xrysnow/BurstLinker)\
+│　　├ [FairyGUI](https://github.com/fairygui/FairyGUI-cocos2dx) (optional)\
+│　　├ [FFmpeg](http://ffmpeg.org) (optional)\
+│　　├ [libzippp](https://github.com/ctabin/libzippp)\
+│　　│　└ [libzip](https://github.com/nih-at/libzip)\
+│　　├ [Lua CJSON](https://kyne.com.au/~mark/software/lua-cjson.php)\
 │　　├ [luafilesystem](http://keplerproject.github.io/luafilesystem)\
 │　　├ [LPeg](http://www.inf.puc-rio.br/~roberto/lpeg)\
-│　　├ [NativeFileDialog](https://github.com/mlabbe/nativefiledialog)\
-│　　├ [libogg](https://xiph.org/ogg)\
-│　　├ [openal-soft](https://github.com/kcat/openal-soft)\
-│　　├ [cLaTeXMath](https://github.com/NanoMichael/cLaTeXMath)\
-│　　├ [FFmpeg](http://ffmpeg.org)\
+│　　├ [MicroTeX](https://github.com/Xrysnow/MicroTeX)\
 │　　├ [nanosvg](https://github.com/memononen/nanosvg)\
-│　　└ [libzippp](https://github.com/ctabin/libzippp)\
-│　　　└ [libzip](https://github.com/nih-at/libzip)\
+│　　├ [NativeFileDialog](https://github.com/mlabbe/nativefiledialog)\
+│　　├ [yasio](https://github.com/yasio/yasio) (optional)\
+│　　└ [Yuescript](https://github.com/pigpigyyy/Yuescript) (optional)\
 ├　[lstgx_Math](https://github.com/Xrysnow/lstgx_Math)\
 ├　[lstgx_LuaCore](https://github.com/Xrysnow/lstgx_LuaCore)\
 ├　[cocos2d-x-imgui](https://github.com/Xrysnow/cocos2d-x-imgui)\
@@ -99,9 +105,9 @@ LuaSTG-x\
 │　　├ [imgui_markdown](https://github.com/juliettef/imgui_markdown)\
 │　　├ [ImGuiColorTextEdit](https://github.com/Xrysnow/ImGuiColorTextEdit)\
 │　　└ [implot](https://github.com/epezent/implot)\
-├　[cocos2d-x-live2d](https://github.com/Xrysnow/cocos2d-x-live2d)\
+├　[cocos2d-x-live2d](https://github.com/Xrysnow/cocos2d-x-live2d) (optional)\
 │　├ [CubismNativeFramework](https://github.com/Live2D/CubismNativeFramework)\
 │　└ [Cubism SDK for Native](https://www.live2d.com/en/download/cubism-sdk/download-native)\
 ├　[cocos2d-x-video](https://github.com/Xrysnow/cocos2d-x-video)\
-│　　└ [FFmpeg](http://ffmpeg.org) （在 lstgx_external 中）\
+│　　└ [FFmpeg](http://ffmpeg.org) (in lstgx_external)\
 └　[creator_to_cocos2dx](https://github.com/Xrysnow/creator_to_cocos2dx)

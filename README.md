@@ -1,6 +1,6 @@
 # LuaSTG-x
 
-### [English Readme](README.md) | [中文简介](README_ZH.md)
+### English Readme | [中文简介](README_ZH.md)
 
 ---
 
@@ -80,12 +80,14 @@ Note that iOS 13+ and macOS 10.15+ is always required for `std::filesystem` ([so
 
 LuaSTG-x\
 ├　[cocos2d-x](https://github.com/Xrysnow/cocos2d-x)\
+│　　└ [cocos2d-x-3rd-party-libs-bin](https://github.com/Xrysnow/cocos2d-x-3rd-party-libs-bin)\
+│　　　　├ [cocos2d-x-gfx](https://github.com/Xrysnow/cocos2d-x-gfx)\
+│　　　　└ [openal-soft](https://github.com/kcat/openal-soft)\
 ├　[lstgx_Audio](https://github.com/Xrysnow/lstgx_Audio)\
-│　　└ [openal-soft](https://github.com/kcat/openal-soft) (in lstgx_external)\
+│　　└ [openal-soft](https://github.com/kcat/openal-soft) (in cocos2d-x-3rd-party-libs-bin)\
 ├　[lstgx_external](https://github.com/Xrysnow/lstgx_external)\
 │　　├ [ANGLE](https://github.com/google/angle) (optional)\
 │　　├ [BurstLinker](https://github.com/Xrysnow/BurstLinker)\
-│　　├ [cLaTeXMath](https://github.com/NanoMichael/cLaTeXMath)\
 │　　├ [FairyGUI](https://github.com/fairygui/FairyGUI-cocos2dx) (optional)\
 │　　├ [FFmpeg](http://ffmpeg.org) (optional)\
 │　　├ [libzippp](https://github.com/ctabin/libzippp)\
@@ -93,10 +95,9 @@ LuaSTG-x\
 │　　├ [Lua CJSON](https://kyne.com.au/~mark/software/lua-cjson.php)\
 │　　├ [luafilesystem](http://keplerproject.github.io/luafilesystem)\
 │　　├ [LPeg](http://www.inf.puc-rio.br/~roberto/lpeg)\
+│　　├ [MicroTeX](https://github.com/Xrysnow/MicroTeX)\
 │　　├ [nanosvg](https://github.com/memononen/nanosvg)\
 │　　├ [NativeFileDialog](https://github.com/mlabbe/nativefiledialog)\
-│　　├ [libogg](https://xiph.org/ogg)\
-│　　├ [openal-soft](https://github.com/kcat/openal-soft)\
 │　　├ [yasio](https://github.com/yasio/yasio) (optional)\
 │　　└ [Yuescript](https://github.com/pigpigyyy/Yuescript) (optional)\
 ├　[lstgx_Math](https://github.com/Xrysnow/lstgx_Math)\
