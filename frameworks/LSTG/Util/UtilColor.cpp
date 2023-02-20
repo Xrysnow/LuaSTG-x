@@ -16,7 +16,7 @@ Color4B& operator+=(Color4B& lhs, const Color4B& rhs) {
 Color4B operator+(Color4B lhs, const Color4B& rhs) {
 	return lhs += rhs;
 }
-Color4B& operator+=(Color4B& lhs, GLubyte rhs)
+Color4B& operator+=(Color4B& lhs, uint8_t rhs)
 {
 	lhs.r = CLAMP_UP(lhs.r + rhs);
 	lhs.g = CLAMP_UP(lhs.g + rhs);
@@ -24,7 +24,7 @@ Color4B& operator+=(Color4B& lhs, GLubyte rhs)
 	lhs.a = CLAMP_UP(lhs.a + rhs);
 	return lhs;
 }
-Color4B operator+(Color4B lhs, GLubyte rhs)
+Color4B operator+(Color4B lhs, uint8_t rhs)
 {
 	return lhs += rhs;
 }
@@ -39,7 +39,7 @@ Color4B& operator-=(Color4B& lhs, const Color4B& rhs) {
 Color4B operator-(Color4B lhs, const Color4B& rhs) {
 	return lhs -= rhs;
 }
-Color4B& operator-=(Color4B& lhs, GLubyte rhs)
+Color4B& operator-=(Color4B& lhs, uint8_t rhs)
 {
 	lhs.r = CLAMP_DOWN(lhs.r - rhs);
 	lhs.g = CLAMP_DOWN(lhs.g - rhs);
@@ -47,7 +47,7 @@ Color4B& operator-=(Color4B& lhs, GLubyte rhs)
 	lhs.a = CLAMP_DOWN(lhs.a - rhs);
 	return lhs;
 }
-Color4B operator-(Color4B lhs, GLubyte rhs)
+Color4B operator-(Color4B lhs, uint8_t rhs)
 {
 	return lhs -= rhs;
 }

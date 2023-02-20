@@ -28,7 +28,7 @@ static const char * COCOS2D_SHADER_UNIFORMS =
 "uniform sampler2D CC_Texture3;\n"
 "//CC INCLUDES END\n\n";
 
-#ifndef CC_USE_METAL
+#if defined(CC_USE_GL) && !defined(CC_USE_GFX)
 static string logForOpenGLShader(GLuint shader)
 {
 #if 0

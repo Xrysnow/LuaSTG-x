@@ -125,12 +125,12 @@ void Triangles::setGridIndices(size_t nCol, size_t nRow)
 		{
 			const auto i = col + row * (nCol + 1);
 			const auto pi = tri.indices + idx * 6;
-			pi[0] = (GLushort)(i);
-			pi[1] = (GLushort)(i + nCol + 1);
-			pi[2] = (GLushort)(i + 1);
-			pi[3] = (GLushort)(i + nCol + 2);
-			pi[4] = (GLushort)(i + 1);
-			pi[5] = (GLushort)(i + nCol + 1);
+			pi[0] = (unsigned short)(i);
+			pi[1] = (unsigned short)(i + nCol + 1);
+			pi[2] = (unsigned short)(i + 1);
+			pi[3] = (unsigned short)(i + nCol + 2);
+			pi[4] = (unsigned short)(i + 1);
+			pi[5] = (unsigned short)(i + nCol + 1);
 			++idx;
 		}
 	}

@@ -1,6 +1,7 @@
 ﻿#include "UtilGLDefinition.h"
+#include "platform/CCGL.h"
 
-std::unordered_map<std::string, GLuint> lstg::util::GLMacro = {
+std::unordered_map<std::string, uint32_t> lstg::util::GLMacro = {
 /* ----------------------------- GL_VERSION_1_1 ---------------------------- */
 #ifdef GL_ZERO
 {"GL_ZERO", GL_ZERO},
