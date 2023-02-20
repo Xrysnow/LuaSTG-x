@@ -76,8 +76,12 @@ bool ResRenderTarget::checkTarget()
 	if (!target)
 	{
 		LINFO("create posteffect buffer, size: (%d, %d)", w, h);
-		target = RenderTexture::create(w, h,
-			backend::PixelFormat::RGBA8888, backend::PixelFormat::D24S8);
+		target = RenderTexture::create(
+			w,
+			h,
+			backend::PixelFormat::RGBA8888,
+			backend::PixelFormat::D24S8, 
+			false);
 		if (!target)
 			return false;
 		target->retain();

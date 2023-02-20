@@ -989,7 +989,11 @@ void XRenderer::frameBufferStart()
 	if (!frameBuffer)
 	{
 		frameBuffer = RenderTexture::create(
-			dw, dh, backend::PixelFormat::RGBA8888, backend::PixelFormat::D24S8);
+			dw,
+			dh,
+			backend::PixelFormat::RGBA8888,
+			backend::PixelFormat::D24S8,
+			false);
 		if (!frameBuffer)
 		{
 			XERROR("create frame buffer failed");
@@ -1085,8 +1089,11 @@ RenderTexture* XRenderer::copyFrameBuffer(bool transparent)
 	if (!frameBuffer)
 		return nullptr;
 	auto tmpRT = RenderTexture::create(
-		(int)_lastFBSize.width, (int)_lastFBSize.height,
-		backend::PixelFormat::RGBA8888, backend::PixelFormat::D24S8);
+		(int)_lastFBSize.width,
+		(int)_lastFBSize.height,
+		backend::PixelFormat::RGBA8888,
+		backend::PixelFormat::D24S8,
+		false);
 	tmpRT->retain();
 	tmpRT->beginWithClear(0, 0, 0, transparent ? 0 : 1);
 	renderFrameBuffer(1.f, true);
