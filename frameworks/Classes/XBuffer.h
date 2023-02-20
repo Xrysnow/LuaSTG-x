@@ -13,6 +13,8 @@ namespace lstg
 		bool canAppend = true;
 		bool canShrink = true;
 	public:
+		using value_type = uint8_t;
+
 		static Buffer* create(size_t size = 0);
 		static Buffer* createFromString(const std::string& s);
 		Buffer* clone() const;
