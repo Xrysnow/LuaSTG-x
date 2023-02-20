@@ -81,8 +81,9 @@ namespace lstg {
 			float emissionResidue = 0.f;  // 不足的粒子数
 			std::array<ParticleInstance, LPARTICLE_MAXCNT> particlePool;
 		public:
-#define PARTICLE_INFO_FUNC(_T, var) _T get##var() const noexcept { return particleInfo.var; } \
-	void set##var(_T val) noexcept { particleInfo.var = val; }
+#define PARTICLE_INFO_FUNC(_T, var)\
+	_T get##var() const { return particleInfo.var; } \
+	void set##var(_T val) { particleInfo.var = val; }
 			PARTICLE_INFO_FUNC(uint32_t, EmissionFreq);
 			PARTICLE_INFO_FUNC(float, Lifetime);
 			PARTICLE_INFO_FUNC(float, LifeMin);
@@ -107,24 +108,24 @@ namespace lstg {
 			PARTICLE_INFO_FUNC(float, ColorVar);
 			PARTICLE_INFO_FUNC(float, AlphaVar);
 #undef PARTICLE_INFO_FUNC
-			cocos2d::Color4B getColorStart() noexcept;
-			void setColorStart(const cocos2d::Color4B& color) noexcept;
-			cocos2d::Color4B getColorEnd() noexcept;
-			void setColorEnd(const cocos2d::Color4B& color) noexcept;
+			cocos2d::Color4B getColorStart();
+			void setColorStart(const cocos2d::Color4B& color);
+			cocos2d::Color4B getColorEnd();
+			void setColorEnd(const cocos2d::Color4B& color);
 
-			ResParticle* getResource()const noexcept { return _res; }
-			size_t getAliveCount()const noexcept { return numAlive; }
+			ResParticle* getResource() const { return _res; }
+			size_t getAliveCount() const { return numAlive; }
 
-			void setSeed(uint32_t seed)noexcept { _rand.seed(seed); }
-			uint32_t getSeed()const noexcept { return _rand.getSeed(); }
-			RenderMode* getRenderMode()const noexcept { return renderMode; }
-			void setRenderMode(RenderMode* m) noexcept;
-			bool isActive()const noexcept { return status == Status::Alive; }
-			void setActive(bool b) noexcept;
-			void setCenter(const cocos2d::Vec2& pos) noexcept;
-			cocos2d::Vec2 getCenter() const noexcept { return center; }
-			void setRotation(float r)noexcept { rotation = r; }
-			float getRotation() const noexcept { return rotation; }
+			void setSeed(uint32_t seed) { _rand.seed(seed); }
+			uint32_t getSeed() const  { return _rand.getSeed(); }
+			RenderMode* getRenderMode() const { return renderMode; }
+			void setRenderMode(RenderMode* m);
+			bool isActive() const { return status == Status::Alive; }
+			void setActive(bool b);
+			void setCenter(const cocos2d::Vec2& pos);
+			cocos2d::Vec2 getCenter() const { return center; }
+			void setRotation(float r) { rotation = r; }
+			float getRotation() const { return rotation; }
 
 			void update(float delta = 1.f / 60);
 			void render(float scaleX = 1.f, float scaleY = 1.f);
@@ -138,12 +139,12 @@ namespace lstg {
 		ParticleInfo particleInfo;
 		RenderMode* renderMode;
 	public:
-		RenderMode* getRenderMode() const noexcept { return renderMode; }
-		ParticlePool* newPool()noexcept;
+		RenderMode* getRenderMode() const { return renderMode; }
+		ParticlePool* newPool();
 		cocos2d::ParticleSystemQuad* newCocosParticle();
 
-		cocos2d::Sprite* getBindSprite() const noexcept { return bindSprite; }
-		const ParticleInfo& getParticleInfo() const noexcept { return particleInfo; }
+		cocos2d::Sprite* getBindSprite() const { return bindSprite; }
+		const ParticleInfo& getParticleInfo() const { return particleInfo; }
 
 		std::unordered_map<std::string, std::string> getInfo() const override;
 	public:

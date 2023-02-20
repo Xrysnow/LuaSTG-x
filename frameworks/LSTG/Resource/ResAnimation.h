@@ -15,11 +15,11 @@ namespace lstg {
 
 		void setVertex(const cocos2d::V3F_C4B_T2F_Quad& v, size_t i);
 		cocos2d::V3F_C4B_T2F_Quad& getVertex(size_t i);
-		size_t getCount()const noexcept { return images.size(); }
-		cocos2d::Sprite* getSprite(uint32_t index) noexcept;
+		size_t getCount() const { return images.size(); }
+		cocos2d::Sprite* getSprite(uint32_t index);
 
 		void setInterval(float v);
-		float getInterval()const noexcept { return interval; }
+		float getInterval() const { return interval; }
 
 		bool render(int ani_timer, float x, float y, float rot = 0,
 			float hscale = 1, float vscale = 1);

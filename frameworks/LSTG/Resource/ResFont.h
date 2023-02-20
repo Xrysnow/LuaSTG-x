@@ -39,7 +39,7 @@ namespace lstg {
 		bool _isShadowed = false;
 
 	public:
-		RenderMode* getRenderMode()const { return renderMode; }
+		RenderMode* getRenderMode() const { return renderMode; }
 		void setRenderMode(RenderMode* m);
 
 		cocos2d::Color4B getColor() const { return textColor; }
@@ -52,7 +52,7 @@ namespace lstg {
 		void setOutlineSize(int size) { enableOutline(outlineColor, size); }
 		void setOutlineColor(const cocos2d::Color4B& color) { enableOutline(color, config.outlineSize); }
 		cocos2d::Color4B getOutlineColor() const { return outlineColor; }
-		int getOutlineSize()const { return config.outlineSize; }
+		int getOutlineSize() const { return config.outlineSize; }
 	// glow
 
 		// only for TTF

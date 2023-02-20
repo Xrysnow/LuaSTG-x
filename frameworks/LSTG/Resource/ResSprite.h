@@ -10,9 +10,9 @@ namespace lstg {
 		cocos2d::Sprite* sprite = nullptr;
 		cocos2d::Texture2D* normalMap = nullptr;
 	public:
-		cocos2d::Sprite* getSprite() const noexcept { return sprite; }
-		cocos2d::Texture2D* getTexture() const noexcept { return sprite->getTexture(); }
-		cocos2d::Texture2D* getNormalMap() const noexcept { return normalMap; }
+		cocos2d::Sprite* getSprite() const { return sprite; }
+		cocos2d::Texture2D* getTexture() const { return sprite->getTexture(); }
+		cocos2d::Texture2D* getNormalMap() const { return normalMap; }
 		void setNormalMap(cocos2d::Texture2D* texture);
 
 		bool render(float x, float y, float rot = 0,

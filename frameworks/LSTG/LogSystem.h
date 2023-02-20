@@ -30,12 +30,12 @@ namespace lstg
 
 		static LogSystem* getInstance();
 
-		void Log(LogType type, const char* info, ...)noexcept;
+		void Log(LogType type, const char* info, ...);
 
-		bool changePath(const std::string& path)noexcept;
-		std::string getPath() const noexcept;
-		bool write(const std::string& str)noexcept;
-		bool writeLine(const std::string& str)noexcept;
+		bool changePath(const std::string& path);
+		std::string getPath() const;
+		bool write(const std::string& str);
+		bool writeLine(const std::string& str);
 		void setConsoleLevel(int level);
 		void setOnWrite(const std::function<void(const std::string&)>& f);
 

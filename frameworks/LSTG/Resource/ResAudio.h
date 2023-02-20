@@ -38,7 +38,7 @@ namespace lstg
 
 		audio::Source* getSource() const { return source; }
 		StreamMemory* getStream() const { return stream; }
-		const std::string& getPath() const noexcept override { return path; }
+		const std::string& getPath() const override { return path; }
 
 		size_t getFFTSize() const;
 		float* getFFT();

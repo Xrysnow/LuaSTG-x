@@ -64,9 +64,9 @@ namespace lstg
 		std::string resName;
 		std::string resPath;
 	public:
-		ResourceType getType()const noexcept { return resType; }
-		const std::string& getName()const noexcept { return resName; }
-		virtual const std::string& getPath()const noexcept { return resPath; }
+		ResourceType getType() const { return resType; }
+		const std::string& getName() const { return resName; }
+		virtual const std::string& getPath() const { return resPath; }
 		virtual std::unordered_map<std::string, std::string> getInfo() const;
 		void pushLua(lua_State* L);
 		static Resource* fromLua(lua_State* L, int idx, ResourceType type);
@@ -85,9 +85,9 @@ namespace lstg
 		double halfSizeX = 0.;
 		double halfSizeY = 0.;
 	public:
-		XColliderType getColliderType() const noexcept { return colliderType; }
-		double getHalfSizeX()const noexcept { return halfSizeX; }
-		double getHalfSizeY()const noexcept { return halfSizeY; }
+		XColliderType getColliderType() const { return colliderType; }
+		double getHalfSizeX() const { return halfSizeX; }
+		double getHalfSizeY() const { return halfSizeY; }
 
 		virtual std::unordered_map<std::string, std::string> getInfo() const override;
 

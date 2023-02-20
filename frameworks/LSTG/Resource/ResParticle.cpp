@@ -8,7 +8,7 @@ using namespace std;
 using namespace cocos2d;
 using namespace lstg;
 
-Color4B ResParticle::ParticlePool::getColorStart() noexcept
+Color4B ResParticle::ParticlePool::getColorStart()
 {
 	Color4B ret;
 	if (particleInfo.ColorStart[0] < 0)
@@ -27,7 +27,7 @@ Color4B ResParticle::ParticlePool::getColorStart() noexcept
 	return ret;
 }
 
-void ResParticle::ParticlePool::setColorStart(const Color4B& color) noexcept
+void ResParticle::ParticlePool::setColorStart(const Color4B& color)
 {
 	particleInfo.ColorStart[0] = color.r / 255.f;
 	particleInfo.ColorStart[1] = color.g / 255.f;
@@ -35,7 +35,7 @@ void ResParticle::ParticlePool::setColorStart(const Color4B& color) noexcept
 	particleInfo.ColorStart[3] = color.a / 255.f;
 }
 
-Color4B ResParticle::ParticlePool::getColorEnd() noexcept
+Color4B ResParticle::ParticlePool::getColorEnd()
 {
 	Color4B ret;
 	if (particleInfo.ColorEnd[0] < 0)
@@ -54,7 +54,7 @@ Color4B ResParticle::ParticlePool::getColorEnd() noexcept
 	return ret;
 }
 
-void ResParticle::ParticlePool::setColorEnd(const Color4B& color) noexcept
+void ResParticle::ParticlePool::setColorEnd(const Color4B& color)
 {
 	particleInfo.ColorEnd[0] = color.r / 255.f;
 	particleInfo.ColorEnd[1] = color.g / 255.f;
@@ -62,12 +62,12 @@ void ResParticle::ParticlePool::setColorEnd(const Color4B& color) noexcept
 	particleInfo.ColorEnd[3] = color.a / 255.f;
 }
 
-void ResParticle::ParticlePool::setRenderMode(RenderMode* m) noexcept
+void ResParticle::ParticlePool::setRenderMode(RenderMode* m)
 {
 	renderMode = m;
 }
 
-void ResParticle::ParticlePool::setActive(bool b) noexcept
+void ResParticle::ParticlePool::setActive(bool b)
 {
 	if (b)
 	{
@@ -78,7 +78,7 @@ void ResParticle::ParticlePool::setActive(bool b) noexcept
 		status = Status::Sleep;
 }
 
-void ResParticle::ParticlePool::setCenter(const cocos2d::Vec2& pos) noexcept
+void ResParticle::ParticlePool::setCenter(const cocos2d::Vec2& pos)
 {
 	if (status == Status::Alive)
 		prevCenter = center;
@@ -255,7 +255,7 @@ ResParticle::ParticlePool::~ParticlePool()
 	_res->release();
 }
 
-ResParticle::ParticlePool* ResParticle::newPool() noexcept
+ResParticle::ParticlePool* ResParticle::newPool()
 {
 	auto pool = new (std::nothrow) ParticlePool(this);
 	if (pool)

@@ -46,7 +46,7 @@ LogSystem::~LogSystem()
 	logFile.close();
 }
 
-void LogSystem::Log(LogType type, const char* info, ...) noexcept
+void LogSystem::Log(LogType type, const char* info, ...)
 {
 	string s;
 	try
@@ -83,7 +83,7 @@ void LogSystem::Log(LogType type, const char* info, ...) noexcept
 	}
 }
 
-bool LogSystem::changePath(const std::string& path)noexcept
+bool LogSystem::changePath(const std::string& path)
 {
 	//lock_guard<mutex> lock(mut);
 	if (logFileName == path)
@@ -119,12 +119,12 @@ bool LogSystem::changePath(const std::string& path)noexcept
 	return false;
 }
 
-std::string LogSystem::getPath() const noexcept
+std::string LogSystem::getPath() const
 {
 	return logFileName;
 }
 
-bool LogSystem::write(const std::string& str) noexcept
+bool LogSystem::write(const std::string& str)
 {
 	lock_guard<mutex> lock(mut);
 	try
@@ -145,7 +145,7 @@ bool LogSystem::write(const std::string& str) noexcept
 	return false;
 }
 
-bool LogSystem::writeLine(const std::string& str) noexcept
+bool LogSystem::writeLine(const std::string& str)
 {
 	return write(str + "\n");
 }

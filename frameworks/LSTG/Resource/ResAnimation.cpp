@@ -64,7 +64,7 @@ V3F_C4B_T2F_Quad& ResAnimation::getVertex(size_t i)
 	return verts[0];
 }
 
-Sprite* ResAnimation::getSprite(uint32_t index) noexcept
+Sprite* ResAnimation::getSprite(uint32_t index)
 {
 	if (index >= getCount())
 		return nullptr;
