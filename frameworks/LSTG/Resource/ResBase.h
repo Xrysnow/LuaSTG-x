@@ -60,10 +60,13 @@ namespace lstg
 	class Resource : public cocos2d::Ref
 	{
 	protected:
+		static std::unordered_set<Resource*> instances;
 		ResourceType resType;
 		std::string resName;
 		std::string resPath;
 	public:
+		static void destroyInstances();
+		
 		ResourceType getType() const { return resType; }
 		const std::string& getName() const { return resName; }
 		virtual const std::string& getPath() const { return resPath; }
@@ -115,7 +118,7 @@ namespace lstg
 
 		cocos2d::Color4B getColor(int i = 0) const;
 
-		RenderMode* getRenderMode()const { return renderMode; }
+		RenderMode* getRenderMode() const { return renderMode; }
 		void setRenderMode(RenderMode* m) { renderMode = m; }
 
 		virtual std::unordered_map<std::string, std::string> getInfo() const override;

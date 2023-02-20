@@ -1,10 +1,21 @@
 #include "ResBase.h"
 #include <scripting/lua-bindings/manual/tolua_fix.h>
+#include "LogSystem.h"
 #include "Util/Utility.h"
 
 using namespace std;
 using namespace cocos2d;
 using namespace lstg;
+
+std::unordered_set<Resource*> Resource::instances;
+
+void Resource::destroyInstances()
+{
+	//for (auto& p : instances)
+	//	delete p;
+	LINFO("%s: %d Resource instances not destructed", __FUNCTION__, instances.size());
+	instances.clear();
+}
 
 // TODO: move to lua
 std::unordered_map<std::string, std::string> Resource::getInfo() const
@@ -33,11 +44,13 @@ Resource* Resource::fromLua(lua_State* L, int idx, ResourceType type)
 Resource::Resource(ResourceType t, const std::string& name, const string& path)
 : resType(t), resName(name), resPath(path)
 {
+	instances.insert(this);
 	autorelease();
 }
 
 Resource::~Resource()
 {
+	instances.erase(this);
 }
 
 std::unordered_map<std::string, std::string> ResourceColliable::getInfo() const
