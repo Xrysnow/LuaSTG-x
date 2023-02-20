@@ -21,63 +21,11 @@ namespace lstg
 		constexpr int LUA_TPROTO = LUA_TTHREAD + 1;
 		constexpr int LUA_TCDATA = LUA_TTHREAD + 2;
 
-		// support cdata
+		// supports cdata
 		bool _luaval_to_integer(lua_State* L, int lo,
 			int64_t* outValue, size_t targetSize, const char* funcName);
 		bool _luaval_to_unsigned_integer(lua_State* L, int lo,
 			uint64_t* outValue, size_t targetSize, const char* funcName);
-
-		//
-
-#define DECL_BASIC_TO_NATIVE(_F, _T) bool _##_F(lua_State* L, int lo, _T* outValue, const char* funcName = "");
-		DECL_BASIC_TO_NATIVE(luaval_to_boolean, bool);
-		DECL_BASIC_TO_NATIVE(luaval_to_number, double);
-		//DECL_BASIC_TO_NATIVE(luaval_to_std_string, std::string);
-		DECL_BASIC_TO_NATIVE(luaval_to_size, cocos2d::Size);
-		DECL_BASIC_TO_NATIVE(luaval_to_rect, cocos2d::Rect);
-		DECL_BASIC_TO_NATIVE(luaval_to_color3b, cocos2d::Color3B);
-		//DECL_BASIC_TO_NATIVE(luaval_to_color4b, cocos2d::Color4B);
-		DECL_BASIC_TO_NATIVE(luaval_to_color4f, cocos2d::Color4F);
-		DECL_BASIC_TO_NATIVE(luaval_to_physics_material, cocos2d::PhysicsMaterial);
-		DECL_BASIC_TO_NATIVE(luaval_to_affinetransform, cocos2d::AffineTransform);
-		DECL_BASIC_TO_NATIVE(luaval_to_fontdefinition, cocos2d::FontDefinition);
-		DECL_BASIC_TO_NATIVE(luaval_to_mat4, cocos2d::Mat4);
-		DECL_BASIC_TO_NATIVE(luaval_to_vec2, cocos2d::Vec2);
-		DECL_BASIC_TO_NATIVE(luaval_to_vec3, cocos2d::Vec3);
-		DECL_BASIC_TO_NATIVE(luaval_to_vec4, cocos2d::Vec4);
-		DECL_BASIC_TO_NATIVE(luaval_to_blendfunc, cocos2d::BlendFunc);
-		DECL_BASIC_TO_NATIVE(luaval_to_ttfconfig, cocos2d::TTFConfig);
-		DECL_BASIC_TO_NATIVE(luaval_to_ccvalue, cocos2d::Value);
-		DECL_BASIC_TO_NATIVE(luaval_to_mesh_vertex_attrib, cocos2d::MeshVertexAttrib);
-		DECL_BASIC_TO_NATIVE(luaval_to_quaternion, cocos2d::Quaternion);
-		DECL_BASIC_TO_NATIVE(luaval_to_texparams, cocos2d::Texture2D::TexParams);
-		DECL_BASIC_TO_NATIVE(luaval_to_v3f_c4b_t2f, cocos2d::V3F_C4B_T2F);
-		DECL_BASIC_TO_NATIVE(luaval_to_tex2f, cocos2d::Tex2F);
-		DECL_BASIC_TO_NATIVE(luaval_to_uniformLocation, cocos2d::backend::UniformLocation);
-#undef DECL_BASIC_TO_NATIVE
-
-#define DECL_BASIC_FROM_NATIVE(_F, _T) void _##_F(lua_State* L, const _T& inValue);
-		DECL_BASIC_FROM_NATIVE(vec2_to_luaval, cocos2d::Vec2);
-		DECL_BASIC_FROM_NATIVE(vec3_to_luaval, cocos2d::Vec3);
-		DECL_BASIC_FROM_NATIVE(vec4_to_luaval, cocos2d::Vec4);
-		DECL_BASIC_FROM_NATIVE(size_to_luaval, cocos2d::Size);
-		DECL_BASIC_FROM_NATIVE(rect_to_luaval, cocos2d::Rect);
-		DECL_BASIC_FROM_NATIVE(color3b_to_luaval, cocos2d::Color3B);
-		//DECL_BASIC_FROM_NATIVE(color4b_to_luaval, cocos2d::Color4B);
-		DECL_BASIC_FROM_NATIVE(color4f_to_luaval, cocos2d::Color4F);
-		DECL_BASIC_FROM_NATIVE(affinetransform_to_luaval, cocos2d::AffineTransform);
-		DECL_BASIC_FROM_NATIVE(physics_material_to_luaval, cocos2d::PhysicsMaterial);
-		DECL_BASIC_FROM_NATIVE(fontdefinition_to_luaval, cocos2d::FontDefinition);
-		DECL_BASIC_FROM_NATIVE(mat4_to_luaval, cocos2d::Mat4);
-		DECL_BASIC_FROM_NATIVE(blendfunc_to_luaval, cocos2d::BlendFunc);
-		DECL_BASIC_FROM_NATIVE(ttfconfig_to_luaval, cocos2d::TTFConfig);
-		DECL_BASIC_FROM_NATIVE(ccvalue_to_luaval, cocos2d::Value);
-		DECL_BASIC_FROM_NATIVE(mesh_vertex_attrib_to_luaval, cocos2d::MeshVertexAttrib);
-		DECL_BASIC_FROM_NATIVE(quaternion_to_luaval, cocos2d::Quaternion);
-		DECL_BASIC_FROM_NATIVE(texParams_to_luaval, cocos2d::Texture2D::TexParams);
-#undef DECL_BASIC_FROM_NATIVE
-
-		////////////////////////////////////////////////////////////////////////////////
 
 		cocos2d::LuaStack* stack();
 		int StackTraceback(lua_State *L);
@@ -99,19 +47,6 @@ namespace lstg
 			return *luaL_checkcolor(L, lo);
 		}
 
-		bool _luaarray_to_numbers(lua_State* L, int lo, const std::function<void(double)>& callBack);
-
-		bool luaval_to_unsigned_long_long(lua_State* L, int lo, unsigned long long* outValue, const char* funcName);
-
-		template<typename T>
-		bool luaval_to_std_vector_number(lua_State* L, int lo, std::vector<T>* outValue, const char* funcName)
-		{
-			static_assert(std::is_arithmetic<T>::value, "");
-			if (!outValue)
-				return false;
-			return _luaarray_to_numbers(L, lo, [=](double v) { outValue->push_back((T)v); });
-		}
-
 #define DECL_NATIVE_CONV(F, T)\
 	bool luaval_to_##F(lua_State* L, int lo, T* outValue, const char* funcName = "");\
 	void F##_to_luaval(lua_State* L, const T& inValue);
@@ -125,7 +60,6 @@ namespace lstg
 #undef DECL_NATIVE_CONV
 
 		bool luaval_to_RenderMode(lua_State* L, int lo, RenderMode** outValue, const char* funcName = "");
-		void RenderMode_to_luaval(lua_State* L, RenderMode* renderMode);
 
 		bool luaval_to_ColliderType(lua_State* L, int lo, XColliderType* outValue, const char* funcName = "");
 		void ColliderType_to_luaval(lua_State* L, XColliderType colliderType);
@@ -186,6 +120,6 @@ namespace lstg
 		const char* checkstring(lua_State* L, int lo, size_t* strlen, uint32_t* hash);
 		const char* tostring(lua_State* L, int lo, size_t* strlen, uint32_t* hash);
 
-		std::string getClassNameByTypeID(const std::string& typeID);
+		std::string getClassNameByTypeID(const char* typeID);
 	}
 }

@@ -9,69 +9,30 @@
 #include "LuaWrapper/LWColor.h"
 #include "Resource/ResFX.h"
 #include "../../Classes/XBuffer.h"
+#include "lua_conversion/lua_conversion.hpp"
 
 using namespace std;
 using namespace lstg;
 using namespace cocos2d;
 
-#define IMPL_BASIC_TO_NATIVE(_F, _T) bool lua::_##_F(lua_State* L, int lo, _T* outValue, const char* funcName){\
-	return ::_F(L, lo, outValue, funcName); }
-IMPL_BASIC_TO_NATIVE(luaval_to_boolean, bool);
-IMPL_BASIC_TO_NATIVE(luaval_to_number, double);
-//IMPL_BASIC_TO_NATIVE(luaval_to_std_string, std::string);
-IMPL_BASIC_TO_NATIVE(luaval_to_rect, Rect);
-IMPL_BASIC_TO_NATIVE(luaval_to_size, Size);
-IMPL_BASIC_TO_NATIVE(luaval_to_color3b, Color3B);
-//IMPL_BASIC_TO_NATIVE(luaval_to_color4b, Color4B);
-IMPL_BASIC_TO_NATIVE(luaval_to_color4f, Color4F);
-IMPL_BASIC_TO_NATIVE(luaval_to_physics_material, cocos2d::PhysicsMaterial);
-IMPL_BASIC_TO_NATIVE(luaval_to_affinetransform, AffineTransform);
-IMPL_BASIC_TO_NATIVE(luaval_to_fontdefinition, FontDefinition);
-IMPL_BASIC_TO_NATIVE(luaval_to_mat4, cocos2d::Mat4);
-IMPL_BASIC_TO_NATIVE(luaval_to_vec2, cocos2d::Vec2);
-IMPL_BASIC_TO_NATIVE(luaval_to_vec3, cocos2d::Vec3);
-IMPL_BASIC_TO_NATIVE(luaval_to_vec4, cocos2d::Vec4);
-IMPL_BASIC_TO_NATIVE(luaval_to_blendfunc, cocos2d::BlendFunc);
-IMPL_BASIC_TO_NATIVE(luaval_to_ttfconfig, cocos2d::TTFConfig);
-IMPL_BASIC_TO_NATIVE(luaval_to_ccvalue, cocos2d::Value);
-IMPL_BASIC_TO_NATIVE(luaval_to_mesh_vertex_attrib, cocos2d::MeshVertexAttrib);
-IMPL_BASIC_TO_NATIVE(luaval_to_quaternion, cocos2d::Quaternion);
-IMPL_BASIC_TO_NATIVE(luaval_to_texparams, cocos2d::Texture2D::TexParams);
-IMPL_BASIC_TO_NATIVE(luaval_to_v3f_c4b_t2f, cocos2d::V3F_C4B_T2F);
-IMPL_BASIC_TO_NATIVE(luaval_to_tex2f, cocos2d::Tex2F);
-
-#define IMPL_BASIC_FROM_NATIVE(_F, _T) void lua::_##_F(lua_State* L, const _T& inValue){\
-	::_F(L, inValue); }
-IMPL_BASIC_FROM_NATIVE(vec2_to_luaval, cocos2d::Vec2);
-IMPL_BASIC_FROM_NATIVE(vec3_to_luaval, cocos2d::Vec3);
-IMPL_BASIC_FROM_NATIVE(vec4_to_luaval, cocos2d::Vec4);
-IMPL_BASIC_FROM_NATIVE(size_to_luaval, cocos2d::Size);
-IMPL_BASIC_FROM_NATIVE(rect_to_luaval, cocos2d::Rect);
-IMPL_BASIC_FROM_NATIVE(color3b_to_luaval, cocos2d::Color3B);
-//IMPL_BASIC_FROM_NATIVE(color4b_to_luaval, cocos2d::Color4B);
-IMPL_BASIC_FROM_NATIVE(color4f_to_luaval, cocos2d::Color4F);
-IMPL_BASIC_FROM_NATIVE(affinetransform_to_luaval, cocos2d::AffineTransform);
-IMPL_BASIC_FROM_NATIVE(physics_material_to_luaval, cocos2d::PhysicsMaterial);
-IMPL_BASIC_FROM_NATIVE(fontdefinition_to_luaval, cocos2d::FontDefinition);
-IMPL_BASIC_FROM_NATIVE(mat4_to_luaval, cocos2d::Mat4);
-IMPL_BASIC_FROM_NATIVE(blendfunc_to_luaval, cocos2d::BlendFunc);
-IMPL_BASIC_FROM_NATIVE(ttfconfig_to_luaval, cocos2d::TTFConfig);
-IMPL_BASIC_FROM_NATIVE(ccvalue_to_luaval, cocos2d::Value);
-IMPL_BASIC_FROM_NATIVE(mesh_vertex_attrib_to_luaval, cocos2d::MeshVertexAttrib);
-IMPL_BASIC_FROM_NATIVE(quaternion_to_luaval, cocos2d::Quaternion);
-IMPL_BASIC_FROM_NATIVE(texParams_to_luaval, cocos2d::Texture2D::TexParams);
+using ::lua::luaval_field_to_native;
+using ::lua::native_to_luaval_field;
+using ::lua::luaval_to_native;
+using ::lua::LUA_TCDATA;
 
 template<typename T>
-bool __luaval_to_integer(lua_State* L, int lo,
-	typename std::enable_if<std::is_same<T, int64_t>::value || std::is_same<T, uint64_t>::value, T>::type* outValue,
-	size_t targetSize, const char* funcName)
+bool luaval_to_integer_T(lua_State* L,
+	int lo,
+	std::enable_if_t<std::is_same_v<T, int64_t> || std::is_same_v<T, uint64_t>, T>* outValue,
+	size_t targetSize,
+	const char* funcName)
 {
 	if (nullptr == L || nullptr == outValue)
 		return false;
 	const auto type = lua_type(L, lo);
-	if (type == lua::LUA_TCDATA)
+	if (type == ::lua::LUA_TCDATA)
 	{
-		if(std::is_same<T, int64_t>::value)
+		if(std::is_same_v<T, int64_t>)
 			lua_pushstring(L, "ffi.cast_int64");
 		else
 			lua_pushstring(L, "ffi.cast_uint64");
@@ -84,7 +45,7 @@ bool __luaval_to_integer(lua_State* L, int lo,
 			lua_pushlightuserdata(L, &ret);
 			if (lua_pcall(L, 1, 1, 0) == 0)
 			{
-				lua::luaval_to_cptr(L, -1, &ret);
+				::lua::luaval_to_cptr(L, -1, &ret);
 				if (ret)
 				{
 					*outValue = *(T*)ret;
@@ -102,7 +63,7 @@ bool __luaval_to_integer(lua_State* L, int lo,
 	if (!is_number)
 	{
 		tolua_err.index = lo; tolua_err.array = 0; tolua_err.type = "number";
-#if COCOS2D_DEBUG >=1
+#if CC_DEBUG
 		luaval_to_native_err(L, "#ferror:", &tolua_err, funcName);
 #endif
 		return false;
@@ -121,22 +82,22 @@ bool __luaval_to_integer(lua_State* L, int lo,
 	return true;
 }
 
-bool lua::_luaval_to_integer(lua_State* L, int lo, int64_t* outValue, size_t targetSize, const char* funcName)
+bool lstg::lua::_luaval_to_integer(lua_State* L, int lo, int64_t* outValue, size_t targetSize, const char* funcName)
 {
-	return __luaval_to_integer<int64_t>(L, lo, outValue, targetSize, funcName);
+	return luaval_to_integer_T<int64_t>(L, lo, outValue, targetSize, funcName);
 }
 
-bool lua::_luaval_to_unsigned_integer(lua_State* L, int lo, uint64_t* outValue, size_t targetSize, const char* funcName)
+bool lstg::lua::_luaval_to_unsigned_integer(lua_State* L, int lo, uint64_t* outValue, size_t targetSize, const char* funcName)
 {
-	return __luaval_to_integer<uint64_t>(L, lo, outValue, targetSize, funcName);
+	return luaval_to_integer_T<uint64_t>(L, lo, outValue, targetSize, funcName);
 }
 
-LuaStack* lua::stack()
+LuaStack* lstg::lua::stack()
 {
 	return LuaEngine::getInstance()->getLuaStack();
 }
 
-int lua::StackTraceback(lua_State *L)
+int lstg::lua::StackTraceback(lua_State *L)
 {
 	lua_getfield(L, LUA_GLOBALSINDEX, "debug");  // errmsg t
 	if (!lua_istable(L, -1))
@@ -174,7 +135,7 @@ int push_table_instance(lua_State* L, int lo)
 	}
 	return 0;
 }
-int lua::isusertype(lua_State* L, int lo, const char* type)
+int lstg::lua::isusertype(lua_State* L, int lo, const char* type)
 {
 	// note: lo must be positive
 	if (lo < 0)
@@ -215,7 +176,7 @@ int lua::isusertype(lua_State* L, int lo, const char* type)
 	return 0;
 }
 
-void* lua::_tousertype(lua_State* L, int lo)
+void* lstg::lua::_tousertype(lua_State* L, int lo)
 {
 	if (!lua_isuserdata(L, lo)) {
 		if (!push_table_instance(L, lo))
@@ -225,7 +186,7 @@ void* lua::_tousertype(lua_State* L, int lo)
 	return u ? *(void**)u : nullptr;
 }
 
-bool lua::_luaval_to_color4b(lua_State* L, int lo, Color4B* outValue, const char* funcName)
+bool lstg::lua::_luaval_to_color4b(lua_State* L, int lo, Color4B* outValue, const char* funcName)
 {
 	if (lua_type(L, lo) == LUA_TUSERDATA)
 	{
@@ -242,61 +203,13 @@ bool lua::_luaval_to_color4b(lua_State* L, int lo, Color4B* outValue, const char
 	}
 }
 
-void lua::_color4b_to_luaval(lua_State* L, const Color4B& cc)
+void lstg::lua::_color4b_to_luaval(lua_State* L, const Color4B& cc)
 {
 	const auto p = ColorWrapper::CreateAndPush(L);
 	*p = cc;
 }
 
-bool lua::_luaarray_to_numbers(lua_State* L, int lo, const std::function<void(double)>& callBack)
-{
-	if (!L || !callBack || lua_gettop(L) < lo)
-		return false;
-	tolua_Error tolua_err;
-	if (!tolua_istable(L, lo, 0, &tolua_err))
-		return false;
-	bool ok = true;
-	const size_t len = lua_objlen(L, lo);
-	for (size_t i = 0; i < len; i++)
-	{
-		lua_pushnumber(L, i + 1);
-		lua_gettable(L, lo);
-		if (lua_isnumber(L, -1))
-			callBack(tolua_tonumber(L, -1, 0));
-		else
-			ok = false;
-		lua_pop(L, 1);
-		if (!ok)
-			break;
-	}
-	return ok;
-}
-
-bool lua::luaval_to_unsigned_long_long(lua_State* L, int lo, unsigned long long* outValue, const char* funcName)
-{
-	if (NULL == L || NULL == outValue)
-		return false;
-
-	bool ok = true;
-
-	tolua_Error tolua_err;
-	if (!tolua_isnumber(L, lo, 0, &tolua_err))
-	{
-#if COCOS2D_DEBUG >=1
-		luaval_to_native_err(L, "#ferror:", &tolua_err, funcName);
-#endif
-		ok = false;
-	}
-
-	if (ok)
-	{
-		*outValue = (unsigned long long)tolua_tonumber(L, lo, 0);
-	}
-
-	return ok;
-}
-
-bool lua::luaval_to_V3F_C4B_T2F_Quad(lua_State* L, int lo, V3F_C4B_T2F_Quad* outValue, const char* /*funcName*/)
+bool lstg::lua::luaval_to_V3F_C4B_T2F_Quad(lua_State* L, int lo, V3F_C4B_T2F_Quad* outValue, const char* /*funcName*/)
 {
 	if (!lua_istable(L, lo))return false;
 	V3F_C4B_T2F_Quad ret;
@@ -327,10 +240,10 @@ bool lua::luaval_to_V3F_C4B_T2F_Quad(lua_State* L, int lo, V3F_C4B_T2F_Quad* out
 	return true;
 }
 
-void lua::V3F_C4B_T2F_Quad_to_luaval(lua_State* L, const V3F_C4B_T2F_Quad& inValue)
+void lstg::lua::V3F_C4B_T2F_Quad_to_luaval(lua_State* L, const V3F_C4B_T2F_Quad& inValue)
 {
 	lua_createtable(L, 0, 4);
-	const auto p = (V3F_C4B_T2F*)&inValue;
+	const auto p = reinterpret_cast<const V3F_C4B_T2F*>(&inValue);
 	for (auto i = 0; i < 4; ++i)
 	{
 		const auto v = p[i];
@@ -351,7 +264,7 @@ void lua::V3F_C4B_T2F_Quad_to_luaval(lua_State* L, const V3F_C4B_T2F_Quad& inVal
 	}
 }
 
-bool lua::luaval_to_UniformLocation(lua_State* L, int lo, backend::UniformLocation* outValue,
+bool lstg::lua::luaval_to_UniformLocation(lua_State* L, int lo, backend::UniformLocation* outValue,
 	const char* funcName)
 {
 	if (!lua_istable(L, lo))
@@ -367,7 +280,7 @@ bool lua::luaval_to_UniformLocation(lua_State* L, int lo, backend::UniformLocati
 	return true;
 }
 
-void lua::UniformLocation_to_luaval(lua_State* L, const backend::UniformLocation& inValue)
+void lstg::lua::UniformLocation_to_luaval(lua_State* L, const backend::UniformLocation& inValue)
 {
 	lua_createtable(L, 0, 2);
 	const std::array<int, 2> arr = { inValue.location[0],inValue.location[1] };
@@ -375,7 +288,7 @@ void lua::UniformLocation_to_luaval(lua_State* L, const backend::UniformLocation
 	native_to_luaval_field(L, -1, "shaderStage", inValue.shaderStage);
 }
 
-bool lua::luaval_to_SamplerDescriptor(lua_State* L, int lo, backend::SamplerDescriptor* outValue,
+bool lstg::lua::luaval_to_SamplerDescriptor(lua_State* L, int lo, backend::SamplerDescriptor* outValue,
 	const char* funcName)
 {
 	if (!lua_istable(L, lo))
@@ -392,7 +305,7 @@ bool lua::luaval_to_SamplerDescriptor(lua_State* L, int lo, backend::SamplerDesc
 	return true;
 }
 
-void lua::SamplerDescriptor_to_luaval(lua_State* L, const backend::SamplerDescriptor& inValue)
+void lstg::lua::SamplerDescriptor_to_luaval(lua_State* L, const backend::SamplerDescriptor& inValue)
 {
 	lua_createtable(L, 0, 4);
 	native_to_luaval_field(L, -1, "magFilter", inValue.magFilter);
@@ -401,7 +314,7 @@ void lua::SamplerDescriptor_to_luaval(lua_State* L, const backend::SamplerDescri
 	native_to_luaval_field(L, -1, "tAddressMode", inValue.tAddressMode);
 }
 
-bool lua::luaval_to_AttributeBindInfo(lua_State* L, int lo, backend::AttributeBindInfo* outValue,
+bool lstg::lua::luaval_to_AttributeBindInfo(lua_State* L, int lo, backend::AttributeBindInfo* outValue,
 	const char* funcName)
 {
 	if (!lua_istable(L, lo))
@@ -418,7 +331,7 @@ bool lua::luaval_to_AttributeBindInfo(lua_State* L, int lo, backend::AttributeBi
 	return true;
 }
 
-void lua::AttributeBindInfo_to_luaval(lua_State* L, const backend::AttributeBindInfo& inValue)
+void lstg::lua::AttributeBindInfo_to_luaval(lua_State* L, const backend::AttributeBindInfo& inValue)
 {
 	lua_createtable(L, 0, 4);
 	native_to_luaval_field(L, -1, "attributeName", inValue.attributeName);
@@ -427,7 +340,7 @@ void lua::AttributeBindInfo_to_luaval(lua_State* L, const backend::AttributeBind
 	native_to_luaval_field(L, -1, "type", inValue.type);
 }
 
-bool lua::luaval_to_Viewport(lua_State* L, int lo, Viewport* outValue, const char* funcName)
+bool lstg::lua::luaval_to_Viewport(lua_State* L, int lo, Viewport* outValue, const char* funcName)
 {
 	if (!lua_istable(L, lo))
 		return false;
@@ -443,7 +356,7 @@ bool lua::luaval_to_Viewport(lua_State* L, int lo, Viewport* outValue, const cha
 	return true;
 }
 
-void lua::Viewport_to_luaval(lua_State* L, const Viewport& inValue)
+void lstg::lua::Viewport_to_luaval(lua_State* L, const Viewport& inValue)
 {
 	lua_createtable(L, 0, 4);
 	native_to_luaval_field(L, -1, "x", inValue.x);
@@ -452,7 +365,7 @@ void lua::Viewport_to_luaval(lua_State* L, const Viewport& inValue)
 	native_to_luaval_field(L, -1, "h", inValue.h);
 }
 
-bool lua::luaval_to_BlendDescriptor(lua_State* L, int lo, backend::BlendDescriptor* outValue,
+bool lstg::lua::luaval_to_BlendDescriptor(lua_State* L, int lo, backend::BlendDescriptor* outValue,
 	const char* funcName)
 {
 	if (!lua_istable(L, lo))
@@ -469,7 +382,7 @@ bool lua::luaval_to_BlendDescriptor(lua_State* L, int lo, backend::BlendDescript
 	return true;
 }
 
-void lua::BlendDescriptor_to_luaval(lua_State* L, const backend::BlendDescriptor& inValue)
+void lstg::lua::BlendDescriptor_to_luaval(lua_State* L, const backend::BlendDescriptor& inValue)
 {
 	lua_createtable(L, 0, 4);
 	native_to_luaval_field(L, -1, "src", inValue.sourceRGBBlendFactor);
@@ -478,7 +391,7 @@ void lua::BlendDescriptor_to_luaval(lua_State* L, const backend::BlendDescriptor
 	native_to_luaval_field(L, -1, "dstAlpha", inValue.destinationAlphaBlendFactor);
 }
 
-bool lua::luaval_to_RenderMode(lua_State* L, int lo, RenderMode** outValue, const char* /*funcName*/)
+bool lstg::lua::luaval_to_RenderMode(lua_State* L, int lo, RenderMode** outValue, const char* /*funcName*/)
 {
 	if (!outValue)
 		return false;
@@ -494,10 +407,12 @@ bool lua::luaval_to_RenderMode(lua_State* L, int lo, RenderMode** outValue, cons
 	}
 	else
 	{
-		b = tousertype<RenderMode>(L, lo, "lstg.RenderMode");
+		b = tousertype<RenderMode>(
+			L, lo, ::lua::getClassNameByType<RenderMode>().c_str());
 		if(!b)
 		{
-			const auto res = tousertype<ResFX>(L, lo, "lstg.ResFX");
+			const auto res = tousertype<ResFX>(
+				L, lo, ::lua::getClassNameByType<ResFX>().c_str());
 			if (res)
 				b = res->getRenderMode();
 		}
@@ -508,15 +423,7 @@ bool lua::luaval_to_RenderMode(lua_State* L, int lo, RenderMode** outValue, cons
 	return true;
 }
 
-void lua::RenderMode_to_luaval(lua_State* L, RenderMode* renderMode)
-{
-	if(renderMode)
-		object_to_luaval<RenderMode>(L, "lstg.RenderMode", renderMode);
-	else
-		lua_pushnil(L);
-}
-
-bool lua::luaval_to_ColliderType(lua_State* L, int lo, XColliderType* outValue, const char* /*funcName*/)
+bool lstg::lua::luaval_to_ColliderType(lua_State* L, int lo, XColliderType* outValue, const char* /*funcName*/)
 {
 	const auto type = lua_type(L, lo);
 	if (type == LUA_TSTRING)
@@ -548,7 +455,7 @@ bool lua::luaval_to_ColliderType(lua_State* L, int lo, XColliderType* outValue, 
 	return false;
 }
 
-void lua::ColliderType_to_luaval(lua_State* L, XColliderType colliderType)
+void lstg::lua::ColliderType_to_luaval(lua_State* L, XColliderType colliderType)
 {
 	if (colliderType != XColliderType::Circle)
 		lua_pushinteger(L, (lua_Integer)colliderType);
@@ -556,7 +463,7 @@ void lua::ColliderType_to_luaval(lua_State* L, XColliderType colliderType)
 		lua_pushboolean(L, false);
 }
 
-bool lua::luaval_to_GameObject(lua_State* L, int lo, GameObject** outValue, const char* /*funcName*/)
+bool lstg::lua::luaval_to_GameObject(lua_State* L, int lo, GameObject** outValue, const char* /*funcName*/)
 {
 	const auto type = lua_type(L, lo);
 	if (type == LUA_TTABLE)
@@ -581,13 +488,13 @@ bool lua::luaval_to_GameObject(lua_State* L, int lo, GameObject** outValue, cons
 	return false;
 }
 
-void lua::GameObject_to_luaval(lua_State* L, GameObject* obj)
+void lstg::lua::GameObject_to_luaval(lua_State* L, GameObject* obj)
 {
 	LPOOL.pushObject(L, obj);
 	//lua::cptr_to_luaval(L, obj);
 }
 
-void lua::BaseLight_to_luaval(lua_State* L, BaseLight* light)
+void lstg::lua::BaseLight_to_luaval(lua_State* L, BaseLight* light)
 {
 	if (light)
 	{
@@ -606,7 +513,7 @@ void lua::BaseLight_to_luaval(lua_State* L, BaseLight* light)
 		lua_pushnil(L);
 }
 
-bool lua::luaval_to_cptr(lua_State* L, int lo, void** outValue)
+bool lstg::lua::luaval_to_cptr(lua_State* L, int lo, void** outValue)
 {
 	const auto top = lua_gettop(L);
 	if (lo < 0)
@@ -640,7 +547,7 @@ bool lua::luaval_to_cptr(lua_State* L, int lo, void** outValue)
 	}
 }
 
-void lua::cptr_to_luaval(lua_State* L, void* ptr)
+void lstg::lua::cptr_to_luaval(lua_State* L, void* ptr)
 {
 	if (!ptr)
 		lua_pushnil(L);
@@ -648,7 +555,7 @@ void lua::cptr_to_luaval(lua_State* L, void* ptr)
 		lua_pushlightuserdata(L, ptr);
 }
 
-void lua::cptr_to_luaval(lua_State* L, void* ptr, const std::string& ptrType)
+void lstg::lua::cptr_to_luaval(lua_State* L, void* ptr, const std::string& ptrType)
 {
 	if (!ptr)
 		lua_pushnil(L);
@@ -666,7 +573,7 @@ void lua::cptr_to_luaval(lua_State* L, void* ptr, const std::string& ptrType)
 	}
 }
 
-void lua::V3F_C4B_T2F_ptr_to_luaval(lua_State* L, V3F_C4B_T2F* ptr)
+void lstg::lua::V3F_C4B_T2F_ptr_to_luaval(lua_State* L, V3F_C4B_T2F* ptr)
 {
 	if (!ptr)
 		lua_pushnil(L);
@@ -682,7 +589,7 @@ void lua::V3F_C4B_T2F_ptr_to_luaval(lua_State* L, V3F_C4B_T2F* ptr)
 	}
 }
 
-bool lua::luaval_to_async_callback(lua_State* L, int lo, std::function<void()>* outValue)
+bool lstg::lua::luaval_to_async_callback(lua_State* L, int lo, std::function<void()>* outValue)
 {
 	const LUA_FUNCTION handler = toluafix_ref_function(L, lo, 0);
 	if (handler == 0)
@@ -699,19 +606,15 @@ bool lua::luaval_to_async_callback(lua_State* L, int lo, std::function<void()>* 
 	return true;
 }
 
-void lua::ref_type_to_luaval(lua_State* L, Ref* ref, const char* typeID)
+void lstg::lua::ref_type_to_luaval(lua_State* L, Ref* ref, const char* typeID)
 {
 	if (ref)
 	{
-		std::string typeName;
-		if (typeID)
-			typeName = typeID;
-		else
-			typeName = typeid(*ref).name();
-		const auto iter = g_luaType.find(typeName);
+		const auto typeName = typeID ? typeID : typeid(*ref).name();
+		const auto iter = g_luaType.find(reinterpret_cast<uintptr_t>(typeName));
 		auto type = "cc.Ref";
 		if (g_luaType.end() != iter)
-			type = iter->second.c_str();
+			type = iter->second;
 		toluafix_pushusertype_ccobject(
 			L, (int)ref->_ID, &ref->_luaID, (void*)ref, type);
 	}
@@ -721,7 +624,7 @@ void lua::ref_type_to_luaval(lua_State* L, Ref* ref, const char* typeID)
 	}
 }
 
-const void* lua::luaval_to_const_data(lua_State* L, int lo, int lo_size, size_t* outSize)
+const void* lstg::lua::luaval_to_const_data(lua_State* L, int lo, int lo_size, size_t* outSize)
 {
 	const void* data = nullptr;
 	size_t size = 0;
@@ -730,7 +633,7 @@ const void* lua::luaval_to_const_data(lua_State* L, int lo, int lo_size, size_t*
 	{
 		data = lua_tolstring(L, lo, &size);
 	}
-	else if (type == lua::LUA_TCDATA)
+	else if (type == LUA_TCDATA)
 	{
 		void* p = nullptr;
 		luaval_to_cptr(L, lo, &p);
@@ -755,7 +658,7 @@ const void* lua::luaval_to_const_data(lua_State* L, int lo, int lo_size, size_t*
 	return data;
 }
 
-std::vector<float> lua::getArray(lua_State* L, int lo, const char* field)
+std::vector<float> lstg::lua::getArray(lua_State* L, int lo, const char* field)
 {
 	const auto len = lua_objlen(L, lo);
 	std::vector<float> ret;
@@ -770,7 +673,7 @@ std::vector<float> lua::getArray(lua_State* L, int lo, const char* field)
 	return ret;
 }
 
-std::vector<Vec2> lua::getVec2Array(lua_State* L, int lo)
+std::vector<Vec2> lstg::lua::getVec2Array(lua_State* L, int lo)
 {
 	const auto len = lua_objlen(L, lo);
 	std::vector<Vec2> ret;
@@ -788,7 +691,7 @@ std::vector<Vec2> lua::getVec2Array(lua_State* L, int lo)
 	return ret;
 }
 
-std::vector<Vec2> lua::getVec2Array(lua_State* L, int lo, const char* k1, const char* k2)
+std::vector<Vec2> lstg::lua::getVec2Array(lua_State* L, int lo, const char* k1, const char* k2)
 {
 	const auto len = lua_objlen(L, lo);
 	std::vector<Vec2> ret;
@@ -806,7 +709,7 @@ std::vector<Vec2> lua::getVec2Array(lua_State* L, int lo, const char* k1, const 
 	return ret;
 }
 
-int lua::pushCArray(lua_State* L, lua_Number* arr, uint32_t size)
+int lstg::lua::pushCArray(lua_State* L, lua_Number* arr, uint32_t size)
 {
 	if (!arr || size == 0)return 0;
 	lua_pushstring(L, "ffi.alloc_arr");
@@ -846,25 +749,26 @@ int lua::pushCArray(lua_State* L, lua_Number* arr, uint32_t size)
 #define HASH_OFFSET (-2)
 #endif
 
-const char* lua::checkstring(lua_State* L, int lo, size_t* strlen, uint32_t* hash)
+const char* lstg::lua::checkstring(lua_State* L, int lo, size_t* strlen, uint32_t* hash)
 {
-	auto ret = luaL_checklstring(L, lo, strlen);
+	const auto ret = luaL_checklstring(L, lo, strlen);
+	// hack into lua
 	if (hash)
-		*hash = ((uint32_t*)ret)[HASH_OFFSET];// hack into lua
+		*hash = reinterpret_cast<const uint32_t*>(ret)[HASH_OFFSET];
 	return ret;
 }
 
-const char* lua::tostring(lua_State* L, int lo, size_t* strlen, uint32_t* hash)
+const char* lstg::lua::tostring(lua_State* L, int lo, size_t* strlen, uint32_t* hash)
 {
-	auto ret = lua_tolstring(L, lo, strlen);
+	const auto ret = lua_tolstring(L, lo, strlen);
 	if (hash)
-		*hash = ((uint32_t*)ret)[HASH_OFFSET];
+		*hash = reinterpret_cast<const uint32_t*>(ret)[HASH_OFFSET];
 	return ret;
 }
 
-std::string lua::getClassNameByTypeID(const std::string& typeID)
+std::string lstg::lua::getClassNameByTypeID(const char* typeID)
 {
-	const auto it = g_luaType.find(typeID);
+	const auto it = g_luaType.find(reinterpret_cast<uintptr_t>(typeID));
 	if (it != g_luaType.end())
 		return it->second;
 	return "";
