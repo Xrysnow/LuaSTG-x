@@ -1,6 +1,7 @@
 #include "GameObject.h"
 #include "LogSystem.h"
 #include "GameObjectManager.h"
+#include "GameClass.h"
 
 using namespace lstg;
 

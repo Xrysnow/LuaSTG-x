@@ -11,6 +11,7 @@
 #include "LogSystem.h"
 #include "XThreadPool.hpp"
 #include "../Math/XMath.h"
+#include "Symbol/GameObjectSymbol.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
 
 #define METATABLE_OBJ "mt"

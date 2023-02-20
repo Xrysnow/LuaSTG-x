@@ -1,13 +1,11 @@
 ﻿#pragma once
+#include "base/CCMap.h"
+#include "lua.hpp"
 #include "Symbol/GameObjectSymbol.h"
 #include <array>
 
 namespace lstg
 {
-	namespace symbol
-	{
-		class Block;
-	}
 	class GameClass
 	{
 	public:
