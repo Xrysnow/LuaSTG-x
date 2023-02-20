@@ -101,23 +101,3 @@ namespace lstg
 		Buffer* _buf = nullptr;
 	};
 }
-
-namespace cocos2d
-{
-	template<>
-	class ResizableBufferAdapter<lstg::Buffer> : public ResizableBuffer {
-		typedef lstg::Buffer BufferType;
-		BufferType* _buffer;
-	public:
-		explicit ResizableBufferAdapter(BufferType* buffer) : _buffer(buffer) {}
-		virtual void resize(size_t size) override {
-			_buffer->resize(size);
-		}
-		virtual void* buffer() const override {
-			if (_buffer->empty())
-				return nullptr;
-			return _buffer->data();
-		}
-	};
-
-}
