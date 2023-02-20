@@ -22,7 +22,9 @@ LUA_REGISTER_FUNC_DEF(lstg, GetLastKey)
 }
 LUA_REGISTER_FUNC_DEF(lstg, GetLastChar)
 {
-	return LIM.getLastChar(L);
+	// deprecated
+	lua_pushliteral(L, "");
+	return 1;
 }
 
 /*******************************************************************************
