@@ -12,31 +12,34 @@
 using namespace std;
 using namespace lstg;
 using namespace cocos2d;
-using namespace backend;
+using backend::ProgramState;
+using backend::ShaderStage;
+using backend::BlendFactor;
 
 static RenderMode* RenderModeDefault = nullptr;
 std::vector<RenderMode*> RenderMode::modeVector;
 Map<std::string, RenderMode*> RenderMode::modeMap;
 
-static void GetDefaultVertexLayout(Program* state, VertexLayout* v)
+static void SetDefaultVertexLayout(Program* program, VertexLayout* v)
 {
-	if(!state) return;
-	v->setAttribute(ATTRIBUTE_NAME_POSITION,
-		state->getAttributeLocation(POSITION),
-		VertexFormat::FLOAT3,
+	if(!program)
+		return;
+	v->setAttribute(backend::ATTRIBUTE_NAME_POSITION,
+		program->getAttributeLocation(backend::POSITION),
+		backend::VertexFormat::FLOAT3,
 		0,
 		false);
-	v->setAttribute(ATTRIBUTE_NAME_TEXCOORD,
-		state->getAttributeLocation(TEXCOORD),
-		VertexFormat::FLOAT2,
+	v->setAttribute(backend::ATTRIBUTE_NAME_TEXCOORD,
+		program->getAttributeLocation(backend::TEXCOORD),
+		backend::VertexFormat::FLOAT2,
 		offsetof(V3F_C4B_T2F, texCoords),
 		false);
-	v->setAttribute(ATTRIBUTE_NAME_COLOR,
-		state->getAttributeLocation(COLOR),
-		VertexFormat::UBYTE4,
+	v->setAttribute(backend::ATTRIBUTE_NAME_COLOR,
+		program->getAttributeLocation(backend::COLOR),
+		backend::VertexFormat::UBYTE4,
 		offsetof(V3F_C4B_T2F, colors),
 		true);
-	v->setLayout(sizeof(V3F_C4B_T2F));
+	v->setStride(sizeof(V3F_C4B_T2F));
 }
 
 RenderMode::RenderMode()
@@ -55,7 +58,7 @@ RenderMode* RenderMode::getDefault()
 {
 	if (!RenderModeDefault)
 		RenderModeDefault = new RenderMode();
-        assert(RenderModeDefault);
+	CC_ASSERT(RenderModeDefault);
 	return RenderModeDefault;
 }
 
@@ -65,8 +68,11 @@ void RenderMode::destructDefault()
 	RenderModeDefault = nullptr;
 }
 
-RenderMode* RenderMode::create(const std::string& name, BlendOperation blendOp,
-	BlendFactor blendFactorSrc, BlendFactor blendFactorDst, Program* program)
+RenderMode* RenderMode::create(const std::string& name,
+	backend::BlendOperation blendOp,
+	backend::BlendFactor blendFactorSrc,
+	backend::BlendFactor blendFactorDst,
+	Program* program)
 {
 	auto ret = new (std::nothrow) RenderMode();
 	if (ret&&ret->init(name, blendOp, blendFactorSrc, blendFactorDst, program))
@@ -81,8 +87,11 @@ RenderMode* RenderMode::create(const std::string& name, BlendOperation blendOp,
 
 RenderMode* RenderMode::create(const std::string& name, Program* program)
 {
-	return create(name, BlendOperation::ADD,
-		BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA, program);
+	return create(name,
+		backend::BlendOperation::ADD,
+		backend::BlendFactor::SRC_ALPHA,
+		backend::BlendFactor::ONE_MINUS_SRC_ALPHA,
+		program);
 }
 
 BlendFunc RenderMode::getBlendFunc() const
@@ -104,8 +113,15 @@ void RenderMode::setProgram(Program* program)
 	CC_SAFE_RELEASE(_program);
 	_program = program;
 	CC_SAFE_RETAIN(_program);
+
+	if (_program->getVertexLayout()->getAttributes().empty())
+	{
+		// set layout
+		SetDefaultVertexLayout(_program, _program->getVertexLayout());
+	}
+
 	CC_SAFE_RELEASE(defaultState);
-	defaultState = new ProgramState(_program);
+	defaultState = new backend::ProgramState(_program);
 	setVertexLayout(defaultState);
 	defaultState->getFragmentUniformBuffer(&fragUniformBuffer, fragUniformBufferSize);
 	defaultState->getVertexUniformBuffer(&vertUniformBuffer, vertUniformBufferSize);
@@ -174,7 +190,7 @@ void RenderMode::setColor(const std::string& uniform, const Color4B& value)
 	setUniform(uniform, &v, sizeof(v));
 }
 
-void RenderMode::setTexture(const std::string& uniform, uint32_t slot, Texture2D* value)
+void RenderMode::setTexture(const std::string& uniform, Texture2D* value, uint32_t slot)
 {
 	const auto it = locations.find(uniform);
 	if (it != locations.end() && value)
@@ -216,7 +232,7 @@ RenderMode* RenderMode::clone(const std::string& newName)
 	return ret;
 }
 
-bool RenderMode::init(const std::string& name, BlendOperation equation,
+bool RenderMode::init(const std::string& name, backend::BlendOperation equation,
                       BlendFactor funcSrc, BlendFactor funcDst, Program* program)
 {
 	if (!program)return false;
@@ -231,16 +247,18 @@ bool RenderMode::init(const std::string& name, BlendOperation equation,
 	desc.destinationRGBBlendFactor = funcDst;
 	//note: keep alpha here
 	//TODO: custom for RenderTarget
-	desc.alphaBlendOperation = BlendOperation::ADD;
-	desc.sourceAlphaBlendFactor = BlendFactor::ONE;
-	desc.destinationAlphaBlendFactor = BlendFactor::ONE_MINUS_SRC_ALPHA;
+	desc.alphaBlendOperation = backend::BlendOperation::ADD;
+	desc.sourceAlphaBlendFactor = backend::BlendFactor::ONE;
+	desc.destinationAlphaBlendFactor = backend::BlendFactor::ONE_MINUS_SRC_ALPHA;
 
-	GetDefaultVertexLayout(program, &defaultLayout);
+#ifndef CC_USE_GFX
+	SetDefaultVertexLayout(program, &defaultLayout);
+#endif // !CC_USE_GFX
 	setProgram(program);
 	return true;
 }
 
-ProgramState* RenderMode::tempraryProgramState()
+backend::ProgramState* RenderMode::tempraryProgramState()
 {
 	if(!pool)
 		pool = LMP.getProgramStatePool(_program);
@@ -252,21 +270,23 @@ ProgramState* RenderMode::tempraryProgramState()
 
 void RenderMode::setVertexLayout(ProgramState* state) const
 {
-	assert(state);
+	CC_ASSERT(state);
+#ifndef CC_USE_GFX
 	// VertexLayout is copyable
 	*state->getVertexLayout() = defaultLayout;
+#endif // !CC_USE_GFX
 }
 
 void RenderMode::syncUniform(ProgramState* state)
 {
-	assert(state);
+	CC_ASSERT(state);
 	char* fBuffer = nullptr;
 	char* vBuffer = nullptr;
 	size_t fSize = 0;
 	size_t vSize = 0;
 	state->getFragmentUniformBuffer(&fBuffer, fSize);
 	state->getVertexUniformBuffer(&vBuffer, vSize);
-	assert(fSize == fragUniformBufferSize && vSize == vertUniformBufferSize);
+	CC_ASSERT(fSize == fragUniformBufferSize && vSize == vertUniformBufferSize);
 	if (fBuffer)
 		std::memcpy(fBuffer, fragUniformBuffer, fragUniformBufferSize);
 	if (vBuffer)
@@ -290,15 +310,15 @@ void RenderMode::syncUniform(ProgramState* state)
 #else
 	for (auto&& it : defaultState->getVertexTextureInfos())
 	{
-		UniformLocation loc;
+		backend::UniformLocation loc;
 		loc.shaderStage = ShaderStage::VERTEX_AND_FRAGMENT;
 		// location[0] is sampler index, location[1] is 0
 		loc.location[0] = it.first;
 		loc.location[1] = 0;
-		state->setTextureArray(loc, it.second.slot, it.second.textures);
+		state->setTextureArray(loc, it.second.slots, it.second.textures);
 	}
 
-	auto p = static_cast<ProgramGFX*>(state->getProgram());
+	auto p = static_cast<backend::ProgramGFX*>(state->getProgram());
 	CC_ASSERT(p);
 	if (p)
 	{
