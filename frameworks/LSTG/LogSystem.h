@@ -9,11 +9,11 @@
 #define LINFO(info, ...) LLOGGER.Log(lstg::LogType::Information, info, ##__VA_ARGS__)
 
 #define XERROR(_str, ...) LLOGGER.Log(lstg::LogType::Error,\
-	"[%s] " _str, lstg::__cut_ns(__FUNCTION__), ##__VA_ARGS__)
+	"[%s] " _str, lstg::_cut_ns(__FUNCTION__), ##__VA_ARGS__)
 #define XWARNING(_str, ...) LLOGGER.Log(lstg::LogType::Warning,\
-	"[%s] " _str, lstg::__cut_ns(__FUNCTION__), ##__VA_ARGS__)
+	"[%s] " _str, lstg::_cut_ns(__FUNCTION__), ##__VA_ARGS__)
 #define XINFO(_str, ...) LLOGGER.Log(lstg::LogType::Information,\
-	"[%s] " _str, lstg::__cut_ns(__FUNCTION__), ##__VA_ARGS__)
+	"[%s] " _str, lstg::_cut_ns(__FUNCTION__), ##__VA_ARGS__)
 
 namespace lstg
 {
@@ -53,7 +53,7 @@ namespace lstg
 		LogSystem &operator =(const LogSystem &) = delete;
 	};
 
-	inline const char* __cut_ns(const char* s)
+	inline const char* _cut_ns(const char* s)
 	{
 		bool eq = true;
 		//const char* ns = "lstg::";
