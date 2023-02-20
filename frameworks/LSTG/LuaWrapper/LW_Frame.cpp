@@ -275,7 +275,12 @@ LUA_REGISTER_FUNC_DEF(lstg, Base64Decode)
 	if (data && size != 0)
 	{
 		unsigned char* decoded = nullptr;
-		const int length = cocos2d::base64Decode((const unsigned char*)data, (unsigned)size, &decoded);
+#ifdef CC_VERSION
+		using cocos2d::utils::base64Decode;
+#else
+		using cocos2d::base64Decode;
+#endif
+		const int length = base64Decode((const unsigned char*)data, (unsigned)size, &decoded);
 		if (decoded)
 		{			
 			lua_pushlstring(L, (const char*)decoded, length);
@@ -294,7 +299,12 @@ LUA_REGISTER_FUNC_DEF(lstg, Base64Encode)
 	if (data && size != 0)
 	{
 		char* encoded = nullptr;
-		const int length = cocos2d::base64Encode((const unsigned char*)data, (unsigned)size, &encoded);
+#ifdef CC_VERSION
+		using cocos2d::utils::base64Encode;
+#else
+		using cocos2d::base64Encode;
+#endif
+		const int length = base64Encode((const unsigned char*)data, (unsigned)size, &encoded);
 		if (encoded)
 		{			
 			lua_pushlstring(L, encoded, length);

@@ -18,7 +18,7 @@ namespace lstg
 	{
 		struct ZipFile
 		{
-			cocos2d::unz_file_info info;
+			unz_file_info info;
 			std::string path;
 			int64_t pos;
 		};

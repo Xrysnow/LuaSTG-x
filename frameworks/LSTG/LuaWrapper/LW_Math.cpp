@@ -4,9 +4,11 @@
 #include "Util/UtilLua.h"
 #include "Util/UtilLuaConversion.h"
 #include "../Classes/XLuaModuleRegistry.h"
+#include "LuaBindings/LuaBindings.h"
 
 using namespace std;
 using namespace lstg;
+using ::lua::native_to_luaval;
 
 LUA_REGISTER_FUNC_DEF(lstg, sin)
 {
@@ -55,7 +57,7 @@ LUA_REGISTER_FUNC_DEF(lstg, sincos)
 
 LUA_REGISTER_FUNC_DEF(lstg, SampleBezierA1)
 {
-	auto in_pos = lua::getVec2Array(L, 1, "x", "y");
+	auto in_pos = lstg::lua::getVec2Array(L, 1, "x", "y");
 	auto i = luaL_checkinteger(L, 2);
 	if (i > in_pos.size())
 		i = in_pos.size();
@@ -74,9 +76,9 @@ LUA_REGISTER_FUNC_DEF(lstg, SampleBezierA1)
 		out_y.push_back(p.y);
 	}
 
-	lua::native_to_luaval(L, out_x);
-	lua::native_to_luaval(L, out_y);
-	lua::native_to_luaval(L, out_rot);
+	native_to_luaval(L, out_x);
+	native_to_luaval(L, out_y);
+	native_to_luaval(L, out_rot);
 	return 3;
 }
 
