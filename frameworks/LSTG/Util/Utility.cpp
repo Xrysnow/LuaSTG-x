@@ -271,11 +271,6 @@ string lstg::tostring(const Vec4& v)
 	return StringUtils::format("(%.3f, %.3f, %.3f, %.3f)", v.x, v.y, v.z, v.w);
 }
 
-string lstg::tostring(const Size& s)
-{
-	return StringUtils::format("(w = %.3f, h = %.3f)", s.width, s.height);
-}
-
 string lstg::tostring(const Rect& r)
 {
 	return "(o = " + tostring(r.origin) + ", s = " + tostring(r.size) + ")";

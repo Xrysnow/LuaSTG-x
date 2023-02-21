@@ -60,7 +60,6 @@ namespace lstg
 	std::string tostring(const cocos2d::Vec2& v);
 	std::string tostring(const cocos2d::Vec3& v);
 	std::string tostring(const cocos2d::Vec4& v);
-	std::string tostring(const cocos2d::Size& s);
 	std::string tostring(const cocos2d::Rect& r);
 	std::string tostring(const cocos2d::Color3B& c);
 	std::string tostring(const cocos2d::Color4B& c);
