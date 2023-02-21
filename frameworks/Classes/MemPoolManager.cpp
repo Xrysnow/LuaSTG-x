@@ -4,7 +4,6 @@
 using namespace std;
 using namespace lstg;
 using namespace cocos2d;
-using namespace backend;
 
 MemPoolManager* MemPoolManager::getInstance()
 {
@@ -12,8 +11,14 @@ MemPoolManager* MemPoolManager::getInstance()
 	return &ins;
 }
 
+cocos2d::CallbackCommand* MemPoolManager::getCallbackCommand()
+{
+	//return ccmdPool.get();
+	return Director::getInstance()->getRenderer()->nextCallbackCommand();
+}
+
 Mat4* MemPoolManager::getMat4(float x, float y, float z,
-	float rot, float hscale, float vscale, const Vec2& anchorPointInPoints)
+                              float rot, float hscale, float vscale, const Vec2& anchorPointInPoints)
 {
 	const auto _transform = getMat4();
 	getNodeTransform(anchorPointInPoints, x, y, rot, hscale, vscale, z, _transform);
@@ -23,7 +28,7 @@ Mat4* MemPoolManager::getMat4(float x, float y, float z,
 void MemPoolManager::trim()
 {
 	xtcmdPool.trim();
-	ccmdPool.trim();
+	//ccmdPool.trim();
 	quadsPool.trim();
 	matPool.trim();
 	laserQuadsPool.trim();
@@ -35,7 +40,7 @@ void MemPoolManager::trim()
 void MemPoolManager::reset()
 {
 	xtcmdPool.reset();
-	ccmdPool.reset();
+	//ccmdPool.reset();
 	quadsPool.reset();
 	matPool.reset();
 	laserQuadsPool.reset();
@@ -47,7 +52,7 @@ void MemPoolManager::reset()
 void MemPoolManager::clear()
 {
 	xtcmdPool.clear();
-	ccmdPool.clear();
+	//ccmdPool.clear();
 	quadsPool.clear();
 	matPool.clear();
 	laserQuadsPool.clear();
@@ -83,17 +88,17 @@ void MemPoolManager::removeProgramStatePool(Program* program)
 
 void ProgramStatePool::alloc_()
 {
-	auto p = std::make_shared<Vector<ProgramState*>>();
+	auto p = std::make_shared<Vector<backend::ProgramState*>>();
 	for (size_t i = 0; i < ProgramStatePoolBlockSize; ++i)
 	{
-		const auto s = new ProgramState(_program);
+		const auto s = new backend::ProgramState(_program);
 		s->autorelease();
 		p->pushBack(s);
 	}
 	blocks.emplace_back(p);
 }
 
-ProgramState* ProgramStatePool::get()
+backend::ProgramState* ProgramStatePool::get()
 {
 	check_size();
 	assert(blocks[idx_b]->size() > idx_a);

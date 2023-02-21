@@ -19,7 +19,7 @@ namespace lstg
 		using LaserQuads = std::array<cocos2d::V3F_C4B_T2F_Quad, LGOBJ_MAXLASERNODE>;
 
 		XTrianglesCommand* getXTrianglesCommand() { return xtcmdPool.get(); }
-		cocos2d::CallbackCommand* getCallbackCommand() { return ccmdPool.get(); }
+		cocos2d::CallbackCommand* getCallbackCommand();
 		cocos2d::V3F_C4B_T2F_Quad* getQuad() { return quadsPool.get(); }
 		cocos2d::Mat4* getMat4() { return matPool.get(); }
 		cocos2d::Mat4* getMat4(float x, float y, float z,
@@ -38,7 +38,6 @@ namespace lstg
 		void removeProgramStatePool(cocos2d::backend::Program* program);
 	private:
 		ArrayObjectPool<XTrianglesCommand, 4096> xtcmdPool;
-		ArrayObjectPool<cocos2d::CallbackCommand, 4096> ccmdPool;
 		ArrayObjectPool<cocos2d::V3F_C4B_T2F_Quad, 4096> quadsPool;
 		ArrayObjectPool<cocos2d::Mat4, 4096> matPool;
 		ArrayObjectPool<LaserQuads, 1> laserQuadsPool;
