@@ -43,11 +43,11 @@ static int _getReferenceCount(lua_State* L)
 	return 0;
 }
 
-const char* RefAdapter::getLuaTypeName(const std::string& hashName)
+const char* RefAdapter::getLuaTypeName(const char* typeName)
 {
-	const auto iter = g_luaType.find(hashName);
+	const auto iter = g_luaType.find((uintptr_t)typeName);
 	if (g_luaType.end() != iter)
-		return iter->second.c_str();
+		return iter->second;
 	return nullptr;
 }
 

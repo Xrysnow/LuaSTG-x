@@ -12,7 +12,7 @@ namespace lstg
 		// it's not recommand to use this class for a Ref object
 		bool _isRef = false;
 
-		static const char* getLuaTypeName(const std::string& hashName);
+		static const char* getLuaTypeName(const char* typeName);
 		static RefAdapter* _create(void* obj, const std::string& className,
 			const std::function<void(void*)>& dtor);
 	public:
