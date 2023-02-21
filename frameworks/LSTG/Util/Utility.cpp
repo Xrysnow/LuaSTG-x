@@ -2,6 +2,7 @@
 #include "AppFrame.h"
 #include "LogSystem.h"
 #include "renderer/backend/Device.h"
+#include "renderer/backend/gfx/TextureGFX.h"
 #include <locale>
 #include <codecvt>
 #include <cstring>
@@ -604,7 +605,7 @@ Image* lstg::getTextureImage(Texture2D* texture,
 	if (!texture || width * height == 0)
 		return nullptr;
 	auto format = texture->getPixelFormat();
-	if (format == backend::PixelFormat::AUTO)
+	if (format == backend::PixelFormat::NONE)
 		format = texture->getBackendTexture()->getTextureFormat();
 	if(format != backend::PixelFormat::RGBA8888)
 		return nullptr;
@@ -614,7 +615,9 @@ Image* lstg::getTextureImage(Texture2D* texture,
 		image->initWithRawData(data, w * h * bytePerPixel,
 			w, h, bytePerPixel * 8, texture->hasPremultipliedAlpha());
 	};
-	texture->getBackendTexture()->getBytes(x, y, width, height, flipImage, callback);
+	//texture->getBackendTexture()->getBytes(x, y, width, height, flipImage, callback);
+	((cocos2d::backend::Texture2DGFX*)texture->getBackendTexture())->getBytes(
+		x, y, width, height, flipImage, callback);
 	return image;
 }
 
