@@ -10,6 +10,7 @@
 #endif
 #ifdef CC_USE_GFX
 #include "gfx-base/GFXDevice.h"
+#include "renderer/backend/gfx/DeviceGFX.h"
 #endif
 
 //#ifdef CC_PLATFORM_PC
@@ -186,36 +187,29 @@ void XRenderer::setAALevel(int lv)noexcept
 
 void XRenderer::setVsync(bool v)noexcept
 {
-	if (v == optVsync)return;
+	if (v == optVsync)
+		return;
 	optVsync = v;
-	bool set = false;
+#if defined(CC_USE_GFX)
+	const auto device = backend::DeviceGFX::getInstance();
+	backend::DeviceGFX::setSwapchainInfo(
+		device->getWindowHandle(), v, device->getWidth(), device->getHeight());
+#else
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
-	glfwSwapInterval(v ? 1 : 0);
 	// glfwSwapInterval usually not work on windows
+	glfwSwapInterval(v ? 1 : 0);
+	// NOTE: usually cannot turn on again after turn off
 	typedef BOOL(WINAPI *PFNWGLSWAPINTERVALEXTPROC)(int interval);
-	PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = nullptr;
-	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+	const auto wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
 	if (wglSwapIntervalEXT)
-	{
 		wglSwapIntervalEXT(v ? 1 : 0);
-		set = true;
-	}
 #elif CC_TARGET_PLATFORM == CC_PLATFORM_MAC
 	glfwSwapInterval(v ? 1 : 0);
-	set = true;
 #elif CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-	EGLDisplay eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+	const auto eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 	eglSwapInterval(eglDisplay, v ? 1 : 0);
-	set = true;
 #endif
-	if (set)
-	{
-		XINFO("set vsync %s", (v ? "on" : "off"));
-	}
-	else
-	{
-		XINFO("not supported");
-	}
+#endif
 }
 
 void XRenderer::setOffscreen(bool b) noexcept
@@ -273,8 +267,7 @@ bool XRenderer::beginScene()noexcept
 	bRenderStarted = true;
 	// clear pools
 	LMP.trim();
-	LMP.reset();
-	//LMP.clear();// clear is painful
+	LMP.reset(); // reuse
 	labelPool.restore();
 	renderTargetUsed.clear();
 
