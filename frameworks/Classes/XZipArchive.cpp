@@ -31,7 +31,8 @@ ZipArchive::~ZipArchive()
 
 bool ZipArchive::init(const std::string& path, const std::string& password, Encryption encryptionMethod)
 {
-	archive = new (std::nothrow) libzippp::ZipArchive(path, password, encryptionMethod);
+	archive = new (std::nothrow) libzippp::ZipArchive(
+		path, password, (libzippp::ZipArchive::Encryption)encryptionMethod);
 	return archive;
 }
 
@@ -39,7 +40,8 @@ bool ZipArchive::initWithBuffer(Buffer* buffer_, OpenMode mode, bool checkConsis
 {
 	if (!buffer_)
 		return false;
-	archive = libzippp::ZipArchive::fromBuffer((const char*)buffer_->data(), buffer_->size(), mode, checkConsistency);
+	archive = libzippp::ZipArchive::fromBuffer(
+		buffer_->data(), buffer_->size(), (libzippp::ZipArchive::OpenMode)mode, checkConsistency);
 	return archive;
 }
 
@@ -67,9 +69,24 @@ ZipArchive* ZipArchive::createFromBuffer(Buffer* buffer, OpenMode mode, bool che
 	return nullptr;
 }
 
+bool ZipArchive::open(OpenMode mode, bool checkConsistency)
+{
+	return archive->open((libzippp::ZipArchive::OpenMode)mode, checkConsistency);
+}
+
+std::string ZipArchive::getComment(State state) const
+{
+	return archive->getComment((libzippp::ZipArchive::State)state);
+}
+
+int64_t ZipArchive::getEntryCount(State state) const
+{
+	return archive->getNbEntries((libzippp::ZipArchive::State)state);
+}
+
 std::vector<std::string> ZipArchive::getEntries(State state) const
 {
-	const auto entries = archive->getEntries(state);
+	const auto entries = archive->getEntries((libzippp::ZipArchive::State)state);
 	std::vector<std::string> ret;
 	ret.reserve(entries.size());
 	for (auto& e : entries)
@@ -79,15 +96,20 @@ std::vector<std::string> ZipArchive::getEntries(State state) const
 	return ret;
 }
 
+bool ZipArchive::hasEntry(const std::string& name, bool excludeDirectories, bool caseSensitive, State state) const
+{
+	return archive->hasEntry(name, excludeDirectories, caseSensitive, (libzippp::ZipArchive::State)state);
+}
+
 std::string ZipArchive::getEntryByIndex(int64_t index, State state) const
 {
-	const auto entry = archive->getEntry(index, state);
+	const auto entry = archive->getEntry(index, (libzippp::ZipArchive::State)state);
 	return entry.getName();
 }
 
 std::string ZipArchive::getEntryComment(const std::string& entry, State state) const
 {
-	return archive->getEntryComment(getEntry(entry, state), state);
+	return archive->getEntryComment(getEntry(entry, state), (libzippp::ZipArchive::State)state);
 }
 
 bool ZipArchive::setEntryComment(const std::string& entry, const std::string& comment, State state) const
@@ -124,7 +146,7 @@ Buffer* ZipArchive::readEntry(const std::string& entry, State state)
 		b->insert_data(b->size(), (const char*)data, (size_t)size_);
 		return true;
 	};
-	const auto ret = archive->readEntry(getEntry(entry, state), readFunc, state);
+	const auto ret = archive->readEntry(getEntry(entry, state), readFunc, (libzippp::ZipArchive::State)state);
 	if (ret != LIBZIPPP_OK)
 	{
 		lastError = getLibZipppError(ret);
@@ -139,7 +161,7 @@ bool ZipArchive::extractEntry(const std::string& entry, const std::string& dstPa
 	std::ofstream out(path, std::ios_base::out | std::ios_base::binary);
 	if(!out.is_open())
 		return false;
-	const auto ret = archive->readEntry(getEntry(entry, state), out, state);
+	const auto ret = archive->readEntry(getEntry(entry, state), out, (libzippp::ZipArchive::State)state);
 	if (ret != LIBZIPPP_OK)
 	{
 		lastError = getLibZipppError(ret);
@@ -180,6 +202,11 @@ bool ZipArchive::addString(const std::string& entry, const std::string& string) 
 	return archive->addData(entry, string.data(), string.size());
 }
 
+ZipArchive::OpenMode ZipArchive::getMode() const
+{
+	return (OpenMode)archive->getMode();
+}
+
 ZipArchive::ZipEntryInfo ZipArchive::getEntryInfo(const std::string& entry, State state)
 {
 	ZipEntryInfo info{};
@@ -199,5 +226,5 @@ ZipArchive::ZipEntryInfo ZipArchive::getEntryInfo(const std::string& entry, Stat
 
 libzippp::ZipEntry ZipArchive::getEntry(const std::string& name, State state) const
 {
-	return archive->getEntry(name, false, true, state);
+	return archive->getEntry(name, false, true, (libzippp::ZipArchive::State)state);
 }

@@ -8,9 +8,48 @@ namespace lstg
 	class ZipArchive : public cocos2d::Ref
 	{
 	public:
-		using OpenMode = libzippp::ZipArchive::OpenMode;
-		using State = libzippp::ZipArchive::State;
-		using Encryption = libzippp::ZipArchive::Encryption;
+		/**
+		 * Defines how the zip file must be open.
+		 * NotOpen is a special mode where the file is not open.
+		 * ReadOnly is the basic mode to only read the archive.
+		 * Write will append to an existing archive or create a new one if it does not exist.
+		 * New will create a new archive or erase all the data if a previous one exists.
+		 */
+		enum OpenMode {
+			NotOpen,
+			ReadOnly,
+			Write,
+			New
+		};
+
+		/**
+		 * Defines how the reading of the data should be made in the archive.
+		 * Original will read the data of the original archive file, without any change.
+		 * Current will read the current content of the archive.
+		 */
+		enum State {
+			Original,
+			Current
+		};
+
+		/**
+		 * Defines encryption methods to be used, when writing, by the underlying libzip library.
+		 * These algorithms map to the types defined in libzip,
+		 * with the addition of a "ZIP_" prefix. For details see:
+		 * https://libzip.org/documentation/zip_file_set_encryption.html
+		 * None will use no encryption.
+		 * Aes128 will use Winzip AES-128 encryption.
+		 * Aes192 will use Winzip AES-192 encryption.
+		 * Aes256 will use Winzip AES-256 encryption.
+		 * TradPkware will use  Traditional PKWare encryption. Do not use this method, it is not secure. It is only provided for backwards compatibility.
+		 */
+		enum Encryption {
+			None,
+			Aes128,
+			Aes192,
+			Aes256,
+			TradPkware
+		};
 
 		struct ZipEntryInfo
 		{
@@ -57,9 +96,7 @@ namespace lstg
 		 * will be thrown. If the archive is already open, this method returns true only if the
 		 * mode is the same.
 		 */
-		bool open(OpenMode mode = OpenMode::ReadOnly, bool checkConsistency = false) {
-			return archive->open(mode, checkConsistency);
-		}
+		bool open(OpenMode mode = OpenMode::ReadOnly, bool checkConsistency = false);
 		/**
 		 * Closes the ZipArchive and releases all the resources held by it. If the ZipArchive was
 		 * not open previously, this method does nothing. If the archive was open in modification
@@ -101,7 +138,7 @@ namespace lstg
 		 * must have been open in WRITE or NEW mode. If the archive is not open, then
 		 * an empty string will be returned.
 		 */
-		std::string getComment(State state = State::Current) const { return archive->getComment(state); }
+		std::string getComment(State state = State::Current) const;
 
 		/**
 		 * Defines the comment of the archive. In order to set the comment, the archive
@@ -128,7 +165,7 @@ namespace lstg
 		 * If you wanna know the "real" entries effectively in the archive, you might use
 		 * the getEntries method.
 		 */
-		int64_t getEntryCount(State state = State::Current) const { return archive->getNbEntries(state); }
+		int64_t getEntryCount(State state = State::Current) const;
 
 		/**
 		 * Returns all the entries of the ZipArchive. If the state is Original, then
@@ -143,9 +180,7 @@ namespace lstg
 		 * The zip file must be open otherwise false will be returned.
 		 */
 		bool hasEntry(const std::string& name,
-			bool excludeDirectories = false, bool caseSensitive = true, State state = State::Current) const {
-			return archive->hasEntry(name, excludeDirectories, caseSensitive, state);
-		}
+			bool excludeDirectories = false, bool caseSensitive = true, State state = State::Current) const;
 
 		/**
 		 * Returns the entry for the specified index. If the index is out of range,
@@ -262,7 +297,7 @@ namespace lstg
 		 * Returns the mode in which the file has been open.
 		 * If the archive is not open, then NOT_OPEN will be returned.
 		 */
-		OpenMode getMode() const { return archive->getMode(); }
+		OpenMode getMode() const;
 
 		ZipEntryInfo getEntryInfo(const std::string& entry, State state = State::Current);
 
@@ -278,26 +313,23 @@ namespace lstg
 	};
 }
 
-#include "Util/UtilLuaConversion.h"
+#include "../LuaBindings/LuaBindings.h"
 
-namespace lstg
+namespace lua
 {
-	namespace lua
+	template<>
+	struct to_lua<lstg::ZipArchive::ZipEntryInfo>
 	{
-		template<>
-		struct to_lua<ZipArchive::ZipEntryInfo>
-		{
-			static void F(lua_State* L, const ZipArchive::ZipEntryInfo& inValue) {
-				if (!L) return;
-				lua_createtable(L, 0, 7);
-				native_to_luaval_field(L, -1, "index", inValue.index);
-				native_to_luaval_field(L, -1, "time", inValue.time);
-				native_to_luaval_field(L, -1, "compressionMethod", inValue.compressionMethod);
-				native_to_luaval_field(L, -1, "encryptionMethod", inValue.encryptionMethod);
-				native_to_luaval_field(L, -1, "size", inValue.size);
-				native_to_luaval_field(L, -1, "sizeComp", inValue.sizeComp);
-				native_to_luaval_field(L, -1, "crc", inValue.crc);
-			}
-		};
-	}
+		static void F(lua_State* L, const lstg::ZipArchive::ZipEntryInfo& inValue) {
+			if (!L) return;
+			lua_createtable(L, 0, 7);
+			native_to_luaval_field(L, -1, "index", inValue.index);
+			native_to_luaval_field(L, -1, "time", inValue.time);
+			native_to_luaval_field(L, -1, "compressionMethod", inValue.compressionMethod);
+			native_to_luaval_field(L, -1, "encryptionMethod", inValue.encryptionMethod);
+			native_to_luaval_field(L, -1, "size", inValue.size);
+			native_to_luaval_field(L, -1, "sizeComp", inValue.sizeComp);
+			native_to_luaval_field(L, -1, "crc", inValue.crc);
+		}
+	};
 }
