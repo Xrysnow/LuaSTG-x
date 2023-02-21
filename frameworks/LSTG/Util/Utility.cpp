@@ -996,7 +996,11 @@ backend::Program* util::CreateProgramFromPath(const std::string& v, const std::s
 	const auto v_content = fu->getStringFromFile(fu->fullPathForFilename(v));
 	const auto f_content = fu->getStringFromFile(fu->fullPathForFilename(f));
 	const auto ret = backend::Device::getInstance()->newProgram(v_content, f_content);
-	if (ret)return ret;
+	if (ret)
+	{
+		ret->autorelease();
+		return ret;
+	}
 	CheckVertexShader(v_content);
 	CheckFragmentShader(f_content);
 	return nullptr;
@@ -1005,7 +1009,11 @@ backend::Program* util::CreateProgramFromPath(const std::string& v, const std::s
 backend::Program* util::CreateProgramFromString(const std::string& v, const std::string& f)
 {
 	const auto ret = backend::Device::getInstance()->newProgram(v, f);
-	if (ret)return ret;
+	if (ret)
+	{
+		ret->autorelease();
+		return ret;
+	}
 	CheckVertexShader(v);
 	CheckFragmentShader(f);
 	return nullptr;
@@ -1027,7 +1035,10 @@ backend::Program* util::CreateProgramFromData(Data* v, Data* f)
 	}
 	const auto ret = backend::Device::getInstance()->newProgram(vdata, fdata);
 	if (ret)
+	{
+		ret->autorelease();
 		return ret;
+	}
 	XERROR("can't load shader from given bytes");
 	CheckVertexShader(vdata);
 	CheckFragmentShader(fdata);
