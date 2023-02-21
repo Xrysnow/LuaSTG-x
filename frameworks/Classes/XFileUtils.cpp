@@ -55,7 +55,7 @@ bool XFileUtils::init()
 	return ret;
 }
 
-string XFileUtils::getStringFromFile(const string& filename) const
+string XFileUtils::getStringFromFile(string_view filename) const
 {
 	if (filename.empty())
 	{
@@ -64,16 +64,16 @@ string XFileUtils::getStringFromFile(const string& filename) const
 	}
 
 	// force replace, used for HGE font
-	auto i = fileStringToReplace.find(filename);
+	auto i = fileStringToReplace.find(std::string{filename});
 	if (i != fileStringToReplace.end())
 	{
 		return i->second;
 	}
 	// via ResourceMgr
-	return LRES.getStringFromFile(filename);
+	return LRES.getStringFromFile(std::string{filename});
 }
 
-Data XFileUtils::getDataFromFile(const string& filename) const
+Data XFileUtils::getDataFromFile(string_view filename) const
 {
 	Data d;
 	if (filename.empty())
@@ -82,20 +82,20 @@ Data XFileUtils::getDataFromFile(const string& filename) const
 	}
 	else
 	{
-		const auto data = LRES.getBufferFromFile(filename);
+		const auto data = LRES.getBufferFromFile(std::string{filename});
 		if(data)
 			d.copy(data->data(), data->size());
 	}
 	return d;
 }
 
-string XFileUtils::fullPathForFilename(const string& filename) const
+string XFileUtils::fullPathForFilename(string_view filename) const
 {
 	if (filename.empty())
 		return "";
-	if (LRES.isFileOrDirectoryExist(filename))
+	if (LRES.isFileOrDirectoryExist(std::string{filename}))
 	{
-		return filename;
+		return std::string{filename};
 	}
 	// fullPathForDirectory is not public
 	if (!filename.empty() && filename[filename.size() - 1] == '/')
@@ -103,18 +103,18 @@ string XFileUtils::fullPathForFilename(const string& filename) const
 	return _FileUtilsBase::fullPathForFilename(filename);
 }
 
-bool XFileUtils::isAbsolutePath(const std::string& strPath) const
+bool XFileUtils::isAbsolutePath(string_view strPath) const
 {
-	if (LRES.isFileOrDirectoryExist(strPath))
+	if (LRES.isFileOrDirectoryExist(std::string{strPath}))
 		return true;
 	return _FileUtilsBase::isAbsolutePath(strPath);
 }
 
-bool XFileUtils::isFileExist(const string& filename) const
+bool XFileUtils::isFileExist(string_view filename) const
 {
 	if (filename.empty())
 		return false;
-	if (LRES.isFileOrDirectoryExist(filename))
+	if (LRES.isFileOrDirectoryExist(std::string{filename}))
 		return true;
 	if (_FileUtilsBase::isDirectoryExist(filename))
 		return false;
@@ -122,23 +122,23 @@ bool XFileUtils::isFileExist(const string& filename) const
 	return _FileUtilsBase::isFileExist(filename);
 }
 
-bool XFileUtils::isDirectoryExistInternal(const string& dirPath) const
+bool XFileUtils::isDirectoryExistInternal(string_view dirPath) const
 {
 	if (dirPath.empty())
 		return false;
-	if (LRES.isFileOrDirectoryExist(dirPath))
+	if (LRES.isFileOrDirectoryExist(std::string{dirPath}))
 		return true;
 	return _FileUtilsBase::isDirectoryExistInternal(dirPath);
 }
 
-vector<string> XFileUtils::listFiles(const string& dirPath) const
+vector<string> XFileUtils::listFiles(string_view dirPath) const
 {
 	vector<string> ret;
 	if (dirPath.empty())
 		return ret;
 	for (auto& pack : LRES.getResourcePacks())
 	{
-		if (pack->isFileOrDirectoryExist(dirPath))
+		if (pack->isFileOrDirectoryExist(std::string{dirPath}))
 		{
 			for (auto& p : pack->listFiles())
 			{
@@ -153,11 +153,11 @@ vector<string> XFileUtils::listFiles(const string& dirPath) const
 	return ret;
 }
 
-string XFileUtils::getFullPathForFilenameWithinDirectory(const string& directory, const string& filename) const
+string XFileUtils::getFullPathForFilenameWithinDirectory(string_view directory, string_view filename) const
 {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
-	string dir = convertPathFormatToUnixStyle(directory);
-	const string f = convertPathFormatToUnixStyle(filename);
+	string dir = convertPathFormatToUnixStyle(std::string{directory});
+	const string f = convertPathFormatToUnixStyle(std::string{filename});
 	// get directory+filename, safely adding '/' as necessary
 	string ret = dir;
 	if (!dir.empty() && dir[dir.size() - 1] != '/')

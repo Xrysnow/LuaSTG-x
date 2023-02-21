@@ -32,16 +32,16 @@ public:
 
 	bool init() override;
 
-	std::string getStringFromFile(const std::string& filename) const override;
-	cocos2d::Data getDataFromFile(const std::string& filename) const override;
+	std::string getStringFromFile(std::string_view filename) const override;
+	cocos2d::Data getDataFromFile(std::string_view filename) const override;
 
-	std::string fullPathForFilename(const std::string &filename) const override;
-	bool isAbsolutePath(const std::string& strPath) const override;
-	bool isFileExist(const std::string& filename) const override;
-	bool isDirectoryExistInternal(const std::string& dirPath) const override;
-	std::vector<std::string> listFiles(const std::string& dirPath) const override;
+	std::string fullPathForFilename(std::string_view filename) const override;
+	bool isAbsolutePath(std::string_view strPath) const override;
+	bool isFileExist(std::string_view filename) const override;
+	bool isDirectoryExistInternal(std::string_view dirPath) const override;
+	std::vector<std::string> listFiles(std::string_view dirPath) const override;
 
-	std::string getFullPathForFilenameWithinDirectory(const std::string& directory, const std::string& filename) const override;
+	std::string getFullPathForFilenameWithinDirectory(std::string_view directory, std::string_view filename) const override;
 
 	static void SetFileStringToReplace(const std::string& filename, std::string content);
 	static void CancelFileStringToReplace(const std::string& filename);
