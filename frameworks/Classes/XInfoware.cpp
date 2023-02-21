@@ -2,7 +2,11 @@
 #include "cocos2d.h"
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 	#include <intrin.h>
+#ifdef CC_VERSION
+	#include "ntcvt/ntcvt.hpp"
+#else
 	#include "CCUtils-win32.h"
+#endif // !CC_VERSION
 	#define WIN32_LEAN_AND_MEAN
 	#include <wbemidl.h>
 	#include <windows.h>
@@ -108,12 +112,20 @@ std::pair<bool, std::uint64_t> detail::deconstruct_sysctl_int(const std::vector<
 std::string detail::narrowen_winstring(const wchar_t* wstr) {
 	if (!wstr)
 		return {};
+#ifdef CC_VERSION
+	return ntcvt::from_chars(wstr, CP_UTF8);
+#else
 	return cocos2d::StringWideCharToUtf8({ wstr, std::wcslen(wstr) });
+#endif // CC_VERSION
 }
 std::string detail::narrowen_bstring(const wchar_t* bstr) {
 	if (!bstr)
 		return {};
+#ifdef CC_VERSION
+	return ntcvt::from_chars(bstr, CP_UTF8);
+#else
 	return cocos2d::StringWideCharToUtf8({ bstr, SysStringLen(const_cast<BSTR>(bstr)) });
+#endif // CC_VERSION
 }
 #else
 std::string detail::narrowen_winstring(const wchar_t*) {
