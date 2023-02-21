@@ -133,6 +133,7 @@ bool XRenderer::end()
 	CC_SAFE_RELEASE_NULL(getInstance()->tempRenderTexture);
 	CC_SAFE_RELEASE_NULL(getInstance()->clearRect);
 	CC_SAFE_RELEASE_NULL(getInstance()->commandBuffer);
+	LMP.clear();
 	RenderMode::modeMap.clear();
 	RenderMode::modeVector.clear();
 	RenderMode::destructDefault();
