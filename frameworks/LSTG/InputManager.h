@@ -7,7 +7,6 @@ namespace lstg
 {
 	class InputManager
 	{
-	private:
 		InputManager();
 		~InputManager();
 
@@ -22,34 +21,33 @@ namespace lstg
 		void clearState();
 
 		// if key is pressed
-		bool getKeyState(int VKCode)noexcept;
+		bool getKeyState(int code);
+		void setKeyState(int code, bool value);
 
-		// last presesed key
-		int getLastKey() const noexcept { return lastKey; }
+		// get last presesed key
+		int getLastKey() const { return lastKey; }
 
-		// last got char (UTF-8) TODO: remove?
-		int getLastChar(lua_State* L)noexcept;
-
-		// mouse position (to the left bottom)
-		cocos2d::Vec2 getMousePosition() const noexcept { return mousePosition; }
+		// get mouse position (to the left bottom)
+		cocos2d::Vec2 getMousePosition() const { return mousePosition; }
 
 		// if mouse button is pressed
-		bool getMouseState(int button) noexcept;
+		bool getMouseState(int button);
 
-		//ControllerHelper* getControllerHelper() { return &controllerHelper; }
-
-		/** update input state immediately TODO: remove?*/
-		void updateInput() noexcept;
+		/**
+		 * \brief (windows only) enable/disable keyboard hook
+		 *
+		 * Enable keyboard hook will reduce input latency, but will affect the whole system. It is recommended to disable it when the game is paused.
+		 * \param enabled enable/disable
+		 */
+		void setKeyboardHookEnabled(bool enabled);
 
 	private:
-
-		wchar_t lastChar = 0;//TODO: Use char?
 		int32_t lastKey = 0;
 		bool KeyStateMap[256];
 		cocos2d::Vec2 mousePosition;
 		bool mouseState[3];
-
 		bool inputStateMap[256];
-		//ControllerHelper controllerHelper;
+
+		void* keyboardHook = nullptr;
 	};
 }
