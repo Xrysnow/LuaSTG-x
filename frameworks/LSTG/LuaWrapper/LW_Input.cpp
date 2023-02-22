@@ -20,6 +20,11 @@ LUA_REGISTER_FUNC_DEF(lstg, GetLastKey)
 	lua_pushinteger(L, LIM.getLastKey());
 	return 1;
 }
+LUA_REGISTER_FUNC_DEF(lstg, SetKeyboardHookEnabled)
+{
+	LIM.setKeyboardHookEnabled(lua_toboolean(L, 1));
+	return 0;
+}
 LUA_REGISTER_FUNC_DEF(lstg, GetLastChar)
 {
 	// deprecated
@@ -27,9 +32,7 @@ LUA_REGISTER_FUNC_DEF(lstg, GetLastChar)
 	return 1;
 }
 
-/*******************************************************************************
- * controller
- *******************************************************************************/
+// controller
 
 LUA_REGISTER_FUNC_DEF(lstg, GetAllControllers)
 {
@@ -105,9 +108,8 @@ LUA_REGISTER_FUNC_DEF(lstg, SetOnControllerDisconnect)
 	return 0;
 }
 
-/*******************************************************************************
-* mouse
-*******************************************************************************/
+// mouse
+
 LUA_REGISTER_FUNC_DEF(lstg, GetMousePosition)
 {
 	const auto pos = LIM.getMousePosition();
@@ -120,9 +122,3 @@ LUA_REGISTER_FUNC_DEF(lstg, GetMouseState)
 	lua_pushboolean(L, LIM.getMouseState(luaL_checkinteger(L, 1) - 1));
 	return 1;
 }
-
-//LUA_REGISTER_FUNC_DEF(lstg, UpdateInput)
-//{
-//	//LAPP.UpdateInput();
-//	return 0;
-//}
