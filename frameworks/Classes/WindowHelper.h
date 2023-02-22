@@ -26,7 +26,7 @@ namespace lstg
 			CUSTOM
 		};
 
-		virtual ~WindowHelper() = default;
+		~WindowHelper() override = default;
 		static WindowHelper* getInstance();
 
 		virtual void setVsync(bool b) {}
@@ -34,14 +34,37 @@ namespace lstg
 
 		virtual void operate(Operation op) {}
 
-		virtual void setGamma(float v){}
-		virtual float getGamma() { return 0.f; }
-
 		virtual void setClipboardString(const std::string& s) {}
-		virtual std::string getClipboardString() { return ""; }
+		virtual std::string getClipboardString() { return {}; }
 
-		virtual void hint(int hint, int value){}
-		virtual void resetHint(){}
+		virtual void hint(int hint, int value) {}
+		virtual void resetHint() {}
+
+		virtual void setTitle(const std::string& s) {}
+		virtual std::string getTitle() { return {}; }
+
+		virtual void setPosition(const cocos2d::Vec2& p) {}
+		virtual cocos2d::Vec2 getPosition() { return {}; }
+
+		virtual void setVisible(bool b) {}
+		virtual bool isVisible() { return false; }
+
+		virtual void setCursorVisible(bool b) {}
+		virtual bool isCursorVisible() { return false; }
+
+		virtual void setSize(const cocos2d::Size& size) {}
+		virtual cocos2d::Size getSize() { return {}; }
+
+		virtual void setFullscreen() {}
+		virtual bool isFullscreen() { return false; }
+
+		virtual void moveToCenter() {}
+
+		virtual void setCustomCursor(const std::string& filename, const cocos2d::Vec2& hotspot) {}
+		virtual void setDefaultCursor() {}
+		virtual void setStandardCursor(CursorType type) {}
+
+		virtual float getDpiScale() { return 1.0f; }
 	protected:
 		std::string title;
 		bool visible = true;
@@ -51,9 +74,7 @@ namespace lstg
 
 		WindowHelper() = default;
 	};
-
 #ifdef CC_PLATFORM_PC
-	//TODO: Mac & Linux
 	class WindowHelperDesktop : public WindowHelper
 	{
 	public:
@@ -72,23 +93,23 @@ namespace lstg
 
 		static WindowHelperDesktop* getInstance();
 
-		virtual void setTitle(const std::string& s);
-		virtual std::string getTitle();
+		void setTitle(const std::string& s) override;
+		std::string getTitle() override;
 
-		virtual void setPosition(const cocos2d::Vec2& p);
-		virtual cocos2d::Vec2 getPosition();
+		void setPosition(const cocos2d::Vec2& p) override;
+		cocos2d::Vec2 getPosition() override;
 
-		virtual void setVisible(bool b);
-		virtual bool isVisible();
+		void setVisible(bool b) override;
+		bool isVisible() override;
 
-		virtual void setCursorVisible(bool b);
-		virtual bool isCursorVisible();
+		void setCursorVisible(bool b) override;
+		bool isCursorVisible() override;
 
-		virtual void setSize(const cocos2d::Size& size);
-		virtual cocos2d::Size getSize();
+		void setSize(const cocos2d::Size& size) override;
+		cocos2d::Size getSize() override;
 
-		virtual void setFullscreen();
-		virtual bool isFullscreen();
+		void setFullscreen() override;
+		bool isFullscreen() override;
 
 		void setVsync(bool b) override;
 		bool isVsync() override;
@@ -96,12 +117,9 @@ namespace lstg
 		void setVideoMode(VideoMode v);
 		VideoMode getVideoMode();
 
-		virtual void moveToCenter();
+		void moveToCenter() override;
 
 		void operate(Operation op) override;
-
-		void setGamma(float v) override;
-		float getGamma() override;
 
 		void setClipboardString(const std::string& s) override;
 		std::string getClipboardString() override;
@@ -109,9 +127,11 @@ namespace lstg
 		void hint(int hint, int value) override;
 		void resetHint() override;
 
-		void setCustomCursor(const std::string& filename, const cocos2d::Vec2& hotspot);
-		void setDefaultCursor();
-		void setStandardCursor(CursorType type);
+		void setCustomCursor(const std::string& filename, const cocos2d::Vec2& hotspot) override;
+		void setDefaultCursor() override;
+		void setStandardCursor(CursorType type) override;
+
+		float getDpiScale() override;
 	protected:
 		// it's better to get window dynamicly
 		GLFWwindow* getWindow();

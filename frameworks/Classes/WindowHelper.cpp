@@ -182,19 +182,6 @@ void WindowHelperDesktop::operate(Operation op)
 	}
 }
 
-void WindowHelperDesktop::setGamma(float v)
-{
-	const auto m = glfwGetWindowMonitor(view->getWindow());
-	if(m)
-		glfwSetGamma(m, v);
-	gamma = v;
-}
-
-float WindowHelperDesktop::getGamma()
-{
-	return gamma;
-}
-
 void WindowHelperDesktop::setClipboardString(const std::string& s)
 {
 	glfwSetClipboardString(getWindow(), s.c_str());
@@ -207,6 +194,8 @@ std::string WindowHelperDesktop::getClipboardString()
 
 void WindowHelperDesktop::hint(int hint, int value)
 {
+    // glfwInit is required
+	glfwInit();
 	glfwWindowHint(hint, value);
 }
 
@@ -257,6 +246,14 @@ void WindowHelperDesktop::setStandardCursor(CursorType type)
 	case CUSTOM: break;
 	default: ;
 	}
+}
+
+float WindowHelperDesktop::getDpiScale()
+{
+	float xscale = 1;
+	float yscale = 1;
+	glfwGetWindowContentScale(getWindow(), &xscale, &yscale);
+	return (xscale + yscale) / 2;
 }
 
 GLFWwindow* WindowHelperDesktop::getWindow()
