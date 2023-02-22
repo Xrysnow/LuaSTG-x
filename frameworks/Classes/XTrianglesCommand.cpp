@@ -17,20 +17,28 @@ void XTrianglesCommand::init(float globalOrder, Texture2D* texture,
 	_globalOrder = globalOrder;
 	_is3D = false;
 	_depth = 0;
-	assert(programState && renderMode && texture);
-	const auto new_tex = texture->getBackendTexture();
-	// use RenderMode to avoid compare BlendDescriptor
+	CC_ASSERT(programState && renderMode && texture);
+	const auto newTex = texture->getBackendTexture();
+	auto uniformID = programState->getUniformID();
+	const auto oldState = _pipelineDescriptor.programState;
+	// oldState can be null
+	//const bool sameState = oldState &&
+	//	(oldState->getProgram() == programState->getProgram()) &&
+	//	(oldState->getUniformID() == uniformID);
+	const bool sameState = oldState && oldState == programState;
+	// use RenderMode to avoid comparing _blendType
 	if (_renderMode != renderMode ||
-		_texture != new_tex ||
-		_pipelineDescriptor.programState != programState)
+		_texture != newTex ||
+		!sameState)
 	{
 		_renderMode = renderMode;
 		_pipelineDescriptor.programState = programState;
 		_pipelineDescriptor.blendDescriptor = renderMode->desc;
 		_programType = programState->getProgram()->getProgramType();
-		_texture = new_tex;
+		_texture = newTex;
 		_blendType.src = renderMode->desc.sourceRGBBlendFactor;
 		_blendType.dst = renderMode->desc.destinationRGBBlendFactor;
+		_uniformID = uniformID;
 
 		// safe to use cocos batching
 		setSkipBatching(false);
@@ -39,13 +47,21 @@ void XTrianglesCommand::init(float globalOrder, Texture2D* texture,
 		{
 			void* texture;
 			void* renderMode;
-			void* programState;
+			void* program;
+			uint32_t uniformID;
+			backend::BlendFactor src;
+			backend::BlendFactor dst;
 		}hashMe;
 		memset(&hashMe, 0, sizeof(hashMe));
 		hashMe.texture = _texture;
 		hashMe.renderMode = renderMode;
-		hashMe.programState = programState;
+		hashMe.program = programState->getProgram();
+		hashMe.uniformID = _uniformID;
+		hashMe.src = _blendType.src;
+		hashMe.dst = _blendType.dst;
 		_materialID = XXH32((const void*)&hashMe, sizeof(hashMe), 0);
+
+		CC_ASSERT(!_renderMode->getProgram()->getVertexLayout()->getAttributes().empty());
 	}
 }
 
@@ -53,7 +69,7 @@ void XTrianglesCommand::copyProperties(XTrianglesCommand* other) const
 {
 	other->_blendType = _blendType;
 	other->_materialID = _materialID;
-	other->_alphaTextureID = _alphaTextureID;
+	other->_uniformID = _uniformID;
 	other->_blendType = _blendType;
 	other->_programType = _programType;
 	other->_texture = _texture;
