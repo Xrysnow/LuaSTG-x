@@ -262,3 +262,164 @@ GLFWwindow* WindowHelperDesktop::getWindow()
 }
 
 #endif // CC_PLATFORM_PC
+
+cocos2d::Map<void*, MonitorHelper*> MonitorHelper::instances;
+
+std::vector<MonitorHelper*> MonitorHelper::getMonitors()
+{
+#ifdef CC_PLATFORM_PC
+	std::vector<MonitorHelper*> ret;
+	int count = 0;
+	const auto arr = glfwGetMonitors(&count);
+	ret.reserve(count);
+	for (int i = 0; i < count; ++i)
+		ret.push_back(MonitorHelperDesktop::getOrCreate(arr[i]));
+	return ret;
+#else
+	return {};
+#endif
+}
+
+MonitorHelper* MonitorHelper::getPrimaryMonitor()
+{
+#ifdef CC_PLATFORM_PC
+	const auto p = glfwGetPrimaryMonitor();
+	return MonitorHelperDesktop::getOrCreate(p);
+#else
+	return nullptr;
+#endif
+}
+
+MonitorHelper* MonitorHelper::getCurrentMonitor()
+{
+#ifdef CC_PLATFORM_PC
+	const auto view = dynamic_cast<GLViewImpl*>(Director::getInstance()->getOpenGLView());
+	const auto p = glfwGetWindowMonitor(view->getWindow());
+	return MonitorHelperDesktop::getOrCreate(p);
+#else
+	return nullptr;
+#endif
+}
+
+#ifdef CC_PLATFORM_PC
+
+bool MonitorHelperDesktop::isValid()
+{
+	int count = 0;
+	const auto arr = glfwGetMonitors(&count);
+	for (int i = 0; i < count; ++i)
+	{
+		if (arr[i] == handle)
+			return true;
+	}
+	return false;
+}
+
+cocos2d::Vec2 MonitorHelperDesktop::getPosition()
+{
+	int x = 0;
+	int y = 0;
+	glfwGetMonitorPos(handle, &x, &y);
+	return { float(x),float(y) };
+}
+
+cocos2d::Rect MonitorHelperDesktop::getWorkarea()
+{
+	int x = 0;
+	int y = 0;
+	int w = 0;
+	int h = 0;
+	glfwGetMonitorWorkarea(handle, &x, &y, &w, &h);
+	return { float(x),float(y),float(w),float(h) };
+}
+
+cocos2d::Vec2 MonitorHelperDesktop::getPhysicalSize()
+{
+	int w = 0;
+	int h = 0;
+	glfwGetMonitorPhysicalSize(handle, &w, &h);
+	return { float(w),float(h) };
+}
+
+cocos2d::Vec2 MonitorHelperDesktop::getContentScale()
+{
+	float x = 0;
+	float y = 0;
+	glfwGetMonitorContentScale(handle, &x, &y);
+	return { x,y };
+}
+
+std::string MonitorHelperDesktop::getName()
+{
+	const auto s = glfwGetMonitorName(handle);
+	return s ? s : "";
+}
+
+std::vector<MonitorHelper::VideoMode> MonitorHelperDesktop::getVideoModes()
+{
+	std::vector<VideoMode> ret;
+	int count = 0;
+	const auto arr = glfwGetVideoModes(handle, &count);
+	for (int i = 0; i < count; ++i)
+	{
+		auto& v = arr[i];
+		ret.emplace_back(VideoMode{ v.width,v.height,v.redBits,v.greenBits,v.blueBits,v.refreshRate });
+	}
+	return ret;
+}
+
+MonitorHelper::VideoMode MonitorHelperDesktop::getCurrentVideoMode()
+{
+	const auto v = glfwGetVideoMode(handle);
+	if (!v)
+		return {};
+	return { v->width,v->height,v->redBits,v->greenBits,v->blueBits,v->refreshRate };
+}
+
+void MonitorHelperDesktop::setGamma(float gamma)
+{
+	glfwSetGamma(handle, gamma);
+}
+
+MonitorHelper::GammaRamp MonitorHelperDesktop::getGammaRamp()
+{
+	const auto ramp = glfwGetGammaRamp(handle);
+	if (!ramp)
+		return {};
+	GammaRamp v;
+	v[0].insert(v[0].end(), ramp->red, ramp->red + ramp->size);
+	v[1].insert(v[1].end(), ramp->green, ramp->red + ramp->size);
+	v[2].insert(v[2].end(), ramp->blue, ramp->red + ramp->size);
+	return v;
+}
+
+void MonitorHelperDesktop::setGammaRamp(const GammaRamp& ramp)
+{
+	const auto size = std::min({ ramp[0].size(),ramp[1].size(),ramp[2].size() });
+	const GLFWgammaramp v = {
+		const_cast<unsigned short*>(ramp[0].data()),
+		const_cast<unsigned short*>(ramp[1].data()),
+		const_cast<unsigned short*>(ramp[2].data()),
+		(unsigned int)size
+	};
+	glfwSetGammaRamp(handle, &v);
+}
+
+MonitorHelperDesktop::MonitorHelperDesktop(GLFWmonitor* hdl)
+	: handle(hdl)
+{
+}
+
+MonitorHelperDesktop* MonitorHelperDesktop::getOrCreate(GLFWmonitor* handle)
+{
+	if (!handle)
+		return nullptr;
+	const auto it = instances.find(handle);
+	if (it != instances.end())
+		return (MonitorHelperDesktop*)it->second;
+	const auto instance = new MonitorHelperDesktop(handle);
+	instance->autorelease();
+	return instance;
+}
+
+#endif

@@ -148,4 +148,52 @@ namespace lstg
 	};
 #endif // CC_PLATFORM_PC
 
+	class MonitorHelper : public cocos2d::Ref
+	{
+	public:
+		using GammaRamp = std::array<std::vector<unsigned short>, 3>;
+		using VideoMode = std::array<int, 6>;
+
+		static std::vector<MonitorHelper*> getMonitors();
+		static MonitorHelper* getPrimaryMonitor();
+		static MonitorHelper* getCurrentMonitor();
+
+		virtual bool isValid() = 0;
+
+		virtual cocos2d::Vec2 getPosition() = 0;
+		virtual cocos2d::Rect getWorkarea() = 0;
+		virtual cocos2d::Vec2 getPhysicalSize() = 0;
+		virtual cocos2d::Vec2 getContentScale() = 0;
+		virtual std::string getName() = 0;
+		virtual std::vector<VideoMode> getVideoModes() = 0;
+		virtual VideoMode getCurrentVideoMode() = 0;
+		virtual void setGamma(float gamma) = 0;
+		virtual GammaRamp getGammaRamp() = 0;
+		virtual void setGammaRamp(const GammaRamp& ramp) = 0;
+	protected:
+		static cocos2d::Map<void*, MonitorHelper*> instances;
+	};
+#ifdef CC_PLATFORM_PC
+	class MonitorHelperDesktop : public MonitorHelper
+	{
+	public:
+		bool isValid() override;
+		cocos2d::Vec2 getPosition() override;
+		cocos2d::Rect getWorkarea() override;
+		cocos2d::Vec2 getPhysicalSize() override;
+		cocos2d::Vec2 getContentScale() override;
+		std::string getName() override;
+		std::vector<VideoMode> getVideoModes() override;
+		VideoMode getCurrentVideoMode() override;
+		void setGamma(float gamma) override;
+		GammaRamp getGammaRamp() override;
+		void setGammaRamp(const GammaRamp& ramp) override;
+	protected:
+		MonitorHelperDesktop(GLFWmonitor* hdl);
+		GLFWmonitor* handle = nullptr;
+
+		static MonitorHelperDesktop* getOrCreate(GLFWmonitor* handle);
+		friend class MonitorHelper;
+	};
+#endif // CC_PLATFORM_PC
 }
