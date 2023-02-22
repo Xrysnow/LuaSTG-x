@@ -8,7 +8,6 @@
 
 namespace lstg
 {
-	using data_shared_ptr = std::shared_ptr<cocos2d::Data>;
 	/**
 	 * A ResourcePack manages a zip file.
 	 * After reading a file from ResourcePack, it will cache the data in memory.
@@ -84,12 +83,9 @@ namespace lstg
 	 */
 	class ResourceMgr
 	{
-	private:
 		cocos2d::Map<std::string, ResourcePack*> packs;
 		std::mutex mut;
 		cocos2d::Map<std::string, Buffer*> localFiles;
-
-		float globalImageScaleFactor = 1.0f;
 
 		ResourceMgr();
 		~ResourceMgr();
@@ -137,7 +133,7 @@ namespace lstg
 		 * @return If it's successed
 		 */
 		bool extractFile(const std::string& filePath, const std::string& targetPath);
-		/** Unload all ResourcePacks, clear local file caches, reset globalImageScaleFactor. */
+		/** Unload all ResourcePacks and clear local file caches. */
 		void clear();
 	};
 }

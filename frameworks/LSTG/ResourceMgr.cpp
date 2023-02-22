@@ -480,7 +480,6 @@ bool ResourceMgr::extractFile(const string& filePath, const string& targetPath)
 
 void ResourceMgr::clear()
 {
-	globalImageScaleFactor = 1.f;
 	unloadAllResourcePacks();
 	clearLocalFileCache();
 }
