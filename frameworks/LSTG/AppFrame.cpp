@@ -211,6 +211,8 @@ for k, v in pairs(axexp) do ccexp[k] = v end
 	if (!Director::getInstance()->getOpenGLView())
 	{
 		XERROR("no view created");
+		// this will give error message
+		loadScript(LLAUNCH_SCRIPT);
 		return false;
 	}
 	return true;
