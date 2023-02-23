@@ -253,7 +253,7 @@ double AppFrame::getFPS() noexcept
 	return Director::getInstance()->getFrameRate();
 }
 
-void AppFrame::loadScript(const std::string& path)noexcept
+void AppFrame::loadScript(const std::string& path) noexcept
 {
 	string err;
 	auto data = LRES.getBufferFromFile(path);
@@ -418,10 +418,10 @@ void AppFrame::frameShutdown()noexcept
 	LINFO("clear GameObjectPool");
 
 	LRES.clear();
-	LINFO("clear all resources");
+	LINFO("clear all file resources");
 
-	LRES.unloadAllResourcePacks();
-	LINFO("unload all packs");
+	Resource::destroyInstances();
+	LINFO("destroy all resources");
 
 #ifndef LSTGX_NO_LIVE2D
 	l2d::Framework::end();
