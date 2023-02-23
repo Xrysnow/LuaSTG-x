@@ -64,6 +64,7 @@ namespace lstg
 		bool isFileCached(const std::string& fpath);
 		bool removeFileCache(const std::string& fpath);
 		void clearFileCache();
+		size_t getFileCacheSize();
 
 		std::vector<std::string> listFiles();
 		std::vector<std::string> listCachedFiles();
@@ -105,6 +106,7 @@ namespace lstg
 		bool removeLocalFileCache(const std::string& fpath);
 		void clearLocalFileCache();
 		std::vector<std::string> listCachedLocalFiles();
+		size_t getFileCacheSize();
 
 		ResourcePack* loadResourcePack(const std::string& fullPath, const std::string& password);
 		bool isResourcePackLoaded(const std::string& packPath);

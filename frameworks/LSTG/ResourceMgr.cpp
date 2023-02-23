@@ -246,6 +246,14 @@ void ResourcePack::clearFileCache()
 	loadedFiles.clear();
 }
 
+size_t ResourcePack::getFileCacheSize()
+{
+	size_t total = 0;
+	for (auto&& it : loadedFiles)
+		total += it.second->size();
+	return total;
+}
+
 vector<string> ResourcePack::listFiles()
 {
 	lock_guard<mutex> lock(mut);
@@ -366,6 +374,16 @@ vector<string> ResourceMgr::listCachedLocalFiles()
 	for (auto& it : localFiles)
 		ret.push_back(it.first);
 	return ret;
+}
+
+size_t ResourceMgr::getFileCacheSize()
+{
+	size_t total = 0;
+	for (auto&& it : packs)
+		total += it.second->getFileCacheSize();
+	for (auto&& it : localFiles)
+		total += it.second->size();
+	return total;
 }
 
 ResourcePack* ResourceMgr::loadResourcePack(const std::string& fullPath, const std::string& password)
