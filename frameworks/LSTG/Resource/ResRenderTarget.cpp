@@ -2,6 +2,7 @@
 #include "LogSystem.h"
 #include "Renderer.h"
 #include "Util/Utility.h"
+#include "renderer/backend/RenderTarget.h"
 
 using namespace std;
 using namespace lstg;
@@ -140,6 +141,14 @@ std::unordered_map<std::string, std::string> ResRenderTarget::getInfo() const
 	if (target)
 		ret["description"] = target->getDescription();
 	return ret;
+}
+
+size_t ResRenderTarget::getMemorySize()
+{
+	size_t total = sizeof(ResRenderTarget) + resName.size() + resPath.size();
+	if (target && target->getReferenceCount() == 1)
+		total += sizeof(RenderTexture) + sizeof(Sprite) + sizeof(Texture2D) + sizeof(backend::RenderTarget);
+	return total;
 }
 
 ResRenderTarget::ResRenderTarget(const std::string& name, RenderTexture* tex, bool autoResize_)

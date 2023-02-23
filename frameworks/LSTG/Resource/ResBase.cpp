@@ -17,6 +17,14 @@ void Resource::destroyInstances()
 	instances.clear();
 }
 
+size_t Resource::getTotalMemorySize()
+{
+	size_t total = 0;
+	for (auto&& ins : instances)
+		total += ins->getMemorySize();
+	return total;
+}
+
 // TODO: move to lua
 std::unordered_map<std::string, std::string> Resource::getInfo() const
 {
@@ -26,6 +34,11 @@ std::unordered_map<std::string, std::string> Resource::getInfo() const
 	if (!resPath.empty())
 		ret["path"] = resPath;
 	return ret;
+}
+
+size_t Resource::getMemorySize()
+{
+	return sizeof(Resource) + resName.size() + resPath.size();
 }
 
 void Resource::pushLua(lua_State* L)
@@ -60,6 +73,11 @@ std::unordered_map<std::string, std::string> ResourceColliable::getInfo() const
 	ret["rb"] = to_string(halfSizeX);
 	ret["collider"] = xmath::collision::to_string(colliderType);
 	return ret;
+}
+
+size_t ResourceColliable::getMemorySize()
+{
+	return sizeof(ResourceColliable) + resName.size() + resPath.size();
 }
 
 ResourceColliable::ResourceColliable(
@@ -134,6 +152,11 @@ std::unordered_map<std::string, std::string> ResourceQuad::getInfo() const
 	ret["render_mode"] = getRenderMode()->getName();
 	ret["color"] = tostring(vertex.tl.colors);
 	return ret;
+}
+
+size_t ResourceQuad::getMemorySize()
+{
+	return sizeof(ResourceQuad) + resName.size() + resPath.size();
 }
 
 ResourceQuad::ResourceQuad(

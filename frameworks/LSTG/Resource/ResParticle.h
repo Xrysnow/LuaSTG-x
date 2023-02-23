@@ -148,6 +148,7 @@ namespace lstg {
 		const ParticleInfo& getParticleInfo() const { return particleInfo; }
 
 		std::unordered_map<std::string, std::string> getInfo() const override;
+		size_t getMemorySize() override;
 
 		ResParticle(const std::string& name, const ParticleInfo& pinfo, cocos2d::Sprite* sprite,
 			RenderMode* rm, double a, double b, XColliderType colliType = XColliderType::Circle);

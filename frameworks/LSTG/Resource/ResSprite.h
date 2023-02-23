@@ -6,7 +6,6 @@ namespace lstg {
 	class ResSprite :
 		public ResourceQuad
 	{
-	private:
 		cocos2d::Sprite* sprite = nullptr;
 		cocos2d::Texture2D* normalMap = nullptr;
 	public:
@@ -23,11 +22,11 @@ namespace lstg {
 
 		ResSprite* clone(const std::string& newName);
 		std::unordered_map<std::string, std::string> getInfo() const override;
+		size_t getMemorySize() override;
 
-	public:
 		ResSprite(const std::string& name, cocos2d::Sprite* sprite,
 			XColliderType colliType, double a, double b, const std::string& path = "");
-		~ResSprite();
+		~ResSprite() override;
 
 		static ResSprite* create(const std::string& name, ResTexture* texture,
 			double x, double y, double w, double h,

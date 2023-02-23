@@ -110,12 +110,13 @@ namespace lstg {
 		bool render(const std::string& str, float x, float y, float width = -1, float height = -1, float scaleX = 1, float scaleY = 1);
 		cocos2d::Vec2 calcSize(const std::string& text);
 		std::unordered_map<std::string, std::string> getInfo() const override;
+		size_t getMemorySize() override;
 
 		cocos2d::Label* createLabel();
 		void syncLabelSetting(cocos2d::Label* target);
 
 		ResFont(const std::string& name, XLabel* label, LabelType type);
-		~ResFont();
+		~ResFont() override;
 
 		static ResFont* createHGE(const std::string& name, const std::string& path);
 		static ResFont* createBMF(const std::string& name, const std::string& path);

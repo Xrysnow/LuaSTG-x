@@ -23,16 +23,16 @@ void ResAnimation::setColor(const Color4B& color, int i)
 	switch (i)
 	{
 	case 0:
-		for (auto& v : verts)v.tl.colors = color;
+		for (auto& v : verts) v.tl.colors = color;
 		break;
 	case 1:
-		for (auto& v : verts)v.tr.colors = color;
+		for (auto& v : verts) v.tr.colors = color;
 		break;
 	case 2:
-		for (auto& v : verts)v.bl.colors = color;
+		for (auto& v : verts) v.bl.colors = color;
 		break;
 	case 3:
-		for (auto& v : verts)v.br.colors = color;
+		for (auto& v : verts) v.br.colors = color;
 		break;
 	default:
 		break;
@@ -92,6 +92,16 @@ std::unordered_map<std::string, std::string> ResAnimation::getInfo() const
 	return ret;
 }
 
+size_t ResAnimation::getMemorySize()
+{
+	size_t total = sizeof(ResAnimation) + resName.size() + resPath.size();
+	total += verts.size() * sizeof(V3F_C4B_T2F_Quad);
+	for (auto&& sp : images)
+		if (sp->getReferenceCount() == 1)
+			total += sizeof(Sprite);
+	return total;
+}
+
 Animation* ResAnimation::newCocosAnimation()
 {
 	Vector<SpriteFrame*> frames;
@@ -117,7 +127,8 @@ interval(intv), w(w), h(h), m(m), n(n)
 				Rect(x + w * i, y + h * j, w, h));
 			if (!s)
 			{
-				for (auto img : images) img->release();
+				for (auto img : images)
+					img->release();
 				throw runtime_error("ResAnimation: CreateSprite2D failed.");
 			}
 			images.pushBack(s);

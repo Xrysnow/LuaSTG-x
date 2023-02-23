@@ -40,6 +40,16 @@ std::unordered_map<std::string, std::string> ResTexture::getInfo() const
 	return ret;
 }
 
+size_t ResTexture::getMemorySize()
+{
+	size_t total = sizeof(ResRenderTarget) + resName.size() + resPath.size();
+	if (texture->getReferenceCount() == 1)
+		total += sizeof(Texture2D);
+	if (xtri && xtri->getReferenceCount() == 1)
+		total += sizeof(Triangles) + xtri->getVertexCount() * sizeof(V3F_C4B_T2F) + xtri->getIndexCount() * sizeof(unsigned short);
+	return total;
+}
+
 ResTexture::ResTexture(const std::string& name, Texture2D* tex)
 : Resource(ResourceType::Texture, name), texture(tex)
 {

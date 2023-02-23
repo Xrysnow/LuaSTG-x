@@ -30,6 +30,7 @@ namespace lstg {
 		void setTexture(const std::string& uniform, cocos2d::Texture2D* value, uint32_t slot = 0);
 
 		std::unordered_map<std::string, std::string> getInfo() const override;
+		size_t getMemorySize() override;
 
 		static ResFX* create(const std::string& name,
 			const std::string& vsPath, const std::string& fsPath);

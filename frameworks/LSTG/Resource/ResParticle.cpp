@@ -373,6 +373,15 @@ std::unordered_map<std::string, std::string> ResParticle::getInfo() const
 	return ret;
 }
 
+size_t ResParticle::getMemorySize()
+{
+	size_t total = sizeof(ResParticle) + resName.size() + resPath.size();
+	if (bindSprite->getReferenceCount() == 1)
+		total += sizeof(Sprite);
+	total += sizeof(ParticlePool) * poolInstances.size();
+	return total;
+}
+
 ResParticle::ResParticle(const std::string& name, const ParticleInfo& pinfo, Sprite* sprite,
 	RenderMode* rm, double a, double b, XColliderType colliType)
 : ResourceColliable(ResourceType::Particle, name, colliType, a, b),

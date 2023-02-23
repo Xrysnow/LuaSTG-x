@@ -98,8 +98,16 @@ std::unordered_map<std::string, std::string> ResFX::getInfo() const
 	return ret;
 }
 
+size_t ResFX::getMemorySize()
+{
+	size_t total = sizeof(ResFX) + resName.size() + resPath.size();
+	for (auto&& it : uniforms)
+		total += it.first.size() + sizeof(backend::UniformLocation);
+	return total;
+}
+
 ResFX* ResFX::create(const std::string& name,
-	const std::string& vsPath, const std::string& fsPath)
+                     const std::string& vsPath, const std::string& fsPath)
 {
 	const auto vs = LRES.getStringFromFile(vsPath);
 	const auto fs = LRES.getStringFromFile(fsPath);

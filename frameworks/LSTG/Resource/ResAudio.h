@@ -44,6 +44,7 @@ namespace lstg
 		float* getFFT();
 
 		std::unordered_map<std::string, std::string> getInfo() const override;
+		size_t getMemorySize() override;
 	protected:
 		size_t fillBufferCopy();
 		size_t fillWavValue();

@@ -155,6 +155,14 @@ std::unordered_map<std::string, std::string> ResFont::getInfo() const
 	return ret;
 }
 
+size_t ResFont::getMemorySize()
+{
+	size_t total = sizeof(ResFont) + resName.size() + resPath.size();
+	if (label->getReferenceCount() == 1)
+		total += sizeof(XLabel);
+	return total;
+}
+
 Label* ResFont::createLabel()
 {
 	Label* ret;

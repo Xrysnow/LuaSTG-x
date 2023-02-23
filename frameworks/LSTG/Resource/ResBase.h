@@ -66,11 +66,13 @@ namespace lstg
 		std::string resPath;
 	public:
 		static void destroyInstances();
-		
+		static size_t getTotalMemorySize();
+
 		ResourceType getType() const { return resType; }
 		const std::string& getName() const { return resName; }
 		virtual const std::string& getPath() const { return resPath; }
 		virtual std::unordered_map<std::string, std::string> getInfo() const;
+		virtual size_t getMemorySize();
 		void pushLua(lua_State* L);
 		static Resource* fromLua(lua_State* L, int idx, ResourceType type);
 
@@ -78,7 +80,7 @@ namespace lstg
 		Resource(const Resource&) = delete;
 
 		Resource(ResourceType t, const std::string& name, const std::string& path = "");
-		virtual ~Resource();
+		~Resource() override;
 	};
 
 	class ResourceColliable : public Resource
@@ -92,7 +94,8 @@ namespace lstg
 		double getHalfSizeX() const { return halfSizeX; }
 		double getHalfSizeY() const { return halfSizeY; }
 
-		virtual std::unordered_map<std::string, std::string> getInfo() const override;
+		std::unordered_map<std::string, std::string> getInfo() const override;
+		size_t getMemorySize() override;
 
 		ResourceColliable(
 			ResourceType t, const std::string& name,
@@ -100,7 +103,7 @@ namespace lstg
 		ResourceColliable(
 			ResourceType t, const std::string& name,
 		    XColliderType colliType, double a, double b, const std::string& path = "");
-		virtual ~ResourceColliable();
+		~ResourceColliable() override;
 	};
 
 	class ResourceQuad : public ResourceColliable
@@ -121,11 +124,12 @@ namespace lstg
 		RenderMode* getRenderMode() const { return renderMode; }
 		void setRenderMode(RenderMode* m) { renderMode = m; }
 
-		virtual std::unordered_map<std::string, std::string> getInfo() const override;
+		std::unordered_map<std::string, std::string> getInfo() const override;
+		size_t getMemorySize() override;
 
 		ResourceQuad(ResourceType t, const std::string& name,
 			XColliderType colliType, double a, double b, const std::string& path = "");
-		virtual ~ResourceQuad() = default;
+		~ResourceQuad() override = default;
 
 		ResourceQuad& operator=(const ResourceQuad&) = delete;
 		ResourceQuad(const ResourceQuad&) = delete;

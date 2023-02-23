@@ -59,8 +59,18 @@ std::unordered_map<std::string, std::string> ResSprite::getInfo() const
 	return ret;
 }
 
+size_t ResSprite::getMemorySize()
+{
+	size_t total = sizeof(ResSprite) + resName.size() + resPath.size();
+	if (sprite->getReferenceCount() == 1)
+		total += sizeof(Sprite);
+	if (normalMap && normalMap->getReferenceCount() == 1)
+		total += sizeof(Texture2D);
+	return total;
+}
+
 ResSprite::ResSprite(const std::string& name, Sprite* sprite,
-	XColliderType colliType, double a, double b, const std::string& path)
+                     XColliderType colliType, double a, double b, const std::string& path)
 : ResourceQuad(ResourceType::Sprite, name, colliType, a, b, path), sprite(sprite)
 {
 	sprite->retain();

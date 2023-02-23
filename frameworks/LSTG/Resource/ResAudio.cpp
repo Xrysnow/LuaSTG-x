@@ -96,6 +96,15 @@ std::unordered_map<std::string, std::string> ResAudio::getInfo() const
 	return ret;
 }
 
+size_t ResAudio::getMemorySize()
+{
+	size_t total = sizeof(ResAudio) + resName.size() + resPath.size() + path.size();
+	total += fftWorkset.size() + fftOutComplex.size() * sizeof(float);
+	if (source->getReferenceCount() == 1)
+		total += sizeof(audio::Source) + sizeof(audio::Decoder) + audio::Decoder::DEFAULT_BUFFER_SIZE;
+	return total;
+}
+
 size_t ResAudio::fillBufferCopy()
 {
 	if (!isPlaying() || !source)
