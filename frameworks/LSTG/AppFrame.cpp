@@ -145,7 +145,9 @@ bool AppFrame::applicationDidFinishLaunching()
 	LuaModuleRegistry::registerModules(L);
 	LuaModuleRegistry::registerFunctions(L);
 	register_all_packages();
+#ifndef CC_VERSION
 	stack->setXXTEAKeyAndSign("2dxLua", strlen("2dxLua"), "XXTEA", strlen("XXTEA"));
+#endif // !CC_VERSION
 	{
 		lua_newtable(L);
 		int i = 1;
@@ -182,9 +184,19 @@ bool AppFrame::applicationDidFinishLaunching()
 
 	FU->addSearchPath("src");
 	FU->addSearchPath("res");
-	//#if CC_64BITS
-	//	FU->addSearchPath("src/64bit");
-	//#endif
+
+#ifdef CC_VERSION
+	engine->executeString(R"__(
+cc = cc or {}
+ccb = ccb or {}
+ccui = ccui or {}
+ccexp = ccexp or {}
+for k, v in pairs(ax) do cc[k] = v end
+for k, v in pairs(axb) do ccb[k] = v end
+for k, v in pairs(axui) do ccui[k] = v end
+for k, v in pairs(axexp) do ccexp[k] = v end
+)__");
+#endif // CC_VERSION
 
 	const auto fullPath = FU->fullPathForFilename(LLAUNCH_SCRIPT);
 	const auto data = FU->getDataFromFile(fullPath);
