@@ -25,6 +25,7 @@
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 #include "../runtime-src/proj.win32/WindowHelperWin32.h"
+#include "timeapi.h"
 #ifdef LSTGX_HP_GPU
 extern "C"
 {
