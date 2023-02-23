@@ -253,6 +253,7 @@ ResParticle::ParticlePool::ParticlePool(ResParticle* ref)
 ResParticle::ParticlePool::~ParticlePool()
 {
 	_res->release();
+	_res->poolInstances.erase(this);
 }
 
 ResParticle::ParticlePool* ResParticle::newPool()
@@ -262,6 +263,7 @@ ResParticle::ParticlePool* ResParticle::newPool()
 	{		
 		pool->setRenderMode(renderMode);
 		//pool->setSeed(uint32_t(time(nullptr)));
+		poolInstances.insert(pool);
 	}
 	return pool;
 }
@@ -372,11 +374,11 @@ std::unordered_map<std::string, std::string> ResParticle::getInfo() const
 }
 
 ResParticle::ResParticle(const std::string& name, const ParticleInfo& pinfo, Sprite* sprite,
-	RenderMode* bld, double a, double b, XColliderType colliType)
+	RenderMode* rm, double a, double b, XColliderType colliType)
 : ResourceColliable(ResourceType::Particle, name, colliType, a, b),
-bindSprite(sprite), particleInfo(pinfo), renderMode(bld)
+bindSprite(sprite), particleInfo(pinfo), renderMode(rm)
 {
-	CC_ASSERT(sprite&&bld);
+	CC_ASSERT(bindSprite && renderMode);
 	bindSprite->retain();
 }
 

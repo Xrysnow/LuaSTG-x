@@ -130,14 +130,15 @@ namespace lstg {
 			void update(float delta = 1.f / 60);
 			void render(float scaleX = 1.f, float scaleY = 1.f);
 			ParticleInstance* getParticleInstance(int32_t index);
-		public:
+
 			explicit ParticlePool(ResParticle* ref);
-			~ParticlePool();
+			~ParticlePool() override;
 		};
-	private:
+	protected:
 		cocos2d::Sprite* bindSprite;
 		ParticleInfo particleInfo;
 		RenderMode* renderMode;
+		std::unordered_set<ParticlePool*> poolInstances;
 	public:
 		RenderMode* getRenderMode() const { return renderMode; }
 		ParticlePool* newPool();
@@ -147,10 +148,10 @@ namespace lstg {
 		const ParticleInfo& getParticleInfo() const { return particleInfo; }
 
 		std::unordered_map<std::string, std::string> getInfo() const override;
-	public:
+
 		ResParticle(const std::string& name, const ParticleInfo& pinfo, cocos2d::Sprite* sprite,
-			RenderMode* bld, double a, double b, XColliderType colliType = XColliderType::Circle);
-		~ResParticle();
+			RenderMode* rm, double a, double b, XColliderType colliType = XColliderType::Circle);
+		~ResParticle() override;
 
 		static ResParticle* create(const std::string& name, const std::string& path, ResSprite* sprite,
 			double a, double b, XColliderType colliType);
