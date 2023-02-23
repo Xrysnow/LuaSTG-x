@@ -19,8 +19,8 @@ namespace lstg
 		std::array<uint8_t, bufferCopySize> bufferCopy;
 		std::array<float, bufferCopySize / 8> wavValue;
 		std::array<float, bufferCopySize / 8> fftWindow;
-		char* fftWorkset = nullptr;
-		float* fftOutComplex = nullptr;
+		std::vector<char> fftWorkset;
+		std::vector<float> fftOutComplex;
 		std::array<float, bufferCopySize / 16> fftOutNorm;
 	public:
 		void play();
@@ -47,13 +47,13 @@ namespace lstg
 	protected:
 		size_t fillBufferCopy();
 		size_t fillWavValue();
-		bool check_fft_tmp();
-		bool do_fft();
+		bool checkFFT();
+		bool doFFT();
 
 		bool init(StreamMemory* _data);
 		ResAudio(const std::string& name, ResourceType type, const std::string& _path);
 	public:
-		virtual ~ResAudio();
+		~ResAudio() override;
 	};
 	// sound effect
 	class ResSound :
@@ -61,9 +61,8 @@ namespace lstg
 	{
 		bool initWithBuffer(Buffer* data);
 		ResSound(const std::string& name, const std::string& path);
-		~ResSound();
+		~ResSound() override;
 	public:
-
 		static ResSound* create(const std::string& name, const std::string& path);
 	};
 	// background music
@@ -72,7 +71,7 @@ namespace lstg
 	{
 		bool initWithBuffer(Buffer* data, double loopA, double loopB);
 		ResMusic(const std::string& name, const std::string& path);
-		~ResMusic();
+		~ResMusic() override;
 	public:
 		static ResMusic* create(const std::string& name, const std::string& path,
 			double loopStart, double loopEnd);

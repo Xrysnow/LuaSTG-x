@@ -72,7 +72,7 @@ float* ResAudio::getFFT()
 	//if (_sinceLastCurrentTime == 0)
 	//	fftOutNorm.fill(0.f);
 	if (fillWavValue() == wavValue.size())
-		do_fft();
+		doFFT();
 	return fftOutNorm.data();
 }
 
@@ -169,18 +169,19 @@ size_t ResAudio::fillWavValue()
 	return filled;
 }
 
-bool ResAudio::check_fft_tmp()
+bool ResAudio::checkFFT()
 {
-	if(!fftWorkset)
+	if(fftWorkset.empty())
 	{
-		fftWorkset = (char*)malloc(xmath::fft::getNeededWorksetSize(wavValue.size()));
-		if (!fftWorkset)
-			return false;
-		fftOutComplex = (float*)malloc(wavValue.size() * sizeof(float) * 2);
-		if (!fftOutComplex)
+		try
 		{
-			free(fftWorkset);
-			fftWorkset = nullptr;
+			fftWorkset.resize(xmath::fft::getNeededWorksetSize(wavValue.size()));
+			fftOutComplex.resize(wavValue.size() * 2);
+		}
+		catch (std::bad_alloc&)
+		{
+			fftWorkset.clear();
+			fftOutComplex.clear();
 			return false;
 		}
 		xmath::fft::getWindow(fftWindow.size(), fftWindow.data());
@@ -188,11 +189,11 @@ bool ResAudio::check_fft_tmp()
 	return true;
 }
 
-bool ResAudio::do_fft()
+bool ResAudio::doFFT()
 {
-	if (!check_fft_tmp())
+	if (!checkFFT())
 		return false;
-	xmath::fft::fft(wavValue.size(), fftWorkset, wavValue.data(), fftOutComplex, fftOutNorm.data());
+	xmath::fft::fft(wavValue.size(), fftWorkset.data(), wavValue.data(), fftOutComplex.data(), fftOutNorm.data());
 	return true;
 }
 
@@ -237,11 +238,6 @@ ResAudio::~ResAudio()
 		source->stop();
 	CC_SAFE_RELEASE_NULL(stream);
 	CC_SAFE_RELEASE_NULL(source);
-	if (fftWorkset)
-	{
-		free(fftWorkset);
-		free(fftOutComplex);
-	}
 }
 
 bool ResSound::initWithBuffer(Buffer* data)
