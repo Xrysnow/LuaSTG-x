@@ -572,7 +572,7 @@ bool XRenderer::renderTexture(ResTexture* p, const V3F_C4B_T2F_Quad* quad)noexce
 bool XRenderer::renderText(ResFont* p, const std::string& str, float x, float y, float scale,
 	TextHAlignment halign, TextVAlignment valign)noexcept
 {
-	assert(p);
+	CC_ASSERT(p);
 	p->setHAlign(halign);
 	p->setVAlign(valign);
 	return renderText(p, str, x, y, -1, -1, scale, scale);
@@ -581,7 +581,7 @@ bool XRenderer::renderText(ResFont* p, const std::string& str, float x, float y,
 bool XRenderer::renderTextAutoAlign(ResFont* p, const std::string& str, const Rect& rect, float scale,
 	TextHAlignment halign, TextVAlignment valign, const Color4B& c)noexcept
 {
-	assert(p);
+	CC_ASSERT(p);
 	p->setHAlign(halign);
 	p->setVAlign(valign);
 	p->setColor(c);
@@ -605,7 +605,7 @@ bool XRenderer::renderTextAutoAlign(ResFont* p, const std::string& str, const Re
 bool XRenderer::renderText(ResFont* p, const std::string& str,
 	float x, float y, float width, float height, float scaleX, float scaleY)noexcept
 {
-	assert(p);
+	CC_ASSERT(p);
 	flushTriangles();
 	updateRenderMode(p->getRenderMode());
 
@@ -796,7 +796,7 @@ void XRenderer::setProgramStateDirty()
 
 void XRenderer::setXTCommand(XTrianglesCommand* cmd, Texture2D* t)
 {
-	assert(cmd && t);
+	CC_ASSERT(cmd && t);
 	if (!currentProgramState || currentTexture != t)
 	{
 		currentTexture = t;
@@ -811,6 +811,7 @@ void XRenderer::setXTCommand(XTrianglesCommand* cmd, Texture2D* t)
 
 void XRenderer::addCommand(RenderCommand* cmd)
 {
+	CCASSERT(bRenderStarted, "not in render!");
 #ifdef BATCH_COMMAND
 	flushTriangles();
 #endif
@@ -819,6 +820,7 @@ void XRenderer::addCommand(RenderCommand* cmd)
 
 void XRenderer::addXTCommand(XTrianglesCommand* cmd)
 {
+	CCASSERT(bRenderStarted, "not in render!");
 #ifdef BATCH_COMMAND
 	if (triToDraw.empty() || triToDraw.back()->getMaterialID() == cmd->getMaterialID())
 	{
