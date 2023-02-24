@@ -206,12 +206,11 @@ bool ResAudio::doFFT()
 	return true;
 }
 
-bool ResAudio::init(StreamMemory* _data)
+bool ResAudio::init(StreamMemory* stream_)
 {
-	if (!_data)
+	if (!stream_)
 		return false;
-	stream = _data;
-	stream->retain();
+	stream = stream_;
 	if (!audio::Engine::isValid())
 		return true;
 	auto s = XAudioStream::create(stream);
@@ -229,7 +228,6 @@ bool ResAudio::init(StreamMemory* _data)
 		XINFO("failed to create Source");
 		return false;
 	}
-	source->retain();
 	return true;
 }
 
@@ -245,8 +243,6 @@ ResAudio::~ResAudio()
 	// stop immediately to avoid glitch
 	if (source)
 		source->stop();
-	CC_SAFE_RELEASE_NULL(stream);
-	CC_SAFE_RELEASE_NULL(source);
 }
 
 bool ResSound::initWithBuffer(Buffer* data)

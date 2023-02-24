@@ -5,12 +5,12 @@ namespace lstg {
 	class ResFX :
 		public Resource
 	{
-		cocos2d::backend::Program* program = nullptr;
-		cocos2d::backend::ProgramState* state = nullptr;
+		cocos2d::RefPtr<cocos2d::backend::Program> program;
+		cocos2d::RefPtr<cocos2d::backend::ProgramState> state;
 		RenderMode* renderMode = nullptr;
 		std::unordered_map<std::string, cocos2d::backend::UniformLocation> uniforms;
 		ResFX(const std::string& name, RenderMode* m);
-		~ResFX();
+		~ResFX() override;
 		void setUniform(const std::string& name, const void* data, size_t size);
 	public:
 		RenderMode* getRenderMode() const { return renderMode; }

@@ -16,7 +16,6 @@ ResFX::ResFX(const std::string& name, RenderMode* m)
 	: Resource(ResourceType::FX, name)
 {
 	renderMode = m;
-	renderMode->retain();
 	program = renderMode->getProgram();
 	// ShaderStage::VERTEX_AND_FRAGMENT is not valid for metal
 	for (const auto& it : program->getAllActiveUniformInfo(backend::ShaderStage::FRAGMENT))
@@ -28,7 +27,6 @@ ResFX::ResFX(const std::string& name, RenderMode* m)
 
 ResFX::~ResFX()
 {
-	renderMode->release();
 }
 
 void ResFX::setUniform(const std::string& name, const void* data, size_t size)

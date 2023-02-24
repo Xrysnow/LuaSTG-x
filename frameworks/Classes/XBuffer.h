@@ -79,7 +79,7 @@ namespace lstg
 		explicit BufferStreamBuf(size_t reserve);
 		explicit BufferStreamBuf(Buffer* buffer);
 		~BufferStreamBuf() noexcept override;
-		Buffer* buffer() const { return _buf; }
+		Buffer* buffer() const { return buf; }
 	protected:
 		int_type overflow(int_type ch) override;
 		//int_type pbackfail(int_type) override;
@@ -98,6 +98,6 @@ namespace lstg
 		void gupdate(std::streamsize offset);
 		ptrdiff_t poff() const;
 		ptrdiff_t goff() const;
-		Buffer* _buf = nullptr;
+		cocos2d::RefPtr<Buffer> buf;
 	};
 }

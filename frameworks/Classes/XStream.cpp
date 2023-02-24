@@ -299,7 +299,6 @@ bool StreamMemory::init(Buffer* src, bool copy)
 		_buffer = Buffer::create();
 	if (!_buffer)
 		return false;
-	CC_SAFE_RETAIN(_buffer);
 	return true;
 }
 
@@ -309,7 +308,6 @@ StreamMemory::StreamMemory()
 
 StreamMemory::~StreamMemory()
 {
-	CC_SAFE_RELEASE(_buffer);
 }
 
 // implemente audio stream creator

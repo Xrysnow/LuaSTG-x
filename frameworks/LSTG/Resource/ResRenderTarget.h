@@ -7,8 +7,7 @@ namespace lstg {
 	class ResRenderTarget :
 		public Resource
 	{
-	private:
-		cocos2d::RenderTexture* target = nullptr;
+		cocos2d::RefPtr<cocos2d::RenderTexture> target;
 		cocos2d::Color4B clearColor;
 		bool autoResize;
 		bool pushed = false;

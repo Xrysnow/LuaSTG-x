@@ -72,7 +72,7 @@ bool ResRenderTarget::checkTarget()
 		const auto th = tex->getPixelsHigh();
 		if (tw != w || th != h)
 		{
-			CC_SAFE_DELETE(target);
+			target = nullptr;
 		}
 	}
 	// lazy init
@@ -87,7 +87,6 @@ bool ResRenderTarget::checkTarget()
 			false);
 		if (!target)
 			return false;
-		target->retain();
 		// skip auto set projection
 		target->setKeepMatrix(true);
 		// store projection in transform, it's ok because we do not call visit or draw on it
@@ -156,15 +155,11 @@ size_t ResRenderTarget::getMemorySize()
 ResRenderTarget::ResRenderTarget(const std::string& name, RenderTexture* tex, bool autoResize_)
 	:Resource(ResourceType::RenderTarget, name), target(tex), autoResize(autoResize_)
 {
-	if (target)
-		target->retain();
 	clearColor = Color4B(0, 0, 0, 0);
 }
 
 ResRenderTarget::~ResRenderTarget()
 {
-	if (target)
-		target->release();
 }
 
 ResRenderTarget* ResRenderTarget::create(const std::string& name)

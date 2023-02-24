@@ -254,14 +254,12 @@ ResFont::ResFont(const std::string& name, XLabel* label, LabelType type)
 	: Resource(ResourceType::Font, name), label(label), labelType(type)
 {
 	CC_ASSERT(label);
-	label->retain();
 	config = label->getTTFConfig();
 }
 
 ResFont::~ResFont()
 {
 	LRR.getLabelPool().onResFontRemove(this);
-	label->release();
 }
 
 ResFont* ResFont::createHGE(const std::string& name, const std::string& path)

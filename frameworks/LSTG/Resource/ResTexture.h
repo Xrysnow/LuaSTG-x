@@ -7,14 +7,13 @@ namespace lstg {
 	class ResTexture :
 		public Resource
 	{
-	private:
-		cocos2d::Texture2D* texture = nullptr;
-		Triangles* xtri = nullptr;
+		cocos2d::RefPtr<cocos2d::Texture2D> texture;
+		cocos2d::RefPtr<Triangles> triangles;
 	public:
 		cocos2d::Texture2D* getTexture() const { return texture; }
 		bool isTextureFlipped();
 
-		Triangles* getTriangles() const { return xtri; }
+		Triangles* getTriangles() const { return triangles; }
 		void setTriangles(Triangles* tri);
 
 		bool render(const cocos2d::V3F_C4B_T2F_Quad& quad);

@@ -95,8 +95,7 @@ namespace lstg
 		Stream &operator =(const Stream &) = delete;
 	};
 
-	class StreamFile :
-		public Stream
+	class StreamFile : public Stream
 	{
 	private:
 		std::fstream file;
@@ -115,11 +114,9 @@ namespace lstg
 		virtual ~StreamFile();
 	};
 
-	class StreamMemory :
-		public Stream
+	class StreamMemory : public Stream
 	{
-	private:
-		Buffer* _buffer = nullptr;
+		cocos2d::RefPtr<Buffer> _buffer;
 	public:
 		bool isWritable() override;
 		bool isResizable() override;
@@ -143,11 +140,9 @@ namespace lstg
 		~StreamMemory();
 	};
 
-	//TODO: StreamZip, StreamNetwork
-
 	class XAudioStream : public audio::Stream
 	{
-		lstg::Stream* _src = nullptr;
+		cocos2d::RefPtr<lstg::Stream> _src;
 	public:
 		static XAudioStream* create(lstg::Stream* src) {
 			if (!src)
@@ -155,13 +150,11 @@ namespace lstg
 			auto ret = new (std::nothrow) XAudioStream();
 			if (ret) {
 				ret->_src = src;
-				ret->_src->retain();
 				ret->autorelease();
 				return ret;
 			}
 			return nullptr;
 		}
-		virtual ~XAudioStream() { if (_src) _src->release(); }
 
 		uint64_t size() override { return _src->size(); }
 		uint64_t tell() override { return _src->tell(); }

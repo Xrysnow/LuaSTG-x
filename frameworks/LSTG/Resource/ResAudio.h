@@ -13,8 +13,8 @@ namespace lstg
 		// note: decoderBufferSize should >= bufferCopySize
 		static constexpr size_t bufferCopySize = 4096;
 		static constexpr size_t decoderBufferSize = 4096;
-		audio::Source* source = nullptr;
-		StreamMemory* stream = nullptr;
+		cocos2d::RefPtr<audio::Source> source;
+		cocos2d::RefPtr<StreamMemory> stream;
 		std::string path;
 		std::array<uint8_t, bufferCopySize> bufferCopy;
 		std::array<float, bufferCopySize / 8> wavValue;
@@ -51,7 +51,7 @@ namespace lstg
 		bool checkFFT();
 		bool doFFT();
 
-		bool init(StreamMemory* _data);
+		bool init(StreamMemory* stream_);
 		ResAudio(const std::string& name, ResourceType type, const std::string& _path);
 	public:
 		~ResAudio() override;

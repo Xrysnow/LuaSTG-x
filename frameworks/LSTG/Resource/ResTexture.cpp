@@ -15,9 +15,7 @@ bool ResTexture::isTextureFlipped()
 
 void ResTexture::setTriangles(Triangles* tri)
 {
-	CC_SAFE_RELEASE(xtri);
-	xtri = tri;
-	CC_SAFE_RETAIN(xtri);
+	triangles = tri;
 }
 
 bool ResTexture::render(const V3F_C4B_T2F_Quad& quad)
@@ -45,22 +43,20 @@ size_t ResTexture::getMemorySize()
 	size_t total = sizeof(ResRenderTarget) + resName.size() + resPath.size();
 	if (texture->getReferenceCount() == 1)
 		total += sizeof(Texture2D);
-	if (xtri && xtri->getReferenceCount() == 1)
-		total += sizeof(Triangles) + xtri->getVertexCount() * sizeof(V3F_C4B_T2F) + xtri->getIndexCount() * sizeof(unsigned short);
+	if (triangles && triangles->getReferenceCount() == 1)
+		total += sizeof(Triangles) + triangles->getVertexCount() * sizeof(V3F_C4B_T2F) + triangles->getIndexCount() * sizeof(unsigned short);
 	return total;
 }
 
 ResTexture::ResTexture(const std::string& name, Texture2D* tex)
 : Resource(ResourceType::Texture, name), texture(tex)
 {
-	texture->retain();
 	const auto size = texture->getContentSize();
 	setTriangles(Triangles::createQuad(Vec2(size)));
 }
 
 ResTexture::~ResTexture()
 {
-	texture->release();
 	setTriangles(nullptr);
 }
 

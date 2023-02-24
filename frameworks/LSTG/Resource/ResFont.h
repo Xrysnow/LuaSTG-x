@@ -27,7 +27,7 @@ namespace lstg {
 		cocos2d::Color4B outlineColor = cocos2d::Color4B(0, 0, 0, 0xFF);
 		cocos2d::Color4B glowColor = cocos2d::Color4B::WHITE;
 
-		XLabel* label;
+		cocos2d::RefPtr<XLabel> label;
 		cocos2d::TTFConfig config;
 
 		cocos2d::TextHAlignment h_alignment = cocos2d::TextHAlignment::LEFT;

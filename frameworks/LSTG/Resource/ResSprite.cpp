@@ -10,9 +10,7 @@ using namespace cocos2d;
 
 void ResSprite::setNormalMap(Texture2D* texture)
 {
-	CC_SAFE_RELEASE(normalMap);
 	normalMap = texture;
-	CC_SAFE_RETAIN(normalMap);
 }
 
 bool ResSprite::render(float x, float y, float rot, float hscale, float vscale, float z)
@@ -33,7 +31,8 @@ bool ResSprite::render4v(float x1, float y1, float z1, float x2, float y2, float
 
 ResSprite* ResSprite::clone(const std::string& newName)
 {
-	if (newName == resName)return this;
+	if (newName == resName)
+		return this;
 	const auto sp = Sprite::createWithSpriteFrame(sprite->getSpriteFrame());
 	if (!sp)
 	{
@@ -73,7 +72,6 @@ ResSprite::ResSprite(const std::string& name, Sprite* sprite,
                      XColliderType colliType, double a, double b, const std::string& path)
 : ResourceQuad(ResourceType::Sprite, name, colliType, a, b, path), sprite(sprite)
 {
-	sprite->retain();
 	sprite->setColor(Color3B::WHITE);
 	sprite->setOpacity(255);
 	const auto v = sprite->getQuad();
@@ -82,8 +80,6 @@ ResSprite::ResSprite(const std::string& name, Sprite* sprite,
 
 ResSprite::~ResSprite()
 {
-	CC_SAFE_RELEASE_NULL(sprite);
-	CC_SAFE_RELEASE_NULL(normalMap);
 }
 
 ResSprite* ResSprite::create(const std::string& name, ResTexture* texture,

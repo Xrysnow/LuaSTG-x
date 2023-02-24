@@ -6,8 +6,8 @@ namespace lstg {
 	class ResSprite :
 		public ResourceQuad
 	{
-		cocos2d::Sprite* sprite = nullptr;
-		cocos2d::Texture2D* normalMap = nullptr;
+		cocos2d::RefPtr<cocos2d::Sprite> sprite;
+		cocos2d::RefPtr<cocos2d::Texture2D> normalMap;
 	public:
 		cocos2d::Sprite* getSprite() const { return sprite; }
 		cocos2d::Texture2D* getTexture() const { return sprite->getTexture(); }
