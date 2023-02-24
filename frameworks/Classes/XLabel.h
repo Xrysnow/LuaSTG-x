@@ -24,7 +24,7 @@ public:
 
 	XLabel(cocos2d::TextHAlignment hAlignment = cocos2d::TextHAlignment::LEFT,
 		cocos2d::TextVAlignment vAlignment = cocos2d::TextVAlignment::TOP);
-	~XLabel();
+	~XLabel() override;
 
 	void setBlendColor(const cocos2d::Color4B& color) { blendColor = color; }
 	cocos2d::Color4B& getBlendColor() { return blendColor; }

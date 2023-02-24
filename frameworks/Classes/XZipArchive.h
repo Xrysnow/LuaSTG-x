@@ -63,7 +63,7 @@ namespace lstg
 		};
 	private:
 		ZipArchive() = default;
-		virtual ~ZipArchive();
+		~ZipArchive() override;
 		bool init(const std::string& path, const std::string& password, Encryption encryptionMethod);
 		bool initWithBuffer(Buffer* buffer_, OpenMode mode, bool checkConsistency);
 	public:

@@ -14,7 +14,7 @@ namespace lstg
 		~StopWatch();
 		StopWatch(const StopWatch &) = delete;
 		StopWatch &operator =(const StopWatch &) = delete;
-		
+
 		void pause();
 		void resume();
 		void reset();

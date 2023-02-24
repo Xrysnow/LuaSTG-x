@@ -12,8 +12,13 @@ namespace lstg
 {
 	class Stream : public cocos2d::Ref
 	{
+		std::mutex mut;
+	protected:
+		uint64_t _size = 0;
+		uint64_t pos = 0;
+		bool resizable = false;
+		bool writable = false;
 	public:
-
 		enum SeekOrigin
 		{
 			/** Seek from the beginning. */
@@ -25,7 +30,7 @@ namespace lstg
 		};
 
 		Stream() = default;
-		virtual ~Stream() = default;
+		~Stream() override = default;
 
 		/** If the stream is writable. */
 		virtual bool isWritable() { return writable; }
@@ -83,21 +88,12 @@ namespace lstg
 		/** Read from this and write to dst. */
 		virtual bool fill(Stream* dst, uint64_t length, Buffer* buffer);
 
-	protected:
-		uint64_t _size = 0;
-		uint64_t pos = 0;
-		bool resizable = false;
-		bool writable = false;
-	private:
-		std::mutex mut;
-	public:
 		Stream(const Stream &) = delete;
 		Stream &operator =(const Stream &) = delete;
 	};
 
 	class StreamFile : public Stream
 	{
-	private:
 		std::fstream file;
 		std::string _path;
 	public:
@@ -111,7 +107,7 @@ namespace lstg
 		bool init(const std::string& path, bool canWrite);
 
 		StreamFile();
-		virtual ~StreamFile();
+		~StreamFile() override;
 	};
 
 	class StreamMemory : public Stream
@@ -137,7 +133,7 @@ namespace lstg
 		bool init(Buffer* src, bool copy);
 
 		StreamMemory();
-		~StreamMemory();
+		~StreamMemory() override;
 	};
 
 	class XAudioStream : public audio::Stream

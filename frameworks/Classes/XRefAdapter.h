@@ -43,7 +43,7 @@ namespace lstg
 
 		void pushLua(lua_State* L);
 
-		virtual ~RefAdapter();
+		~RefAdapter() override;
 
 		template<typename T>
 		void setDefaultDtor()

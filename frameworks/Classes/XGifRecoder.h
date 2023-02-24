@@ -14,7 +14,7 @@ namespace lstg
 		int32_t dither = 0;
 
 		GifRecoder();
-		virtual ~GifRecoder();
+		~GifRecoder() override;
 	public:
 		static GifRecoder* create(
 			const cocos2d::Rect& rect = cocos2d::Rect::ZERO,

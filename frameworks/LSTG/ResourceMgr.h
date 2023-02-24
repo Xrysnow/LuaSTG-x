@@ -21,7 +21,6 @@ namespace lstg
 			std::string path;
 			int64_t pos;
 		};
-	private:
 		std::string path;
 		std::string password;
 		std::mutex mut;
@@ -39,7 +38,6 @@ namespace lstg
 		Buffer* loadFile(const std::string& fpath);
 
 	public:
-
 		static ResourcePack* create(const std::string& fullPath, const std::string& password);
 
 		std::string getPath() const;
@@ -74,7 +72,7 @@ namespace lstg
 
 	private:
 		ResourcePack();
-		virtual ~ResourcePack();
+		~ResourcePack() override;
 	};
 
 	/**

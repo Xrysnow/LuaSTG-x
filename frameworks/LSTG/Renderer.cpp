@@ -22,38 +22,38 @@ using namespace std;
 using namespace lstg;
 using namespace cocos2d;
 
-static unsigned short _quadIndices9[9 * 6] = { 0 };
-static unsigned short _quadIndices512[LGOBJ_MAXLASERNODE * 6] = { 0 };
-struct _initializer
+static unsigned short QuadIndices9[9 * 6] = { 0 };
+static unsigned short QuadIndices512[LGOBJ_MAXLASERNODE * 6] = { 0 };
+struct QuadIndicesInitializer
 {
-	_initializer()
+	QuadIndicesInitializer()
 	{
 		for (uint16_t i = 0; i < 9; ++i)
 		{
 			const uint16_t off = i * 4;
-			_quadIndices9[i * 6 + 0] = 0 + off;
-			_quadIndices9[i * 6 + 1] = 1 + off;
-			_quadIndices9[i * 6 + 2] = 2 + off;
-			_quadIndices9[i * 6 + 3] = 3 + off;
-			_quadIndices9[i * 6 + 4] = 2 + off;
-			_quadIndices9[i * 6 + 5] = 1 + off;
+			QuadIndices9[i * 6 + 0] = 0 + off;
+			QuadIndices9[i * 6 + 1] = 1 + off;
+			QuadIndices9[i * 6 + 2] = 2 + off;
+			QuadIndices9[i * 6 + 3] = 3 + off;
+			QuadIndices9[i * 6 + 4] = 2 + off;
+			QuadIndices9[i * 6 + 5] = 1 + off;
 		}
 		for (uint16_t i = 0; i < LGOBJ_MAXLASERNODE; ++i)
 		{
 			const uint16_t off = i * 4;
-			_quadIndices512[i * 6 + 0] = 0 + off;
-			_quadIndices512[i * 6 + 1] = 1 + off;
-			_quadIndices512[i * 6 + 2] = 2 + off;
-			_quadIndices512[i * 6 + 3] = 3 + off;
-			_quadIndices512[i * 6 + 4] = 2 + off;
-			_quadIndices512[i * 6 + 5] = 1 + off;
+			QuadIndices512[i * 6 + 0] = 0 + off;
+			QuadIndices512[i * 6 + 1] = 1 + off;
+			QuadIndices512[i * 6 + 2] = 2 + off;
+			QuadIndices512[i * 6 + 3] = 3 + off;
+			QuadIndices512[i * 6 + 4] = 2 + off;
+			QuadIndices512[i * 6 + 5] = 1 + off;
 		}
 	}
 };
-static _initializer __Renderer;
+static QuadIndicesInitializer _QuadIndicesInitializer;
 
-unsigned short* XRenderer::quadIndices9 = _quadIndices9;
-unsigned short* XRenderer::quadIndices512 = _quadIndices512;
+unsigned short* XRenderer::quadIndices9 = QuadIndices9;
+unsigned short* XRenderer::quadIndices512 = QuadIndices512;
 
 XRenderer* XRenderer::getInstance()
 {

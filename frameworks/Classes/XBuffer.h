@@ -6,7 +6,7 @@ namespace lstg
 	class Buffer : public cocos2d::Ref
 	{
 		Buffer();
-		virtual ~Buffer();
+		~Buffer() override;
 
 		std::vector<uint8_t> buffer;
 		bool canWrite = true;
