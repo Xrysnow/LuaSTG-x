@@ -44,17 +44,17 @@ namespace lstg {
 		{
 			cocos2d::Vec2 vecLocation;
 			cocos2d::Vec2 vecVelocity;
-			float gravity = 0;              // 重力
-			float radialAccel = 0;          // 线加速度
-			float tangentialAccel = 0;      // 角加速度
-			float spin = 0;                 // 自旋
-			float spinDelta = 0;            // 自旋增量
-			float size = 0;                 // 大小
-			float sizeDelta = 0;            // 大小增量
-			float color[4] = {};            // 颜色
-			float colorDelta[4] = {};       // 颜色增量
-			float life = 0;                 // 当前存活时间
-			float terminalLife = 0;         // 终止时间
+			float gravity = 0;         // 重力
+			float radialAccel = 0;     // 线加速度
+			float tangentialAccel = 0; // 角加速度
+			float spin = 0;            // 自旋
+			float spinDelta = 0;       // 自旋增量
+			float size = 0;            // 大小
+			float sizeDelta = 0;       // 大小增量
+			float color[4] = {};       // 颜色
+			float colorDelta[4] = {};  // 颜色增量
+			float life = 0;            // 当前存活时间
+			float terminalLife = 0;    // 终止时间
 		};
 		// particle pool instance
 		class ParticlePool : public cocos2d::Ref
@@ -67,19 +67,24 @@ namespace lstg {
 				Sleep
 			};
 		private:
-			ResParticle* _res;
+			ResParticle* host = nullptr;
 			ParticleInfo particleInfo;
-			RandomWELL512 _rand;
+			RandomWELL512 rng;
+			cocos2d::TrianglesCommand::Triangles triangles;
 
 			RenderMode* renderMode = RenderMode::getDefault();
-			Status status = Status::Alive;  // 状态
-			cocos2d::Vec2 center;  // 中心
-			cocos2d::Vec2 prevCenter;  // 上一个中心
-			float rotation = 0.f;  // 方向
-			size_t numAlive = 0;  // 存活数
-			float life = 0.f;  // 已存活时间
-			float emissionResidue = 0.f;  // 不足的粒子数
+			Status status = Status::Alive;
+			cocos2d::Vec2 center;
+			cocos2d::Vec2 prevCenter;
+			float rotation = 0.f;
+			size_t numAlive = 0;
+			float life = 0.f;  // lived time
+			float emissionResidue = 0.f;
 			std::array<ParticleInstance, LPARTICLE_MAXCNT> particlePool;
+			std::array<cocos2d::V3F_C4B_T2F_Quad, LPARTICLE_MAXCNT> quads;
+
+			static std::vector<unsigned short> quadIndices;
+			static void initQuadIndices(size_t size);
 		public:
 #define PARTICLE_INFO_FUNC(_T, var)\
 	_T get##var() const { return particleInfo.var; } \
@@ -113,11 +118,11 @@ namespace lstg {
 			cocos2d::Color4B getColorEnd();
 			void setColorEnd(const cocos2d::Color4B& color);
 
-			ResParticle* getResource() const { return _res; }
+			ResParticle* getResource() const { return host; }
 			size_t getAliveCount() const { return numAlive; }
 
-			void setSeed(uint32_t seed) { _rand.seed(seed); }
-			uint32_t getSeed() const  { return _rand.getSeed(); }
+			void setSeed(uint32_t seed) { rng.seed(seed); }
+			uint32_t getSeed() const  { return rng.getSeed(); }
 			RenderMode* getRenderMode() const { return renderMode; }
 			void setRenderMode(RenderMode* m);
 			bool isActive() const { return status == Status::Alive; }
@@ -131,12 +136,12 @@ namespace lstg {
 			void render(float scaleX = 1.f, float scaleY = 1.f);
 			ParticleInstance* getParticleInstance(int32_t index);
 
-			explicit ParticlePool(ResParticle* ref);
+			explicit ParticlePool(ResParticle* res);
 			~ParticlePool() override;
 		};
 	protected:
-		cocos2d::Sprite* bindSprite;
 		ParticleInfo particleInfo;
+		cocos2d::RefPtr<cocos2d::Sprite> bindSprite;
 		RenderMode* renderMode;
 		std::unordered_set<ParticlePool*> poolInstances;
 	public:

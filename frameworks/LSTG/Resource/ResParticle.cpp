@@ -8,12 +8,32 @@ using namespace std;
 using namespace cocos2d;
 using namespace lstg;
 
+std::vector<unsigned short> ResParticle::ParticlePool::quadIndices;
+
+void ResParticle::ParticlePool::initQuadIndices(size_t size)
+{
+	if (quadIndices.size() >= size)
+		return;
+	quadIndices.resize(size);
+	for (size_t i = 0; i < size; ++i)
+	{
+		CC_ASSERT(i * 4 < std::numeric_limits<uint16_t>::max());
+		const auto off = i * 4;
+		quadIndices[i * 6 + 0] = 0 + off;
+		quadIndices[i * 6 + 1] = 1 + off;
+		quadIndices[i * 6 + 2] = 2 + off;
+		quadIndices[i * 6 + 3] = 3 + off;
+		quadIndices[i * 6 + 4] = 2 + off;
+		quadIndices[i * 6 + 5] = 1 + off;
+	}
+}
+
 Color4B ResParticle::ParticlePool::getColorStart()
 {
 	Color4B ret;
 	if (particleInfo.ColorStart[0] < 0)
 	{
-		const auto sp = _res->getBindSprite();
+		const auto sp = host->getBindSprite();
 		ret = Color4B(sp->getColor());
 		ret.a = sp->getOpacity();
 	}
@@ -40,7 +60,7 @@ Color4B ResParticle::ParticlePool::getColorEnd()
 	Color4B ret;
 	if (particleInfo.ColorEnd[0] < 0)
 	{
-		const auto sp = _res->getBindSprite();
+		const auto sp = host->getBindSprite();
 		ret = Color4B(sp->getColor());
 		ret.a = sp->getOpacity();
 	}
@@ -144,10 +164,9 @@ void ResParticle::ParticlePool::update(float delta)
 	// 产生新的粒子
 	if (status == Status::Alive)
 	{
-		//const auto fParticlesNeeded = emissionFreq * delta + emissionResidue;
 		const auto fParticlesNeeded = pInfo.EmissionFreq * delta + emissionResidue;
-		const auto nParticlesCreated = uint32_t(fParticlesNeeded);
-		emissionResidue = fParticlesNeeded - float(nParticlesCreated);
+		const auto nParticlesCreated = static_cast<uint32_t>(fParticlesNeeded);
+		emissionResidue = fParticlesNeeded - static_cast<float>(nParticlesCreated);
 
 		for (i = 0; i < nParticlesCreated; ++i)
 		{
@@ -156,24 +175,24 @@ void ResParticle::ParticlePool::update(float delta)
 
 			ParticleInstance& tInst = particlePool[numAlive++];
 			tInst.life = 0.0f;
-			tInst.terminalLife = _rand.getRandFloat(pInfo.LifeMin, pInfo.LifeMax);
+			tInst.terminalLife = rng.getRandFloat(pInfo.LifeMin, pInfo.LifeMax);
 			// magic numbers here
-			tInst.vecLocation = prevCenter + (center - prevCenter) * _rand.getRandFloat(0.0f, 1.0f);
-			tInst.vecLocation.x += _rand.getRandFloat(-2.0f, 2.0f);
-			tInst.vecLocation.y += _rand.getRandFloat(-2.0f, 2.0f);
+			tInst.vecLocation = prevCenter + (center - prevCenter) * rng.getRandFloat(0.0f, 1.0f);
+			tInst.vecLocation.x += rng.getRandFloat(-2.0f, 2.0f);
+			tInst.vecLocation.y += rng.getRandFloat(-2.0f, 2.0f);
 
 			constexpr auto LPI_HALF = 1.5707963267f;  // PI*0.5
 			const float ang = /* pInfo.Direction */ (rotation - float(LPI_HALF)) - float(LPI_HALF) +
-				_rand.getRandFloat(0, pInfo.Spread) - pInfo.Spread / 2.0f;
+				rng.getRandFloat(0, pInfo.Spread) - pInfo.Spread / 2.0f;
 			tInst.vecVelocity.x = cos(ang);
 			tInst.vecVelocity.y = sin(ang);
-			tInst.vecVelocity *= _rand.getRandFloat(pInfo.SpeedMin, pInfo.SpeedMax);
+			tInst.vecVelocity *= rng.getRandFloat(pInfo.SpeedMin, pInfo.SpeedMax);
 
-			tInst.gravity = _rand.getRandFloat(pInfo.GravityMin, pInfo.GravityMax);
-			tInst.radialAccel = _rand.getRandFloat(pInfo.RadialAccelMin, pInfo.RadialAccelMax);
-			tInst.tangentialAccel = _rand.getRandFloat(pInfo.TangentialAccelMin, pInfo.TangentialAccelMax);
+			tInst.gravity = rng.getRandFloat(pInfo.GravityMin, pInfo.GravityMax);
+			tInst.radialAccel = rng.getRandFloat(pInfo.RadialAccelMin, pInfo.RadialAccelMax);
+			tInst.tangentialAccel = rng.getRandFloat(pInfo.TangentialAccelMin, pInfo.TangentialAccelMax);
 
-			tInst.size = _rand.getRandFloat(
+			tInst.size = rng.getRandFloat(
 				pInfo.SizeStart,
 				pInfo.SizeStart + (pInfo.SizeEnd - pInfo.SizeStart) * pInfo.SizeVar);
 			tInst.sizeDelta = (pInfo.SizeEnd - tInst.size) / tInst.terminalLife;
@@ -182,14 +201,14 @@ void ResParticle::ParticlePool::update(float delta)
 			//	_rand.GetRandFloat(0, pInfo.SpinEnd) - pInfo.SpinEnd / 2.0f;
 			//tInst.spinDelta = pInfo.SpinVar;
 
-			tInst.spin = _rand.getRandFloat(0, (pInfo.SpinEnd - pInfo.SpinStart)*pInfo.SpinVar) + pInfo.SpinStart;
+			tInst.spin = rng.getRandFloat(0, (pInfo.SpinEnd - pInfo.SpinStart)*pInfo.SpinVar) + pInfo.SpinStart;
 			tInst.spinDelta = (pInfo.SpinEnd - tInst.spin) / tInst.terminalLife;
 
 			auto _var = pInfo.ColorVar;
 			for (int j = 0; j < 4; ++j)
 			{
 				if (j == 3)_var = pInfo.AlphaVar;
-				tInst.color[j] = _rand.getRandFloat(
+				tInst.color[j] = rng.getRandFloat(
 					pInfo.ColorStart[j],
 					pInfo.ColorStart[j] + (pInfo.ColorEnd[j] - pInfo.ColorStart[j])*_var);
 			}
@@ -205,17 +224,56 @@ void ResParticle::ParticlePool::update(float delta)
 
 void ResParticle::ParticlePool::render(float scaleX, float scaleY)
 {
-	Sprite* p = _res->getBindSprite();
-	const auto no_ins_color = particleInfo.ColorStart[0] < 0;
+	Sprite* p = host->getBindSprite();
+	const auto noInsColor = particleInfo.ColorStart[0] < 0;
 	const auto _color = p->getColor();
 	const auto _alpha = p->getOpacity();
+	const auto spQuad = p->getQuad();
+	const auto quadCenter = (spQuad.tl.vertices + spQuad.br.vertices) / 2;
+	const auto tl_ = spQuad.tl.vertices - quadCenter;
+	const Vec2 topLeft = { tl_.x,tl_.y };
+	const auto z = 0.5f;
+
+#define MEREGE_PARTICLE_TRANGLES
+
+	initQuadIndices(LPARTICLE_MAXCNT);
+	triangles.indexCount = numAlive * 6;
+	triangles.vertCount = numAlive * 4;
+	triangles.indices = quadIndices.data();
+	triangles.verts = reinterpret_cast<V3F_C4B_T2F*>(quads.data());
 
 	LRR.updateRenderMode(renderMode);
 
 	for (size_t i = 0; i < numAlive; ++i)
 	{
 		ParticleInstance& pInst = particlePool[i];
-		if (no_ins_color)  // r < 0
+#ifdef MEREGE_PARTICLE_TRANGLES
+		auto& quad = quads[i];
+		auto vert = reinterpret_cast<V3F_C4B_T2F*>(&quads[i]);
+		if (!noInsColor)
+		{
+			const uint8_t r = pInst.color[0] * 255;
+			const uint8_t g = pInst.color[1] * 255;
+			const uint8_t b = pInst.color[2] * 255;
+			const uint8_t a = pInst.color[3] * 255;
+			const Color4B color = { r,g,b,a };
+			for (auto j = 0; j < 4; ++j)
+				vert[j].colors = color;
+		}
+		const auto rad = -pInst.spin;
+		const auto x = pInst.vecLocation.x;
+		const auto y = pInst.vecLocation.y;
+		const auto rot = Vec2(std::cosf(rad), std::sinf(rad));
+		//NOTE: anchor point of Sprite is ignored
+		const auto tl0 = Vec2(topLeft.x * scaleX * pInst.size, topLeft.y * scaleY * pInst.size);
+		const auto tl = tl0.rotate(rot);
+		const auto tr = Vec2(-tl0.x, tl0.y).rotate(rot);
+		quad.tl.vertices.set(tl.x + x, tl.y + y, z);
+		quad.bl.vertices.set(-tr.x + x, -tr.y + y, z);
+		quad.tr.vertices.set(tr.x + x, tr.y + y, z);
+		quad.br.vertices.set(-tl.x + x, -tl.y + y, z);
+#else
+		if (noInsColor)  // r < 0
 		{
 			//p->setColor(tOrgColor);
 		}
@@ -231,7 +289,11 @@ void ResParticle::ParticlePool::render(float scaleX, float scaleY)
 		//TODO: merge triangles
 		LRR.render(p, nullptr, pInst.vecLocation.x, pInst.vecLocation.y, CC_RADIANS_TO_DEGREES(pInst.spin),
 			scaleX * pInst.size, scaleY * pInst.size);
+#endif // MEREGE_PARTICLE_TRANGLES
 	}
+#ifdef MEREGE_PARTICLE_TRANGLES
+	LRR.renderTexture(p->getTexture(), triangles);
+#endif // MEREGE_PARTICLE_TRANGLES
 	p->setColor(_color);
 	p->setOpacity(_alpha);
 }
@@ -239,21 +301,26 @@ void ResParticle::ParticlePool::render(float scaleX, float scaleY)
 ResParticle::ParticleInstance* ResParticle::ParticlePool::getParticleInstance(int32_t index)
 {
 	if (0 <= index && index < numAlive)
-		return &particlePool.at(index);
+		return &particlePool[index];
 	return nullptr;
 }
 
-ResParticle::ParticlePool::ParticlePool(ResParticle* ref)
-	: _res(ref), particleInfo()//, emissionFreq(float(ref->getParticleInfo().EmissionFreq))
+ResParticle::ParticlePool::ParticlePool(ResParticle* res)
+	: host(res), particleInfo()
 {
-	_res->retain();
-	particleInfo = _res->getParticleInfo();
+	CC_ASSERT(host);
+	CC_SAFE_RETAIN(host);
+	particleInfo = host->getParticleInfo();
+	const auto quad = host->getBindSprite()->getQuad();
+	// for texCoords
+	for (auto&& q : quads)
+		q = quad;
 }
 
 ResParticle::ParticlePool::~ParticlePool()
 {
-	_res->release();
-	_res->poolInstances.erase(this);
+	host->poolInstances.erase(this);
+	CC_SAFE_RELEASE_NULL(host);
 }
 
 ResParticle::ParticlePool* ResParticle::newPool()
@@ -275,6 +342,7 @@ ParticleSystemQuad* ResParticle::newCocosParticle()
 		return nullptr;
 
 	ret->setEmitterMode(ParticleSystem::Mode::GRAVITY);
+	ret->setPositionType(ParticleSystem::PositionType::GROUPED);
 	ret->setRotationIsDir(false);
 	ret->setSourcePosition(Vec2::ZERO);
 	ret->setAutoRemoveOnFinish(false);
@@ -385,15 +453,13 @@ size_t ResParticle::getMemorySize()
 ResParticle::ResParticle(const std::string& name, const ParticleInfo& pinfo, Sprite* sprite,
 	RenderMode* rm, double a, double b, XColliderType colliType)
 : ResourceColliable(ResourceType::Particle, name, colliType, a, b),
-bindSprite(sprite), particleInfo(pinfo), renderMode(rm)
+  particleInfo(pinfo), bindSprite(sprite), renderMode(rm)
 {
 	CC_ASSERT(bindSprite && renderMode);
-	bindSprite->retain();
 }
 
 ResParticle::~ResParticle()
 {
-	bindSprite->release();
 }
 
 ResParticle* ResParticle::create(const std::string& name, const std::string& path, ResSprite* sprite,
