@@ -3,19 +3,11 @@
 using namespace std;
 using namespace lstg;
 
-////////////////////////////////////////////////////////////////////////////////
-
 BinaryReader::BinaryReader(Stream* pStream)
 	: stream(pStream)
 {
 	if (!stream)
-		throw runtime_error("fcyBinaryReader::fcyBinaryReader");
-	stream->retain();
-}
-
-BinaryReader::~BinaryReader()
-{
-	stream->release();
+		throw runtime_error("invalid stream in BinaryReader");
 }
 
 Stream* BinaryReader::getStream() const
@@ -26,20 +18,20 @@ Stream* BinaryReader::getStream() const
 uint8_t BinaryReader::readByte() const
 {
 	uint8_t tRet = 0;
-	stream->read((uint8_t*)&tRet, sizeof tRet);
+	stream->read(&tRet, sizeof tRet);
 	return tRet;
 }
 
 void BinaryReader::readBytes(uint8_t* outBuffer, uint64_t length) const
 {
-	stream->read((uint8_t*)outBuffer, length);
+	stream->read(outBuffer, length);
 }
 
 std::string BinaryReader::readString(uint64_t length) const
 {
 	std::string tRet;
 	tRet.resize(length);
-	stream->read((uint8_t*)tRet.c_str(), length);
+	stream->read((uint8_t*)tRet.data(), length);
 	return tRet;
 }
 
@@ -104,14 +96,8 @@ double BinaryReader::readDouble() const
 BinaryWriter::BinaryWriter(Stream* pStream)
 	: stream(pStream)
 {
-	if (!stream||!stream->isWritable())
-		throw runtime_error("fcyBinaryWriter::fcyBinaryWriter");
-	stream->retain();
-}
-
-BinaryWriter::~BinaryWriter()
-{
-	stream->release();
+	if (!stream || !stream->isWritable())
+		throw runtime_error("invalid stream in BinaryWriter");
 }
 
 Stream* BinaryWriter::getStream() const
@@ -119,57 +105,57 @@ Stream* BinaryWriter::getStream() const
 	return stream;
 }
 
-void BinaryWriter::writeByte(uint8_t Value) const
+void BinaryWriter::writeByte(uint8_t value) const
 {
-	stream->write((uint8_t*)&Value, sizeof Value);
+	stream->write(&value, sizeof value);
 }
 
-void BinaryWriter::writeBytes(uint8_t* Buffer, uint64_t Length) const
+void BinaryWriter::writeBytes(const uint8_t* buffer, uint64_t length) const
 {
-	stream->write((uint8_t*)Buffer, Length);
+	stream->write(buffer, length);
 }
 
 void BinaryWriter::writeString(const std::string& value) const
 {
-	stream->write((uint8_t*)value.c_str(), value.size());
+	stream->write((const uint8_t*)value.c_str(), value.size());
 }
 
-void BinaryWriter::writeInt16(int16_t Value) const
+void BinaryWriter::writeInt16(int16_t value) const
 {
-	stream->write((uint8_t*)&Value, sizeof Value);
+	stream->write((uint8_t*)&value, sizeof value);
 }
 
-void BinaryWriter::writeUInt16(uint16_t Value) const
+void BinaryWriter::writeUInt16(uint16_t value) const
 {
-	stream->write((uint8_t*)&Value, sizeof Value);
+	stream->write((uint8_t*)&value, sizeof value);
 }
 
-void BinaryWriter::writeInt32(int32_t Value) const
+void BinaryWriter::writeInt32(int32_t value) const
 {
-	stream->write((uint8_t*)&Value, sizeof Value);
+	stream->write((uint8_t*)&value, sizeof value);
 }
 
-void BinaryWriter::writeUInt32(uint32_t Value) const
+void BinaryWriter::writeUInt32(uint32_t value) const
 {
-	stream->write((uint8_t*)&Value, sizeof Value);
+	stream->write((uint8_t*)&value, sizeof value);
 }
 
-void BinaryWriter::writeInt64(int64_t Value) const
+void BinaryWriter::writeInt64(int64_t value) const
 {
-	stream->write((uint8_t*)&Value, sizeof Value);
+	stream->write((uint8_t*)&value, sizeof value);
 }
 
-void BinaryWriter::writeUInt64(uint64_t Value) const
+void BinaryWriter::writeUInt64(uint64_t value) const
 {
-	stream->write((uint8_t*)&Value, sizeof Value);
+	stream->write((uint8_t*)&value, sizeof value);
 }
 
-void BinaryWriter::writeFloat(float Value) const
+void BinaryWriter::writeFloat(float value) const
 {
-	stream->write((uint8_t*)&Value, sizeof Value);
+	stream->write((uint8_t*)&value, sizeof value);
 }
 
-void BinaryWriter::writeDouble(double Value) const
+void BinaryWriter::writeDouble(double value) const
 {
-	stream->write((uint8_t*)&Value, sizeof Value);
+	stream->write((uint8_t*)&value, sizeof value);
 }
