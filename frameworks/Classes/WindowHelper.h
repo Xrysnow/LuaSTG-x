@@ -3,7 +3,7 @@
 
 namespace lstg
 {
-	class WindowHelper : public cocos2d::Ref
+	class WindowHelper
 	{
 	public:
 		enum Operation
@@ -26,7 +26,7 @@ namespace lstg
 			CUSTOM
 		};
 
-		~WindowHelper() override = default;
+		virtual ~WindowHelper() = default;
 		static WindowHelper* getInstance();
 
 		virtual void setVsync(bool b) {}
@@ -171,6 +171,7 @@ namespace lstg
 		virtual GammaRamp getGammaRamp() = 0;
 		virtual void setGammaRamp(const GammaRamp& ramp) = 0;
 	protected:
+		~MonitorHelper() override = default;
 		static cocos2d::Map<void*, MonitorHelper*> instances;
 	};
 #ifdef CC_PLATFORM_PC
@@ -190,6 +191,7 @@ namespace lstg
 		void setGammaRamp(const GammaRamp& ramp) override;
 	protected:
 		MonitorHelperDesktop(GLFWmonitor* hdl);
+		~MonitorHelperDesktop() override = default;
 		GLFWmonitor* handle = nullptr;
 
 		static MonitorHelperDesktop* getOrCreate(GLFWmonitor* handle);
