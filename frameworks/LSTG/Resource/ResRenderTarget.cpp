@@ -44,6 +44,8 @@ Texture2D* ResRenderTarget::getTexture()
 
 Texture2D* ResRenderTarget::copyTexture(bool flip)
 {
+	if (!checkTarget())
+		return nullptr;
 	auto tex = new Texture2D();
 	tex->autorelease();
 	Image* img = nullptr;
