@@ -51,7 +51,7 @@ void GameObjectBentLaser::setColorMode(ColorMode mode, ColorMixMode mixMode)
 
 void GameObjectBentLaser::pushHead(float x, float y, float width, const Color4B& color)
 {
-	while (queue.size() >= nodeLimit || queue.isFull())
+	while (queue.size() >= nodeLimit || queue.full())
 		popTail();
 	auto node = queue.new_back();
 	CC_ASSERT(node);
@@ -77,7 +77,7 @@ void GameObjectBentLaser::pushHead(float x, float y, float width, const Color4B&
 
 void GameObjectBentLaser::pushTail(float x, float y, float width, const Color4B& color)
 {
-	while (queue.size() >= nodeLimit || queue.isFull())
+	while (queue.size() >= nodeLimit || queue.full())
 		popHead();
 	auto node = queue.new_front();
 	CC_ASSERT(node);
@@ -101,7 +101,7 @@ void GameObjectBentLaser::pushTail(float x, float y, float width, const Color4B&
 
 void GameObjectBentLaser::popHead()
 {
-	if (queue.isEmpty())return;
+	if (queue.empty())return;
 	auto& back = queue.back();
 #if USE_FASTCHECK
 	xSet.erase(back.pos.x);
@@ -123,7 +123,7 @@ void GameObjectBentLaser::popHead(size_t n)
 
 void GameObjectBentLaser::popTail()
 {
-	if (queue.isEmpty())return;
+	if (queue.empty())return;
 	auto& front = queue.front();
 #if USE_FASTCHECK
 	xSet.erase(front.pos.x);

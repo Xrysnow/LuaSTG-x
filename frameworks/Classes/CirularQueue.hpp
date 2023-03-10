@@ -24,13 +24,13 @@ namespace lstg
 			else
 				return &data[(idx + iFront) % MaxSize];
 		}
-		bool isEmpty() const { return iFront == iRear; }
-		bool isFull() const { return (iFront == (iRear + 1) % MaxSize); }
+		bool empty() const { return iFront == iRear; }
+		bool full() const { return (iFront == (iRear + 1) % MaxSize); }
 		size_t size() const { return count; }
 		size_t max() const { return MaxSize - 1; }
 
 		T* new_back(){
-			if (isFull())
+			if (full())
 				return nullptr;
 			const auto ret = &data[iRear];
 			iRear = (iRear + 1) % MaxSize;
@@ -38,7 +38,7 @@ namespace lstg
 			return ret;
 		}
 		T* new_front(){
-			if (isFull())
+			if (full())
 				return nullptr;
 			if (iFront > 0)
 				--iFront;
@@ -50,7 +50,7 @@ namespace lstg
 
 		void push_back(const T& val)
 		{
-			if (isFull())
+			if (full())
 				return;
 			data[iRear] = val;
 			iRear = (iRear + 1) % MaxSize;
@@ -58,7 +58,7 @@ namespace lstg
 		}
 		void push_front(const T& val)
 		{
-			if (isFull())
+			if (full())
 				return;
 			if (iFront > 0)
 				--iFront;
@@ -70,7 +70,7 @@ namespace lstg
 
 		bool pop_front(T& out)
 		{
-			if (isEmpty())
+			if (empty())
 				return false;
 			out = front();
 			pop_front();
@@ -78,7 +78,7 @@ namespace lstg
 		}
 		void pop_front()
 		{
-			if (isEmpty())
+			if (empty())
 				return;
 			iFront = (iFront + 1) % MaxSize;
 			--count;
@@ -86,7 +86,7 @@ namespace lstg
 
 		bool pop_back(T& out)
 		{
-			if (isEmpty())
+			if (empty())
 				return false;
 			out = back();
 			pop_back();
@@ -94,7 +94,7 @@ namespace lstg
 		}
 		void pop_back()
 		{
-			if (isEmpty())
+			if (empty())
 				return;
 			if (iRear > 0)
 				--iRear;
@@ -103,9 +103,9 @@ namespace lstg
 			--count;
 		}
 
-		T Queue(T val)
+		T queue(T val)
 		{
-			if (!isFull())
+			if (!full())
 				++count;
 			else
 				iFront = (iFront + 1) % MaxSize;
@@ -116,12 +116,12 @@ namespace lstg
 		}
 		T& front()
 		{
-			CCASSERT(!isEmpty(), "CirularQueue: Try to get front when empty.");
+			CCASSERT(!empty(), "CirularQueue: Try to get front when empty.");
 			return data[iFront];
 		}
 		T& back()
 		{
-			CCASSERT(!isEmpty(), "CirularQueue: Try to get back when empty.");
+			CCASSERT(!empty(), "CirularQueue: Try to get back when empty.");
 			if (iRear == 0)
 				return data[MaxSize - 1];
 			else
