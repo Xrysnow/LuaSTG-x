@@ -3,17 +3,20 @@
 using namespace std;
 using namespace lstg;
 
-bool XProfiler::enable = true;
-
 XProfiler* XProfiler::getInstance()
 {
 	static XProfiler instance;
 	return &instance;
 }
 
-void XProfiler::setEnable(bool b)
+void XProfiler::setEnabled(bool b)
 {
 	enable = b;
+}
+
+bool XProfiler::isEnabled() const
+{
+	return enable;
 }
 
 void XProfiler::tic(const string& name)
@@ -24,63 +27,81 @@ void XProfiler::tic(const string& name)
 
 double XProfiler::toc(const string& name)
 {
-	if (!enable)return 0.0;
-	auto it = timers.find(name);
-	if (it == timers.end())return 0.0;
+	if (!enable)
+		return 0.0;
+	const auto it = timers.find(name);
+	if (it == timers.end())
+		return 0.0;
 	return it->second.toc();
 }
 
-CirularQueue<double, 60>* XProfiler::getQueue(const string& name)
+double XProfiler::getAverageTime(const string& name)
 {
-	auto it = timers.find(name);
-	if (it == timers.end())return nullptr;
-	return &it->second.que;
-}
-
-double XProfiler::getAverage(const string& name)
-{
-	auto it = timers.find(name);
-	if (it == timers.end())return 0.0;
+	const auto it = timers.find(name);
+	if (it == timers.end())
+		return 0.0;
 	return it->second.avg;
 }
 
-double XProfiler::getMin(const string& name)
+double XProfiler::getMinTime(const string& name)
 {
-	auto it = timers.find(name);
-	if (it == timers.end())return 0.0;
+	const auto it = timers.find(name);
+	if (it == timers.end())
+		return 0.0;
 	return it->second.min;
 }
 
-double XProfiler::getMax(const string& name)
+double XProfiler::getMaxTime(const string& name)
 {
-	auto it = timers.find(name);
-	if (it == timers.end())return 0.0;
+	const auto it = timers.find(name);
+	if (it == timers.end())
+		return 0.0;
 	return it->second.max;
 }
 
-double XProfiler::getLast(const string& name)
+double XProfiler::getTime(const string& name)
 {
-	auto it = timers.find(name);
-	if (it == timers.end())return 0.0;
-	return it->second.que.back();
+	const auto it = timers.find(name);
+	if (it == timers.end())
+		return 0.0;
+	return it->second.que.back().time;
 }
 
-unordered_map<string, double> XProfiler::getAllLast()
+size_t XProfiler::getCount(const std::string& name)
 {
-	unordered_map<string, double> ret;
-	for (auto& it : timers)
-		ret[it.first] = it.second.que.back();
-	return ret;
+	const auto it = timers.find(name);
+	if (it == timers.end())
+		return 0.0;
+	return it->second.que.back().count;
 }
 
-void XProfiler::clear(const string& name)
+void XProfiler::next()
 {
-	auto it = timers.find(name);
+	for (auto&& t : timers)
+		t.second.next();
+}
+
+void XProfiler::next(const std::string& name)
+{
+	const auto it = timers.find(name);
 	if (it != timers.end())
-		it->second.clear();
+		it->second.next();
 }
 
-void XProfiler::clearAll()
+void XProfiler::reset()
+{
+	for (auto&& t : timers)
+		t.second.reset();
+}
+
+void XProfiler::reset(const string& name)
+{
+	const auto it = timers.find(name);
+	if (it != timers.end())
+		it->second.reset();
+}
+
+void XProfiler::clear()
 {
 	timers.clear();
 }
@@ -93,21 +114,34 @@ void XProfiler::ProfileTimer::tic()
 
 double XProfiler::ProfileTimer::toc()
 {
-	if (_toc)return 0.0;
+	if (_toc)
+		return 0.0;
 	_toc = true;
 	const auto dt = sw.get();
-	if (que.isFull())
-		sum -= que.Queue(dt);
-	else
-		que.Queue(dt);
-	sum += dt;
-	avg = sum / que.size();
-	if (dt < min)min = dt;
-	if (dt > max)max = dt;
+	current += dt;
+	count++;
 	return dt;
 }
 
-void XProfiler::ProfileTimer::clear()
+void XProfiler::ProfileTimer::next()
+{
+	if (!_toc)
+		toc();
+	if (que.full())
+		sum -= que.queue({current, count}).time;
+	else
+		que.queue({ current, count });
+	sum += current;
+	avg = sum / que.size();
+	if (current < min)
+		min = current;
+	if (current > max)
+		max = current;
+	count = 0;
+	current = 0;
+}
+
+void XProfiler::ProfileTimer::reset()
 {
 	sw.reset();
 	sum = 0.0;
@@ -120,8 +154,18 @@ void XProfiler::ProfileTimer::clear()
 
 XProfiler::ProfileTimer* XProfiler::getTimer(const std::string& name)
 {
-	auto it = timers.find(name);
+	const auto it = timers.find(name);
 	if (it != timers.end())
 		return &it->second;
 	return nullptr;
+}
+
+void lstg::ProfilingBegin(const std::string& name)
+{
+	XProfiler::getInstance()->tic(name);
+}
+
+double lstg::ProfilingEnd(const std::string& name)
+{
+	return XProfiler::getInstance()->toc(name);
 }

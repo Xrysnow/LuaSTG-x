@@ -9,34 +9,45 @@ namespace lstg
 	{
 	public:
 		static XProfiler* getInstance();
-		static void setEnable(bool b);
+		void setEnabled(bool b);
+		bool isEnabled() const;
 
 		void tic(const std::string& name);
 		double toc(const std::string& name);
 
-		CirularQueue<double, 60>* getQueue(const std::string& name);
-		double getAverage(const std::string& name);
-		double getMin(const std::string& name);
-		double getMax(const std::string& name);
-		double getLast(const std::string& name);
+		double getAverageTime(const std::string& name);
+		double getMinTime(const std::string& name);
+		double getMaxTime(const std::string& name);
+		double getTime(const std::string& name);
+		size_t getCount(const std::string& name);
 
-		std::unordered_map<std::string, double> getAllLast();
+		void next();
+		void next(const std::string& name);
+		void reset();
+		void reset(const std::string& name);
+		void clear();
 
-		void clear(const std::string& name);
-		void clearAll();
+		struct Record
+		{
+			double time = 0;
+			size_t count = 0;
+		};
 
 		struct ProfileTimer
 		{
 			StopWatch sw;
-			CirularQueue<double, 60> que;
+			CirularQueue<Record, 60> que;
 			double sum = 0.0;
 			double avg = 0.0;
 			double min = 1e10;
 			double max = 0.0;
+			double current = 0.0;
+			size_t count = 0;
 			bool _toc = false;
 			void tic();
 			double toc();
-			void clear();
+			void next();
+			void reset();
 		};
 
 		ProfileTimer* getTimer(const std::string& name);
@@ -44,9 +55,29 @@ namespace lstg
 	private:
 
 		std::unordered_map<std::string, ProfileTimer> timers;
-		static bool enable;
+		bool enable = true;
 
 		XProfiler() = default;
 		~XProfiler() = default;
-	};	
+	};
+
+	void ProfilingBegin(const std::string& name);
+	double ProfilingEnd(const std::string& name);
+
+	struct ProfilingScope
+	{
+		ProfilingScope(const ProfilingScope&) = delete;
+		ProfilingScope& operator=(const ProfilingScope&) = delete;
+
+		ProfilingScope(const std::string& name)
+			: _name(name)
+		{
+			ProfilingBegin(_name);
+		}
+		~ProfilingScope()
+		{
+			ProfilingEnd(_name);
+		}
+		std::string _name;
+	};
 }

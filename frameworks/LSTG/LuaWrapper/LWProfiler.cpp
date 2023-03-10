@@ -70,37 +70,37 @@ LUA_REGISTER_MODULE_DEF(lstg_Profiler)
 
 		static int getAverage(lua_State* L) noexcept
 		{
-			lua_pushnumber(L, XProfiler::getInstance()->getAverage(luaL_checkstring(L, 1)));
+			lua_pushnumber(L, XProfiler::getInstance()->getAverageTime(luaL_checkstring(L, 1)));
 			return 1;
 		}
 
 		static int getMin(lua_State* L) noexcept
 		{
-			lua_pushnumber(L, XProfiler::getInstance()->getMin(luaL_checkstring(L, 1)));
+			lua_pushnumber(L, XProfiler::getInstance()->getMinTime(luaL_checkstring(L, 1)));
 			return 1;
 		}
 
 		static int getMax(lua_State* L) noexcept
 		{
-			lua_pushnumber(L, XProfiler::getInstance()->getMax(luaL_checkstring(L, 1)));
+			lua_pushnumber(L, XProfiler::getInstance()->getMaxTime(luaL_checkstring(L, 1)));
 			return 1;
 		}
 
 		static int getLast(lua_State* L) noexcept
 		{
-			lua_pushnumber(L, XProfiler::getInstance()->getLast(luaL_checkstring(L, 1)));
+			lua_pushnumber(L, XProfiler::getInstance()->getTime(luaL_checkstring(L, 1)));
 			return 1;
 		}
 
 		static int clear(lua_State* L) noexcept
 		{
-			XProfiler::getInstance()->clear(luaL_checkstring(L, 1));
+			XProfiler::getInstance()->reset(luaL_checkstring(L, 1));
 			return 0;
 		}
 
 		static int clearAll(lua_State* L) noexcept
 		{
-			XProfiler::getInstance()->clearAll();
+			XProfiler::getInstance()->clear();
 			return 0;
 		}
 

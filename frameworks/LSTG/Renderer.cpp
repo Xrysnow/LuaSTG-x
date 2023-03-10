@@ -333,6 +333,8 @@ bool XRenderer::endScene()noexcept
 	triToDraw.clear();
 
 	XProfiler::getInstance()->toc(AppFrame::PF_EndScene);
+	// push all profilers foward
+	XProfiler::getInstance()->next();
 	return true;
 }
 
