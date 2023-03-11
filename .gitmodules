@@ -13,9 +13,6 @@
 [submodule "frameworks/runtime-src/Classes/Video"]
 	path = frameworks/Video
 	url = https://github.com/Xrysnow/cocos2d-x-video.git
-[submodule "frameworks/runtime-src/Classes/reader"]
-	path = frameworks/reader
-	url = https://github.com/Xrysnow/creator_to_cocos2dx.git
 [submodule "frameworks/runtime-src/external"]
 	path = frameworks/external
 	url = https://github.com/Xrysnow/lstgx_external.git
