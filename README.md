@@ -41,7 +41,7 @@ Full release download:
 
         $ git clone --recursive https://github.com/Xrysnow/LuaSTG-x.git
 
-2. Clone external libraries into `frameworks/cocos2d-x/external` (or download from [release page](https://github.com/Xrysnow/cocos2d-x-3rd-party-libs-bin/releases)).
+2. For releases before 2023, clone external libraries into `frameworks/cocos2d-x/external` (or download from [release page](https://github.com/Xrysnow/cocos2d-x-3rd-party-libs-bin/releases)).
 
         $ cd LuaSTG-x/frameworks/cocos2d-x/external
         $ git clone --recursive https://github.com/Xrysnow/cocos2d-x-3rd-party-libs-bin.git
@@ -60,7 +60,7 @@ Full release download:
 ## Build Requirements
 
 - CMake 3.20+
-- Android Studio 2020.3.1+ and NDK r22+
+- Android Studio 2021.1.1+ and NDK r22+
 - Linux with compiler supports C++17 (Clang is recommended)
 - macOS 11.3+ and Xcode 13+
 - Windows 7+ and VS 2019+
@@ -74,34 +74,17 @@ Runtime requirements is actually decided by your compiler, but in most cases the
 - macOS 10.15+
 - Windows 7+ and visual c++ runtime
 
-Note that iOS 13+ and macOS 10.15+ is always required for `std::filesystem` ([source](https://developer.apple.com/documentation/xcode-release-notes/xcode-11-release-notes)).
+Note that iOS 13+ and macOS 10.15+ are always required for `std::filesystem` ([source](https://developer.apple.com/documentation/xcode-release-notes/xcode-11-release-notes)).
 
 ## Dependency Graph
 
 LuaSTG-x\
-├　[cocos2d-x](https://github.com/Xrysnow/cocos2d-x)\
-│　　└ [cocos2d-x-3rd-party-libs-bin](https://github.com/Xrysnow/cocos2d-x-3rd-party-libs-bin)\
+├　[cocos-x](https://github.com/Xrysnow/cocos-x)\
+│　　└ [cocos-x-external](https://github.com/Xrysnow/cocos-x-external)\
 │　　　　├ [cocos2d-x-gfx](https://github.com/Xrysnow/cocos2d-x-gfx)\
-│　　　　└ [openal-soft](https://github.com/kcat/openal-soft)\
-├　[lstgx_Audio](https://github.com/Xrysnow/lstgx_Audio)\
-│　　└ [openal-soft](https://github.com/kcat/openal-soft) (in cocos2d-x-3rd-party-libs-bin)\
-├　[lstgx_external](https://github.com/Xrysnow/lstgx_external)\
-│　　├ [ANGLE](https://github.com/google/angle) (optional)\
-│　　├ [BurstLinker](https://github.com/Xrysnow/BurstLinker)\
-│　　├ [FairyGUI](https://github.com/fairygui/FairyGUI-cocos2dx) (optional)\
-│　　├ [FFmpeg](http://ffmpeg.org) (optional)\
-│　　├ [libzippp](https://github.com/ctabin/libzippp)\
-│　　│　└ [libzip](https://github.com/nih-at/libzip)\
-│　　├ [Lua CJSON](https://kyne.com.au/~mark/software/lua-cjson.php)\
-│　　├ [luafilesystem](http://keplerproject.github.io/luafilesystem)\
-│　　├ [LPeg](http://www.inf.puc-rio.br/~roberto/lpeg)\
-│　　├ [MicroTeX](https://github.com/Xrysnow/MicroTeX)\
-│　　├ [nanosvg](https://github.com/memononen/nanosvg)\
-│　　├ [NativeFileDialog](https://github.com/mlabbe/nativefiledialog)\
-│　　├ [yasio](https://github.com/yasio/yasio) (optional)\
-│　　└ [Yuescript](https://github.com/pigpigyyy/Yuescript) (optional)\
-├　[lstgx_Math](https://github.com/Xrysnow/lstgx_Math)\
-├　[lstgx_LuaCore](https://github.com/Xrysnow/lstgx_LuaCore)\
+│　　　　├ [glslang](https://github.com/KhronosGroup/glslang)\
+│　　　　├ [openal-soft](https://github.com/kcat/openal-soft)\
+│　　　　└ [SPIRV-Cross](https://github.com/KhronosGroup/SPIRV-Cross)\
 ├　[cocos2d-x-imgui](https://github.com/Xrysnow/cocos2d-x-imgui)\
 │　　├ [ImGui](https://github.com/ocornut/imgui)\
 │　　├ [imgui_markdown](https://github.com/juliettef/imgui_markdown)\
@@ -112,4 +95,20 @@ LuaSTG-x\
 │　└ [Cubism SDK for Native](https://www.live2d.com/en/download/cubism-sdk/download-native)\
 ├　[cocos2d-x-video](https://github.com/Xrysnow/cocos2d-x-video)\
 │　　└ [FFmpeg](http://ffmpeg.org) (in lstgx_external)\
-└　[creator_to_cocos2dx](https://github.com/Xrysnow/creator_to_cocos2dx)
+├　[lstgx_Audio](https://github.com/Xrysnow/lstgx_Audio)\
+│　　└ [openal-soft](https://github.com/kcat/openal-soft) (in cocos-x-external)\
+├　[lstgx_external](https://github.com/Xrysnow/lstgx_external)\
+│　　├ [ANGLE](https://github.com/google/angle) (optional)\
+│　　├ [BurstLinker](https://github.com/Xrysnow/BurstLinker)\
+│　　├ [FFmpeg](http://ffmpeg.org) (optional)\
+│　　├ [libzippp](https://github.com/ctabin/libzippp)\
+│　　│　└ [libzip](https://github.com/nih-at/libzip)\
+│　　├ [Lua CJSON](https://kyne.com.au/~mark/software/lua-cjson.php)\
+│　　├ [luafilesystem](http://keplerproject.github.io/luafilesystem)\
+│　　├ [LPeg](http://www.inf.puc-rio.br/~roberto/lpeg)\
+│　　├ [MicroTeX](https://github.com/Xrysnow/MicroTeX)\
+│　　├ [nanosvg](https://github.com/memononen/nanosvg)\
+│　　├ [NativeFileDialog](https://github.com/mlabbe/nativefiledialog)\
+│　　└ [Yuescript](https://github.com/pigpigyyy/Yuescript) (optional)\
+├　[lstgx_Math](https://github.com/Xrysnow/lstgx_Math)\
+└　[lstgx_LuaCore](https://github.com/Xrysnow/lstgx_LuaCore)
