@@ -1,7 +1,6 @@
 #include "lua_cc_fairygui_manual.hpp"
 #include "lua_cc_fairygui_auto.hpp"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
-#include "scripting/lua-bindings/manual/cocos2d/LuaScriptHandlerMgr.h"
 #include "../LSTG/Util/UtilLuaConversion.h"
 #include "FairyGUI.h"
 #include "GLoader3D.h"
@@ -36,7 +35,7 @@
 #define LUA_PARAMETER_ERROR(L, NAME, ARGC, EXPECT) return luaL_error((L), "wrong number of arguments in '%s': %d, expects %s", NAME, (ARGC), EXPECT);
 #endif
 
-using lstg::lua::native_to_luaval;
+using ::lua::native_to_luaval;
 
 #define GOBJECT_AS(T)\
 	int lua_cc_fairygui_GObject_as##T(lua_State * tolua_S) {\

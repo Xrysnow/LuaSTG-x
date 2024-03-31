@@ -4,7 +4,7 @@
 
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
-#include "scripting/lua-bindings/manual/cocos2d/LuaScriptHandlerMgr.h"
+//#include "scripting/lua-bindings/manual/cocos2d/LuaScriptHandlerMgr.h"
 #include "scripting/lua-bindings/manual/CCLuaValue.h"
 #include "scripting/lua-bindings/manual/CCLuaEngine.h"
 #include "base/CCGameController.h"

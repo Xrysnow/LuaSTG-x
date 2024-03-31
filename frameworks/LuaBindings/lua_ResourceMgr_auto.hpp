@@ -1,11 +1,13 @@
 #pragma once
-#ifdef __cplusplus
-extern "C" {
-#endif
-#include "tolua++.h"
-#ifdef __cplusplus
+#include "base/ccConfig.h"
+#include "LuaBindings.h"
+
+extern int luaReg_ResourceMgr_lstgResourcePack(lua_State* lua_S);
+extern int luaReg_ResourceMgr_lstgResourceMgr(lua_State* lua_S);
+
+inline int luaReg_ResourceMgr(lua_State* lua_S)
+{
+	luaReg_ResourceMgr_lstgResourcePack(lua_S);
+	luaReg_ResourceMgr_lstgResourceMgr(lua_S);
+	return 0;
 }
-#endif
-
-int register_all_x_ResourceMgr(lua_State* tolua_S);
-

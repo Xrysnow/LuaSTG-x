@@ -1,887 +1,275 @@
 #include "lua_ZipArchive_auto.hpp"
-#include "../Classes/XZipArchive.h"
-#include "scripting/lua-bindings/manual/tolua_fix.h"
-#include "scripting/lua-bindings/manual/LuaBasicConversions.h"
-#include "Util/UtilLuaConversion.h"
+#include "XZipArchive.h"
 
-using lstg::lua::luaval_to_native;
-using lstg::lua::native_to_luaval;
-
-#ifndef LUA_CHECK_COBJ_TYPE
-	#ifdef LUA_DEBUG
-		#define LUA_CHECK_COBJ_TYPE(L, TYPE, NAME) if(!tolua_isusertype((L), 1, (TYPE), 0, nullptr)) { return luaL_error((L), "invalid 'cobj' in '%s': '%s', expects '%s'", NAME, tolua_typename((L), 1), (TYPE)); }
-	#else
-		#define LUA_CHECK_COBJ_TYPE(L, TYPE, NAME) (void)(TYPE);
-	#endif
-#endif
-#ifndef LUA_CHECK_COBJ
-	#ifdef LUA_DEBUG
-		#define LUA_CHECK_COBJ(L, COBJ, NAME) if(!(COBJ)) { return luaL_error((L), "invalid 'cobj' in '%s'", NAME); }
-	#else
-		#define LUA_CHECK_COBJ(L, COBJ, NAME)
-	#endif
-#endif
-#ifndef LUA_CHECK_PARAMETER
-	#define LUA_CHECK_PARAMETER(L, OK, NAME) if(!(OK)) { return luaL_error((L), "invalid arguments in '%s'", NAME); }
-#endif
-#ifndef LUA_PARAMETER_ERROR
-	#define LUA_PARAMETER_ERROR(L, NAME, ARGC, EXPECT) return luaL_error((L), "wrong number of arguments in '%s': %d, expects %s", NAME, (ARGC), EXPECT);
-#endif
-
-int lua_x_ZipArchive_ZipArchive_addData(lua_State* tolua_S)
+int luaReg_ZipArchive_lstgZipArchiveOpenMode(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:addData";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 2) {
-		std::string arg0;
-		lstg::Buffer* arg1;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_native(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->addData(arg0, arg1);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2");
-}
-int lua_x_ZipArchive_ZipArchive_addEntry(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:addEntry";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		std::string arg0;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->addEntry(arg0);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
-}
-int lua_x_ZipArchive_ZipArchive_addFile(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:addFile";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 2) {
-		std::string arg0;
-		std::string arg1;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_std_string(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->addFile(arg0, arg1);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2");
-}
-int lua_x_ZipArchive_ZipArchive_addString(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:addString";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 2) {
-		std::string arg0;
-		std::string arg1;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_std_string(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->addString(arg0, arg1);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2");
-}
-int lua_x_ZipArchive_ZipArchive_close(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:close";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->close();
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_ZipArchive_ZipArchive_create(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:create";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		std::string arg0;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = lstg::ZipArchive::create(arg0);
-		native_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	if (argc == 2) {
-		std::string arg0;
-		std::string arg1;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_std_string(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = lstg::ZipArchive::create(arg0, arg1);
-		native_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	if (argc == 3) {
-		std::string arg0;
-		std::string arg1;
-		lstg::ZipArchive::Encryption arg2;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_std_string(tolua_S, 3, &arg1, LUA_FNAME);
-		ok &= luaval_to_native(tolua_S, 4, &arg2, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = lstg::ZipArchive::create(arg0, arg1, arg2);
-		native_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1 to 3");
-}
-int lua_x_ZipArchive_ZipArchive_createFromBuffer(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:createFromBuffer";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		lstg::Buffer* arg0;
-		ok &= luaval_to_native(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = lstg::ZipArchive::createFromBuffer(arg0);
-		native_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	if (argc == 2) {
-		lstg::Buffer* arg0;
-		lstg::ZipArchive::OpenMode arg1;
-		ok &= luaval_to_native(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_native(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = lstg::ZipArchive::createFromBuffer(arg0, arg1);
-		native_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	if (argc == 3) {
-		lstg::Buffer* arg0;
-		lstg::ZipArchive::OpenMode arg1;
-		bool arg2;
-		ok &= luaval_to_native(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_native(tolua_S, 3, &arg1, LUA_FNAME);
-		ok &= luaval_to_boolean(tolua_S, 4, &arg2, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = lstg::ZipArchive::createFromBuffer(arg0, arg1, arg2);
-		native_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1 to 3");
-}
-int lua_x_ZipArchive_ZipArchive_deleteEntry(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:deleteEntry";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		std::string arg0;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->deleteEntry(arg0);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
-}
-int lua_x_ZipArchive_ZipArchive_discard(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:discard";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->discard();
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_ZipArchive_ZipArchive_extractEntry(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:extractEntry";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 2) {
-		std::string arg0;
-		std::string arg1;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_std_string(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->extractEntry(arg0, arg1);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	if (argc == 3) {
-		std::string arg0;
-		std::string arg1;
-		lstg::ZipArchive::State arg2;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_std_string(tolua_S, 3, &arg1, LUA_FNAME);
-		ok &= luaval_to_native(tolua_S, 4, &arg2, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->extractEntry(arg0, arg1, arg2);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2 to 3");
-}
-int lua_x_ZipArchive_ZipArchive_getComment(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:getComment";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->getComment();
-		lua_pushlstring(tolua_S, ret.c_str(), ret.length());
-		return 1;
-	}
-	if (argc == 1) {
-		lstg::ZipArchive::State arg0;
-		ok &= luaval_to_native(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->getComment(arg0);
-		lua_pushlstring(tolua_S, ret.c_str(), ret.length());
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0 to 1");
-}
-int lua_x_ZipArchive_ZipArchive_getEntries(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:getEntries";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->getEntries();
-		ccvector_std_string_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	if (argc == 1) {
-		lstg::ZipArchive::State arg0;
-		ok &= luaval_to_native(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->getEntries(arg0);
-		ccvector_std_string_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0 to 1");
-}
-int lua_x_ZipArchive_ZipArchive_getEntryByIndex(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:getEntryByIndex";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		long long arg0;
-		ok &= luaval_to_long_long(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->getEntryByIndex(arg0);
-		lua_pushlstring(tolua_S, ret.c_str(), ret.length());
-		return 1;
-	}
-	if (argc == 2) {
-		long long arg0;
-		lstg::ZipArchive::State arg1;
-		ok &= luaval_to_long_long(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_native(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->getEntryByIndex(arg0, arg1);
-		lua_pushlstring(tolua_S, ret.c_str(), ret.length());
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1 to 2");
-}
-int lua_x_ZipArchive_ZipArchive_getEntryComment(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:getEntryComment";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		std::string arg0;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->getEntryComment(arg0);
-		lua_pushlstring(tolua_S, ret.c_str(), ret.length());
-		return 1;
-	}
-	if (argc == 2) {
-		std::string arg0;
-		lstg::ZipArchive::State arg1;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_native(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->getEntryComment(arg0, arg1);
-		lua_pushlstring(tolua_S, ret.c_str(), ret.length());
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1 to 2");
-}
-int lua_x_ZipArchive_ZipArchive_getEntryCount(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:getEntryCount";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->getEntryCount();
-		tolua_pushnumber(tolua_S, (lua_Number)ret);
-		return 1;
-	}
-	if (argc == 1) {
-		lstg::ZipArchive::State arg0;
-		ok &= luaval_to_native(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->getEntryCount(arg0);
-		tolua_pushnumber(tolua_S, (lua_Number)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0 to 1");
-}
-int lua_x_ZipArchive_ZipArchive_getEntryInfo(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:getEntryInfo";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		std::string arg0;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->getEntryInfo(arg0);
-		native_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	if (argc == 2) {
-		std::string arg0;
-		lstg::ZipArchive::State arg1;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_native(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->getEntryInfo(arg0, arg1);
-		native_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1 to 2");
-}
-int lua_x_ZipArchive_ZipArchive_getMode(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:getMode";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->getMode();
-		native_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_ZipArchive_ZipArchive_hasEntry(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:hasEntry";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		std::string arg0;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->hasEntry(arg0);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	if (argc == 2) {
-		std::string arg0;
-		bool arg1;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_boolean(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->hasEntry(arg0, arg1);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	if (argc == 3) {
-		std::string arg0;
-		bool arg1;
-		bool arg2;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_boolean(tolua_S, 3, &arg1, LUA_FNAME);
-		ok &= luaval_to_boolean(tolua_S, 4, &arg2, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->hasEntry(arg0, arg1, arg2);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	if (argc == 4) {
-		std::string arg0;
-		bool arg1;
-		bool arg2;
-		lstg::ZipArchive::State arg3;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_boolean(tolua_S, 3, &arg1, LUA_FNAME);
-		ok &= luaval_to_boolean(tolua_S, 4, &arg2, LUA_FNAME);
-		ok &= luaval_to_native(tolua_S, 5, &arg3, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->hasEntry(arg0, arg1, arg2, arg3);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1 to 4");
-}
-int lua_x_ZipArchive_ZipArchive_isEncrypted(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:isEncrypted";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->isEncrypted();
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_ZipArchive_ZipArchive_isEntryCompressionEnabled(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:isEntryCompressionEnabled";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		std::string arg0;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->isEntryCompressionEnabled(arg0);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	if (argc == 2) {
-		std::string arg0;
-		lstg::ZipArchive::State arg1;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_native(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->isEntryCompressionEnabled(arg0, arg1);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1 to 2");
-}
-int lua_x_ZipArchive_ZipArchive_isMutable(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:isMutable";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->isMutable();
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_ZipArchive_ZipArchive_isOpen(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:isOpen";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->isOpen();
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_ZipArchive_ZipArchive_open(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:open";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->open();
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	if (argc == 1) {
-		lstg::ZipArchive::OpenMode arg0;
-		ok &= luaval_to_native(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->open(arg0);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	if (argc == 2) {
-		lstg::ZipArchive::OpenMode arg0;
-		bool arg1;
-		ok &= luaval_to_native(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_boolean(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->open(arg0, arg1);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0 to 2");
-}
-int lua_x_ZipArchive_ZipArchive_readEntry(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:readEntry";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		std::string arg0;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->readEntry(arg0);
-		native_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	if (argc == 2) {
-		std::string arg0;
-		lstg::ZipArchive::State arg1;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_native(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->readEntry(arg0, arg1);
-		native_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1 to 2");
-}
-int lua_x_ZipArchive_ZipArchive_removeComment(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:removeComment";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->removeComment();
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_ZipArchive_ZipArchive_renameEntry(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:renameEntry";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 2) {
-		std::string arg0;
-		std::string arg1;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_std_string(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->renameEntry(arg0, arg1);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2");
-}
-int lua_x_ZipArchive_ZipArchive_setComment(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:setComment";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		std::string arg0;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->setComment(arg0);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
-}
-int lua_x_ZipArchive_ZipArchive_setEntryComment(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:setEntryComment";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 2) {
-		std::string arg0;
-		std::string arg1;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_std_string(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->setEntryComment(arg0, arg1);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	if (argc == 3) {
-		std::string arg0;
-		std::string arg1;
-		lstg::ZipArchive::State arg2;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_std_string(tolua_S, 3, &arg1, LUA_FNAME);
-		ok &= luaval_to_native(tolua_S, 4, &arg2, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->setEntryComment(arg0, arg1, arg2);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2 to 3");
-}
-int lua_x_ZipArchive_ZipArchive_setEntryCompressionEnabled(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:setEntryCompressionEnabled";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 2) {
-		std::string arg0;
-		bool arg1;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_boolean(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->setEntryCompressionEnabled(arg0, arg1);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	if (argc == 3) {
-		std::string arg0;
-		bool arg1;
-		lstg::ZipArchive::State arg2;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_boolean(tolua_S, 3, &arg1, LUA_FNAME);
-		ok &= luaval_to_native(tolua_S, 4, &arg2, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->setEntryCompressionEnabled(arg0, arg1, arg2);
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2 to 3");
-}
-int lua_x_ZipArchive_ZipArchive_unlink(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.ZipArchive";
-	constexpr auto LUA_FNAME = "lstg.ZipArchive:unlink";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::ZipArchive*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->unlink();
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-static int lua_x_ZipArchive_ZipArchive_finalize(lua_State* tolua_S)
-{
+	LUA_ENUM_DEF("OpenMode");
+	LUA_ENUM_ENTRY("NotOpen", lstg::ZipArchive::OpenMode::NotOpen);
+	LUA_ENUM_ENTRY("ReadOnly", lstg::ZipArchive::OpenMode::ReadOnly);
+	LUA_ENUM_ENTRY("Write", lstg::ZipArchive::OpenMode::Write);
+	LUA_ENUM_ENTRY("New", lstg::ZipArchive::OpenMode::New);
+	LUA_ENUM_END();
 	return 0;
 }
-
-int lua_register_x_ZipArchive_ZipArchive(lua_State* tolua_S)
+int luaReg_ZipArchive_lstgZipArchiveState(lua_State* lua_S)
 {
-	tolua_usertype(tolua_S, "lstg.ZipArchive");
-	tolua_cclass(tolua_S, "ZipArchive", "lstg.ZipArchive", "cc.Ref", nullptr);
-
-	tolua_beginmodule(tolua_S, "ZipArchive");
-		tolua_function(tolua_S, "addData", lua_x_ZipArchive_ZipArchive_addData);
-		tolua_function(tolua_S, "addEntry", lua_x_ZipArchive_ZipArchive_addEntry);
-		tolua_function(tolua_S, "addFile", lua_x_ZipArchive_ZipArchive_addFile);
-		tolua_function(tolua_S, "addString", lua_x_ZipArchive_ZipArchive_addString);
-		tolua_function(tolua_S, "close", lua_x_ZipArchive_ZipArchive_close);
-		tolua_function(tolua_S, "deleteEntry", lua_x_ZipArchive_ZipArchive_deleteEntry);
-		tolua_function(tolua_S, "discard", lua_x_ZipArchive_ZipArchive_discard);
-		tolua_function(tolua_S, "extractEntry", lua_x_ZipArchive_ZipArchive_extractEntry);
-		tolua_function(tolua_S, "getComment", lua_x_ZipArchive_ZipArchive_getComment);
-		tolua_function(tolua_S, "getEntries", lua_x_ZipArchive_ZipArchive_getEntries);
-		tolua_function(tolua_S, "getEntryByIndex", lua_x_ZipArchive_ZipArchive_getEntryByIndex);
-		tolua_function(tolua_S, "getEntryComment", lua_x_ZipArchive_ZipArchive_getEntryComment);
-		tolua_function(tolua_S, "getEntryCount", lua_x_ZipArchive_ZipArchive_getEntryCount);
-		tolua_function(tolua_S, "getEntryInfo", lua_x_ZipArchive_ZipArchive_getEntryInfo);
-		tolua_function(tolua_S, "getMode", lua_x_ZipArchive_ZipArchive_getMode);
-		tolua_function(tolua_S, "hasEntry", lua_x_ZipArchive_ZipArchive_hasEntry);
-		tolua_function(tolua_S, "isEncrypted", lua_x_ZipArchive_ZipArchive_isEncrypted);
-		tolua_function(tolua_S, "isEntryCompressionEnabled", lua_x_ZipArchive_ZipArchive_isEntryCompressionEnabled);
-		tolua_function(tolua_S, "isMutable", lua_x_ZipArchive_ZipArchive_isMutable);
-		tolua_function(tolua_S, "isOpen", lua_x_ZipArchive_ZipArchive_isOpen);
-		tolua_function(tolua_S, "open", lua_x_ZipArchive_ZipArchive_open);
-		tolua_function(tolua_S, "readEntry", lua_x_ZipArchive_ZipArchive_readEntry);
-		tolua_function(tolua_S, "removeComment", lua_x_ZipArchive_ZipArchive_removeComment);
-		tolua_function(tolua_S, "renameEntry", lua_x_ZipArchive_ZipArchive_renameEntry);
-		tolua_function(tolua_S, "setComment", lua_x_ZipArchive_ZipArchive_setComment);
-		tolua_function(tolua_S, "setEntryComment", lua_x_ZipArchive_ZipArchive_setEntryComment);
-		tolua_function(tolua_S, "setEntryCompressionEnabled", lua_x_ZipArchive_ZipArchive_setEntryCompressionEnabled);
-		tolua_function(tolua_S, "unlink", lua_x_ZipArchive_ZipArchive_unlink);
-		tolua_function(tolua_S, "create", lua_x_ZipArchive_ZipArchive_create);
-		tolua_function(tolua_S, "createFromBuffer", lua_x_ZipArchive_ZipArchive_createFromBuffer);
-		{
-			tolua_module(tolua_S, "OpenMode", 0);
-			tolua_beginmodule(tolua_S, "OpenMode");
-			{
-				tolua_constant(tolua_S, "NotOpen", (lua_Number)lstg::ZipArchive::OpenMode::NotOpen);
-				tolua_constant(tolua_S, "ReadOnly", (lua_Number)lstg::ZipArchive::OpenMode::ReadOnly);
-				tolua_constant(tolua_S, "Write", (lua_Number)lstg::ZipArchive::OpenMode::Write);
-				tolua_constant(tolua_S, "New", (lua_Number)lstg::ZipArchive::OpenMode::New);
-			}
-			tolua_endmodule(tolua_S);
-		}
-		{
-			tolua_module(tolua_S, "State", 0);
-			tolua_beginmodule(tolua_S, "State");
-			{
-				tolua_constant(tolua_S, "Original", (lua_Number)lstg::ZipArchive::State::Original);
-				tolua_constant(tolua_S, "Current", (lua_Number)lstg::ZipArchive::State::Current);
-			}
-			tolua_endmodule(tolua_S);
-		}
-		{
-			tolua_module(tolua_S, "Encryption", 0);
-			tolua_beginmodule(tolua_S, "Encryption");
-			{
-				tolua_constant(tolua_S, "None", (lua_Number)lstg::ZipArchive::Encryption::None);
-				tolua_constant(tolua_S, "Aes128", (lua_Number)lstg::ZipArchive::Encryption::Aes128);
-				tolua_constant(tolua_S, "Aes192", (lua_Number)lstg::ZipArchive::Encryption::Aes192);
-				tolua_constant(tolua_S, "Aes256", (lua_Number)lstg::ZipArchive::Encryption::Aes256);
-				tolua_constant(tolua_S, "TradPkware", (lua_Number)lstg::ZipArchive::Encryption::TradPkware);
-			}
-			tolua_endmodule(tolua_S);
-		}
-	tolua_endmodule(tolua_S);
-	std::string typeName = typeid(lstg::ZipArchive).name();
-	g_luaType[typeName] = "lstg.ZipArchive";
-	g_typeCast["ZipArchive"] = "lstg.ZipArchive";
-	return 1;
+	LUA_ENUM_DEF("State");
+	LUA_ENUM_ENTRY("Original", lstg::ZipArchive::State::Original);
+	LUA_ENUM_ENTRY("Current", lstg::ZipArchive::State::Current);
+	LUA_ENUM_END();
+	return 0;
 }
-
-int register_all_x_ZipArchive(lua_State* tolua_S)
+int luaReg_ZipArchive_lstgZipArchiveEncryption(lua_State* lua_S)
 {
-	tolua_open(tolua_S);
-
-	tolua_module(tolua_S, "lstg", 0);
-	tolua_beginmodule(tolua_S, "lstg");
-
-	lua_register_x_ZipArchive_ZipArchive(tolua_S);
-
-	tolua_endmodule(tolua_S);
-	return 1;
+	LUA_ENUM_DEF("Encryption");
+	LUA_ENUM_ENTRY("None", lstg::ZipArchive::Encryption::None);
+	LUA_ENUM_ENTRY("Aes128", lstg::ZipArchive::Encryption::Aes128);
+	LUA_ENUM_ENTRY("Aes192", lstg::ZipArchive::Encryption::Aes192);
+	LUA_ENUM_ENTRY("Aes256", lstg::ZipArchive::Encryption::Aes256);
+	LUA_ENUM_ENTRY("TradPkware", lstg::ZipArchive::Encryption::TradPkware);
+	LUA_ENUM_END();
+	return 0;
 }
-
+int lua_lstg_ZipArchive_addData(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:addData");
+	LUA_TRY_INVOKE_R(2, &lstg::ZipArchive::addData);
+	LUA_INVOKE_FOOTER("2");
+}
+int lua_lstg_ZipArchive_addEntry(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:addEntry");
+	LUA_TRY_INVOKE_R(1, &lstg::ZipArchive::addEntry);
+	LUA_INVOKE_FOOTER("1");
+}
+int lua_lstg_ZipArchive_addFile(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:addFile");
+	LUA_TRY_INVOKE_R(2, &lstg::ZipArchive::addFile);
+	LUA_INVOKE_FOOTER("2");
+}
+int lua_lstg_ZipArchive_addString(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:addString");
+	LUA_TRY_INVOKE_R(2, &lstg::ZipArchive::addString);
+	LUA_INVOKE_FOOTER("2");
+}
+int lua_lstg_ZipArchive_close(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:close");
+	LUA_TRY_INVOKE_R(0, &lstg::ZipArchive::close);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_ZipArchive_deleteEntry(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:deleteEntry");
+	LUA_TRY_INVOKE_R(1, &lstg::ZipArchive::deleteEntry);
+	LUA_INVOKE_FOOTER("1");
+}
+int lua_lstg_ZipArchive_discard(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:discard");
+	LUA_TRY_INVOKE(0, &lstg::ZipArchive::discard);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_ZipArchive_extractEntry(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:extractEntry");
+	LUA_TRY_INVOKE_R(3, static_cast<bool(lstg::ZipArchive::*)(const std::string&, const std::string&, lstg::ZipArchive::State)>(&lstg::ZipArchive::extractEntry));
+	LUA_TRY_INVOKE_R(2, [](lstg::ZipArchive* obj, const std::string& arg0,const std::string& arg1){{return obj->extractEntry(arg0,arg1);}});
+	LUA_INVOKE_FOOTER("2,3");
+}
+int lua_lstg_ZipArchive_getComment(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:getComment");
+	LUA_TRY_INVOKE_R(1, static_cast<std::basic_string<char>(lstg::ZipArchive::*)(lstg::ZipArchive::State)const>(&lstg::ZipArchive::getComment));
+	LUA_TRY_INVOKE_R(0, [](lstg::ZipArchive* obj){{return obj->getComment();}});
+	LUA_INVOKE_FOOTER("0,1");
+}
+int lua_lstg_ZipArchive_getEntries(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:getEntries");
+	LUA_TRY_INVOKE_R(1, static_cast<std::vector<std::basic_string<char>>(lstg::ZipArchive::*)(lstg::ZipArchive::State)const>(&lstg::ZipArchive::getEntries));
+	LUA_TRY_INVOKE_R(0, [](lstg::ZipArchive* obj){{return obj->getEntries();}});
+	LUA_INVOKE_FOOTER("0,1");
+}
+int lua_lstg_ZipArchive_getEntryByIndex(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:getEntryByIndex");
+	LUA_TRY_INVOKE_R(2, static_cast<std::basic_string<char>(lstg::ZipArchive::*)(int64_t, lstg::ZipArchive::State)const>(&lstg::ZipArchive::getEntryByIndex));
+	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj, int64_t arg0){{return obj->getEntryByIndex(std::move(arg0));}});
+	LUA_INVOKE_FOOTER("1,2");
+}
+int lua_lstg_ZipArchive_getEntryComment(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:getEntryComment");
+	LUA_TRY_INVOKE_R(2, static_cast<std::basic_string<char>(lstg::ZipArchive::*)(const std::string&, lstg::ZipArchive::State)const>(&lstg::ZipArchive::getEntryComment));
+	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj, const std::string& arg0){{return obj->getEntryComment(arg0);}});
+	LUA_INVOKE_FOOTER("1,2");
+}
+int lua_lstg_ZipArchive_getEntryCount(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:getEntryCount");
+	LUA_TRY_INVOKE_R(1, static_cast<int64_t(lstg::ZipArchive::*)(lstg::ZipArchive::State)const>(&lstg::ZipArchive::getEntryCount));
+	LUA_TRY_INVOKE_R(0, [](lstg::ZipArchive* obj){{return obj->getEntryCount();}});
+	LUA_INVOKE_FOOTER("0,1");
+}
+int lua_lstg_ZipArchive_getEntryInfo(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:getEntryInfo");
+	LUA_TRY_INVOKE_R(2, static_cast<lstg::ZipArchive::ZipEntryInfo(lstg::ZipArchive::*)(const std::string&, lstg::ZipArchive::State)>(&lstg::ZipArchive::getEntryInfo));
+	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj, const std::string& arg0){{return obj->getEntryInfo(arg0);}});
+	LUA_INVOKE_FOOTER("1,2");
+}
+int lua_lstg_ZipArchive_getMode(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:getMode");
+	LUA_TRY_INVOKE_R(0, &lstg::ZipArchive::getMode);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_ZipArchive_hasEntry(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:hasEntry");
+	LUA_TRY_INVOKE_R(4, static_cast<bool(lstg::ZipArchive::*)(const std::string&, bool, bool, lstg::ZipArchive::State)const>(&lstg::ZipArchive::hasEntry));
+	LUA_TRY_INVOKE_R(3, [](lstg::ZipArchive* obj, const std::string& arg0,bool arg1,bool arg2){{return obj->hasEntry(arg0,std::move(arg1),std::move(arg2));}});
+	LUA_TRY_INVOKE_R(2, [](lstg::ZipArchive* obj, const std::string& arg0,bool arg1){{return obj->hasEntry(arg0,std::move(arg1));}});
+	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj, const std::string& arg0){{return obj->hasEntry(arg0);}});
+	LUA_INVOKE_FOOTER("1,2,3,4");
+}
+int lua_lstg_ZipArchive_isEncrypted(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:isEncrypted");
+	LUA_TRY_INVOKE_R(0, &lstg::ZipArchive::isEncrypted);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_ZipArchive_isEntryCompressionEnabled(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:isEntryCompressionEnabled");
+	LUA_TRY_INVOKE_R(2, static_cast<bool(lstg::ZipArchive::*)(const std::string&, lstg::ZipArchive::State)const>(&lstg::ZipArchive::isEntryCompressionEnabled));
+	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj, const std::string& arg0){{return obj->isEntryCompressionEnabled(arg0);}});
+	LUA_INVOKE_FOOTER("1,2");
+}
+int lua_lstg_ZipArchive_isMutable(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:isMutable");
+	LUA_TRY_INVOKE_R(0, &lstg::ZipArchive::isMutable);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_ZipArchive_isOpen(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:isOpen");
+	LUA_TRY_INVOKE_R(0, &lstg::ZipArchive::isOpen);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_ZipArchive_open(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:open");
+	LUA_TRY_INVOKE_R(2, static_cast<bool(lstg::ZipArchive::*)(lstg::ZipArchive::OpenMode, bool)>(&lstg::ZipArchive::open));
+	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj, lstg::ZipArchive::OpenMode arg0){{return obj->open(std::move(arg0));}});
+	LUA_TRY_INVOKE_R(0, [](lstg::ZipArchive* obj){{return obj->open();}});
+	LUA_INVOKE_FOOTER("0,1,2");
+}
+int lua_lstg_ZipArchive_readEntry(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:readEntry");
+	LUA_TRY_INVOKE_R(2, static_cast<lstg::Buffer*(lstg::ZipArchive::*)(const std::string&, lstg::ZipArchive::State)>(&lstg::ZipArchive::readEntry));
+	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj, const std::string& arg0){{return obj->readEntry(arg0);}});
+	LUA_INVOKE_FOOTER("1,2");
+}
+int lua_lstg_ZipArchive_removeComment(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:removeComment");
+	LUA_TRY_INVOKE_R(0, &lstg::ZipArchive::removeComment);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_ZipArchive_renameEntry(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:renameEntry");
+	LUA_TRY_INVOKE_R(2, &lstg::ZipArchive::renameEntry);
+	LUA_INVOKE_FOOTER("2");
+}
+int lua_lstg_ZipArchive_setComment(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:setComment");
+	LUA_TRY_INVOKE_R(1, &lstg::ZipArchive::setComment);
+	LUA_INVOKE_FOOTER("1");
+}
+int lua_lstg_ZipArchive_setEntryComment(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:setEntryComment");
+	LUA_TRY_INVOKE_R(3, static_cast<bool(lstg::ZipArchive::*)(const std::string&, const std::string&, lstg::ZipArchive::State)const>(&lstg::ZipArchive::setEntryComment));
+	LUA_TRY_INVOKE_R(2, [](lstg::ZipArchive* obj, const std::string& arg0,const std::string& arg1){{return obj->setEntryComment(arg0,arg1);}});
+	LUA_INVOKE_FOOTER("2,3");
+}
+int lua_lstg_ZipArchive_setEntryCompressionEnabled(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:setEntryCompressionEnabled");
+	LUA_TRY_INVOKE_R(3, static_cast<bool(lstg::ZipArchive::*)(const std::string&, bool, lstg::ZipArchive::State)const>(&lstg::ZipArchive::setEntryCompressionEnabled));
+	LUA_TRY_INVOKE_R(2, [](lstg::ZipArchive* obj, const std::string& arg0,bool arg1){{return obj->setEntryCompressionEnabled(arg0,std::move(arg1));}});
+	LUA_INVOKE_FOOTER("2,3");
+}
+int lua_lstg_ZipArchive_unlink(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:unlink");
+	LUA_TRY_INVOKE_R(0, &lstg::ZipArchive::unlink);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_ZipArchive_create(lua_State* lua_S)
+{
+	LUA_SINVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:create");
+	LUA_TRY_INVOKE_R(3, static_cast<lstg::ZipArchive*(*)(const std::string&, const std::string&, lstg::ZipArchive::Encryption)>(&lstg::ZipArchive::create));
+	LUA_TRY_INVOKE_R(2, [](const std::string& arg0,const std::string& arg1){{return lstg::ZipArchive::create(arg0,arg1);}});
+	LUA_TRY_INVOKE_R(1, [](const std::string& arg0){{return lstg::ZipArchive::create(arg0);}});
+	LUA_SINVOKE_FOOTER("1,2,3");
+}
+int lua_lstg_ZipArchive_createFromBuffer(lua_State* lua_S)
+{
+	LUA_SINVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:createFromBuffer");
+	LUA_TRY_INVOKE_R(3, static_cast<lstg::ZipArchive*(*)(lstg::Buffer*, lstg::ZipArchive::OpenMode, bool)>(&lstg::ZipArchive::createFromBuffer));
+	LUA_TRY_INVOKE_R(2, [](lstg::Buffer* arg0,lstg::ZipArchive::OpenMode arg1){{return lstg::ZipArchive::createFromBuffer(arg0,std::move(arg1));}});
+	LUA_TRY_INVOKE_R(1, [](lstg::Buffer* arg0){{return lstg::ZipArchive::createFromBuffer(arg0);}});
+	LUA_SINVOKE_FOOTER("1,2,3");
+}
+int luaReg_ZipArchive_lstgZipArchive(lua_State* lua_S)
+{
+	LUA_ENTRY("lstg");
+	LUA_CLS_DEF_BASE(lstg::ZipArchive, "ZipArchive", "lstg.ZipArchive",
+		cocos2d::Ref, "cc.Ref",
+		nullptr, nullptr);
+	LUA_METHOD("addData", lua_lstg_ZipArchive_addData);
+	LUA_METHOD("addEntry", lua_lstg_ZipArchive_addEntry);
+	LUA_METHOD("addFile", lua_lstg_ZipArchive_addFile);
+	LUA_METHOD("addString", lua_lstg_ZipArchive_addString);
+	LUA_METHOD("close", lua_lstg_ZipArchive_close);
+	LUA_METHOD("deleteEntry", lua_lstg_ZipArchive_deleteEntry);
+	LUA_METHOD("discard", lua_lstg_ZipArchive_discard);
+	LUA_METHOD("extractEntry", lua_lstg_ZipArchive_extractEntry);
+	LUA_METHOD("getComment", lua_lstg_ZipArchive_getComment);
+	LUA_METHOD("getEntries", lua_lstg_ZipArchive_getEntries);
+	LUA_METHOD("getEntryByIndex", lua_lstg_ZipArchive_getEntryByIndex);
+	LUA_METHOD("getEntryComment", lua_lstg_ZipArchive_getEntryComment);
+	LUA_METHOD("getEntryCount", lua_lstg_ZipArchive_getEntryCount);
+	LUA_METHOD("getEntryInfo", lua_lstg_ZipArchive_getEntryInfo);
+	LUA_METHOD("getMode", lua_lstg_ZipArchive_getMode);
+	LUA_METHOD("hasEntry", lua_lstg_ZipArchive_hasEntry);
+	LUA_METHOD("isEncrypted", lua_lstg_ZipArchive_isEncrypted);
+	LUA_METHOD("isEntryCompressionEnabled", lua_lstg_ZipArchive_isEntryCompressionEnabled);
+	LUA_METHOD("isMutable", lua_lstg_ZipArchive_isMutable);
+	LUA_METHOD("isOpen", lua_lstg_ZipArchive_isOpen);
+	LUA_METHOD("open", lua_lstg_ZipArchive_open);
+	LUA_METHOD("readEntry", lua_lstg_ZipArchive_readEntry);
+	LUA_METHOD("removeComment", lua_lstg_ZipArchive_removeComment);
+	LUA_METHOD("renameEntry", lua_lstg_ZipArchive_renameEntry);
+	LUA_METHOD("setComment", lua_lstg_ZipArchive_setComment);
+	LUA_METHOD("setEntryComment", lua_lstg_ZipArchive_setEntryComment);
+	LUA_METHOD("setEntryCompressionEnabled", lua_lstg_ZipArchive_setEntryCompressionEnabled);
+	LUA_METHOD("unlink", lua_lstg_ZipArchive_unlink);
+	LUA_METHOD("create", lua_lstg_ZipArchive_create);
+	LUA_METHOD("createFromBuffer", lua_lstg_ZipArchive_createFromBuffer);
+	luaReg_ZipArchive_lstgZipArchiveEncryption(lua_S);
+	luaReg_ZipArchive_lstgZipArchiveOpenMode(lua_S);
+	luaReg_ZipArchive_lstgZipArchiveState(lua_S);
+	LUA_CLS_END();
+	LUA_ENTRY_END(1);
+	return 0;
+}

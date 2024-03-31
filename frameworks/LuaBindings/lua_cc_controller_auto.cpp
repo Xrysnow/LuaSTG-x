@@ -3,6 +3,7 @@
 #include "base/CCGameController.h"
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
+#include "lua_conversion/lua_conversion.hpp"
 
 int lua_cocos2dx_controller_Controller_receiveExternalKeyEvent(lua_State* tolua_S)
 {
@@ -92,8 +93,8 @@ int lua_cocos2dx_controller_Controller_getDeviceName(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_controller_Controller_getDeviceName'", nullptr);
             return 0;
         }
-        const std::string& ret = cobj->getDeviceName();
-        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
+        const auto& ret = cobj->getDeviceName();
+        lua_pushlstring(tolua_S,ret.data(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Controller:getDeviceName",argc, 0);
@@ -460,9 +461,7 @@ int lua_register_cocos2dx_controller_Controller(lua_State* tolua_S)
         tolua_function(tolua_S,"getControllerByDeviceId", lua_cocos2dx_controller_Controller_getControllerByDeviceId);
         tolua_function(tolua_S,"getControllerByTag", lua_cocos2dx_controller_Controller_getControllerByTag);
     tolua_endmodule(tolua_S);
-    std::string typeName = typeid(cocos2d::Controller).name();
-    g_luaType[typeName] = "cc.Controller";
-    g_typeCast["Controller"] = "cc.Controller";
+    lua::registerLuaType<cocos2d::Controller>("cc.Controller", "Controller");
     return 1;
 }
 
@@ -840,9 +839,7 @@ int lua_register_cocos2dx_controller_EventController(lua_State* tolua_S)
         tolua_function(tolua_S,"getController",lua_cocos2dx_controller_EventController_getController);
         tolua_function(tolua_S,"getKeyCode",lua_cocos2dx_controller_EventController_getKeyCode);
     tolua_endmodule(tolua_S);
-    std::string typeName = typeid(cocos2d::EventController).name();
-    g_luaType[typeName] = "cc.EventController";
-    g_typeCast["EventController"] = "cc.EventController";
+    lua::registerLuaType<cocos2d::EventController>("cc.EventController", "EventController");
     return 1;
 }
 
@@ -894,9 +891,7 @@ int lua_register_cocos2dx_controller_EventListenerController(lua_State* tolua_S)
     tolua_beginmodule(tolua_S,"EventListenerController");
         tolua_function(tolua_S,"create", lua_cocos2dx_controller_EventListenerController_create);
     tolua_endmodule(tolua_S);
-    std::string typeName = typeid(cocos2d::EventListenerController).name();
-    g_luaType[typeName] = "cc.EventListenerController";
-    g_typeCast["EventListenerController"] = "cc.EventListenerController";
+    lua::registerLuaType<cocos2d::EventListenerController>("cc.EventListenerController", "EventListenerController");
     return 1;
 }
 TOLUA_API int register_all_cocos2dx_controller(lua_State* tolua_S)

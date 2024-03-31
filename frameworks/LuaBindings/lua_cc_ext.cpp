@@ -5,8 +5,9 @@
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
 #include "Util/Utility.h"
 #include "Util/UtilLuaConversion.h"
-using lstg::lua::luaval_to_native;
-using lstg::lua::native_to_luaval;
+#include "lua_conversion/lua_conversion.hpp"
+using ::lua::luaval_to_native;
+using ::lua::native_to_luaval;
 
 #ifndef LUA_CHECK_COBJ_TYPE
 	#ifdef LUA_DEBUG
@@ -245,9 +246,7 @@ int lua_register_cc_ext_Texture2D(lua_State* tolua_S)
 	tolua_beginmodule(tolua_S, "Texture2D");
 		tolua_function(tolua_S, "newImage", lua_cc_ext_Texture2D_newImage);
 	tolua_endmodule(tolua_S);
-	std::string typeName = typeid(cocos2d::Texture2D).name();
-	g_luaType[typeName] = "cc.Texture2D";
-	g_typeCast["Texture2D"] = "cc.Texture2D";
+	lua::registerLuaType<cocos2d::Texture2D>("cc.Texture2D", "Texture2D");
 	return 1;
 }
 

@@ -3,8 +3,9 @@
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
 #include "Util/UtilLuaConversion.h"
-using lstg::lua::luaval_to_native;
-using lstg::lua::native_to_luaval;
+#include "lua_conversion/lua_conversion.hpp"
+using ::lua::luaval_to_native;
+using ::lua::native_to_luaval;
 
 #ifndef LUA_CHECK_COBJ_TYPE
 	#ifdef LUA_DEBUG
@@ -379,7 +380,7 @@ int lua_cc_configuration_Configuration_supportsETC(lua_State* tolua_S)
 	const int argc = lua_gettop(tolua_S) - 1;
 	if (argc == 0) {
 		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->supportsETC();
+		auto ret = cobj->supportsETC1();
 		tolua_pushboolean(tolua_S, (bool)ret);
 		return 1;
 	}
@@ -543,9 +544,7 @@ int lua_register_cc_configuration_Configuration(lua_State* tolua_S)
 		tolua_function(tolua_S, "supportsShareableVAO", lua_cc_configuration_Configuration_supportsShareableVAO);
 		tolua_function(tolua_S, "getInstance", lua_cc_configuration_Configuration_getInstance);
 	tolua_endmodule(tolua_S);
-	std::string typeName = typeid(cocos2d::Configuration).name();
-	g_luaType[typeName] = "cc.Configuration";
-	g_typeCast["Configuration"] = "cc.Configuration";
+	lua::registerLuaType<cocos2d::Configuration>("cc.Configuration", "Configuration");
 	return 1;
 }
 

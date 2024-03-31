@@ -1,11 +1,11 @@
 #pragma once
-#ifdef __cplusplus
-extern "C" {
-#endif
-#include "tolua++.h"
-#ifdef __cplusplus
+#include "base/ccConfig.h"
+#include "LuaBindings.h"
+
+extern int luaReg_Latex_lstgLatex(lua_State* lua_S);
+
+inline int luaReg_Latex(lua_State* lua_S)
+{
+	luaReg_Latex_lstgLatex(lua_S);
+	return 0;
 }
-#endif
-
-int register_all_x_Latex(lua_State* tolua_S);
-

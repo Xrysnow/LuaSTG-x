@@ -1,620 +1,323 @@
 #include "lua_WindowHelper_auto.hpp"
-#include "../Classes/WindowHelper.h"
-#include "scripting/lua-bindings/manual/tolua_fix.h"
-#include "scripting/lua-bindings/manual/LuaBasicConversions.h"
-#include "Util/UtilLuaConversion.h"
-using lstg::lua::luaval_to_native;
-using lstg::lua::native_to_luaval;
+#include "WindowHelper.h"
 
-#ifndef LUA_CHECK_COBJ_TYPE
-	#ifdef LUA_DEBUG
-		#define LUA_CHECK_COBJ_TYPE(L, TYPE, NAME) if(!tolua_isusertype((L), 1, (TYPE), 0, nullptr)) { return luaL_error((L), "invalid 'cobj' in '%s': '%s', expects '%s'", NAME, tolua_typename((L), 1), (TYPE)); }
-	#else
-		#define LUA_CHECK_COBJ_TYPE(L, TYPE, NAME) (void)(TYPE);
-	#endif
-#endif
-#ifndef LUA_CHECK_COBJ
-	#ifdef LUA_DEBUG
-		#define LUA_CHECK_COBJ(L, COBJ, NAME) if(!(COBJ)) { return luaL_error((L), "invalid 'cobj' in '%s'", NAME); }
-	#else
-		#define LUA_CHECK_COBJ(L, COBJ, NAME)
-	#endif
-#endif
-#ifndef LUA_CHECK_PARAMETER
-	#define LUA_CHECK_PARAMETER(L, OK, NAME) if(!(OK)) { return luaL_error((L), "invalid arguments in '%s'", NAME); }
-#endif
-#ifndef LUA_PARAMETER_ERROR
-	#define LUA_PARAMETER_ERROR(L, NAME, ARGC, EXPECT) return luaL_error((L), "wrong number of arguments in '%s': %d, expects %s", NAME, (ARGC), EXPECT);
-#endif
-
-int lua_x_WindowHelper_WindowHelper_getClipboardString(lua_State* tolua_S)
+int luaReg_WindowHelper_lstgWindowHelperOperation(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelper";
-	constexpr auto LUA_FNAME = "lstg.WindowHelper:getClipboardString";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelper*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->getClipboardString();
-		lua_pushlstring(tolua_S, ret.c_str(), ret.length());
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_WindowHelper_WindowHelper_getGamma(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelper";
-	constexpr auto LUA_FNAME = "lstg.WindowHelper:getGamma";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelper*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->getGamma();
-		tolua_pushnumber(tolua_S, (lua_Number)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_WindowHelper_WindowHelper_getInstance(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelper";
-	constexpr auto LUA_FNAME = "lstg.WindowHelper:getInstance";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = lstg::WindowHelper::getInstance();
-		native_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_WindowHelper_WindowHelper_hint(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelper";
-	constexpr auto LUA_FNAME = "lstg.WindowHelper:hint";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelper*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 2) {
-		int arg0;
-		int arg1;
-		ok &= luaval_to_int32(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_int32(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->hint(arg0, arg1);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2");
-}
-int lua_x_WindowHelper_WindowHelper_isVsync(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelper";
-	constexpr auto LUA_FNAME = "lstg.WindowHelper:isVsync";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelper*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->isVsync();
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_WindowHelper_WindowHelper_operate(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelper";
-	constexpr auto LUA_FNAME = "lstg.WindowHelper:operate";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelper*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		lstg::WindowHelper::Operation arg0;
-		ok &= luaval_to_native(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->operate(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
-}
-int lua_x_WindowHelper_WindowHelper_resetHint(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelper";
-	constexpr auto LUA_FNAME = "lstg.WindowHelper:resetHint";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelper*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->resetHint();
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_WindowHelper_WindowHelper_setClipboardString(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelper";
-	constexpr auto LUA_FNAME = "lstg.WindowHelper:setClipboardString";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelper*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		std::string arg0;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->setClipboardString(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
-}
-int lua_x_WindowHelper_WindowHelper_setGamma(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelper";
-	constexpr auto LUA_FNAME = "lstg.WindowHelper:setGamma";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelper*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		double arg0;
-		ok &= luaval_to_number(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->setGamma(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
-}
-int lua_x_WindowHelper_WindowHelper_setVsync(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelper";
-	constexpr auto LUA_FNAME = "lstg.WindowHelper:setVsync";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelper*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		bool arg0;
-		ok &= luaval_to_boolean(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->setVsync(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
-}
-static int lua_x_WindowHelper_WindowHelper_finalize(lua_State* tolua_S)
-{
+	LUA_ENUM_DEF("Operation");
+	LUA_ENUM_ENTRY("SHOW", lstg::WindowHelper::Operation::SHOW);
+	LUA_ENUM_ENTRY("HIDE", lstg::WindowHelper::Operation::HIDE);
+	LUA_ENUM_ENTRY("FOCUS", lstg::WindowHelper::Operation::FOCUS);
+	LUA_ENUM_ENTRY("ICONIFY", lstg::WindowHelper::Operation::ICONIFY);
+	LUA_ENUM_ENTRY("RESTORE", lstg::WindowHelper::Operation::RESTORE);
+	LUA_ENUM_ENTRY("MAXIMIZE", lstg::WindowHelper::Operation::MAXIMIZE);
+	LUA_ENUM_END();
 	return 0;
 }
-
-int lua_register_x_WindowHelper_WindowHelper(lua_State* tolua_S)
+int luaReg_WindowHelper_lstgWindowHelperCursorType(lua_State* lua_S)
 {
-	tolua_usertype(tolua_S, "lstg.WindowHelper");
-	tolua_cclass(tolua_S, "WindowHelper", "lstg.WindowHelper", "cc.Ref", nullptr);
-
-	tolua_beginmodule(tolua_S, "WindowHelper");
-		tolua_function(tolua_S, "getClipboardString", lua_x_WindowHelper_WindowHelper_getClipboardString);
-		tolua_function(tolua_S, "getGamma", lua_x_WindowHelper_WindowHelper_getGamma);
-		tolua_function(tolua_S, "hint", lua_x_WindowHelper_WindowHelper_hint);
-		tolua_function(tolua_S, "isVsync", lua_x_WindowHelper_WindowHelper_isVsync);
-		tolua_function(tolua_S, "operate", lua_x_WindowHelper_WindowHelper_operate);
-		tolua_function(tolua_S, "resetHint", lua_x_WindowHelper_WindowHelper_resetHint);
-		tolua_function(tolua_S, "setClipboardString", lua_x_WindowHelper_WindowHelper_setClipboardString);
-		tolua_function(tolua_S, "setGamma", lua_x_WindowHelper_WindowHelper_setGamma);
-		tolua_function(tolua_S, "setVsync", lua_x_WindowHelper_WindowHelper_setVsync);
-		tolua_function(tolua_S, "getInstance", lua_x_WindowHelper_WindowHelper_getInstance);
-		{
-			tolua_module(tolua_S, "Operation", 0);
-			tolua_beginmodule(tolua_S, "Operation");
-			{
-				tolua_constant(tolua_S, "SHOW", (lua_Number)lstg::WindowHelper::Operation::SHOW);
-				tolua_constant(tolua_S, "HIDE", (lua_Number)lstg::WindowHelper::Operation::HIDE);
-				tolua_constant(tolua_S, "FOCUS", (lua_Number)lstg::WindowHelper::Operation::FOCUS);
-				tolua_constant(tolua_S, "ICONIFY", (lua_Number)lstg::WindowHelper::Operation::ICONIFY);
-				tolua_constant(tolua_S, "RESTORE", (lua_Number)lstg::WindowHelper::Operation::RESTORE);
-				tolua_constant(tolua_S, "MAXIMIZE", (lua_Number)lstg::WindowHelper::Operation::MAXIMIZE);
-			}
-			tolua_endmodule(tolua_S);
-		}
-		{
-			tolua_module(tolua_S, "CursorType", 0);
-			tolua_beginmodule(tolua_S, "CursorType");
-			{
-				tolua_constant(tolua_S, "ARROW", (lua_Number)lstg::WindowHelper::CursorType::ARROW);
-				tolua_constant(tolua_S, "IBEAM", (lua_Number)lstg::WindowHelper::CursorType::IBEAM);
-				tolua_constant(tolua_S, "CROSSHAIR", (lua_Number)lstg::WindowHelper::CursorType::CROSSHAIR);
-				tolua_constant(tolua_S, "HAND", (lua_Number)lstg::WindowHelper::CursorType::HAND);
-				tolua_constant(tolua_S, "HRESIZE", (lua_Number)lstg::WindowHelper::CursorType::HRESIZE);
-				tolua_constant(tolua_S, "VRESIZE", (lua_Number)lstg::WindowHelper::CursorType::VRESIZE);
-				tolua_constant(tolua_S, "CUSTOM", (lua_Number)lstg::WindowHelper::CursorType::CUSTOM);
-			}
-			tolua_endmodule(tolua_S);
-		}
-	tolua_endmodule(tolua_S);
-	std::string typeName = typeid(lstg::WindowHelper).name();
-	g_luaType[typeName] = "lstg.WindowHelper";
-	g_typeCast["WindowHelper"] = "lstg.WindowHelper";
-	return 1;
-}
-
-#ifdef CC_PLATFORM_PC
-int lua_x_WindowHelper_WindowHelperDesktop_getInstance(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelperDesktop";
-	constexpr auto LUA_FNAME = "lstg.WindowHelperDesktop:getInstance";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = lstg::WindowHelperDesktop::getInstance();
-		native_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_WindowHelper_WindowHelperDesktop_getPosition(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelperDesktop";
-	constexpr auto LUA_FNAME = "lstg.WindowHelperDesktop:getPosition";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelperDesktop*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->getPosition();
-		vec2_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_WindowHelper_WindowHelperDesktop_getSize(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelperDesktop";
-	constexpr auto LUA_FNAME = "lstg.WindowHelperDesktop:getSize";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelperDesktop*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->getSize();
-		size_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_WindowHelper_WindowHelperDesktop_getTitle(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelperDesktop";
-	constexpr auto LUA_FNAME = "lstg.WindowHelperDesktop:getTitle";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelperDesktop*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->getTitle();
-		lua_pushlstring(tolua_S, ret.c_str(), ret.length());
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_WindowHelper_WindowHelperDesktop_isCursorVisible(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelperDesktop";
-	constexpr auto LUA_FNAME = "lstg.WindowHelperDesktop:isCursorVisible";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelperDesktop*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->isCursorVisible();
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_WindowHelper_WindowHelperDesktop_isFullscreen(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelperDesktop";
-	constexpr auto LUA_FNAME = "lstg.WindowHelperDesktop:isFullscreen";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelperDesktop*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->isFullscreen();
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_WindowHelper_WindowHelperDesktop_isVisible(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelperDesktop";
-	constexpr auto LUA_FNAME = "lstg.WindowHelperDesktop:isVisible";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelperDesktop*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->isVisible();
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_WindowHelper_WindowHelperDesktop_moveToCenter(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelperDesktop";
-	constexpr auto LUA_FNAME = "lstg.WindowHelperDesktop:moveToCenter";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelperDesktop*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->moveToCenter();
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_WindowHelper_WindowHelperDesktop_setCursorVisible(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelperDesktop";
-	constexpr auto LUA_FNAME = "lstg.WindowHelperDesktop:setCursorVisible";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelperDesktop*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		bool arg0;
-		ok &= luaval_to_boolean(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->setCursorVisible(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
-}
-int lua_x_WindowHelper_WindowHelperDesktop_setCustomCursor(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelperDesktop";
-	constexpr auto LUA_FNAME = "lstg.WindowHelperDesktop:setCustomCursor";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelperDesktop*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 2) {
-		std::string arg0;
-		cocos2d::Vec2 arg1;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_vec2(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->setCustomCursor(arg0, arg1);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2");
-}
-int lua_x_WindowHelper_WindowHelperDesktop_setDefaultCursor(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelperDesktop";
-	constexpr auto LUA_FNAME = "lstg.WindowHelperDesktop:setDefaultCursor";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelperDesktop*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->setDefaultCursor();
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_WindowHelper_WindowHelperDesktop_setFullscreen(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelperDesktop";
-	constexpr auto LUA_FNAME = "lstg.WindowHelperDesktop:setFullscreen";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelperDesktop*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->setFullscreen();
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-int lua_x_WindowHelper_WindowHelperDesktop_setPosition(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelperDesktop";
-	constexpr auto LUA_FNAME = "lstg.WindowHelperDesktop:setPosition";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelperDesktop*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		cocos2d::Vec2 arg0;
-		ok &= luaval_to_vec2(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->setPosition(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
-}
-int lua_x_WindowHelper_WindowHelperDesktop_setSize(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelperDesktop";
-	constexpr auto LUA_FNAME = "lstg.WindowHelperDesktop:setSize";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelperDesktop*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		cocos2d::Size arg0;
-		ok &= luaval_to_size(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->setSize(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
-}
-int lua_x_WindowHelper_WindowHelperDesktop_setStandardCursor(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelperDesktop";
-	constexpr auto LUA_FNAME = "lstg.WindowHelperDesktop:setStandardCursor";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelperDesktop*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		lstg::WindowHelper::CursorType arg0;
-		ok &= luaval_to_native(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->setStandardCursor(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
-}
-int lua_x_WindowHelper_WindowHelperDesktop_setTitle(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelperDesktop";
-	constexpr auto LUA_FNAME = "lstg.WindowHelperDesktop:setTitle";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelperDesktop*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		std::string arg0;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->setTitle(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
-}
-int lua_x_WindowHelper_WindowHelperDesktop_setVisible(lua_State* tolua_S)
-{
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.WindowHelperDesktop";
-	constexpr auto LUA_FNAME = "lstg.WindowHelperDesktop:setVisible";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::WindowHelperDesktop*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		bool arg0;
-		ok &= luaval_to_boolean(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->setVisible(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
-}
-static int lua_x_WindowHelper_WindowHelperDesktop_finalize(lua_State* tolua_S)
-{
+	LUA_ENUM_DEF("CursorType");
+	LUA_ENUM_ENTRY("ARROW", lstg::WindowHelper::CursorType::ARROW);
+	LUA_ENUM_ENTRY("IBEAM", lstg::WindowHelper::CursorType::IBEAM);
+	LUA_ENUM_ENTRY("CROSSHAIR", lstg::WindowHelper::CursorType::CROSSHAIR);
+	LUA_ENUM_ENTRY("HAND", lstg::WindowHelper::CursorType::HAND);
+	LUA_ENUM_ENTRY("HRESIZE", lstg::WindowHelper::CursorType::HRESIZE);
+	LUA_ENUM_ENTRY("VRESIZE", lstg::WindowHelper::CursorType::VRESIZE);
+	LUA_ENUM_ENTRY("CUSTOM", lstg::WindowHelper::CursorType::CUSTOM);
+	LUA_ENUM_END();
 	return 0;
 }
-
-int lua_register_x_WindowHelper_WindowHelperDesktop(lua_State* tolua_S)
+int lua_lstg_WindowHelper_getClipboardString(lua_State* lua_S)
 {
-	tolua_usertype(tolua_S, "lstg.WindowHelperDesktop");
-	tolua_cclass(tolua_S, "WindowHelperDesktop", "lstg.WindowHelperDesktop", "lstg.WindowHelper", nullptr);
-
-	tolua_beginmodule(tolua_S, "WindowHelperDesktop");
-		tolua_function(tolua_S, "getPosition", lua_x_WindowHelper_WindowHelperDesktop_getPosition);
-		tolua_function(tolua_S, "getSize", lua_x_WindowHelper_WindowHelperDesktop_getSize);
-		tolua_function(tolua_S, "getTitle", lua_x_WindowHelper_WindowHelperDesktop_getTitle);
-		tolua_function(tolua_S, "isCursorVisible", lua_x_WindowHelper_WindowHelperDesktop_isCursorVisible);
-		tolua_function(tolua_S, "isFullscreen", lua_x_WindowHelper_WindowHelperDesktop_isFullscreen);
-		tolua_function(tolua_S, "isVisible", lua_x_WindowHelper_WindowHelperDesktop_isVisible);
-		tolua_function(tolua_S, "moveToCenter", lua_x_WindowHelper_WindowHelperDesktop_moveToCenter);
-		tolua_function(tolua_S, "setCursorVisible", lua_x_WindowHelper_WindowHelperDesktop_setCursorVisible);
-		tolua_function(tolua_S, "setCustomCursor", lua_x_WindowHelper_WindowHelperDesktop_setCustomCursor);
-		tolua_function(tolua_S, "setDefaultCursor", lua_x_WindowHelper_WindowHelperDesktop_setDefaultCursor);
-		tolua_function(tolua_S, "setFullscreen", lua_x_WindowHelper_WindowHelperDesktop_setFullscreen);
-		tolua_function(tolua_S, "setPosition", lua_x_WindowHelper_WindowHelperDesktop_setPosition);
-		tolua_function(tolua_S, "setSize", lua_x_WindowHelper_WindowHelperDesktop_setSize);
-		tolua_function(tolua_S, "setStandardCursor", lua_x_WindowHelper_WindowHelperDesktop_setStandardCursor);
-		tolua_function(tolua_S, "setTitle", lua_x_WindowHelper_WindowHelperDesktop_setTitle);
-		tolua_function(tolua_S, "setVisible", lua_x_WindowHelper_WindowHelperDesktop_setVisible);
-		tolua_function(tolua_S, "getInstance", lua_x_WindowHelper_WindowHelperDesktop_getInstance);
-	tolua_endmodule(tolua_S);
-	std::string typeName = typeid(lstg::WindowHelperDesktop).name();
-	g_luaType[typeName] = "lstg.WindowHelperDesktop";
-	g_typeCast["WindowHelperDesktop"] = "lstg.WindowHelperDesktop";
-	return 1;
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:getClipboardString");
+	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::getClipboardString);
+	LUA_INVOKE_FOOTER("0");
 }
-#endif
-
-int register_all_x_WindowHelper(lua_State* tolua_S)
+int lua_lstg_WindowHelper_getDpiScale(lua_State* lua_S)
 {
-	tolua_open(tolua_S);
-
-	tolua_module(tolua_S, "lstg", 0);
-	tolua_beginmodule(tolua_S, "lstg");
-
-	lua_register_x_WindowHelper_WindowHelper(tolua_S);
-#ifdef CC_PLATFORM_PC
-	lua_register_x_WindowHelper_WindowHelperDesktop(tolua_S);
-#endif
-
-	tolua_endmodule(tolua_S);
-	return 1;
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:getDpiScale");
+	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::getDpiScale);
+	LUA_INVOKE_FOOTER("0");
 }
-
+int lua_lstg_WindowHelper_getPosition(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:getPosition");
+	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::getPosition);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_WindowHelper_getSize(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:getSize");
+	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::getSize);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_WindowHelper_getTitle(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:getTitle");
+	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::getTitle);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_WindowHelper_hint(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:hint");
+	LUA_TRY_INVOKE(2, &lstg::WindowHelper::hint);
+	LUA_INVOKE_FOOTER("2");
+}
+int lua_lstg_WindowHelper_isCursorVisible(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:isCursorVisible");
+	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::isCursorVisible);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_WindowHelper_isFullscreen(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:isFullscreen");
+	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::isFullscreen);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_WindowHelper_isVisible(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:isVisible");
+	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::isVisible);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_WindowHelper_isVsync(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:isVsync");
+	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::isVsync);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_WindowHelper_moveToCenter(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:moveToCenter");
+	LUA_TRY_INVOKE(0, &lstg::WindowHelper::moveToCenter);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_WindowHelper_operate(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:operate");
+	LUA_TRY_INVOKE(1, &lstg::WindowHelper::operate);
+	LUA_INVOKE_FOOTER("1");
+}
+int lua_lstg_WindowHelper_resetHint(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:resetHint");
+	LUA_TRY_INVOKE(0, &lstg::WindowHelper::resetHint);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_WindowHelper_setClipboardString(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:setClipboardString");
+	LUA_TRY_INVOKE(1, &lstg::WindowHelper::setClipboardString);
+	LUA_INVOKE_FOOTER("1");
+}
+int lua_lstg_WindowHelper_setCursorVisible(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:setCursorVisible");
+	LUA_TRY_INVOKE(1, &lstg::WindowHelper::setCursorVisible);
+	LUA_INVOKE_FOOTER("1");
+}
+int lua_lstg_WindowHelper_setCustomCursor(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:setCustomCursor");
+	LUA_TRY_INVOKE(2, &lstg::WindowHelper::setCustomCursor);
+	LUA_INVOKE_FOOTER("2");
+}
+int lua_lstg_WindowHelper_setDefaultCursor(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:setDefaultCursor");
+	LUA_TRY_INVOKE(0, &lstg::WindowHelper::setDefaultCursor);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_WindowHelper_setFullscreen(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:setFullscreen");
+	LUA_TRY_INVOKE(0, &lstg::WindowHelper::setFullscreen);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_WindowHelper_setPosition(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:setPosition");
+	LUA_TRY_INVOKE(1, &lstg::WindowHelper::setPosition);
+	LUA_INVOKE_FOOTER("1");
+}
+int lua_lstg_WindowHelper_setSize(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:setSize");
+	LUA_TRY_INVOKE(1, &lstg::WindowHelper::setSize);
+	LUA_INVOKE_FOOTER("1");
+}
+int lua_lstg_WindowHelper_setStandardCursor(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:setStandardCursor");
+	LUA_TRY_INVOKE(1, &lstg::WindowHelper::setStandardCursor);
+	LUA_INVOKE_FOOTER("1");
+}
+int lua_lstg_WindowHelper_setTitle(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:setTitle");
+	LUA_TRY_INVOKE(1, &lstg::WindowHelper::setTitle);
+	LUA_INVOKE_FOOTER("1");
+}
+int lua_lstg_WindowHelper_setVisible(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:setVisible");
+	LUA_TRY_INVOKE(1, &lstg::WindowHelper::setVisible);
+	LUA_INVOKE_FOOTER("1");
+}
+int lua_lstg_WindowHelper_setVsync(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:setVsync");
+	LUA_TRY_INVOKE(1, &lstg::WindowHelper::setVsync);
+	LUA_INVOKE_FOOTER("1");
+}
+int lua_lstg_WindowHelper_getInstance(lua_State* lua_S)
+{
+	LUA_SINVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:getInstance");
+	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::getInstance);
+	LUA_SINVOKE_FOOTER("0");
+}
+int luaReg_WindowHelper_lstgWindowHelper(lua_State* lua_S)
+{
+	LUA_ENTRY("lstg");
+	LUA_CLS_DEF_BASE(lstg::WindowHelper, "WindowHelper", "lstg.WindowHelper",
+		cocos2d::Ref, "cc.Ref",
+		nullptr, nullptr);
+	LUA_METHOD("getClipboardString", lua_lstg_WindowHelper_getClipboardString);
+	LUA_METHOD("getDpiScale", lua_lstg_WindowHelper_getDpiScale);
+	LUA_METHOD("getPosition", lua_lstg_WindowHelper_getPosition);
+	LUA_METHOD("getSize", lua_lstg_WindowHelper_getSize);
+	LUA_METHOD("getTitle", lua_lstg_WindowHelper_getTitle);
+	LUA_METHOD("hint", lua_lstg_WindowHelper_hint);
+	LUA_METHOD("isCursorVisible", lua_lstg_WindowHelper_isCursorVisible);
+	LUA_METHOD("isFullscreen", lua_lstg_WindowHelper_isFullscreen);
+	LUA_METHOD("isVisible", lua_lstg_WindowHelper_isVisible);
+	LUA_METHOD("isVsync", lua_lstg_WindowHelper_isVsync);
+	LUA_METHOD("moveToCenter", lua_lstg_WindowHelper_moveToCenter);
+	LUA_METHOD("operate", lua_lstg_WindowHelper_operate);
+	LUA_METHOD("resetHint", lua_lstg_WindowHelper_resetHint);
+	LUA_METHOD("setClipboardString", lua_lstg_WindowHelper_setClipboardString);
+	LUA_METHOD("setCursorVisible", lua_lstg_WindowHelper_setCursorVisible);
+	LUA_METHOD("setCustomCursor", lua_lstg_WindowHelper_setCustomCursor);
+	LUA_METHOD("setDefaultCursor", lua_lstg_WindowHelper_setDefaultCursor);
+	LUA_METHOD("setFullscreen", lua_lstg_WindowHelper_setFullscreen);
+	LUA_METHOD("setPosition", lua_lstg_WindowHelper_setPosition);
+	LUA_METHOD("setSize", lua_lstg_WindowHelper_setSize);
+	LUA_METHOD("setStandardCursor", lua_lstg_WindowHelper_setStandardCursor);
+	LUA_METHOD("setTitle", lua_lstg_WindowHelper_setTitle);
+	LUA_METHOD("setVisible", lua_lstg_WindowHelper_setVisible);
+	LUA_METHOD("setVsync", lua_lstg_WindowHelper_setVsync);
+	LUA_METHOD("getInstance", lua_lstg_WindowHelper_getInstance);
+	luaReg_WindowHelper_lstgWindowHelperCursorType(lua_S);
+	luaReg_WindowHelper_lstgWindowHelperOperation(lua_S);
+	LUA_CLS_END();
+	LUA_ENTRY_END(1);
+	return 0;
+}
+int lua_lstg_MonitorHelper_getContentScale(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.MonitorHelper", "lstg.MonitorHelper:getContentScale");
+	LUA_TRY_INVOKE_R(0, &lstg::MonitorHelper::getContentScale);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_MonitorHelper_getCurrentVideoMode(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.MonitorHelper", "lstg.MonitorHelper:getCurrentVideoMode");
+	LUA_TRY_INVOKE_R(0, &lstg::MonitorHelper::getCurrentVideoMode);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_MonitorHelper_getGammaRamp(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.MonitorHelper", "lstg.MonitorHelper:getGammaRamp");
+	LUA_TRY_INVOKE_R(0, &lstg::MonitorHelper::getGammaRamp);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_MonitorHelper_getName(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.MonitorHelper", "lstg.MonitorHelper:getName");
+	LUA_TRY_INVOKE_R(0, &lstg::MonitorHelper::getName);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_MonitorHelper_getPhysicalSize(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.MonitorHelper", "lstg.MonitorHelper:getPhysicalSize");
+	LUA_TRY_INVOKE_R(0, &lstg::MonitorHelper::getPhysicalSize);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_MonitorHelper_getPosition(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.MonitorHelper", "lstg.MonitorHelper:getPosition");
+	LUA_TRY_INVOKE_R(0, &lstg::MonitorHelper::getPosition);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_MonitorHelper_getVideoModes(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.MonitorHelper", "lstg.MonitorHelper:getVideoModes");
+	LUA_TRY_INVOKE_R(0, &lstg::MonitorHelper::getVideoModes);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_MonitorHelper_getWorkarea(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.MonitorHelper", "lstg.MonitorHelper:getWorkarea");
+	LUA_TRY_INVOKE_R(0, &lstg::MonitorHelper::getWorkarea);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_MonitorHelper_isValid(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.MonitorHelper", "lstg.MonitorHelper:isValid");
+	LUA_TRY_INVOKE_R(0, &lstg::MonitorHelper::isValid);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_MonitorHelper_setGamma(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.MonitorHelper", "lstg.MonitorHelper:setGamma");
+	LUA_TRY_INVOKE(1, &lstg::MonitorHelper::setGamma);
+	LUA_INVOKE_FOOTER("1");
+}
+int lua_lstg_MonitorHelper_setGammaRamp(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.MonitorHelper", "lstg.MonitorHelper:setGammaRamp");
+	LUA_TRY_INVOKE(1, &lstg::MonitorHelper::setGammaRamp);
+	LUA_INVOKE_FOOTER("1");
+}
+int lua_lstg_MonitorHelper_getCurrentMonitor(lua_State* lua_S)
+{
+	LUA_SINVOKE_HEADER("lstg.MonitorHelper", "lstg.MonitorHelper:getCurrentMonitor");
+	LUA_TRY_INVOKE_R(0, &lstg::MonitorHelper::getCurrentMonitor);
+	LUA_SINVOKE_FOOTER("0");
+}
+int lua_lstg_MonitorHelper_getMonitors(lua_State* lua_S)
+{
+	LUA_SINVOKE_HEADER("lstg.MonitorHelper", "lstg.MonitorHelper:getMonitors");
+	LUA_TRY_INVOKE_R(0, &lstg::MonitorHelper::getMonitors);
+	LUA_SINVOKE_FOOTER("0");
+}
+int lua_lstg_MonitorHelper_getPrimaryMonitor(lua_State* lua_S)
+{
+	LUA_SINVOKE_HEADER("lstg.MonitorHelper", "lstg.MonitorHelper:getPrimaryMonitor");
+	LUA_TRY_INVOKE_R(0, &lstg::MonitorHelper::getPrimaryMonitor);
+	LUA_SINVOKE_FOOTER("0");
+}
+int luaReg_WindowHelper_lstgMonitorHelper(lua_State* lua_S)
+{
+	LUA_ENTRY("lstg");
+	LUA_CLS_DEF_BASE(lstg::MonitorHelper, "MonitorHelper", "lstg.MonitorHelper",
+		cocos2d::Ref, "cc.Ref",
+		nullptr, nullptr);
+	LUA_METHOD("getContentScale", lua_lstg_MonitorHelper_getContentScale);
+	LUA_METHOD("getCurrentVideoMode", lua_lstg_MonitorHelper_getCurrentVideoMode);
+	LUA_METHOD("getGammaRamp", lua_lstg_MonitorHelper_getGammaRamp);
+	LUA_METHOD("getName", lua_lstg_MonitorHelper_getName);
+	LUA_METHOD("getPhysicalSize", lua_lstg_MonitorHelper_getPhysicalSize);
+	LUA_METHOD("getPosition", lua_lstg_MonitorHelper_getPosition);
+	LUA_METHOD("getVideoModes", lua_lstg_MonitorHelper_getVideoModes);
+	LUA_METHOD("getWorkarea", lua_lstg_MonitorHelper_getWorkarea);
+	LUA_METHOD("isValid", lua_lstg_MonitorHelper_isValid);
+	LUA_METHOD("setGamma", lua_lstg_MonitorHelper_setGamma);
+	LUA_METHOD("setGammaRamp", lua_lstg_MonitorHelper_setGammaRamp);
+	LUA_METHOD("getCurrentMonitor", lua_lstg_MonitorHelper_getCurrentMonitor);
+	LUA_METHOD("getMonitors", lua_lstg_MonitorHelper_getMonitors);
+	LUA_METHOD("getPrimaryMonitor", lua_lstg_MonitorHelper_getPrimaryMonitor);
+	LUA_CLS_END();
+	LUA_ENTRY_END(1);
+	return 0;
+}

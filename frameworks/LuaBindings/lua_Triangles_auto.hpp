@@ -1,11 +1,11 @@
 #pragma once
-#ifdef __cplusplus
-extern "C" {
-#endif
-#include "tolua++.h"
-#ifdef __cplusplus
+#include "base/ccConfig.h"
+#include "LuaBindings.h"
+
+extern int luaReg_Triangles_lstgTriangles(lua_State* lua_S);
+
+inline int luaReg_Triangles(lua_State* lua_S)
+{
+	luaReg_Triangles_lstgTriangles(lua_S);
+	return 0;
 }
-#endif
-
-int register_all_x_Triangles(lua_State* tolua_S);
-

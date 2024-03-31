@@ -1,14 +1,15 @@
 ﻿#include "lua_cc_fix.h"
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
-#include "scripting/lua-bindings/manual/cocos2d/LuaScriptHandlerMgr.h"
+//#include "scripting/lua-bindings/manual/cocos2d/LuaScriptHandlerMgr.h"
 #include "scripting/lua-bindings/manual/CCLuaValue.h"
 #include "scripting/lua-bindings/manual/CCLuaEngine.h"
 #include "cocos2d.h"
 #include "ui/UIWidget.h"
 #include "Util/UtilLuaConversion.h"
-using lstg::lua::luaval_to_native;
-using lstg::lua::native_to_luaval;
+#include "lua_conversion/lua_conversion.hpp"
+using ::lua::luaval_to_native;
+using ::lua::native_to_luaval;
 
 #ifndef LUA_CHECK_COBJ_TYPE
 #ifdef LUA_DEBUG
@@ -65,7 +66,7 @@ int lua_cocos2dx_ui_Widget_hitTest00(lua_State* tolua_S)
 		tolua_pushboolean(tolua_S, (bool)ret);
 		return 1;
 	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2 to 3");
+	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2,3");
 }
 
 int lua_cocos2dx_EventDispatcher_addCustomEventListener00(lua_State* tolua_S)
@@ -95,9 +96,15 @@ int lua_cocos2dx_EventDispatcher_addCustomEventListener00(lua_State* tolua_S)
 	}
 	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2");
 }
-
+#ifdef CC_VERSION
+extern int lua_ax_base_GLViewImpl_createWithRect(lua_State* tolua_S);
+extern int lua_ax_base_GLViewImpl_create(lua_State* tolua_S);
+#define lua_cocos2dx_GLViewImpl_createWithRect lua_ax_base_GLViewImpl_createWithRect
+#define lua_cocos2dx_GLViewImpl_create lua_ax_base_GLViewImpl_create
+#else
 extern int lua_cocos2dx_GLViewImpl_createWithRect(lua_State* tolua_S);
 extern int lua_cocos2dx_GLViewImpl_create(lua_State* tolua_S);
+#endif // CC_VERSION
 int lua_cocos2dx_GLViewImpl_createWithRect00(lua_State* tolua_S)
 {
 #ifdef CC_PLATFORM_PC
@@ -147,6 +154,15 @@ int lua_cocos2dx_GLViewImpl_create00(lua_State* tolua_S)
 	return lua_cocos2dx_GLViewImpl_create(tolua_S);
 }
 
+#ifdef CC_VERSION
+int lua_cc_FileUtils_getSuitableFOpen(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("cc.FileUtils", "cc.FileUtils:getSuitableFOpen");
+	LUA_TRY_INVOKE_R(1, &cocos2d::FileUtils::getSuitableFOpen);
+	LUA_INVOKE_FOOTER("1");
+}
+#endif
+
 int register_all_cocos2dx_fix(lua_State* L)
 {
 	if (nullptr == L)
@@ -176,6 +192,16 @@ int register_all_cocos2dx_fix(lua_State* L)
 		tolua_function(L, "create", lua_cocos2dx_GLViewImpl_create00);
 	}
 	lua_pop(L, 1);
+
+#ifdef CC_VERSION
+	lua_pushstring(L, "cc.FileUtils");
+	lua_rawget(L, LUA_REGISTRYINDEX);
+	if (lua_istable(L, -1))
+	{
+		tolua_function(L, "getSuitableFOpen", lua_cc_FileUtils_getSuitableFOpen);
+	}
+	lua_pop(L, 1);
+#endif
 
 	return 0;
 }

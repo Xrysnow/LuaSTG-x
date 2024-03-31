@@ -1,11 +1,11 @@
 #pragma once
-#ifdef __cplusplus
-extern "C" {
-#endif
-#include "tolua++.h"
-#ifdef __cplusplus
+#include "base/ccConfig.h"
+#include "LuaBindings.h"
+
+extern int luaReg_StopWatch_lstgStopWatch(lua_State* lua_S);
+
+inline int luaReg_StopWatch(lua_State* lua_S)
+{
+	luaReg_StopWatch_lstgStopWatch(lua_S);
+	return 0;
 }
-#endif
-
-int register_all_x_StopWatch(lua_State* tolua_S);
-

@@ -1,11 +1,15 @@
 #pragma once
-#ifdef __cplusplus
-extern "C" {
-#endif
-#include "tolua++.h"
-#ifdef __cplusplus
+#include "base/ccConfig.h"
+#include "LuaBindings.h"
+
+extern int luaReg_Stream_lstgStream(lua_State* lua_S);
+extern int luaReg_Stream_lstgStreamFile(lua_State* lua_S);
+extern int luaReg_Stream_lstgStreamMemory(lua_State* lua_S);
+
+inline int luaReg_Stream(lua_State* lua_S)
+{
+	luaReg_Stream_lstgStream(lua_S);
+	luaReg_Stream_lstgStreamFile(lua_S);
+	luaReg_Stream_lstgStreamMemory(lua_S);
+	return 0;
 }
-#endif
-
-int register_all_x_Stream(lua_State* tolua_S);
-

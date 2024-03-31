@@ -1,11 +1,13 @@
 #pragma once
-#ifdef __cplusplus
-extern "C" {
-#endif
-#include "tolua++.h"
-#ifdef __cplusplus
+#include "base/ccConfig.h"
+#include "LuaBindings.h"
+
+extern int luaReg_WindowHelper_lstgWindowHelper(lua_State* lua_S);
+extern int luaReg_WindowHelper_lstgMonitorHelper(lua_State* lua_S);
+
+inline int luaReg_WindowHelper(lua_State* lua_S)
+{
+	luaReg_WindowHelper_lstgWindowHelper(lua_S);
+	luaReg_WindowHelper_lstgMonitorHelper(lua_S);
+	return 0;
 }
-#endif
-
-int register_all_x_WindowHelper(lua_State* tolua_S);
-

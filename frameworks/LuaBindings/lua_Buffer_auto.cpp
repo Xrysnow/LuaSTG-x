@@ -1,830 +1,274 @@
 #include "lua_Buffer_auto.hpp"
 #include "XBuffer.h"
-#include "scripting/lua-bindings/manual/tolua_fix.h"
-#include "scripting/lua-bindings/manual/LuaBasicConversions.h"
-#include "Util/UtilLuaConversion.h"
-using lstg::lua::luaval_to_native;
-using lstg::lua::native_to_luaval;
 
-#ifndef LUA_CHECK_COBJ_TYPE
-	#ifdef LUA_DEBUG
-		#define LUA_CHECK_COBJ_TYPE(L, TYPE, NAME) if(!tolua_isusertype((L), 1, (TYPE), 0, nullptr)) { return luaL_error((L), "invalid 'cobj' in '%s': '%s', expects '%s'", NAME, tolua_typename((L), 1), (TYPE)); }
-	#else
-		#define LUA_CHECK_COBJ_TYPE(L, TYPE, NAME) (void)(TYPE);
-	#endif
-#endif
-#ifndef LUA_CHECK_COBJ
-	#ifdef LUA_DEBUG
-		#define LUA_CHECK_COBJ(L, COBJ, NAME) if(!(COBJ)) { return luaL_error((L), "invalid 'cobj' in '%s'", NAME); }
-	#else
-		#define LUA_CHECK_COBJ(L, COBJ, NAME)
-	#endif
-#endif
-#ifndef LUA_CHECK_PARAMETER
-	#define LUA_CHECK_PARAMETER(L, OK, NAME) if(!(OK)) { return luaL_error((L), "invalid arguments in '%s'", NAME); }
-#endif
-#ifndef LUA_PARAMETER_ERROR
-	#define LUA_PARAMETER_ERROR(L, NAME, ARGC, EXPECT) return luaL_error((L), "wrong number of arguments in '%s': %d, expects %s", NAME, (ARGC), EXPECT);
-#endif
-
-int lua_x_Buffer_Buffer_assign(lua_State* tolua_S)
+int lua_lstg_Buffer_assign(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:assign";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 3) {
-		lstg::Buffer* arg0;
-		unsigned int arg1;
-		unsigned int arg2;
-		ok &= luaval_to_native(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_uint32(tolua_S, 3, &arg1, LUA_FNAME);
-		ok &= luaval_to_uint32(tolua_S, 4, &arg2, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->assign(arg0, arg1, arg2);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "3");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:assign");
+	LUA_TRY_INVOKE(3, &lstg::Buffer::assign);
+	LUA_INVOKE_FOOTER("3");
 }
-int lua_x_Buffer_Buffer_assign_value(lua_State* tolua_S)
+int lua_lstg_Buffer_assign_value(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:assign_value";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 2) {
-		unsigned int arg0;
-		uint16_t arg1;
-		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_uint16(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->assign_value(arg0, arg1);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:assign_value");
+	LUA_TRY_INVOKE(2, &lstg::Buffer::assign_value);
+	LUA_INVOKE_FOOTER("2");
 }
-int lua_x_Buffer_Buffer_assign_values(lua_State* tolua_S)
+int lua_lstg_Buffer_assign_values(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:assign_values";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		std::vector<unsigned char> arg0;
-		ok &= luaval_to_native(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->assign_values(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:assign_values");
+	LUA_TRY_INVOKE(1, &lstg::Buffer::assign_values);
+	LUA_INVOKE_FOOTER("1");
 }
-int lua_x_Buffer_Buffer_at(lua_State* tolua_S)
+int lua_lstg_Buffer_at(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:at";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		unsigned int arg0;
-		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->at(arg0);
-		tolua_pushnumber(tolua_S, (lua_Number)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:at");
+	LUA_TRY_INVOKE_R(1, &lstg::Buffer::at);
+	LUA_INVOKE_FOOTER("1");
 }
-int lua_x_Buffer_Buffer_back(lua_State* tolua_S)
+int lua_lstg_Buffer_back(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:back";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->back();
-		tolua_pushnumber(tolua_S, (lua_Number)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:back");
+	LUA_TRY_INVOKE_R(0, &lstg::Buffer::back);
+	LUA_INVOKE_FOOTER("0");
 }
-int lua_x_Buffer_Buffer_capacity(lua_State* tolua_S)
+int lua_lstg_Buffer_capacity(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:capacity";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->capacity();
-		tolua_pushnumber(tolua_S, (lua_Number)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:capacity");
+	LUA_TRY_INVOKE_R(0, &lstg::Buffer::capacity);
+	LUA_INVOKE_FOOTER("0");
 }
-int lua_x_Buffer_Buffer_clear(lua_State* tolua_S)
+int lua_lstg_Buffer_clear(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:clear";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->clear();
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:clear");
+	LUA_TRY_INVOKE(0, &lstg::Buffer::clear);
+	LUA_INVOKE_FOOTER("0");
 }
-int lua_x_Buffer_Buffer_clone(lua_State* tolua_S)
+int lua_lstg_Buffer_clone(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:clone";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->clone();
-		native_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:clone");
+	LUA_TRY_INVOKE_R(0, &lstg::Buffer::clone);
+	LUA_INVOKE_FOOTER("0");
 }
-int lua_x_Buffer_Buffer_copy(lua_State* tolua_S)
+int lua_lstg_Buffer_copy(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:copy";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		lstg::Buffer* arg0;
-		ok &= luaval_to_native(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->copy(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:copy");
+	LUA_TRY_INVOKE(1, &lstg::Buffer::copy);
+	LUA_INVOKE_FOOTER("1");
 }
-int lua_x_Buffer_Buffer_create(lua_State* tolua_S)
+int lua_lstg_Buffer_empty(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:create";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = lstg::Buffer::create();
-		native_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	if (argc == 1) {
-		unsigned int arg0;
-		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = lstg::Buffer::create(arg0);
-		native_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0 to 1");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:empty");
+	LUA_TRY_INVOKE_R(0, &lstg::Buffer::empty);
+	LUA_INVOKE_FOOTER("0");
 }
-int lua_x_Buffer_Buffer_createFromString(lua_State* tolua_S)
+int lua_lstg_Buffer_erase(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:createFromString";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		std::string arg0;
-		ok &= luaval_to_std_string(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = lstg::Buffer::createFromString(arg0);
-		native_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:erase");
+	LUA_TRY_INVOKE(2, &lstg::Buffer::erase);
+	LUA_INVOKE_FOOTER("2");
 }
-int lua_x_Buffer_Buffer_data(lua_State* tolua_S)
+int lua_lstg_Buffer_front(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:data";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->data();
-		native_to_luaval(tolua_S, ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:front");
+	LUA_TRY_INVOKE_R(0, &lstg::Buffer::front);
+	LUA_INVOKE_FOOTER("0");
 }
-int lua_x_Buffer_Buffer_empty(lua_State* tolua_S)
+int lua_lstg_Buffer_insert(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:empty";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->empty();
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:insert");
+	LUA_TRY_INVOKE(4, &lstg::Buffer::insert);
+	LUA_INVOKE_FOOTER("4");
 }
-int lua_x_Buffer_Buffer_erase(lua_State* tolua_S)
+int lua_lstg_Buffer_insert_data(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:erase";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 2) {
-		unsigned int arg0;
-		unsigned int arg1;
-		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_uint32(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->erase(arg0, arg1);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:insert_data");
+	LUA_TRY_INVOKE(3, &lstg::Buffer::insert_data);
+	LUA_INVOKE_FOOTER("3");
 }
-int lua_x_Buffer_Buffer_front(lua_State* tolua_S)
+int lua_lstg_Buffer_insert_value(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:front";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->front();
-		tolua_pushnumber(tolua_S, (lua_Number)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:insert_value");
+	LUA_TRY_INVOKE(3, &lstg::Buffer::insert_value);
+	LUA_INVOKE_FOOTER("3");
 }
-int lua_x_Buffer_Buffer_insert(lua_State* tolua_S)
+int lua_lstg_Buffer_insert_values(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:insert";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 4) {
-		unsigned int arg0;
-		lstg::Buffer* arg1;
-		unsigned int arg2;
-		unsigned int arg3;
-		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_native(tolua_S, 3, &arg1, LUA_FNAME);
-		ok &= luaval_to_uint32(tolua_S, 4, &arg2, LUA_FNAME);
-		ok &= luaval_to_uint32(tolua_S, 5, &arg3, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->insert(arg0, arg1, arg2, arg3);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "4");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:insert_values");
+	LUA_TRY_INVOKE(2, &lstg::Buffer::insert_values);
+	LUA_INVOKE_FOOTER("2");
 }
-int lua_x_Buffer_Buffer_insert_data(lua_State* tolua_S)
+int lua_lstg_Buffer_isAppendable(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:insert_data";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 3) {
-		unsigned int arg0;
-		const char* arg1;
-		unsigned int arg2;
-		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= lua_isstring(tolua_S, 3); if (ok) arg1 = luaL_checkstring(tolua_S, 3);
-		ok &= luaval_to_uint32(tolua_S, 4, &arg2, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->insert_data(arg0, arg1, arg2);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "3");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:isAppendable");
+	LUA_TRY_INVOKE_R(0, &lstg::Buffer::isAppendable);
+	LUA_INVOKE_FOOTER("0");
 }
-int lua_x_Buffer_Buffer_insert_value(lua_State* tolua_S)
+int lua_lstg_Buffer_isResizable(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:insert_value";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 3) {
-		unsigned int arg0;
-		unsigned int arg1;
-		uint16_t arg2;
-		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_uint32(tolua_S, 3, &arg1, LUA_FNAME);
-		ok &= luaval_to_uint16(tolua_S, 4, &arg2, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->insert_value(arg0, arg1, arg2);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "3");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:isResizable");
+	LUA_TRY_INVOKE_R(0, &lstg::Buffer::isResizable);
+	LUA_INVOKE_FOOTER("0");
 }
-int lua_x_Buffer_Buffer_insert_values(lua_State* tolua_S)
+int lua_lstg_Buffer_isShrinkable(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:insert_values";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 2) {
-		unsigned int arg0;
-		std::vector<unsigned char> arg1;
-		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_native(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->insert_values(arg0, arg1);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:isShrinkable");
+	LUA_TRY_INVOKE_R(0, &lstg::Buffer::isShrinkable);
+	LUA_INVOKE_FOOTER("0");
 }
-int lua_x_Buffer_Buffer_isAppendable(lua_State* tolua_S)
+int lua_lstg_Buffer_isWritable(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:isAppendable";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->isAppendable();
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:isWritable");
+	LUA_TRY_INVOKE_R(0, &lstg::Buffer::isWritable);
+	LUA_INVOKE_FOOTER("0");
 }
-int lua_x_Buffer_Buffer_isResizable(lua_State* tolua_S)
+int lua_lstg_Buffer_move(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:isResizable";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->isResizable();
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:move");
+	LUA_TRY_INVOKE(1, &lstg::Buffer::move);
+	LUA_INVOKE_FOOTER("1");
 }
-int lua_x_Buffer_Buffer_isShrinkable(lua_State* tolua_S)
+int lua_lstg_Buffer_pop_back(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:isShrinkable";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->isShrinkable();
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:pop_back");
+	LUA_TRY_INVOKE(0, &lstg::Buffer::pop_back);
+	LUA_INVOKE_FOOTER("0");
 }
-int lua_x_Buffer_Buffer_isWritable(lua_State* tolua_S)
+int lua_lstg_Buffer_push_back(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:isWritable";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->isWritable();
-		tolua_pushboolean(tolua_S, (bool)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:push_back");
+	LUA_TRY_INVOKE(1, &lstg::Buffer::push_back);
+	LUA_INVOKE_FOOTER("1");
 }
-int lua_x_Buffer_Buffer_move(lua_State* tolua_S)
+int lua_lstg_Buffer_reserve(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:move";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		lstg::Buffer* arg0;
-		ok &= luaval_to_native(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->move(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:reserve");
+	LUA_TRY_INVOKE(1, &lstg::Buffer::reserve);
+	LUA_INVOKE_FOOTER("1");
 }
-int lua_x_Buffer_Buffer_pop_back(lua_State* tolua_S)
+int lua_lstg_Buffer_resize(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:pop_back";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->pop_back();
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:resize");
+	LUA_TRY_INVOKE(2, static_cast<void(lstg::Buffer::*)(size_t, uint8_t)>(&lstg::Buffer::resize));
+	LUA_TRY_INVOKE(1, [](lstg::Buffer* obj, size_t arg0){{return obj->resize(std::move(arg0));}});
+	LUA_INVOKE_FOOTER("1,2");
 }
-int lua_x_Buffer_Buffer_push_back(lua_State* tolua_S)
+int lua_lstg_Buffer_set(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:push_back";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		uint16_t arg0;
-		ok &= luaval_to_uint16(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->push_back(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:set");
+	LUA_TRY_INVOKE(2, &lstg::Buffer::set);
+	LUA_INVOKE_FOOTER("2");
 }
-int lua_x_Buffer_Buffer_reserve(lua_State* tolua_S)
+int lua_lstg_Buffer_setAppendable(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:reserve";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		unsigned int arg0;
-		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->reserve(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:setAppendable");
+	LUA_TRY_INVOKE(1, &lstg::Buffer::setAppendable);
+	LUA_INVOKE_FOOTER("1");
 }
-int lua_x_Buffer_Buffer_resize(lua_State* tolua_S)
+int lua_lstg_Buffer_setResizable(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:resize";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		unsigned int arg0;
-		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->resize(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	if (argc == 2) {
-		unsigned int arg0;
-		uint16_t arg1;
-		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_uint16(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->resize(arg0, arg1);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1 to 2");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:setResizable");
+	LUA_TRY_INVOKE(1, &lstg::Buffer::setResizable);
+	LUA_INVOKE_FOOTER("1");
 }
-int lua_x_Buffer_Buffer_set(lua_State* tolua_S)
+int lua_lstg_Buffer_setShrinkable(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:set";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 2) {
-		unsigned int arg0;
-		uint16_t arg1;
-		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_uint16(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->set(arg0, arg1);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:setShrinkable");
+	LUA_TRY_INVOKE(1, &lstg::Buffer::setShrinkable);
+	LUA_INVOKE_FOOTER("1");
 }
-int lua_x_Buffer_Buffer_setAppendable(lua_State* tolua_S)
+int lua_lstg_Buffer_setWritable(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:setAppendable";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		bool arg0;
-		ok &= luaval_to_boolean(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->setAppendable(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:setWritable");
+	LUA_TRY_INVOKE(1, &lstg::Buffer::setWritable);
+	LUA_INVOKE_FOOTER("1");
 }
-int lua_x_Buffer_Buffer_setResizable(lua_State* tolua_S)
+int lua_lstg_Buffer_set_values(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:setResizable";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		bool arg0;
-		ok &= luaval_to_boolean(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->setResizable(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:set_values");
+	LUA_TRY_INVOKE(2, &lstg::Buffer::set_values);
+	LUA_INVOKE_FOOTER("2");
 }
-int lua_x_Buffer_Buffer_setShrinkable(lua_State* tolua_S)
+int lua_lstg_Buffer_shrink_to_fit(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:setShrinkable";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		bool arg0;
-		ok &= luaval_to_boolean(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->setShrinkable(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:shrink_to_fit");
+	LUA_TRY_INVOKE(0, &lstg::Buffer::shrink_to_fit);
+	LUA_INVOKE_FOOTER("0");
 }
-int lua_x_Buffer_Buffer_setWritable(lua_State* tolua_S)
+int lua_lstg_Buffer_size(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:setWritable";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		bool arg0;
-		ok &= luaval_to_boolean(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->setWritable(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:size");
+	LUA_TRY_INVOKE_R(0, &lstg::Buffer::size);
+	LUA_INVOKE_FOOTER("0");
 }
-int lua_x_Buffer_Buffer_set_values(lua_State* tolua_S)
+int lua_lstg_Buffer_swap(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:set_values";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 2) {
-		unsigned int arg0;
-		std::vector<unsigned char> arg1;
-		ok &= luaval_to_uint32(tolua_S, 2, &arg0, LUA_FNAME);
-		ok &= luaval_to_native(tolua_S, 3, &arg1, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->set_values(arg0, arg1);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:swap");
+	LUA_TRY_INVOKE(1, &lstg::Buffer::swap);
+	LUA_INVOKE_FOOTER("1");
 }
-int lua_x_Buffer_Buffer_shrink_to_fit(lua_State* tolua_S)
+int lua_lstg_Buffer_to_string(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:shrink_to_fit";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->shrink_to_fit();
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
+	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:to_string");
+	LUA_TRY_INVOKE_R(0, &lstg::Buffer::to_string);
+	LUA_INVOKE_FOOTER("0");
 }
-int lua_x_Buffer_Buffer_size(lua_State* tolua_S)
+int lua_lstg_Buffer_create(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:size";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->size();
-		tolua_pushnumber(tolua_S, (lua_Number)ret);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
+	LUA_SINVOKE_HEADER("lstg.Buffer", "lstg.Buffer:create");
+	LUA_TRY_INVOKE_R(1, static_cast<lstg::Buffer*(*)(size_t)>(&lstg::Buffer::create));
+	LUA_TRY_INVOKE_R(0, [](){{return lstg::Buffer::create();}});
+	LUA_SINVOKE_FOOTER("0,1");
 }
-int lua_x_Buffer_Buffer_swap(lua_State* tolua_S)
+int lua_lstg_Buffer_createFromString(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:swap";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 1) {
-		lstg::Buffer* arg0;
-		ok &= luaval_to_native(tolua_S, 2, &arg0, LUA_FNAME);
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		cobj->swap(arg0);
-		lua_settop(tolua_S, 1);
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "1");
+	LUA_SINVOKE_HEADER("lstg.Buffer", "lstg.Buffer:createFromString");
+	LUA_TRY_INVOKE_R(1, &lstg::Buffer::createFromString);
+	LUA_SINVOKE_FOOTER("1");
 }
-int lua_x_Buffer_Buffer_to_string(lua_State* tolua_S)
+int luaReg_Buffer_lstgBuffer(lua_State* lua_S)
 {
-	bool ok = true;
-	constexpr auto LUA_OBJ_TYPE = "lstg.Buffer";
-	constexpr auto LUA_FNAME = "lstg.Buffer:to_string";
-	LUA_CHECK_COBJ_TYPE(tolua_S, LUA_OBJ_TYPE, LUA_FNAME);
-	auto cobj = (lstg::Buffer*)tolua_tousertype(tolua_S, 1, nullptr);
-	LUA_CHECK_COBJ(tolua_S, cobj, LUA_FNAME);
-	const int argc = lua_gettop(tolua_S) - 1;
-	if (argc == 0) {
-		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
-		auto ret = cobj->to_string();
-		lua_pushlstring(tolua_S, ret.c_str(), ret.length());
-		return 1;
-	}
-	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
-}
-static int lua_x_Buffer_Buffer_finalize(lua_State* tolua_S)
-{
+	LUA_ENTRY("lstg");
+	LUA_CLS_DEF_BASE(lstg::Buffer, "Buffer", "lstg.Buffer",
+		cocos2d::Ref, "cc.Ref",
+		nullptr, nullptr);
+	LUA_METHOD("assign", lua_lstg_Buffer_assign);
+	LUA_METHOD("assign_value", lua_lstg_Buffer_assign_value);
+	LUA_METHOD("assign_values", lua_lstg_Buffer_assign_values);
+	LUA_METHOD("at", lua_lstg_Buffer_at);
+	LUA_METHOD("back", lua_lstg_Buffer_back);
+	LUA_METHOD("capacity", lua_lstg_Buffer_capacity);
+	LUA_METHOD("clear", lua_lstg_Buffer_clear);
+	LUA_METHOD("clone", lua_lstg_Buffer_clone);
+	LUA_METHOD("copy", lua_lstg_Buffer_copy);
+	LUA_METHOD("empty", lua_lstg_Buffer_empty);
+	LUA_METHOD("erase", lua_lstg_Buffer_erase);
+	LUA_METHOD("front", lua_lstg_Buffer_front);
+	LUA_METHOD("insert", lua_lstg_Buffer_insert);
+	LUA_METHOD("insert_data", lua_lstg_Buffer_insert_data);
+	LUA_METHOD("insert_value", lua_lstg_Buffer_insert_value);
+	LUA_METHOD("insert_values", lua_lstg_Buffer_insert_values);
+	LUA_METHOD("isAppendable", lua_lstg_Buffer_isAppendable);
+	LUA_METHOD("isResizable", lua_lstg_Buffer_isResizable);
+	LUA_METHOD("isShrinkable", lua_lstg_Buffer_isShrinkable);
+	LUA_METHOD("isWritable", lua_lstg_Buffer_isWritable);
+	LUA_METHOD("move", lua_lstg_Buffer_move);
+	LUA_METHOD("pop_back", lua_lstg_Buffer_pop_back);
+	LUA_METHOD("push_back", lua_lstg_Buffer_push_back);
+	LUA_METHOD("reserve", lua_lstg_Buffer_reserve);
+	LUA_METHOD("resize", lua_lstg_Buffer_resize);
+	LUA_METHOD("set", lua_lstg_Buffer_set);
+	LUA_METHOD("setAppendable", lua_lstg_Buffer_setAppendable);
+	LUA_METHOD("setResizable", lua_lstg_Buffer_setResizable);
+	LUA_METHOD("setShrinkable", lua_lstg_Buffer_setShrinkable);
+	LUA_METHOD("setWritable", lua_lstg_Buffer_setWritable);
+	LUA_METHOD("set_values", lua_lstg_Buffer_set_values);
+	LUA_METHOD("shrink_to_fit", lua_lstg_Buffer_shrink_to_fit);
+	LUA_METHOD("size", lua_lstg_Buffer_size);
+	LUA_METHOD("swap", lua_lstg_Buffer_swap);
+	LUA_METHOD("to_string", lua_lstg_Buffer_to_string);
+	LUA_METHOD("create", lua_lstg_Buffer_create);
+	LUA_METHOD("createFromString", lua_lstg_Buffer_createFromString);
+	LUA_CLS_END();
+	LUA_ENTRY_END(1);
 	return 0;
 }
-
-int lua_register_x_Buffer_Buffer(lua_State* tolua_S)
-{
-	tolua_usertype(tolua_S, "lstg.Buffer");
-	tolua_cclass(tolua_S, "Buffer", "lstg.Buffer", "cc.Ref", nullptr);
-
-	tolua_beginmodule(tolua_S, "Buffer");
-		tolua_function(tolua_S, "assign", lua_x_Buffer_Buffer_assign);
-		tolua_function(tolua_S, "assign_value", lua_x_Buffer_Buffer_assign_value);
-		tolua_function(tolua_S, "assign_values", lua_x_Buffer_Buffer_assign_values);
-		tolua_function(tolua_S, "at", lua_x_Buffer_Buffer_at);
-		tolua_function(tolua_S, "back", lua_x_Buffer_Buffer_back);
-		tolua_function(tolua_S, "capacity", lua_x_Buffer_Buffer_capacity);
-		tolua_function(tolua_S, "clear", lua_x_Buffer_Buffer_clear);
-		tolua_function(tolua_S, "clone", lua_x_Buffer_Buffer_clone);
-		tolua_function(tolua_S, "copy", lua_x_Buffer_Buffer_copy);
-		tolua_function(tolua_S, "data", lua_x_Buffer_Buffer_data);
-		tolua_function(tolua_S, "empty", lua_x_Buffer_Buffer_empty);
-		tolua_function(tolua_S, "erase", lua_x_Buffer_Buffer_erase);
-		tolua_function(tolua_S, "front", lua_x_Buffer_Buffer_front);
-		tolua_function(tolua_S, "insert", lua_x_Buffer_Buffer_insert);
-		tolua_function(tolua_S, "insert_data", lua_x_Buffer_Buffer_insert_data);
-		tolua_function(tolua_S, "insert_value", lua_x_Buffer_Buffer_insert_value);
-		tolua_function(tolua_S, "insert_values", lua_x_Buffer_Buffer_insert_values);
-		tolua_function(tolua_S, "isAppendable", lua_x_Buffer_Buffer_isAppendable);
-		tolua_function(tolua_S, "isResizable", lua_x_Buffer_Buffer_isResizable);
-		tolua_function(tolua_S, "isShrinkable", lua_x_Buffer_Buffer_isShrinkable);
-		tolua_function(tolua_S, "isWritable", lua_x_Buffer_Buffer_isWritable);
-		tolua_function(tolua_S, "move", lua_x_Buffer_Buffer_move);
-		tolua_function(tolua_S, "pop_back", lua_x_Buffer_Buffer_pop_back);
-		tolua_function(tolua_S, "push_back", lua_x_Buffer_Buffer_push_back);
-		tolua_function(tolua_S, "reserve", lua_x_Buffer_Buffer_reserve);
-		tolua_function(tolua_S, "resize", lua_x_Buffer_Buffer_resize);
-		tolua_function(tolua_S, "set", lua_x_Buffer_Buffer_set);
-		tolua_function(tolua_S, "setAppendable", lua_x_Buffer_Buffer_setAppendable);
-		tolua_function(tolua_S, "setResizable", lua_x_Buffer_Buffer_setResizable);
-		tolua_function(tolua_S, "setShrinkable", lua_x_Buffer_Buffer_setShrinkable);
-		tolua_function(tolua_S, "setWritable", lua_x_Buffer_Buffer_setWritable);
-		tolua_function(tolua_S, "set_values", lua_x_Buffer_Buffer_set_values);
-		tolua_function(tolua_S, "shrink_to_fit", lua_x_Buffer_Buffer_shrink_to_fit);
-		tolua_function(tolua_S, "size", lua_x_Buffer_Buffer_size);
-		tolua_function(tolua_S, "swap", lua_x_Buffer_Buffer_swap);
-		tolua_function(tolua_S, "to_string", lua_x_Buffer_Buffer_to_string);
-		tolua_function(tolua_S, "create", lua_x_Buffer_Buffer_create);
-		tolua_function(tolua_S, "createFromString", lua_x_Buffer_Buffer_createFromString);
-	tolua_endmodule(tolua_S);
-	std::string typeName = typeid(lstg::Buffer).name();
-	g_luaType[typeName] = "lstg.Buffer";
-	g_typeCast["Buffer"] = "lstg.Buffer";
-	return 1;
-}
-
-int register_all_x_Buffer(lua_State* tolua_S)
-{
-	tolua_open(tolua_S);
-
-	tolua_module(tolua_S, "lstg", 0);
-	tolua_beginmodule(tolua_S, "lstg");
-
-	lua_register_x_Buffer_Buffer(tolua_S);
-
-	tolua_endmodule(tolua_S);
-	return 1;
-}
-
