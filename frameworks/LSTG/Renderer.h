@@ -181,6 +181,7 @@ namespace lstg
 		/******************************************************************************/
 
 		void setProgramStateDirty();
+		void setCommand(cocos2d::RenderCommand* cmd, cocos2d::Texture2D* t);
 		void setXTCommand(XTrianglesCommand* cmd, cocos2d::Texture2D* t);
 		void addCommand(cocos2d::RenderCommand* cmd);
 		void addXTCommand(XTrianglesCommand* cmd);

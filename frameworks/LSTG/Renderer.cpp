@@ -796,6 +796,23 @@ void XRenderer::setProgramStateDirty()
 
 /******************************************************************************/
 
+void XRenderer::setCommand(cocos2d::RenderCommand* cmd, cocos2d::Texture2D* t)
+{
+	CC_ASSERT(cmd && t);
+	if (!currentProgramState || currentTexture != t)
+	{
+		currentTexture = t;
+		currentProgramState = currentRenderMode->tempraryProgramState();
+		currentProgramState->setTexture(currentProgramState->getUniformLocation(backend::TEXTURE),
+			0, t->getBackendTexture());
+		currentProgramState->setUniform(currentProgramState->getUniformLocation(backend::MVP_MATRIX),
+			currentProjection.m, sizeof(currentProjection.m));
+	}
+	auto& desc = cmd->getPipelineDescriptor();
+	desc.blendDescriptor = currentRenderMode->getBlendDescriptor();
+	desc.programState = currentProgramState;
+}
+
 void XRenderer::setXTCommand(XTrianglesCommand* cmd, Texture2D* t)
 {
 	CC_ASSERT(cmd && t);
