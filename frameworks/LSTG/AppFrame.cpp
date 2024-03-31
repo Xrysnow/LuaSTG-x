@@ -257,18 +257,18 @@ AppFrame::~AppFrame()
 	CC_SAFE_DELETE(threadPool);
 }
 
-void AppFrame::setFPS(uint32_t v) noexcept
+void AppFrame::setFPS(uint32_t v)
 {
 	targetFPS = v;
 	Director::getInstance()->setAnimationInterval(1.0 / v);
 }
 
-double AppFrame::getFPS() noexcept
+double AppFrame::getFPS()
 {
 	return Director::getInstance()->getFrameRate();
 }
 
-void AppFrame::loadScript(const std::string& path) noexcept
+void AppFrame::loadScript(const std::string& path)
 {
 	string err;
 	auto data = LRES.getBufferFromFile(path);
@@ -290,19 +290,19 @@ void AppFrame::loadScript(const std::string& path) noexcept
 	}
 }
 
-void AppFrame::snapShot(const std::string& path)noexcept
+void AppFrame::snapShot(const std::string& path)
 {
 	utils::captureScreen(nullptr, path);
 }
 
-ThreadPool* AppFrame::getThreadPool() noexcept
+ThreadPool* AppFrame::getThreadPool()
 {
 	if (!threadPool)
 		threadPool = new ThreadPool{ 0 };
 	return threadPool;
 }
 
-bool AppFrame::frameInit()noexcept
+bool AppFrame::frameInit()
 {
 	if (status != Status::NotInitialized)
 	{
@@ -459,7 +459,7 @@ void AppFrame::frameShutdown(bool fromNative)
 	LINFO("cleared successfully");
 }
 
-bool AppFrame::frameReset()noexcept
+bool AppFrame::frameReset()
 {
 	status = Status::Initializing;
 

@@ -56,22 +56,22 @@ namespace lstg
 		void applicationDidEnterBackground() override;
 		void applicationWillEnterForeground() override;
 
-		void setFPS(uint32_t v) noexcept;
-		double getTargetFPS() const noexcept { return targetFPS; }
-		double getFPS() noexcept;
+		void setFPS(uint32_t v);
+		double getTargetFPS() const { return targetFPS; }
+		double getFPS();
 
-		void loadScript(const std::string& path) noexcept;
-		void snapShot(const std::string& path) noexcept;
+		void loadScript(const std::string& path);
+		void snapShot(const std::string& path);
 
-		GameObjectManager& getGameObjectPool() const noexcept { return *gameObjectPool; }
-		ThreadPool* getThreadPool() noexcept;
+		GameObjectManager& getGameObjectPool() const { return *gameObjectPool; }
+		ThreadPool* getThreadPool();
 
 		uint32_t getDropCounter() const { return dropCounter; }
 		void setDropCounter(uint32_t v) { dropCounter = v; }
 
-		bool frameInit() noexcept;
+		bool frameInit();
 		void frameShutdown(bool fromNative);
-		bool frameReset() noexcept;
+		bool frameReset();
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 		int run() override;
 #endif
@@ -79,7 +79,7 @@ namespace lstg
 	private:
 		AppFrame();
 	public:
-		~AppFrame();
+		~AppFrame() override;
 	};
 }
 
