@@ -70,7 +70,7 @@ namespace lstg
 		void setDropCounter(uint32_t v) { dropCounter = v; }
 
 		bool frameInit() noexcept;
-		void frameShutdown() noexcept;
+		void frameShutdown(bool fromNative);
 		bool frameReset() noexcept;
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 		int run() override;

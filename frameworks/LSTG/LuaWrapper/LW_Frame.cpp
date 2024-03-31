@@ -118,7 +118,7 @@ LUA_REGISTER_FUNC_DEF(lstg, FrameReset)
 
 LUA_REGISTER_FUNC_DEF(lstg, FrameEnd)
 {
-	LAPP.frameShutdown();
+	LAPP.frameShutdown(false);
 	return 0;
 }
 

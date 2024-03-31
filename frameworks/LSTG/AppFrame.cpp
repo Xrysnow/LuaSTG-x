@@ -252,7 +252,7 @@ AppFrame::~AppFrame()
 {
 	if (status != Status::NotInitialized && status != Status::Destroyed)
 	{
-		frameShutdown();
+		frameShutdown(true);
 	}
 	CC_SAFE_DELETE(threadPool);
 }
@@ -382,7 +382,7 @@ bool AppFrame::frameInit()noexcept
 	// EVENT_RESET will be sent in Director::end.
 	auto listener = EventListenerCustom::create(Director::EVENT_RESET, [this](EventCustom* event)
 	{
-		frameShutdown();
+		frameShutdown(true);
 	});
 	e->addEventListenerWithFixedPriority(listener, 1);
 
@@ -423,10 +423,18 @@ bool AppFrame::frameInit()noexcept
 	return true;
 }
 
-void AppFrame::frameShutdown()noexcept
+void AppFrame::frameShutdown(bool fromNative)
 {
 	if (status == Status::NotInitialized || status == Status::Destroyed)
 		return;
+	if (fromNative)
+	{
+		LuaEngine::getInstance()->executeGlobalFunction("GameExit");
+		// return if GameExit called this method
+		if (status == Status::Destroyed)
+			return;
+	}
+
 	XRenderer::end();
 
 	gameObjectPool = nullptr;
@@ -442,7 +450,7 @@ void AppFrame::frameShutdown()noexcept
 	l2d::Framework::end();
 #endif
 
-	// note: must be called after ClearAllResource
+	// note: must be after resources cleared
 	audio::Engine::end();
 
 	InputManager::end();
