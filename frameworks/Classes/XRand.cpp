@@ -192,15 +192,15 @@ Random::Random(uint32_t seed, GeneratorType type)
 	switch (_type)
 	{
 	case GeneratorType::well512: well512 = {}; break;
-	case GeneratorType::minstd_rand0: minstd_rand0 = {}; break;
-	case GeneratorType::minstd_rand: minstd_rand = {}; break;
-	case GeneratorType::mt19937: mt19937 = {}; break;
-	case GeneratorType::mt19937_64: mt19937_64 = {}; break;
-	case GeneratorType::ranlux24_base: ranlux24_base = {}; break;
-	case GeneratorType::ranlux48_base: ranlux48_base = {}; break;
-	case GeneratorType::ranlux24: ranlux24 = {}; break;
-	case GeneratorType::ranlux48: ranlux48 = {}; break;
-	case GeneratorType::knuth_b: knuth_b = {}; break;
+	case GeneratorType::minstd_rand0: minstd_rand0 = std::minstd_rand0{0}; break;
+	case GeneratorType::minstd_rand: minstd_rand = std::minstd_rand{0}; break;
+	case GeneratorType::mt19937: mt19937 = std::mt19937{0}; break;
+	case GeneratorType::mt19937_64: mt19937_64 = std::mt19937_64{0}; break;
+	case GeneratorType::ranlux24_base: ranlux24_base = std::ranlux24_base{0}; break;
+	case GeneratorType::ranlux48_base: ranlux48_base = std::ranlux48_base{0}; break;
+	case GeneratorType::ranlux24: ranlux24 = std::ranlux24{0}; break;
+	case GeneratorType::ranlux48: ranlux48 = std::ranlux48{0}; break;
+	case GeneratorType::knuth_b: knuth_b = std::knuth_b{0}; break;
 	default: ;
 	}
 	Random::setSeed(seed);
