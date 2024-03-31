@@ -7,6 +7,7 @@
 #include <deque>
 #include <forward_list>
 #include <functional>
+#include <list>
 #include <map>
 #include <queue>
 #include <set>
