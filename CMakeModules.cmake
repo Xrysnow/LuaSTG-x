@@ -32,13 +32,11 @@ else()
 	target_compile_definitions(${APP_NAME} PUBLIC LSTGX_NO_VIDEO)
 endif()
 
-# ogg, OpenalSoft, audio
+# audio
 
 set(CC_AUDIO_DEPEND_LIBS)
-
 # in cocos/external
-list(APPEND CC_AUDIO_DEPEND_LIBS ext_ogg)
-
+list(APPEND CC_AUDIO_DEPEND_LIBS ogg)
 list(APPEND CC_AUDIO_DEPEND_LIBS OpenAL)
 
 if(MACOSX OR IOS)
@@ -66,11 +64,6 @@ endif()
 
 add_subdirectory(${LSTGX_MOD_ROOT}/Math)
 list(APPEND EXTERNAL_LIBS x_math)
-
-# reader
-
-add_subdirectory(${LSTGX_MOD_ROOT}/reader)
-list(APPEND EXTERNAL_LIBS creator_reader)
 
 # BurstLinker
 
@@ -105,24 +98,6 @@ if(WINDOWS OR LINUX OR MACOSX)
 	list(APPEND EXTERNAL_LIBS ext_NativeFileDialog)
 endif()
 
-# FairyGUI
-
-if(NOT LSTGX_NO_FAIRY_GUI)
-	add_subdirectory(${LSTGX_EXT_ROOT}/FairyGUI)
-	list(APPEND EXTERNAL_LIBS ext_FairyGUI)
-else()
-	target_compile_definitions(${APP_NAME} PUBLIC LSTGX_NO_FAIRY_GUI)
-endif()
-
-# yasio
-
-if(NOT LSTGX_NO_YASIO)
-	add_subdirectory(${LSTGX_EXT_ROOT}/yasio)
-	list(APPEND EXTERNAL_LIBS ext_yasio)
-else()
-	target_compile_definitions(${APP_NAME} PUBLIC LSTGX_NO_YASIO)
-endif()
-
 # Yuescript
 
 if(NOT LSTGX_NO_YUESCRIPT)
@@ -131,6 +106,8 @@ if(NOT LSTGX_NO_YUESCRIPT)
 else()
 	target_compile_definitions(${APP_NAME} PUBLIC LSTGX_NO_YUESCRIPT)
 endif()
+
+list(APPEND EXTERNAL_LIBS ${COCOS_EXTENSION_LIBS})
 
 # windows
 

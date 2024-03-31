@@ -21,7 +21,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 # ****************************************************************************/
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
 
 set(APP_NAME LuaSTG-x)
 
@@ -29,29 +29,24 @@ project(${APP_NAME})
 
 option(LSTGX_NO_LIVE2D    "No live2d module"     OFF)
 option(LSTGX_NO_VIDEO     "No video module"      OFF)
-option(LSTGX_NO_FAIRY_GUI "No FairyGUI module"    ON)
-option(LSTGX_NO_YASIO     "No YASIO module"      OFF)
 option(LSTGX_NO_YUESCRIPT "No Yuescript module"   ON)
 option(LSTGX_USE_ANGLE    "Use angle on windows" OFF)
 option(LSTGX_USE_GFX      "Use GFX beckend"       ON)
 
 message("LSTGX_NO_LIVE2D: ${LSTGX_NO_LIVE2D}")
 message("LSTGX_NO_VIDEO: ${LSTGX_NO_VIDEO}")
-message("LSTGX_NO_FAIRY_GUI: ${LSTGX_NO_FAIRY_GUI}")
-message("LSTGX_NO_YASIO: ${LSTGX_NO_YASIO}")
 message("LSTGX_NO_YUESCRIPT: ${LSTGX_NO_YUESCRIPT}")
 message("LSTGX_USE_ANGLE: ${LSTGX_USE_ANGLE}")
 message("LSTGX_USE_GFX: ${LSTGX_USE_GFX}")
 
 set(CC_USE_ANGLE LSTGX_USE_ANGLE)
 set(CC_USE_GFX LSTGX_USE_GFX)
-set(BUILD_EDITOR_COCOSTUDIO OFF)
 set(USE_JOB_SYSTEM_TASKFLOW ON)
 set(USE_JOB_SYSTEM_TBB OFF)
 
 if(XCODE)
     if(NOT DEFINED CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET)
-        set(CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET 8.0)
+        set(CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET 13.0)
     endif()
 endif()
 
@@ -77,7 +72,7 @@ if(APPLE OR VS)
 endif()
 
 # sources
-include(src.cmake)
+include(CMakeSources.cmake)
 
 if(ANDROID)
     # change APP_NAME to the share library name for Android, it's value depend on AndroidManifest.xml
@@ -93,7 +88,7 @@ else()
     add_library(${APP_NAME} SHARED ${APP_SRC})
     add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos/platform/android ${ENGINE_BINARY_PATH}/cocos/platform)
     target_link_libraries(${APP_NAME} -Wl,--whole-archive cpp_android_spec -Wl,--no-whole-archive)
-    add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos/scripting/lua-bindings/proj.android ${ENGINE_BINARY_PATH}/cocos/lua-android)
+    add_subdirectory(${COCOS2DX_ROOT_PATH}/extensions/scripting/lua-bindings/proj.android ${ENGINE_BINARY_PATH}/cocos/lua-android)
     target_link_libraries(${APP_NAME} -Wl,--whole-archive lua_android_spec -Wl,--no-whole-archive)
 
     config_android_shared_libs("org.lstgx.lib" "${CMAKE_CURRENT_SOURCE_DIR}/frameworks/runtime-src/proj.android/app/src")
@@ -105,12 +100,15 @@ target_include_directories(${APP_NAME} PRIVATE ${GAME_INCLUDE})
 # mark app resources, resource will be copy auto after mark
 setup_cocos_app_config(${APP_NAME})
 
-include(modules.cmake)
-
-if(MSVC)
-    target_compile_options(${APP_NAME} PUBLIC /Z7)
-    set_property(TARGET ${APP_NAME} APPEND_STRING PROPERTY LINK_FLAGS " /SAFESEH:NO")
+if(CC_USE_GFX)
+	target_compile_definitions(${APP_NAME} PUBLIC CC_USE_GFX)
 endif()
+
+if(CC_EXTENSION_LIBS)
+    target_link_libraries(${APP_NAME} ${CC_EXTENSION_LIBS})
+endif()
+
+include(CMakeModules.cmake)
 
 if(APPLE)
     set_target_properties(${APP_NAME} PROPERTIES RESOURCE "${APP_UI_RES}")
@@ -129,16 +127,31 @@ if(APPLE)
     endif()
 elseif(WINDOWS)
     cocos_copy_target_dll(${APP_NAME})
-elseif(ANDROID OR LINUX)
+    if(MSVC)
+        target_compile_options(${APP_NAME} PUBLIC /Z7)
+        target_compile_options(${APP_NAME} PUBLIC /wd4244) # disable warning 4244
+        set_property(TARGET ${APP_NAME} APPEND_STRING PROPERTY LINK_FLAGS " /SAFESEH:NO")
+    endif()
+    if(WIN64)
+        set(PVR_ROOT ${COCOS2DX_ROOT_PATH}/external/PVRVFrame/prebuilt/win64)
+    else()
+        set(PVR_ROOT ${COCOS2DX_ROOT_PATH}/external/PVRVFrame/prebuilt/win32)
+    endif()
+    function(copy_custom_file target file)
+        get_filename_component(file_name ${file} NAME)
+        add_custom_command(TARGET ${target} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${file} "$<TARGET_FILE_DIR:${APP_NAME}>/${file_name}"
+        )
+    endfunction()
+    copy_custom_file(${APP_NAME} ${PVR_ROOT}/libEGL.dll)
+    copy_custom_file(${APP_NAME} ${PVR_ROOT}/libGLES_CM.dll)
+    copy_custom_file(${APP_NAME} ${PVR_ROOT}/libGLESv2.dll)
+elseif(LINUX)
+    # android does not require copy now
     set(depend_libs)
     set(all_depend_libs)
-    if(ANDROID)
-        search_depend_libs_recursive(cocos2dlua depend_libs)
-        set(depend_dest ${RUNTIME_SRC_ROOT}/proj.android/app/libs/${ANDROID_ABI})
-    else()
-        search_depend_libs_recursive(${APP_NAME} depend_libs)
-        set(depend_dest ${CMAKE_BINARY_DIR}/bin/${APP_NAME})
-    endif()
+    search_depend_libs_recursive(${APP_NAME} depend_libs)
+    set(depend_dest ${CMAKE_BINARY_DIR}/bin/${APP_NAME})
     foreach(depend_lib ${depend_libs})
         if(TARGET ${depend_lib})
             get_target_property(target_type ${depend_lib} TYPE)
@@ -161,5 +174,5 @@ endif()
 if(LINUX OR WINDOWS)
     cocos_get_resource_path(APP_RES_DIR ${APP_NAME})
     #cocos_copy_target_res(${APP_NAME} LINK_TO ${APP_RES_DIR}/res FOLDERS ${res_res_folders})
-    #cocos_copy_lua_scripts(${APP_NAME} ${res_src_folders} ${APP_RES_DIR}/src )
+    #cocos_copy_lua_scripts(${APP_NAME} ${res_src_folders} ${APP_RES_DIR}/src)
 endif()
