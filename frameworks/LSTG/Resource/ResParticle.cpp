@@ -2,6 +2,8 @@
 #include "AppFrame.h"
 #include "Util/Utility.h"
 #include "Renderer.h"
+#include "XProfiler.h"
+#include "renderer/backend/Buffer.h"
 #include <cstring>
 
 using namespace std;
@@ -10,15 +12,31 @@ using namespace lstg;
 
 std::vector<unsigned short> ResParticle::ParticlePool::quadIndices;
 
+static void convertColor(const float* input, Color4B& output)
+{
+	output.r = input[0] * 255;
+	output.g = input[1] * 255;
+	output.b = input[2] * 255;
+	output.a = input[3] * 255;
+}
+
+static void convertColor(const Color4B& input, float* output)
+{
+	output[0] = input.r / 255.f;
+	output[1] = input.g / 255.f;
+	output[2] = input.b / 255.f;
+	output[3] = input.a / 255.f;
+}
+
 void ResParticle::ParticlePool::initQuadIndices(size_t size)
 {
-	if (quadIndices.size() >= size)
+	if (quadIndices.size() >= size * 6)
 		return;
-	quadIndices.resize(size);
+	quadIndices.resize(size * 6);
 	for (size_t i = 0; i < size; ++i)
 	{
 		CC_ASSERT(i * 4 < std::numeric_limits<uint16_t>::max());
-		const auto off = i * 4;
+		const uint16_t off = i * 4;
 		quadIndices[i * 6 + 0] = 0 + off;
 		quadIndices[i * 6 + 1] = 1 + off;
 		quadIndices[i * 6 + 2] = 2 + off;
@@ -39,20 +57,14 @@ Color4B ResParticle::ParticlePool::getColorStart()
 	}
 	else
 	{
-		ret.r = particleInfo.ColorStart[0] * 255;
-		ret.g = particleInfo.ColorStart[1] * 255;
-		ret.b = particleInfo.ColorStart[2] * 255;
-		ret.a = particleInfo.ColorStart[3] * 255;
+		convertColor(particleInfo.ColorStart, ret);
 	}
 	return ret;
 }
 
 void ResParticle::ParticlePool::setColorStart(const Color4B& color)
 {
-	particleInfo.ColorStart[0] = color.r / 255.f;
-	particleInfo.ColorStart[1] = color.g / 255.f;
-	particleInfo.ColorStart[2] = color.b / 255.f;
-	particleInfo.ColorStart[3] = color.a / 255.f;
+	convertColor(color, particleInfo.ColorStart);
 }
 
 Color4B ResParticle::ParticlePool::getColorEnd()
@@ -66,20 +78,14 @@ Color4B ResParticle::ParticlePool::getColorEnd()
 	}
 	else
 	{
-		ret.r = particleInfo.ColorEnd[0] * 255;
-		ret.g = particleInfo.ColorEnd[1] * 255;
-		ret.b = particleInfo.ColorEnd[2] * 255;
-		ret.a = particleInfo.ColorEnd[3] * 255;
+		convertColor(particleInfo.ColorEnd, ret);
 	}
 	return ret;
 }
 
 void ResParticle::ParticlePool::setColorEnd(const Color4B& color)
 {
-	particleInfo.ColorEnd[0] = color.r / 255.f;
-	particleInfo.ColorEnd[1] = color.g / 255.f;
-	particleInfo.ColorEnd[2] = color.b / 255.f;
-	particleInfo.ColorEnd[3] = color.a / 255.f;
+	convertColor(color, particleInfo.ColorEnd);
 }
 
 void ResParticle::ParticlePool::setRenderMode(RenderMode* m)
@@ -109,7 +115,7 @@ void ResParticle::ParticlePool::setCenter(const cocos2d::Vec2& pos)
 
 void ResParticle::ParticlePool::update(float delta)
 {
-	//const ParticleInfo& pInfo = m_pInstance->getParticleInfo();
+	//ProfilingScope scope{ "ParticlePool::update" };
 	const auto& pInfo = particleInfo;
 
 	if (status == Status::Alive)
@@ -119,7 +125,7 @@ void ResParticle::ParticlePool::update(float delta)
 			status = Status::Sleep;
 	}
 
-	// 更新所有粒子
+	// update
 	size_t i = 0;
 	while (i < numAlive)
 	{
@@ -133,24 +139,23 @@ void ResParticle::ParticlePool::update(float delta)
 			continue;
 		}
 
-		// 计算线加速度和切向加速度
+		// acceleration
 		auto vecAccel = tInst.vecLocation - center;
 		vecAccel.normalize();
 		auto vecAccel2 = vecAccel;
 		vecAccel *= tInst.radialAccel;
-		// vecAccel2.Rotate(M_PI_2);
 		swap(vecAccel2.x, vecAccel2.y);
 		vecAccel2.x = -vecAccel2.x;
 		vecAccel2 *= tInst.tangentialAccel;
 
-		// 计算速度
+		// velocity
 		tInst.vecVelocity += (vecAccel + vecAccel2) * delta;
 		tInst.vecVelocity.y += tInst.gravity * delta;
 
-		// 计算位置
+		// location
 		tInst.vecLocation += tInst.vecVelocity * delta;
 
-		// 计算自旋和大小
+		// spin size color
 		tInst.spin += tInst.spinDelta * delta;
 		tInst.size += tInst.sizeDelta * delta;
 		tInst.color[0] += tInst.colorDelta[0] * delta;
@@ -161,7 +166,7 @@ void ResParticle::ParticlePool::update(float delta)
 		++i;
 	}
 
-	// 产生新的粒子
+	// generate
 	if (status == Status::Alive)
 	{
 		const auto fParticlesNeeded = pInfo.EmissionFreq * delta + emissionResidue;
@@ -182,7 +187,7 @@ void ResParticle::ParticlePool::update(float delta)
 			tInst.vecLocation.y += rng.getRandFloat(-2.0f, 2.0f);
 
 			constexpr auto LPI_HALF = 1.5707963267f;  // PI*0.5
-			const float ang = /* pInfo.Direction */ (rotation - float(LPI_HALF)) - float(LPI_HALF) +
+			const float ang = (rotation - LPI_HALF) - LPI_HALF +
 				rng.getRandFloat(0, pInfo.Spread) - pInfo.Spread / 2.0f;
 			tInst.vecVelocity.x = cos(ang);
 			tInst.vecVelocity.y = sin(ang);
@@ -207,10 +212,12 @@ void ResParticle::ParticlePool::update(float delta)
 			auto _var = pInfo.ColorVar;
 			for (int j = 0; j < 4; ++j)
 			{
-				if (j == 3)_var = pInfo.AlphaVar;
+				if (j == 3)
+					_var = pInfo.AlphaVar;
+				const auto& start = pInfo.ColorStart[j];
 				tInst.color[j] = rng.getRandFloat(
-					pInfo.ColorStart[j],
-					pInfo.ColorStart[j] + (pInfo.ColorEnd[j] - pInfo.ColorStart[j])*_var);
+					start,
+					start + (pInfo.ColorEnd[j] - start) * _var);
 			}
 			for (int j = 0; j < 4; ++j)
 			{
@@ -224,43 +231,40 @@ void ResParticle::ParticlePool::update(float delta)
 
 void ResParticle::ParticlePool::render(float scaleX, float scaleY)
 {
+	//ProfilingScope scope{ "ParticlePool::render" };
+#define USE_CUSTOM_COMMAND
+	if (numAlive == 0)
+		return;
 	Sprite* p = host->getBindSprite();
 	const auto noInsColor = particleInfo.ColorStart[0] < 0;
-	const auto _color = p->getColor();
-	const auto _alpha = p->getOpacity();
 	const auto spQuad = p->getQuad();
 	const auto quadCenter = (spQuad.tl.vertices + spQuad.br.vertices) / 2;
 	const auto tl_ = spQuad.tl.vertices - quadCenter;
 	const Vec2 topLeft = { tl_.x,tl_.y };
 	const auto z = 0.5f;
 
-#define MEREGE_PARTICLE_TRANGLES
-
+#ifndef USE_CUSTOM_COMMAND
 	initQuadIndices(LPARTICLE_MAXCNT);
 	triangles.indexCount = numAlive * 6;
 	triangles.vertCount = numAlive * 4;
 	triangles.indices = quadIndices.data();
 	triangles.verts = reinterpret_cast<V3F_C4B_T2F*>(quads.data());
+#endif
 
 	LRR.updateRenderMode(renderMode);
 
 	for (size_t i = 0; i < numAlive; ++i)
 	{
 		ParticleInstance& pInst = particlePool[i];
-#ifdef MEREGE_PARTICLE_TRANGLES
 		auto& quad = quads[i];
 		auto vert = reinterpret_cast<V3F_C4B_T2F*>(&quads[i]);
 		if (!noInsColor)
 		{
-			const uint8_t r = pInst.color[0] * 255;
-			const uint8_t g = pInst.color[1] * 255;
-			const uint8_t b = pInst.color[2] * 255;
-			const uint8_t a = pInst.color[3] * 255;
-			const Color4B color = { r,g,b,a };
-			for (auto j = 0; j < 4; ++j)
-				vert[j].colors = color;
+			convertColor(pInst.color, vert[0].colors);
+			for (auto j = 1; j < 4; ++j)
+				vert[j].colors = vert[0].colors;
 		}
-		const auto rad = -pInst.spin;
+		const auto rad = pInst.spin;
 		const auto x = pInst.vecLocation.x;
 		const auto y = pInst.vecLocation.y;
 		const auto rot = Vec2(std::cosf(rad), std::sinf(rad));
@@ -272,30 +276,18 @@ void ResParticle::ParticlePool::render(float scaleX, float scaleY)
 		quad.bl.vertices.set(-tr.x + x, -tr.y + y, z);
 		quad.tr.vertices.set(tr.x + x, tr.y + y, z);
 		quad.br.vertices.set(-tl.x + x, -tl.y + y, z);
-#else
-		if (noInsColor)  // r < 0
-		{
-			//p->setColor(tOrgColor);
-		}
-		else
-		{
-			p->setColor(Color3B(
-				pInst.color[0] * 255,
-				pInst.color[1] * 255,
-				pInst.color[2] * 255
-			));
-		}
-		p->setOpacity(pInst.color[3] * 255);
-		//TODO: merge triangles
-		LRR.render(p, nullptr, pInst.vecLocation.x, pInst.vecLocation.y, CC_RADIANS_TO_DEGREES(pInst.spin),
-			scaleX * pInst.size, scaleY * pInst.size);
-#endif // MEREGE_PARTICLE_TRANGLES
 	}
-#ifdef MEREGE_PARTICLE_TRANGLES
+
+#if defined(USE_CUSTOM_COMMAND)
+	//NOTE: this is not batched
+	cmd.getVertexBuffer()->updateData(quads.data(), numAlive * 4 * sizeof(V3F_C4B_T2F));
+	cmd.setIndexDrawInfo(0, numAlive * 6);
+	cmd.setVertexDrawInfo(0, numAlive * 4);
+	LRR.setCommand(&cmd, p->getTexture());
+	LRR.addCommand(&cmd);
+#else
 	LRR.renderTexture(p->getTexture(), triangles);
-#endif // MEREGE_PARTICLE_TRANGLES
-	p->setColor(_color);
-	p->setOpacity(_alpha);
+#endif
 }
 
 ResParticle::ParticleInstance* ResParticle::ParticlePool::getParticleInstance(int32_t index)
@@ -315,6 +307,20 @@ ResParticle::ParticlePool::ParticlePool(ResParticle* res)
 	// for texCoords
 	for (auto&& q : quads)
 		q = quad;
+	cmd.init(0.f);
+	cmd.setDrawType(CustomCommand::DrawType::ELEMENT);
+	cmd.setPrimitiveType(backend::PrimitiveType::TRIANGLE);
+	cmd.setIndexFormat(backend::IndexFormat::U_SHORT);
+	cmd.createIndexBuffer(
+		backend::IndexFormat::U_SHORT,
+		LPARTICLE_MAXCNT * 6,
+		backend::BufferUsage::DYNAMIC);
+	cmd.createVertexBuffer(
+		sizeof(V3F_C4B_T2F),
+		LPARTICLE_MAXCNT * 4,
+		backend::BufferUsage::DYNAMIC);
+	initQuadIndices(LPARTICLE_MAXCNT);
+	cmd.getIndexBuffer()->updateData(quadIndices.data(), quadIndices.size() * sizeof(uint16_t));
 }
 
 ResParticle::ParticlePool::~ParticlePool()

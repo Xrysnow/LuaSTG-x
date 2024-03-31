@@ -47,12 +47,12 @@ namespace lstg {
 			float gravity = 0;         // 重力
 			float radialAccel = 0;     // 线加速度
 			float tangentialAccel = 0; // 角加速度
-			float spin = 0;            // 自旋
 			float spinDelta = 0;       // 自旋增量
-			float size = 0;            // 大小
+			float spin = 0;            // 自旋
 			float sizeDelta = 0;       // 大小增量
-			float color[4] = {};       // 颜色
+			float size = 0;            // 大小
 			float colorDelta[4] = {};  // 颜色增量
+			float color[4] = {};       // 颜色
 			float life = 0;            // 当前存活时间
 			float terminalLife = 0;    // 终止时间
 		};
@@ -71,6 +71,7 @@ namespace lstg {
 			ParticleInfo particleInfo;
 			RandomWELL512 rng;
 			cocos2d::TrianglesCommand::Triangles triangles;
+			cocos2d::CustomCommand cmd;
 
 			RenderMode* renderMode = RenderMode::getDefault();
 			Status status = Status::Alive;
