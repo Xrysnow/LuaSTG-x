@@ -65,6 +65,8 @@ namespace lstg
 		virtual void setStandardCursor(CursorType type) {}
 
 		virtual float getDpiScale() { return 1.0f; }
+
+		virtual cocos2d::Vec2 getDeviceResolution() { return cocos2d::Vec2(); }
 	protected:
 		std::string title;
 		bool visible = true;
@@ -132,6 +134,8 @@ namespace lstg
 		void setStandardCursor(CursorType type) override;
 
 		float getDpiScale() override;
+
+		cocos2d::Vec2 getDeviceResolution() override;
 	protected:
 		// it's better to get window dynamicly
 		GLFWwindow* getWindow();

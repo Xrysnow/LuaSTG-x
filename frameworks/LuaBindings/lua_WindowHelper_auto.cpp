@@ -38,6 +38,12 @@ int lua_lstg_WindowHelper_getDpiScale(lua_State* lua_S)
 	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::getDpiScale);
 	LUA_INVOKE_FOOTER("0");
 }
+int lua_lstg_WindowHelper_getDeviceResolution(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:getDeviceResolution");
+	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::getDeviceResolution);
+	LUA_INVOKE_FOOTER("0");
+}
 int lua_lstg_WindowHelper_getPosition(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:getPosition");
@@ -184,6 +190,7 @@ int luaReg_WindowHelper_lstgWindowHelper(lua_State* lua_S)
 		nullptr, nullptr);
 	LUA_METHOD("getClipboardString", lua_lstg_WindowHelper_getClipboardString);
 	LUA_METHOD("getDpiScale", lua_lstg_WindowHelper_getDpiScale);
+	LUA_METHOD("getDeviceResolution", lua_lstg_WindowHelper_getDeviceResolution);
 	LUA_METHOD("getPosition", lua_lstg_WindowHelper_getPosition);
 	LUA_METHOD("getSize", lua_lstg_WindowHelper_getSize);
 	LUA_METHOD("getTitle", lua_lstg_WindowHelper_getTitle);

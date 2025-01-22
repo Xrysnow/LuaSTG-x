@@ -256,6 +256,14 @@ float WindowHelperDesktop::getDpiScale()
 	return (xscale + yscale) / 2;
 }
 
+cocos2d::Vec2 lstg::WindowHelperDesktop::getDeviceResolution()
+{
+	DEVMODE devMode{};
+	EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &devMode);
+
+	return cocos2d::Vec2(devMode.dmPelsWidth,devMode.dmPelsHeight);
+}
+
 GLFWwindow* WindowHelperDesktop::getWindow()
 {
 	return view->getWindow();
