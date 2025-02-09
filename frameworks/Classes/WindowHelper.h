@@ -67,6 +67,9 @@ namespace lstg
 		virtual float getDpiScale() { return 1.0f; }
 
 		virtual cocos2d::Vec2 getDeviceResolution() { return cocos2d::Vec2(); }
+
+		virtual void EnableIME() {};
+		virtual void DisableIME() {};
 	protected:
 		std::string title;
 		bool visible = true;
@@ -136,6 +139,9 @@ namespace lstg
 		float getDpiScale() override;
 
 		cocos2d::Vec2 getDeviceResolution() override;
+
+		void EnableIME() override;
+		void DisableIME() override;
 	protected:
 		// it's better to get window dynamicly
 		GLFWwindow* getWindow();

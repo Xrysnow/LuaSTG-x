@@ -264,6 +264,28 @@ cocos2d::Vec2 lstg::WindowHelperDesktop::getDeviceResolution()
 	return cocos2d::Vec2(devMode.dmPelsWidth,devMode.dmPelsHeight);
 }
 
+void lstg::WindowHelperDesktop::EnableIME()
+{
+	HWND hwnd = Director::getInstance()->getOpenGLView()->getWin32Window();
+	HIMC hIMC = ImmGetContext(hwnd);
+	if (hIMC)
+	{
+		ImmSetOpenStatus(hIMC, TRUE);
+		ImmReleaseContext(hwnd, hIMC);
+	}
+}
+
+void lstg::WindowHelperDesktop::DisableIME()
+{
+	HWND hwnd = Director::getInstance()->getOpenGLView()->getWin32Window();
+	HIMC hIMC = ImmGetContext(hwnd);
+	if (hIMC)
+	{
+		ImmSetOpenStatus(hIMC, FALSE);
+		ImmReleaseContext(hwnd, hIMC);
+	}
+}
+
 GLFWwindow* WindowHelperDesktop::getWindow()
 {
 	return view->getWindow();

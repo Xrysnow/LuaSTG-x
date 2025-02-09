@@ -44,6 +44,18 @@ int lua_lstg_WindowHelper_getDeviceResolution(lua_State* lua_S)
 	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::getDeviceResolution);
 	LUA_INVOKE_FOOTER("0");
 }
+int lua_lstg_WindowHelper_EnableIME(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:EnableIME");
+	LUA_TRY_INVOKE(0, &lstg::WindowHelper::EnableIME);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_WindowHelper_DisableIME(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:DisableIME");
+	LUA_TRY_INVOKE(0, &lstg::WindowHelper::DisableIME);
+	LUA_INVOKE_FOOTER("0");
+}
 int lua_lstg_WindowHelper_getPosition(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:getPosition");
