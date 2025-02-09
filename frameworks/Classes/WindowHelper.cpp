@@ -256,6 +256,62 @@ float WindowHelperDesktop::getDpiScale()
 	return (xscale + yscale) / 2;
 }
 
+std::vector<cocos2d::Vec2> lstg::WindowHelperDesktop::getDeviceResolution()
+{
+	DEVMODE devMode{};
+
+	int modeNum = 0;
+
+	// 构建一个Lua表，将枚举出的值保存在此处
+	
+	std::vector<cocos2d::Vec2> res{};
+
+	while (EnumDisplaySettings(nullptr, modeNum, &devMode))
+	{
+		// 检查对于宽高，是否已经存在，因为枚举显示设置时会将刷新率纳入考虑
+		bool exist = false;
+		for (auto& v : res)
+		{
+			if (v.x == devMode.dmPelsWidth && v.y == devMode.dmPelsHeight)
+			{
+				exist = true;
+				break;
+			}
+		}
+		if (exist)
+		{
+			modeNum++;
+			continue;
+		}
+		res.push_back({ static_cast<float>(devMode.dmPelsWidth), static_cast<float>(devMode.dmPelsHeight) });
+		modeNum++;
+	}
+
+	return res;
+}
+
+void lstg::WindowHelperDesktop::EnableIME()
+{
+	HWND hwnd = Director::getInstance()->getOpenGLView()->getWin32Window();
+	HIMC hIMC = ImmGetContext(hwnd);
+	if (hIMC)
+	{
+		ImmSetOpenStatus(hIMC, TRUE);
+		ImmReleaseContext(hwnd, hIMC);
+	}
+}
+
+void lstg::WindowHelperDesktop::DisableIME()
+{
+	HWND hwnd = Director::getInstance()->getOpenGLView()->getWin32Window();
+	HIMC hIMC = ImmGetContext(hwnd);
+	if (hIMC)
+	{
+		ImmSetOpenStatus(hIMC, FALSE);
+		ImmReleaseContext(hwnd, hIMC);
+	}
+}
+
 GLFWwindow* WindowHelperDesktop::getWindow()
 {
 	return view->getWindow();
