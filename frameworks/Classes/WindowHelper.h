@@ -66,12 +66,12 @@ namespace lstg
 
 		virtual float getDpiScale() { return 1.0f; }
 
-		virtual std::vector<cocos2d::Vec2> getDeviceResolution() {
+		virtual std::vector<cocos2d::Vec2> enumDeviceResolution() {
 			return std::vector<cocos2d::Vec2>{};
 		}
 
-		virtual void EnableIME() {};
-		virtual void DisableIME() {};
+		virtual void setImeEnabled(bool enable) {};
+		virtual bool isImeEnabled() { return false; };
 	protected:
 		std::string title;
 		bool visible = true;
@@ -140,10 +140,10 @@ namespace lstg
 
 		float getDpiScale() override;
 
-		std::vector<cocos2d::Vec2> getDeviceResolution() override;
+		std::vector<cocos2d::Vec2> enumDeviceResolution() override;
 
-		void EnableIME() override;
-		void DisableIME() override;
+		void setImeEnabled(bool enabled) override;
+		bool isImeEnabled() override;
 	protected:
 		// it's better to get window dynamicly
 		GLFWwindow* getWindow();

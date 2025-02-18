@@ -256,13 +256,11 @@ float WindowHelperDesktop::getDpiScale()
 	return (xscale + yscale) / 2;
 }
 
-std::vector<cocos2d::Vec2> lstg::WindowHelperDesktop::getDeviceResolution()
+std::vector<cocos2d::Vec2> lstg::WindowHelperDesktop::enumDeviceResolution()
 {
 	DEVMODE devMode{};
 
 	int modeNum = 0;
-
-	// 构建一个Lua表，将枚举出的值保存在此处
 	
 	std::vector<cocos2d::Vec2> res{};
 
@@ -290,26 +288,28 @@ std::vector<cocos2d::Vec2> lstg::WindowHelperDesktop::getDeviceResolution()
 	return res;
 }
 
-void lstg::WindowHelperDesktop::EnableIME()
+void lstg::WindowHelperDesktop::setImeEnabled(bool enabled)
 {
 	HWND hwnd = Director::getInstance()->getOpenGLView()->getWin32Window();
 	HIMC hIMC = ImmGetContext(hwnd);
 	if (hIMC)
 	{
-		ImmSetOpenStatus(hIMC, TRUE);
+		ImmSetOpenStatus(hIMC, enabled);
 		ImmReleaseContext(hwnd, hIMC);
 	}
 }
 
-void lstg::WindowHelperDesktop::DisableIME()
+bool lstg::WindowHelperDesktop::isImeEnabled()
 {
 	HWND hwnd = Director::getInstance()->getOpenGLView()->getWin32Window();
 	HIMC hIMC = ImmGetContext(hwnd);
 	if (hIMC)
 	{
-		ImmSetOpenStatus(hIMC, FALSE);
+		bool b = ImmGetOpenStatus(hIMC);
 		ImmReleaseContext(hwnd, hIMC);
+		return b;
 	}
+	return false;
 }
 
 GLFWwindow* WindowHelperDesktop::getWindow()

@@ -38,22 +38,22 @@ int lua_lstg_WindowHelper_getDpiScale(lua_State* lua_S)
 	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::getDpiScale);
 	LUA_INVOKE_FOOTER("0");
 }
-int lua_lstg_WindowHelper_getDeviceResolution(lua_State* lua_S)
+int lua_lstg_WindowHelper_enumDeviceResolution(lua_State* lua_S)
 {
-	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:getDeviceResolution");
-	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::getDeviceResolution);
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:enumDeviceResolution");
+	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::enumDeviceResolution);
 	LUA_INVOKE_FOOTER("0");
 }
-int lua_lstg_WindowHelper_EnableIME(lua_State* lua_S)
+int lua_lstg_WindowHelper_setImeEnabled(lua_State* lua_S)
 {
-	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:EnableIME");
-	LUA_TRY_INVOKE(0, &lstg::WindowHelper::EnableIME);
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:setImeEnabled");
+	LUA_TRY_INVOKE(0, &lstg::WindowHelper::setImeEnabled);
 	LUA_INVOKE_FOOTER("0");
 }
-int lua_lstg_WindowHelper_DisableIME(lua_State* lua_S)
+int lua_lstg_WindowHelper_isImeEnabled(lua_State* lua_S)
 {
-	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:DisableIME");
-	LUA_TRY_INVOKE(0, &lstg::WindowHelper::DisableIME);
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:isImeEnabled");
+	LUA_TRY_INVOKE(0, &lstg::WindowHelper::isImeEnabled);
 	LUA_INVOKE_FOOTER("0");
 }
 int lua_lstg_WindowHelper_getPosition(lua_State* lua_S)
@@ -202,7 +202,9 @@ int luaReg_WindowHelper_lstgWindowHelper(lua_State* lua_S)
 		nullptr, nullptr);
 	LUA_METHOD("getClipboardString", lua_lstg_WindowHelper_getClipboardString);
 	LUA_METHOD("getDpiScale", lua_lstg_WindowHelper_getDpiScale);
-	LUA_METHOD("getDeviceResolution", lua_lstg_WindowHelper_getDeviceResolution);
+	LUA_METHOD("enumDeviceResolution", lua_lstg_WindowHelper_enumDeviceResolution);
+	LUA_METHOD("setImeEnabled", lua_lstg_WindowHelper_setImeEnabled);
+	LUA_METHOD("isImeEnabled", lua_lstg_WindowHelper_isImeEnabled);
 	LUA_METHOD("getPosition", lua_lstg_WindowHelper_getPosition);
 	LUA_METHOD("getSize", lua_lstg_WindowHelper_getSize);
 	LUA_METHOD("getTitle", lua_lstg_WindowHelper_getTitle);
