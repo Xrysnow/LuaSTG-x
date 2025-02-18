@@ -256,33 +256,35 @@ float WindowHelperDesktop::getDpiScale()
 	return (xscale + yscale) / 2;
 }
 
-std::vector<cocos2d::Vec2> lstg::WindowHelperDesktop::enumDeviceResolution()
+cocos2d::Vec2 WindowHelperDesktop::getDisplayResolution()
 {
-	DEVMODE devMode{};
+	return view->getMonitorSize();
+}
 
-	int modeNum = 0;
-	
+std::vector<cocos2d::Vec2> lstg::WindowHelperDesktop::enumDisplayResolution()
+{
 	std::vector<cocos2d::Vec2> res{};
 
-	while (EnumDisplaySettings(nullptr, modeNum, &devMode))
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+
+	int count;
+	const GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
+
+	for (int i = 0; i < count; i++)
 	{
-		// 检查对于宽高，是否已经存在，因为枚举显示设置时会将刷新率纳入考虑
-		bool exist = false;
-		for (auto& v : res)
+		const auto& mode = modes[i];
+		bool duplicate = false;
+		for (const auto& r : res)
 		{
-			if (v.x == devMode.dmPelsWidth && v.y == devMode.dmPelsHeight)
+			if (r.x == mode.width && r.y == mode.height)
 			{
-				exist = true;
+				duplicate = true;
 				break;
 			}
 		}
-		if (exist)
-		{
-			modeNum++;
+		if (duplicate)
 			continue;
-		}
-		res.push_back({ static_cast<float>(devMode.dmPelsWidth), static_cast<float>(devMode.dmPelsHeight) });
-		modeNum++;
+		res.push_back({ float(mode.width), float(mode.height) });
 	}
 
 	return res;
@@ -290,6 +292,7 @@ std::vector<cocos2d::Vec2> lstg::WindowHelperDesktop::enumDeviceResolution()
 
 void lstg::WindowHelperDesktop::setImeEnabled(bool enabled)
 {
+#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 	HWND hwnd = Director::getInstance()->getOpenGLView()->getWin32Window();
 	HIMC hIMC = ImmGetContext(hwnd);
 	if (hIMC)
@@ -297,10 +300,28 @@ void lstg::WindowHelperDesktop::setImeEnabled(bool enabled)
 		ImmSetOpenStatus(hIMC, enabled);
 		ImmReleaseContext(hwnd, hIMC);
 	}
+#endif
+
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+	// TODO
+#endif
+
+#if CC_TARGET_PLATFORM == CC_PLATFORM_LINUX
+	// TODO
+#endif
+
+#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+	// TODO
+#endif
+
+#if CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+	// TODO
+#endif
 }
 
 bool lstg::WindowHelperDesktop::isImeEnabled()
 {
+#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 	HWND hwnd = Director::getInstance()->getOpenGLView()->getWin32Window();
 	HIMC hIMC = ImmGetContext(hwnd);
 	if (hIMC)
@@ -309,7 +330,25 @@ bool lstg::WindowHelperDesktop::isImeEnabled()
 		ImmReleaseContext(hwnd, hIMC);
 		return b;
 	}
+
 	return false;
+#endif
+
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+	// TODO
+#endif
+
+#if CC_TARGET_PLATFORM == CC_PLATFORM_LINUX
+	// TODO
+#endif
+
+#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+	// TODO
+#endif
+
+#if CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+	// TODO
+#endif
 }
 
 GLFWwindow* WindowHelperDesktop::getWindow()

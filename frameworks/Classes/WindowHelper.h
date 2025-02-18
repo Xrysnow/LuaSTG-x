@@ -66,7 +66,11 @@ namespace lstg
 
 		virtual float getDpiScale() { return 1.0f; }
 
-		virtual std::vector<cocos2d::Vec2> enumDeviceResolution() {
+		virtual cocos2d::Vec2 getDisplayResolution() {
+			return cocos2d::Vec2{};
+		}
+
+		virtual std::vector<cocos2d::Vec2> enumDisplayResolution() {
 			return std::vector<cocos2d::Vec2>{};
 		}
 
@@ -140,7 +144,8 @@ namespace lstg
 
 		float getDpiScale() override;
 
-		std::vector<cocos2d::Vec2> enumDeviceResolution() override;
+		cocos2d::Vec2 getDisplayResolution() override;
+		std::vector<cocos2d::Vec2> enumDisplayResolution() override;
 
 		void setImeEnabled(bool enabled) override;
 		bool isImeEnabled() override;
