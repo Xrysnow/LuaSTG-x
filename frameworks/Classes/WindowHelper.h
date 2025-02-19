@@ -65,6 +65,17 @@ namespace lstg
 		virtual void setStandardCursor(CursorType type) {}
 
 		virtual float getDpiScale() { return 1.0f; }
+
+		virtual cocos2d::Vec2 getDisplayResolution() {
+			return cocos2d::Vec2{};
+		}
+
+		virtual std::vector<cocos2d::Vec2> enumDisplayResolution() {
+			return std::vector<cocos2d::Vec2>{};
+		}
+
+		virtual void setImeEnabled(bool enable) {};
+		virtual bool isImeEnabled() { return false; };
 	protected:
 		std::string title;
 		bool visible = true;
@@ -132,6 +143,12 @@ namespace lstg
 		void setStandardCursor(CursorType type) override;
 
 		float getDpiScale() override;
+
+		cocos2d::Vec2 getDisplayResolution() override;
+		std::vector<cocos2d::Vec2> enumDisplayResolution() override;
+
+		void setImeEnabled(bool enabled) override;
+		bool isImeEnabled() override;
 	protected:
 		// it's better to get window dynamicly
 		GLFWwindow* getWindow();

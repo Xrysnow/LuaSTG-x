@@ -256,6 +256,101 @@ float WindowHelperDesktop::getDpiScale()
 	return (xscale + yscale) / 2;
 }
 
+cocos2d::Vec2 WindowHelperDesktop::getDisplayResolution()
+{
+	return view->getMonitorSize();
+}
+
+std::vector<cocos2d::Vec2> lstg::WindowHelperDesktop::enumDisplayResolution()
+{
+	std::vector<cocos2d::Vec2> res{};
+
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+
+	int count;
+	const GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
+
+	for (int i = 0; i < count; i++)
+	{
+		const auto& mode = modes[i];
+		bool duplicate = false;
+		for (const auto& r : res)
+		{
+			if (r.x == mode.width && r.y == mode.height)
+			{
+				duplicate = true;
+				break;
+			}
+		}
+		if (duplicate)
+			continue;
+		res.push_back({ float(mode.width), float(mode.height) });
+	}
+
+	return res;
+}
+
+void lstg::WindowHelperDesktop::setImeEnabled(bool enabled)
+{
+#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
+	HWND hwnd = Director::getInstance()->getOpenGLView()->getWin32Window();
+	HIMC hIMC = ImmGetContext(hwnd);
+	if (hIMC)
+	{
+		ImmSetOpenStatus(hIMC, enabled);
+		ImmReleaseContext(hwnd, hIMC);
+	}
+#endif
+
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+	// TODO
+#endif
+
+#if CC_TARGET_PLATFORM == CC_PLATFORM_LINUX
+	// TODO
+#endif
+
+#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+	// TODO
+#endif
+
+#if CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+	// TODO
+#endif
+}
+
+bool lstg::WindowHelperDesktop::isImeEnabled()
+{
+#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
+	HWND hwnd = Director::getInstance()->getOpenGLView()->getWin32Window();
+	HIMC hIMC = ImmGetContext(hwnd);
+	if (hIMC)
+	{
+		bool b = ImmGetOpenStatus(hIMC);
+		ImmReleaseContext(hwnd, hIMC);
+		return b;
+	}
+
+	return false;
+#endif
+
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+	// TODO
+#endif
+
+#if CC_TARGET_PLATFORM == CC_PLATFORM_LINUX
+	// TODO
+#endif
+
+#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+	// TODO
+#endif
+
+#if CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+	// TODO
+#endif
+}
+
 GLFWwindow* WindowHelperDesktop::getWindow()
 {
 	return view->getWindow();
