@@ -263,10 +263,10 @@ cocos2d::Vec2 WindowHelperDesktop::getDisplayResolution()
 	return view->getMonitorSize();
 }
 
-std::vector<cocos2d::Vec2> lstg::WindowHelperDesktop::enumDisplayResolution()
+std::vector<cocos2d::Vec2> WindowHelperDesktop::enumDisplayResolution()
 {
 	std::vector<cocos2d::Vec2> res{};
-	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	GLFWmonitor* monitor = view->getMonitor();
 	int count;
 	const GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
 	for (int i = 0; i < count; i++)
@@ -275,7 +275,7 @@ std::vector<cocos2d::Vec2> lstg::WindowHelperDesktop::enumDisplayResolution()
 		bool duplicate = false;
 		for (const auto& r : res)
 		{
-			if (r.x == mode.width && r.y == mode.height)
+			if (int(r.x) == mode.width && int(r.y) == mode.height)
 			{
 				duplicate = true;
 				break;
@@ -354,7 +354,7 @@ MonitorHelper* MonitorHelper::getCurrentMonitor()
 {
 #ifdef CC_PLATFORM_PC
 	const auto view = dynamic_cast<GLViewImpl*>(Director::getInstance()->getOpenGLView());
-	const auto p = glfwGetWindowMonitor(view->getWindow());
+	const auto p = view->getMonitor();
 	return MonitorHelperDesktop::getOrCreate(p);
 #else
 	return nullptr;
