@@ -1036,22 +1036,29 @@ void XRenderer::frameBufferEnd()
 	flushTriangles();
 	frameBuffer->setGlobalZOrder(std::numeric_limits<float>::max());
 	frameBuffer->end();
-	auto size = Director::getInstance()->getOpenGLView()->getFrameSize();
-	if (size.width != _lastFrameSize.width || size.height != _lastFrameSize.height)
+	const auto view = Director::getInstance()->getOpenGLView();
+	const auto fsize = view->getFrameSize();
+	if (fsize.width != _lastFrameSize.width || fsize.height != _lastFrameSize.height)
 	{
-		_lastFrameSize = size;
-		Mat4::createOrthographicOffCenter(0, size.width, 0, size.height, -1024.f, 1024.f, &_FBProjection);
+		_lastFrameSize = fsize;
+		Mat4::createOrthographicOffCenter(0, fsize.width, 0, fsize.height, -1024.f, 1024.f, &_FBProjection);
 	}
 	pushCallbackCommand([=]()
 	{
-		pRenderer->setViewPort(0, 0, size.width, size.height);
+		// offset on fullscreen
+		const auto& vp = Camera::getDefaultViewport();
+		pRenderer->setViewPort(
+			vp.x / view->getScaleX(),
+			vp.y / view->getScaleY(),
+			fsize.width,
+			fsize.height);
 		Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, _FBProjection);
 	});
 
 	if (!bOffscreen)
 	{
 		const auto tsize = frameBuffer->getSprite()->getTexture()->getContentSizeInPixels();
-		const auto scale = min(size.width / tsize.width, size.height / tsize.height);
+		const auto scale = min(fsize.width / tsize.width, fsize.height / tsize.height);
 		renderFrameBuffer(scale);
 	}
 }
