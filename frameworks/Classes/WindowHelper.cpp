@@ -152,7 +152,9 @@ void WindowHelperDesktop::moveToCenter()
 {
 	if (isFullscreen())
 		return;
-	const auto s = (view->getMonitorSize() - getSize()) / 2;
+	int xpos = 0, ypos = 0;
+	glfwGetMonitorPos(view->getMonitor(), &xpos, &ypos);
+	const auto s = (view->getMonitorSize() - getSize()) / 2 + Vec2(xpos, ypos);
 	setPosition(Vec2(s.width, s.height));
 }
 
