@@ -266,12 +266,9 @@ cocos2d::Vec2 WindowHelperDesktop::getDisplayResolution()
 std::vector<cocos2d::Vec2> lstg::WindowHelperDesktop::enumDisplayResolution()
 {
 	std::vector<cocos2d::Vec2> res{};
-
 	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-
 	int count;
 	const GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
-
 	for (int i = 0; i < count; i++)
 	{
 		const auto& mode = modes[i];
@@ -286,13 +283,12 @@ std::vector<cocos2d::Vec2> lstg::WindowHelperDesktop::enumDisplayResolution()
 		}
 		if (duplicate)
 			continue;
-		res.push_back({ float(mode.width), float(mode.height) });
+		res.emplace_back(float(mode.width), float(mode.height));
 	}
-
 	return res;
 }
 
-void lstg::WindowHelperDesktop::setImeEnabled(bool enabled)
+void WindowHelperDesktop::setImeEnabled(bool enabled)
 {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 	HWND hwnd = Director::getInstance()->getOpenGLView()->getWin32Window();
@@ -303,25 +299,9 @@ void lstg::WindowHelperDesktop::setImeEnabled(bool enabled)
 		ImmReleaseContext(hwnd, hIMC);
 	}
 #endif
-
-#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
-	// TODO
-#endif
-
-#if CC_TARGET_PLATFORM == CC_PLATFORM_LINUX
-	// TODO
-#endif
-
-#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-	// TODO
-#endif
-
-#if CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-	// TODO
-#endif
 }
 
-bool lstg::WindowHelperDesktop::isImeEnabled()
+bool WindowHelperDesktop::isImeEnabled()
 {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 	HWND hwnd = Director::getInstance()->getOpenGLView()->getWin32Window();
@@ -332,25 +312,8 @@ bool lstg::WindowHelperDesktop::isImeEnabled()
 		ImmReleaseContext(hwnd, hIMC);
 		return b;
 	}
-
+#endif
 	return false;
-#endif
-
-#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
-	// TODO
-#endif
-
-#if CC_TARGET_PLATFORM == CC_PLATFORM_LINUX
-	// TODO
-#endif
-
-#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-	// TODO
-#endif
-
-#if CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-	// TODO
-#endif
 }
 
 GLFWwindow* WindowHelperDesktop::getWindow()

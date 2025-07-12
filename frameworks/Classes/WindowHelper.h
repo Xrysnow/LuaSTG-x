@@ -74,8 +74,8 @@ namespace lstg
 			return std::vector<cocos2d::Vec2>{};
 		}
 
-		virtual void setImeEnabled(bool enable) {};
-		virtual bool isImeEnabled() { return false; };
+		virtual void setImeEnabled(bool enable) {}
+		virtual bool isImeEnabled() { return false; }
 	protected:
 		std::string title;
 		bool visible = true;
