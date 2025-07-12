@@ -166,17 +166,9 @@ void XRenderer::setAALevel(int lv)noexcept
 	switch (lv)
 	{
 	case 0:
-		optAALevel = lv;
-		break;
 	case 2:
-		optAALevel = lv;
-		break;
 	case 4:
-		optAALevel = lv;
-		break;
 	case 8:
-		optAALevel = lv;
-		break;
 	case 16:
 		optAALevel = lv;
 		break;
@@ -254,6 +246,8 @@ void XRenderer::pushCallbackCommand(RenderQueue::QUEUE_GROUP group, float global
 		case RenderQueue::GLOBALZ_ZERO:
 			break;
 		case RenderQueue::GLOBALZ_POS:
+			break;
+		case RenderQueue::QUEUE_COUNT:
 			break;
 		default: ;
 	}
