@@ -17,6 +17,7 @@ namespace lstg
 		cocos2d::Mat4* getMV() { return &_mv; }
 		Triangles* getTri() { return &_triangles; }
 		cocos2d::PipelineDescriptor* getDesc() { return &_pipelineDescriptor; }
+		RenderMode* getRenderMode() const { return _renderMode; }
 
 		void copyProperties(XTrianglesCommand* other) const;
 
