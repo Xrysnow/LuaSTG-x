@@ -459,7 +459,9 @@ bool XRenderer::render(Sprite* p, const V3F_C4B_T2F_Quad* quad,
 	tr->indexCount = 6;
 	setXTCommand(cmd, p->getTexture());
 	// note: rotation in cocos2dx is adverse to lstg
-	getNodeTransform(p->getAnchorPointInPoints(), x, y, -rot, hscale, vscale, z, cmd->getMV());
+	//getNodeTransform(p->getAnchorPointInPoints(), x, y, -rot, hscale, vscale, z, cmd->getMV());
+	transformQuad(*q, p->getAnchorPointInPoints(), x, y, -rot, hscale, vscale, z);
+	cmd->setSkipModelView(true);
 	addXTCommand(cmd);
 	return true;
 }
@@ -540,13 +542,14 @@ bool XRenderer::renderTexture(Texture2D* t, const V3F_C4B_T2F_Quad* quad)noexcep
 		std::swap(q->tl.texCoords, q->bl.texCoords);
 		std::swap(q->tr.texCoords, q->br.texCoords);
 	}
+	setXTCommand(cmd, t);
 	const auto tri = cmd->getTri();
 	tri->verts = (V3F_C4B_T2F*)q;
 	tri->indices = quadIndices9;
 	tri->vertCount = 4;
 	tri->indexCount = 6;
-	*cmd->getMV() = Mat4::IDENTITY;
-	setXTCommand(cmd, t);
+	//NOTE: set after setXTCommand
+	cmd->setSkipModelView(true);
 	addXTCommand(cmd);
 	return true;
 }
@@ -557,7 +560,7 @@ bool XRenderer::renderTexture(Texture2D* t, const TrianglesCommand::Triangles& t
 	auto cmd = LMP.getXTrianglesCommand();
 	setXTCommand(cmd, t);
 	*cmd->getTri() = triangles;
-	*cmd->getMV() = Mat4::IDENTITY;
+	cmd->setSkipModelView(true);
 	addXTCommand(cmd);
 	return true;
 }
