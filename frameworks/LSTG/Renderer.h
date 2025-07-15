@@ -111,7 +111,7 @@ namespace lstg
 		//TODO: camera manager
 
 		// set viewport
-		bool setViewport(double left, double right, double bottom, double top)noexcept;
+		bool setViewport(int left, int right, int bottom, int top)noexcept;
 
 		// set ortho projection
 		void setOrtho(float left, float right, float bottom, float top)noexcept;

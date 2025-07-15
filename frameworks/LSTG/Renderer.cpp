@@ -373,9 +373,8 @@ void XRenderer::renderClear(const Color4F& c)noexcept
 	}
 }
 
-bool XRenderer::setViewport(double left, double right, double bottom, double top)noexcept
+bool XRenderer::setViewport(int left, int right, int bottom, int top)noexcept
 {
-	//TODO: use float
 	const int x = std::min(left, right);
 	const int y = std::min(bottom, top);
 	const unsigned int w = std::max(left, right) - x;
