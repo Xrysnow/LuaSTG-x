@@ -268,7 +268,7 @@ void ResParticle::ParticlePool::render(float scaleX, float scaleY)
 		const auto rad = pInst.spin;
 		const auto x = pInst.vecLocation.x;
 		const auto y = pInst.vecLocation.y;
-		const auto rot = Vec2(std::cosf(rad), std::sinf(rad));
+		const auto rot = Vec2(::cosf(rad), ::sinf(rad));
 		//NOTE: anchor point of Sprite is ignored
 		const auto tl0 = Vec2(topLeft.x * scaleX * pInst.size, topLeft.y * scaleY * pInst.size);
 		const auto tl = tl0.rotate(rot);
