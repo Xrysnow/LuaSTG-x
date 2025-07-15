@@ -4,9 +4,11 @@
 #include <array>
 #include <bitset>
 #include <cstdint>
+#include <cstring>
 #include <deque>
 #include <forward_list>
 #include <functional>
+#include <limits>
 #include <list>
 #include <map>
 #include <queue>

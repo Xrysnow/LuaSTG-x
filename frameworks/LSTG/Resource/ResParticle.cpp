@@ -4,6 +4,7 @@
 #include "Renderer.h"
 #include "XProfiler.h"
 #include "renderer/backend/Buffer.h"
+#include <cmath>
 #include <cstring>
 
 using namespace std;

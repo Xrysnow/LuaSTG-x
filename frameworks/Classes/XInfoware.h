@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <array>
 #include <bitset>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
