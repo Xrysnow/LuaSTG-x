@@ -358,8 +358,66 @@ string lstg::tostring(TextVAlignment va)
 	return "";
 }
 
+void lstg::transformPoint(Vec3& point, const Vec2& anchorPIP,
+	float x, float y, float rot, float hscale, float vscale, float z)
+{
+	float zz2_;
+	float wz2;
+	if (rot == 0.f)
+	{
+		zz2_ = 1.0f;
+		wz2 = 0;
+	}
+	else
+	{
+		const float halfRadz = -(.5f * 0.01745329252f * rot);
+		const float qz = std::sin(halfRadz);
+		const float qw = std::cos(halfRadz);
+		const float z2 = qz + qz;
+		zz2_ = 1.0f - qz * z2;
+		wz2 = qw * z2;
+	}
+
+	const float dx = (point.x - anchorPIP.x) * hscale;
+	const float dy = (point.y - anchorPIP.y) * vscale;
+
+	point.x = dx * zz2_ + dy * (-wz2) + x;
+	point.y = dx * wz2 + dy * zz2_ + y;
+	point.z += z;
+}
+
+void lstg::transformQuad(V3F_C4B_T2F_Quad& quad, const cocos2d::Vec2& anchorPIP, float x, float y, float rot,
+	float hscale, float vscale, float z)
+{
+	float zz2_;
+	float wz2;
+	if (rot == 0.f)
+	{
+		zz2_ = 1.0f;
+		wz2 = 0;
+	}
+	else
+	{
+		const float halfRadz = -(.5f * 0.01745329252f * rot);
+		const float qz = std::sin(halfRadz);
+		const float qw = std::cos(halfRadz);
+		const float z2 = qz + qz;
+		zz2_ = 1.0f - qz * z2;
+		wz2 = qw * z2;
+	}
+	for (int i = 0; i < 4; ++i)
+	{
+		auto& point = ((V3F_C4B_T2F*)&quad)[i].vertices;
+		const float dx = (point.x - anchorPIP.x) * hscale;
+		const float dy = (point.y - anchorPIP.y) * vscale;
+		point.x = dx * zz2_ + dy * (-wz2) + x;
+		point.y = dx * wz2 + dy * zz2_ + y;
+		point.z += z;
+	}
+}
+
 void lstg::getNodeTransform(const Vec2& anchorPointInPoints,
-	float x, float y, float rot, float hscale, float vscale, float z, Mat4* _transform)
+                            float x, float y, float rot, float hscale, float vscale, float z, Mat4* _transform)
 {
 	float zz2_;
 	float wz2;

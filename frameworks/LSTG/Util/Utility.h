@@ -71,6 +71,10 @@ namespace lstg
 	std::string tostring(cocos2d::TextHAlignment ha);
 	std::string tostring(cocos2d::TextVAlignment va);
 
+	void transformPoint(cocos2d::Vec3& point, const cocos2d::Vec2& anchorPIP,
+		float x, float y, float rot, float hscale, float vscale, float z);
+	void transformQuad(cocos2d::V3F_C4B_T2F_Quad& quad, const cocos2d::Vec2& anchorPIP,
+		float x, float y, float rot, float hscale, float vscale, float z);
 	void getNodeTransform(const cocos2d::Vec2& anchorPointInPoints,
 		float x, float y, float rot, float hscale, float vscale, float z, cocos2d::Mat4* out);
 	cocos2d::Mat4 getNodeTransform(const cocos2d::Vec2& anchorPointInPoints,
