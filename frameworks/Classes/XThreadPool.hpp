@@ -64,9 +64,9 @@ namespace lstg
 
 		template<class F, class... Args>
 		auto add_task_future(F&& f, Args&&... args)
-			-> std::future<typename std::result_of<F(Args...)>::type>
+			-> std::future<std::invoke_result_t<F, Args...>>
 		{
-			using return_type = typename std::result_of<F(Args...)>::type;
+			using return_type = std::invoke_result_t<F, Args...>;
 			auto task = std::make_shared<std::packaged_task<return_type()>>(
 				std::bind(std::forward<F>(f), std::forward<Args>(args)...)
 			);
@@ -100,7 +100,7 @@ namespace lstg
 					}
 					if (!_taskQueue.empty())
 					{
-						task = move(_taskQueue.front());
+						task = std::move(_taskQueue.front());
 						_taskQueue.pop();
 					}
 					else
@@ -118,7 +118,7 @@ namespace lstg
 		}
 
 		void add_worker() {
-			_workers.emplace_back(std::bind(&ThreadPool::thread_func, this));
+			_workers.emplace_back([this] { thread_func(); });
 		}
 
 		void join()
@@ -139,8 +139,8 @@ namespace lstg
 		std::mutex _waitMutex;
 		std::condition_variable _taskCondition;
 		std::condition_variable _waitCondition;
-		bool _stop;
 		size_t _numWorker;
 		std::atomic_int _numTaskLeft;
+		bool _stop;
 	};
 }
