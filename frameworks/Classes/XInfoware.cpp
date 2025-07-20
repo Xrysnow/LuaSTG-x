@@ -586,7 +586,7 @@ system::memory_t system::memory() noexcept {
 	std::ifstream meminfo("/proc/meminfo");
 	if (!meminfo.is_open() || !meminfo)
 		return {};
-	system::memory_t ret;
+	system::memory_t ret{};
 	for (std::string line; std::getline(meminfo, line);) {
 		const auto colon_id = line.find_first_of(':');
 		const auto value = std::strtoul(line.c_str() + colon_id + 1, nullptr, 10) * 1024;
