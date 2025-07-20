@@ -1,3 +1,28 @@
+pluginManagement {
+
+    /**
+     * The pluginManagement.repositories block configures the
+     * repositories Gradle uses to search or download the Gradle plugins and
+     * their transitive dependencies. Gradle pre-configures support for remote
+     * repositories such as JCenter, Maven Central, and Ivy. You can also use
+     * local repositories or define your own remote repositories. Here we
+     * define the Gradle Plugin Portal, Google's Maven repository,
+     * and the Maven Central Repository as the repositories Gradle should use to look for its
+     * dependencies.
+     */
+
+    repositories {
+        maven {url='https://maven.aliyun.com/repository/releases/'}
+        maven {url='https://maven.aliyun.com/repository/google/'}
+        maven {url='https://maven.aliyun.com/repository/public/'}
+        maven {url='https://maven.aliyun.com/repository/central'}
+        maven {url='https://maven.aliyun.com/repository/gradle-plugin'}
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+
 include ':libcocos2dx'
 project(':libcocos2dx').projectDir = new File(settingsDir, '../../cocos2d-x/cocos/platform/android/libcocos2dx-with-controller')
 include ':LuaSTG-x'
