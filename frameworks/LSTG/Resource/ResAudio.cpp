@@ -6,6 +6,7 @@
 #include "../Math/XFFT.h"
 #include "../Audio/AudioDecoder.h"
 #include "../Audio/AudioEngine.h"
+#include <algorithm>
 
 using namespace std;
 using namespace lstg;
@@ -115,8 +116,7 @@ size_t ResAudio::fillBufferCopy()
 	if (curr > off)
 		offset = (curr - off) * source->getBytesPerFrame();
 	// offset should be limited
-	if (offset > decoderBufferSize - bufferCopySize)
-		offset = decoderBufferSize - bufferCopySize;
+	offset = std::min(offset, decoderBufferSize - bufferCopySize);
 	return source->copyBuffer((char*)bufferCopy.data(), bufferCopy.size(), offset);
 }
 
