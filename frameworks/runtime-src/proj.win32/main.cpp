@@ -27,8 +27,6 @@
 
 USING_NS_CC;
 
-#define USE_WIN32_CONSOLE
-
 int WINAPI _tWinMain(HINSTANCE hInstance,
                        HINSTANCE hPrevInstance,
                        LPTSTR    lpCmdLine,
@@ -37,13 +35,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-#ifdef USE_WIN32_CONSOLE
-    AllocConsole();
-    freopen("CONIN$", "r", stdin);
-    freopen("CONOUT$", "w", stdout);
-    freopen("CONOUT$", "w", stderr);
-#endif
-
+	bool useConsole = false;
 	std::vector<std::string> args;
 	for (int i = 0; i < __argc; ++i)
 	{
@@ -52,14 +44,21 @@ int WINAPI _tWinMain(HINSTANCE hInstance,
 		wcstombs(buf, __wargv[i], len);
 		args.emplace_back(buf, len);
 		free(buf);
+		if (args.back() == "--console" && !useConsole)
+		{
+			AllocConsole();
+			freopen("CONIN$", "r", stdin);
+			freopen("CONOUT$", "w", stdout);
+			freopen("CONOUT$", "w", stderr);
+            useConsole = true;
+		}
 	}
 	lstg::AppFrame::setCmdLineArgs(args);
     int ret = lstg::AppFrame::getInstance()->run();
 	lstg::AppFrame::destroyInstance();
 
-#ifdef USE_WIN32_CONSOLE
-    FreeConsole();
-#endif
+	if (useConsole)
+		FreeConsole();
 
     return ret;
 }
