@@ -107,9 +107,9 @@ Size WindowHelperDesktop::getSize()
 	return view->getFrameSize();
 }
 
-void WindowHelperDesktop::setFullscreen()
+void WindowHelperDesktop::setFullscreen(bool exclusive)
 {
-	view->setFullscreen();
+	view->setFullscreen(exclusive);
 }
 
 bool WindowHelperDesktop::isFullscreen()

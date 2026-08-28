@@ -55,7 +55,7 @@ namespace lstg
 		virtual void setSize(const cocos2d::Size& size) {}
 		virtual cocos2d::Size getSize() { return {}; }
 
-		virtual void setFullscreen() {}
+		virtual void setFullscreen(bool exclusive = false) {}
 		virtual bool isFullscreen() { return false; }
 
 		virtual void moveToCenter() {}
@@ -78,10 +78,10 @@ namespace lstg
 		virtual bool isImeEnabled() { return false; }
 	protected:
 		std::string title;
+		float gamma = 0.f;
 		bool visible = true;
 		bool cursorVisible = true;
 		bool vsync = true;
-		float gamma = 0.f;
 
 		WindowHelper() = default;
 	};
@@ -119,7 +119,7 @@ namespace lstg
 		void setSize(const cocos2d::Size& size) override;
 		cocos2d::Size getSize() override;
 
-		void setFullscreen() override;
+		void setFullscreen(bool exclusive = false) override;
 		bool isFullscreen() override;
 
 		void setVsync(bool b) override;

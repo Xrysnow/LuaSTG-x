@@ -26,40 +26,28 @@ int luaReg_WindowHelper_lstgWindowHelperCursorType(lua_State* lua_S)
 	LUA_ENUM_END();
 	return 0;
 }
+int lua_lstg_WindowHelper_enumDisplayResolution(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:enumDisplayResolution");
+	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::enumDisplayResolution);
+	LUA_INVOKE_FOOTER("0");
+}
 int lua_lstg_WindowHelper_getClipboardString(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:getClipboardString");
 	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::getClipboardString);
 	LUA_INVOKE_FOOTER("0");
 }
-int lua_lstg_WindowHelper_getDpiScale(lua_State* lua_S)
-{
-	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:getDpiScale");
-	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::getDpiScale);
-	LUA_INVOKE_FOOTER("0");
-}
-int lua_lstg_WindowHelper_getCurrentDeviceResolution(lua_State* lua_S)
+int lua_lstg_WindowHelper_getDisplayResolution(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:getDisplayResolution");
 	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::getDisplayResolution);
 	LUA_INVOKE_FOOTER("0");
 }
-int lua_lstg_WindowHelper_enumDeviceResolution(lua_State* lua_S)
+int lua_lstg_WindowHelper_getDpiScale(lua_State* lua_S)
 {
-	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:enumDisplayResolution");
-	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::enumDisplayResolution);
-	LUA_INVOKE_FOOTER("0");
-}
-int lua_lstg_WindowHelper_setImeEnabled(lua_State* lua_S)
-{
-	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:setImeEnabled");
-	LUA_TRY_INVOKE(1, &lstg::WindowHelper::setImeEnabled);
-	LUA_INVOKE_FOOTER("0");
-}
-int lua_lstg_WindowHelper_isImeEnabled(lua_State* lua_S)
-{
-	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:isImeEnabled");
-	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::isImeEnabled);
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:getDpiScale");
+	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::getDpiScale);
 	LUA_INVOKE_FOOTER("0");
 }
 int lua_lstg_WindowHelper_getPosition(lua_State* lua_S)
@@ -96,6 +84,12 @@ int lua_lstg_WindowHelper_isFullscreen(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:isFullscreen");
 	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::isFullscreen);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_WindowHelper_isImeEnabled(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:isImeEnabled");
+	LUA_TRY_INVOKE_R(0, &lstg::WindowHelper::isImeEnabled);
 	LUA_INVOKE_FOOTER("0");
 }
 int lua_lstg_WindowHelper_isVisible(lua_State* lua_S)
@@ -155,8 +149,15 @@ int lua_lstg_WindowHelper_setDefaultCursor(lua_State* lua_S)
 int lua_lstg_WindowHelper_setFullscreen(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:setFullscreen");
-	LUA_TRY_INVOKE(0, &lstg::WindowHelper::setFullscreen);
-	LUA_INVOKE_FOOTER("0");
+	LUA_TRY_INVOKE(1, static_cast<void(lstg::WindowHelper::*)(bool)>(&lstg::WindowHelper::setFullscreen));
+	LUA_TRY_INVOKE(0, [](lstg::WindowHelper* obj){{return obj->setFullscreen();}});
+	LUA_INVOKE_FOOTER("0,1");
+}
+int lua_lstg_WindowHelper_setImeEnabled(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:setImeEnabled");
+	LUA_TRY_INVOKE(1, &lstg::WindowHelper::setImeEnabled);
+	LUA_INVOKE_FOOTER("1");
 }
 int lua_lstg_WindowHelper_setPosition(lua_State* lua_S)
 {
@@ -203,21 +204,19 @@ int lua_lstg_WindowHelper_getInstance(lua_State* lua_S)
 int luaReg_WindowHelper_lstgWindowHelper(lua_State* lua_S)
 {
 	LUA_ENTRY("lstg");
-	LUA_CLS_DEF_BASE(lstg::WindowHelper, "WindowHelper", "lstg.WindowHelper",
-		cocos2d::Ref, "cc.Ref",
+	LUA_CLS_DEF(lstg::WindowHelper, "WindowHelper", "lstg.WindowHelper",
 		nullptr, nullptr);
+	LUA_METHOD("enumDisplayResolution", lua_lstg_WindowHelper_enumDisplayResolution);
 	LUA_METHOD("getClipboardString", lua_lstg_WindowHelper_getClipboardString);
+	LUA_METHOD("getDisplayResolution", lua_lstg_WindowHelper_getDisplayResolution);
 	LUA_METHOD("getDpiScale", lua_lstg_WindowHelper_getDpiScale);
-	LUA_METHOD("getDisplayResolution", lua_lstg_WindowHelper_getCurrentDeviceResolution);
-	LUA_METHOD("enumDisplayResolution", lua_lstg_WindowHelper_enumDeviceResolution);
-	LUA_METHOD("setImeEnabled", lua_lstg_WindowHelper_setImeEnabled);
-	LUA_METHOD("isImeEnabled", lua_lstg_WindowHelper_isImeEnabled);
 	LUA_METHOD("getPosition", lua_lstg_WindowHelper_getPosition);
 	LUA_METHOD("getSize", lua_lstg_WindowHelper_getSize);
 	LUA_METHOD("getTitle", lua_lstg_WindowHelper_getTitle);
 	LUA_METHOD("hint", lua_lstg_WindowHelper_hint);
 	LUA_METHOD("isCursorVisible", lua_lstg_WindowHelper_isCursorVisible);
 	LUA_METHOD("isFullscreen", lua_lstg_WindowHelper_isFullscreen);
+	LUA_METHOD("isImeEnabled", lua_lstg_WindowHelper_isImeEnabled);
 	LUA_METHOD("isVisible", lua_lstg_WindowHelper_isVisible);
 	LUA_METHOD("isVsync", lua_lstg_WindowHelper_isVsync);
 	LUA_METHOD("moveToCenter", lua_lstg_WindowHelper_moveToCenter);
@@ -228,6 +227,7 @@ int luaReg_WindowHelper_lstgWindowHelper(lua_State* lua_S)
 	LUA_METHOD("setCustomCursor", lua_lstg_WindowHelper_setCustomCursor);
 	LUA_METHOD("setDefaultCursor", lua_lstg_WindowHelper_setDefaultCursor);
 	LUA_METHOD("setFullscreen", lua_lstg_WindowHelper_setFullscreen);
+	LUA_METHOD("setImeEnabled", lua_lstg_WindowHelper_setImeEnabled);
 	LUA_METHOD("setPosition", lua_lstg_WindowHelper_setPosition);
 	LUA_METHOD("setSize", lua_lstg_WindowHelper_setSize);
 	LUA_METHOD("setStandardCursor", lua_lstg_WindowHelper_setStandardCursor);
