@@ -30,6 +30,36 @@ int luaReg_ZipArchive_lstgZipArchiveEncryption(lua_State* lua_S)
 	LUA_ENUM_END();
 	return 0;
 }
+int luaReg_ZipArchive_lstgZipArchiveCompressionMethod(lua_State* lua_S)
+{
+	LUA_ENUM_DEF("CompressionMethod");
+	LUA_ENUM_ENTRY("DEFAULT", lstg::ZipArchive::CompressionMethod::DEFAULT);
+	LUA_ENUM_ENTRY("STORE", lstg::ZipArchive::CompressionMethod::STORE);
+	LUA_ENUM_ENTRY("DEFLATE", lstg::ZipArchive::CompressionMethod::DEFLATE);
+	LUA_ENUM_ENTRY("BZIP2", lstg::ZipArchive::CompressionMethod::BZIP2);
+	LUA_ENUM_ENTRY("XZ", lstg::ZipArchive::CompressionMethod::XZ);
+	LUA_ENUM_ENTRY("ZSTD", lstg::ZipArchive::CompressionMethod::ZSTD);
+	LUA_ENUM_END();
+	return 0;
+}
+int luaReg_ZipArchive_lstgZipArchiveErrorCode(lua_State* lua_S)
+{
+	LUA_ENUM_DEF("ErrorCode");
+	LUA_ENUM_ENTRY("OK", lstg::ZipArchive::ErrorCode::OK);
+	LUA_ENUM_ENTRY("NOT_OPEN", lstg::ZipArchive::ErrorCode::NOT_OPEN);
+	LUA_ENUM_ENTRY("NOT_ALLOWED", lstg::ZipArchive::ErrorCode::NOT_ALLOWED);
+	LUA_ENUM_ENTRY("INVALID_ENTRY", lstg::ZipArchive::ErrorCode::INVALID_ENTRY);
+	LUA_ENUM_ENTRY("INVALID_PARAMETER", lstg::ZipArchive::ErrorCode::INVALID_PARAMETER);
+	LUA_ENUM_ENTRY("MEMORY_ALLOCATION", lstg::ZipArchive::ErrorCode::MEMORY_ALLOCATION);
+	LUA_ENUM_ENTRY("FOPEN_FAILURE", lstg::ZipArchive::ErrorCode::FOPEN_FAILURE);
+	LUA_ENUM_ENTRY("FREAD_FAILURE", lstg::ZipArchive::ErrorCode::FREAD_FAILURE);
+	LUA_ENUM_ENTRY("OWRITE_FAILURE", lstg::ZipArchive::ErrorCode::OWRITE_FAILURE);
+	LUA_ENUM_ENTRY("OWRITE_INDEX_FAILURE", lstg::ZipArchive::ErrorCode::OWRITE_INDEX_FAILURE);
+	LUA_ENUM_ENTRY("HANDLE_FAILURE", lstg::ZipArchive::ErrorCode::HANDLE_FAILURE);
+	LUA_ENUM_ENTRY("UNKNOWN", lstg::ZipArchive::ErrorCode::UNKNOWN);
+	LUA_ENUM_END();
+	return 0;
+}
 int lua_lstg_ZipArchive_addData(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:addData");
@@ -76,7 +106,7 @@ int lua_lstg_ZipArchive_extractEntry(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:extractEntry");
 	LUA_TRY_INVOKE_R(3, static_cast<bool(lstg::ZipArchive::*)(const std::string&, const std::string&, lstg::ZipArchive::State)>(&lstg::ZipArchive::extractEntry));
-	LUA_TRY_INVOKE_R(2, [](lstg::ZipArchive* obj, const std::string& arg0,const std::string& arg1){{return obj->extractEntry(arg0,arg1);}});
+	LUA_TRY_INVOKE_R(2, [](lstg::ZipArchive* obj,const std::string& arg0,const std::string& arg1){{return obj->extractEntry(arg0,arg1);}});
 	LUA_INVOKE_FOOTER("2,3");
 }
 int lua_lstg_ZipArchive_getComment(lua_State* lua_S)
@@ -86,40 +116,65 @@ int lua_lstg_ZipArchive_getComment(lua_State* lua_S)
 	LUA_TRY_INVOKE_R(0, [](lstg::ZipArchive* obj){{return obj->getComment();}});
 	LUA_INVOKE_FOOTER("0,1");
 }
+int lua_lstg_ZipArchive_getCompressionLevel(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:getCompressionLevel");
+	LUA_TRY_INVOKE_R(0, &lstg::ZipArchive::getCompressionLevel);
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_lstg_ZipArchive_getCompressionMethod(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:getCompressionMethod");
+	LUA_TRY_INVOKE_R(0, &lstg::ZipArchive::getCompressionMethod);
+	LUA_INVOKE_FOOTER("0");
+}
 int lua_lstg_ZipArchive_getEntries(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:getEntries");
-	LUA_TRY_INVOKE_R(1, static_cast<std::vector<std::basic_string<char>>(lstg::ZipArchive::*)(lstg::ZipArchive::State)const>(&lstg::ZipArchive::getEntries));
+	LUA_TRY_INVOKE_R(1, static_cast<std::vector<std::string>(lstg::ZipArchive::*)(lstg::ZipArchive::State)const>(&lstg::ZipArchive::getEntries));
 	LUA_TRY_INVOKE_R(0, [](lstg::ZipArchive* obj){{return obj->getEntries();}});
+	LUA_INVOKE_FOOTER("0,1");
+}
+int lua_lstg_ZipArchive_getEntriesCount(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:getEntriesCount");
+	LUA_TRY_INVOKE_R(1, static_cast<int64_t(lstg::ZipArchive::*)(lstg::ZipArchive::State)const>(&lstg::ZipArchive::getEntriesCount));
+	LUA_TRY_INVOKE_R(0, [](lstg::ZipArchive* obj){{return obj->getEntriesCount();}});
 	LUA_INVOKE_FOOTER("0,1");
 }
 int lua_lstg_ZipArchive_getEntryByIndex(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:getEntryByIndex");
 	LUA_TRY_INVOKE_R(2, static_cast<std::basic_string<char>(lstg::ZipArchive::*)(int64_t, lstg::ZipArchive::State)const>(&lstg::ZipArchive::getEntryByIndex));
-	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj, int64_t arg0){{return obj->getEntryByIndex(std::move(arg0));}});
+	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj,int64_t arg0){{return obj->getEntryByIndex(std::move(arg0));}});
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_lstg_ZipArchive_getEntryComment(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:getEntryComment");
 	LUA_TRY_INVOKE_R(2, static_cast<std::basic_string<char>(lstg::ZipArchive::*)(const std::string&, lstg::ZipArchive::State)const>(&lstg::ZipArchive::getEntryComment));
-	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj, const std::string& arg0){{return obj->getEntryComment(arg0);}});
+	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj,const std::string& arg0){{return obj->getEntryComment(arg0);}});
 	LUA_INVOKE_FOOTER("1,2");
 }
-int lua_lstg_ZipArchive_getEntryCount(lua_State* lua_S)
+int lua_lstg_ZipArchive_getEntryCompressionMethod(lua_State* lua_S)
 {
-	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:getEntryCount");
-	LUA_TRY_INVOKE_R(1, static_cast<int64_t(lstg::ZipArchive::*)(lstg::ZipArchive::State)const>(&lstg::ZipArchive::getEntryCount));
-	LUA_TRY_INVOKE_R(0, [](lstg::ZipArchive* obj){{return obj->getEntryCount();}});
-	LUA_INVOKE_FOOTER("0,1");
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:getEntryCompressionMethod");
+	LUA_TRY_INVOKE_R(2, static_cast<lstg::ZipArchive::CompressionMethod(lstg::ZipArchive::*)(const std::string&, lstg::ZipArchive::State)const>(&lstg::ZipArchive::getEntryCompressionMethod));
+	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj,const std::string& arg0){{return obj->getEntryCompressionMethod(arg0);}});
+	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_lstg_ZipArchive_getEntryInfo(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:getEntryInfo");
 	LUA_TRY_INVOKE_R(2, static_cast<lstg::ZipArchive::ZipEntryInfo(lstg::ZipArchive::*)(const std::string&, lstg::ZipArchive::State)>(&lstg::ZipArchive::getEntryInfo));
-	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj, const std::string& arg0){{return obj->getEntryInfo(arg0);}});
+	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj,const std::string& arg0){{return obj->getEntryInfo(arg0);}});
 	LUA_INVOKE_FOOTER("1,2");
+}
+int lua_lstg_ZipArchive_getLastError(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:getLastError");
+	LUA_TRY_INVOKE_R(0, &lstg::ZipArchive::getLastError);
+	LUA_INVOKE_FOOTER("0");
 }
 int lua_lstg_ZipArchive_getMode(lua_State* lua_S)
 {
@@ -127,13 +182,20 @@ int lua_lstg_ZipArchive_getMode(lua_State* lua_S)
 	LUA_TRY_INVOKE_R(0, &lstg::ZipArchive::getMode);
 	LUA_INVOKE_FOOTER("0");
 }
+int lua_lstg_ZipArchive_getNbEntries(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:getNbEntries");
+	LUA_TRY_INVOKE_R(1, static_cast<int64_t(lstg::ZipArchive::*)(lstg::ZipArchive::State)const>(&lstg::ZipArchive::getNbEntries));
+	LUA_TRY_INVOKE_R(0, [](lstg::ZipArchive* obj){{return obj->getNbEntries();}});
+	LUA_INVOKE_FOOTER("0,1");
+}
 int lua_lstg_ZipArchive_hasEntry(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:hasEntry");
 	LUA_TRY_INVOKE_R(4, static_cast<bool(lstg::ZipArchive::*)(const std::string&, bool, bool, lstg::ZipArchive::State)const>(&lstg::ZipArchive::hasEntry));
-	LUA_TRY_INVOKE_R(3, [](lstg::ZipArchive* obj, const std::string& arg0,bool arg1,bool arg2){{return obj->hasEntry(arg0,std::move(arg1),std::move(arg2));}});
-	LUA_TRY_INVOKE_R(2, [](lstg::ZipArchive* obj, const std::string& arg0,bool arg1){{return obj->hasEntry(arg0,std::move(arg1));}});
-	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj, const std::string& arg0){{return obj->hasEntry(arg0);}});
+	LUA_TRY_INVOKE_R(3, [](lstg::ZipArchive* obj,const std::string& arg0,bool arg1,bool arg2){{return obj->hasEntry(arg0,std::move(arg1),std::move(arg2));}});
+	LUA_TRY_INVOKE_R(2, [](lstg::ZipArchive* obj,const std::string& arg0,bool arg1){{return obj->hasEntry(arg0,std::move(arg1));}});
+	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj,const std::string& arg0){{return obj->hasEntry(arg0);}});
 	LUA_INVOKE_FOOTER("1,2,3,4");
 }
 int lua_lstg_ZipArchive_isEncrypted(lua_State* lua_S)
@@ -141,13 +203,6 @@ int lua_lstg_ZipArchive_isEncrypted(lua_State* lua_S)
 	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:isEncrypted");
 	LUA_TRY_INVOKE_R(0, &lstg::ZipArchive::isEncrypted);
 	LUA_INVOKE_FOOTER("0");
-}
-int lua_lstg_ZipArchive_isEntryCompressionEnabled(lua_State* lua_S)
-{
-	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:isEntryCompressionEnabled");
-	LUA_TRY_INVOKE_R(2, static_cast<bool(lstg::ZipArchive::*)(const std::string&, lstg::ZipArchive::State)const>(&lstg::ZipArchive::isEntryCompressionEnabled));
-	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj, const std::string& arg0){{return obj->isEntryCompressionEnabled(arg0);}});
-	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_lstg_ZipArchive_isMutable(lua_State* lua_S)
 {
@@ -165,7 +220,7 @@ int lua_lstg_ZipArchive_open(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:open");
 	LUA_TRY_INVOKE_R(2, static_cast<bool(lstg::ZipArchive::*)(lstg::ZipArchive::OpenMode, bool)>(&lstg::ZipArchive::open));
-	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj, lstg::ZipArchive::OpenMode arg0){{return obj->open(std::move(arg0));}});
+	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj,lstg::ZipArchive::OpenMode arg0){{return obj->open(std::move(arg0));}});
 	LUA_TRY_INVOKE_R(0, [](lstg::ZipArchive* obj){{return obj->open();}});
 	LUA_INVOKE_FOOTER("0,1,2");
 }
@@ -173,7 +228,7 @@ int lua_lstg_ZipArchive_readEntry(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:readEntry");
 	LUA_TRY_INVOKE_R(2, static_cast<lstg::Buffer*(lstg::ZipArchive::*)(const std::string&, lstg::ZipArchive::State)>(&lstg::ZipArchive::readEntry));
-	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj, const std::string& arg0){{return obj->readEntry(arg0);}});
+	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj,const std::string& arg0){{return obj->readEntry(arg0);}});
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_lstg_ZipArchive_removeComment(lua_State* lua_S)
@@ -194,19 +249,33 @@ int lua_lstg_ZipArchive_setComment(lua_State* lua_S)
 	LUA_TRY_INVOKE_R(1, &lstg::ZipArchive::setComment);
 	LUA_INVOKE_FOOTER("1");
 }
+int lua_lstg_ZipArchive_setCompressionLevel(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:setCompressionLevel");
+	LUA_TRY_INVOKE(1, &lstg::ZipArchive::setCompressionLevel);
+	LUA_INVOKE_FOOTER("1");
+}
+int lua_lstg_ZipArchive_setCompressionMethod(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:setCompressionMethod");
+	LUA_TRY_INVOKE(1, &lstg::ZipArchive::setCompressionMethod);
+	LUA_INVOKE_FOOTER("1");
+}
 int lua_lstg_ZipArchive_setEntryComment(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:setEntryComment");
 	LUA_TRY_INVOKE_R(3, static_cast<bool(lstg::ZipArchive::*)(const std::string&, const std::string&, lstg::ZipArchive::State)const>(&lstg::ZipArchive::setEntryComment));
-	LUA_TRY_INVOKE_R(2, [](lstg::ZipArchive* obj, const std::string& arg0,const std::string& arg1){{return obj->setEntryComment(arg0,arg1);}});
+	LUA_TRY_INVOKE_R(2, [](lstg::ZipArchive* obj,const std::string& arg0,const std::string& arg1){{return obj->setEntryComment(arg0,arg1);}});
 	LUA_INVOKE_FOOTER("2,3");
 }
-int lua_lstg_ZipArchive_setEntryCompressionEnabled(lua_State* lua_S)
+int lua_lstg_ZipArchive_setEntryCompressionConfig(lua_State* lua_S)
 {
-	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:setEntryCompressionEnabled");
-	LUA_TRY_INVOKE_R(3, static_cast<bool(lstg::ZipArchive::*)(const std::string&, bool, lstg::ZipArchive::State)const>(&lstg::ZipArchive::setEntryCompressionEnabled));
-	LUA_TRY_INVOKE_R(2, [](lstg::ZipArchive* obj, const std::string& arg0,bool arg1){{return obj->setEntryCompressionEnabled(arg0,std::move(arg1));}});
-	LUA_INVOKE_FOOTER("2,3");
+	LUA_INVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:setEntryCompressionConfig");
+	LUA_TRY_INVOKE_R(4, static_cast<bool(lstg::ZipArchive::*)(const std::string&, lstg::ZipArchive::CompressionMethod, uint32_t, lstg::ZipArchive::State)const>(&lstg::ZipArchive::setEntryCompressionConfig));
+	LUA_TRY_INVOKE_R(3, [](lstg::ZipArchive* obj,const std::string& arg0,lstg::ZipArchive::CompressionMethod arg1,uint32_t arg2){{return obj->setEntryCompressionConfig(arg0,std::move(arg1),std::move(arg2));}});
+	LUA_TRY_INVOKE_R(2, [](lstg::ZipArchive* obj,const std::string& arg0,lstg::ZipArchive::CompressionMethod arg1){{return obj->setEntryCompressionConfig(arg0,std::move(arg1));}});
+	LUA_TRY_INVOKE_R(1, [](lstg::ZipArchive* obj,const std::string& arg0){{return obj->setEntryCompressionConfig(arg0);}});
+	LUA_INVOKE_FOOTER("1,2,3,4");
 }
 int lua_lstg_ZipArchive_unlink(lua_State* lua_S)
 {
@@ -225,10 +294,9 @@ int lua_lstg_ZipArchive_create(lua_State* lua_S)
 int lua_lstg_ZipArchive_createFromBuffer(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("lstg.ZipArchive", "lstg.ZipArchive:createFromBuffer");
-	LUA_TRY_INVOKE_R(3, static_cast<lstg::ZipArchive*(*)(lstg::Buffer*, lstg::ZipArchive::OpenMode, bool)>(&lstg::ZipArchive::createFromBuffer));
-	LUA_TRY_INVOKE_R(2, [](lstg::Buffer* arg0,lstg::ZipArchive::OpenMode arg1){{return lstg::ZipArchive::createFromBuffer(arg0,std::move(arg1));}});
+	LUA_TRY_INVOKE_R(2, static_cast<lstg::ZipArchive*(*)(lstg::Buffer*, bool)>(&lstg::ZipArchive::createFromBuffer));
 	LUA_TRY_INVOKE_R(1, [](lstg::Buffer* arg0){{return lstg::ZipArchive::createFromBuffer(arg0);}});
-	LUA_SINVOKE_FOOTER("1,2,3");
+	LUA_SINVOKE_FOOTER("1,2");
 }
 int luaReg_ZipArchive_lstgZipArchive(lua_State* lua_S)
 {
@@ -245,15 +313,19 @@ int luaReg_ZipArchive_lstgZipArchive(lua_State* lua_S)
 	LUA_METHOD("discard", lua_lstg_ZipArchive_discard);
 	LUA_METHOD("extractEntry", lua_lstg_ZipArchive_extractEntry);
 	LUA_METHOD("getComment", lua_lstg_ZipArchive_getComment);
+	LUA_METHOD("getCompressionLevel", lua_lstg_ZipArchive_getCompressionLevel);
+	LUA_METHOD("getCompressionMethod", lua_lstg_ZipArchive_getCompressionMethod);
 	LUA_METHOD("getEntries", lua_lstg_ZipArchive_getEntries);
+	LUA_METHOD("getEntriesCount", lua_lstg_ZipArchive_getEntriesCount);
 	LUA_METHOD("getEntryByIndex", lua_lstg_ZipArchive_getEntryByIndex);
 	LUA_METHOD("getEntryComment", lua_lstg_ZipArchive_getEntryComment);
-	LUA_METHOD("getEntryCount", lua_lstg_ZipArchive_getEntryCount);
+	LUA_METHOD("getEntryCompressionMethod", lua_lstg_ZipArchive_getEntryCompressionMethod);
 	LUA_METHOD("getEntryInfo", lua_lstg_ZipArchive_getEntryInfo);
+	LUA_METHOD("getLastError", lua_lstg_ZipArchive_getLastError);
 	LUA_METHOD("getMode", lua_lstg_ZipArchive_getMode);
+	LUA_METHOD("getNbEntries", lua_lstg_ZipArchive_getNbEntries);
 	LUA_METHOD("hasEntry", lua_lstg_ZipArchive_hasEntry);
 	LUA_METHOD("isEncrypted", lua_lstg_ZipArchive_isEncrypted);
-	LUA_METHOD("isEntryCompressionEnabled", lua_lstg_ZipArchive_isEntryCompressionEnabled);
 	LUA_METHOD("isMutable", lua_lstg_ZipArchive_isMutable);
 	LUA_METHOD("isOpen", lua_lstg_ZipArchive_isOpen);
 	LUA_METHOD("open", lua_lstg_ZipArchive_open);
@@ -261,12 +333,16 @@ int luaReg_ZipArchive_lstgZipArchive(lua_State* lua_S)
 	LUA_METHOD("removeComment", lua_lstg_ZipArchive_removeComment);
 	LUA_METHOD("renameEntry", lua_lstg_ZipArchive_renameEntry);
 	LUA_METHOD("setComment", lua_lstg_ZipArchive_setComment);
+	LUA_METHOD("setCompressionLevel", lua_lstg_ZipArchive_setCompressionLevel);
+	LUA_METHOD("setCompressionMethod", lua_lstg_ZipArchive_setCompressionMethod);
 	LUA_METHOD("setEntryComment", lua_lstg_ZipArchive_setEntryComment);
-	LUA_METHOD("setEntryCompressionEnabled", lua_lstg_ZipArchive_setEntryCompressionEnabled);
+	LUA_METHOD("setEntryCompressionConfig", lua_lstg_ZipArchive_setEntryCompressionConfig);
 	LUA_METHOD("unlink", lua_lstg_ZipArchive_unlink);
 	LUA_METHOD("create", lua_lstg_ZipArchive_create);
 	LUA_METHOD("createFromBuffer", lua_lstg_ZipArchive_createFromBuffer);
+	luaReg_ZipArchive_lstgZipArchiveCompressionMethod(lua_S);
 	luaReg_ZipArchive_lstgZipArchiveEncryption(lua_S);
+	luaReg_ZipArchive_lstgZipArchiveErrorCode(lua_S);
 	luaReg_ZipArchive_lstgZipArchiveOpenMode(lua_S);
 	luaReg_ZipArchive_lstgZipArchiveState(lua_S);
 	LUA_CLS_END();

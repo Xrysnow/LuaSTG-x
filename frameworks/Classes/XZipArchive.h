@@ -1,7 +1,9 @@
 ﻿#pragma once
 #include "base/CCRef.h"
 #include "XBuffer.h"
+#include <zip.h>
 #include "libzippp.h"
+#include <memory>
 
 namespace lstg
 {
@@ -51,6 +53,36 @@ namespace lstg
 			TradPkware
 		};
 
+		/** libzippp enum values; these are not raw ZIP compression method IDs. */
+		enum CompressionMethod {
+			DEFAULT = libzippp::DEFAULT,
+			STORE = libzippp::STORE,
+			DEFLATE = libzippp::DEFLATE,
+#ifdef ZIP_CM_BZIP2
+			BZIP2 = libzippp::BZIP2,
+#endif
+#ifdef ZIP_CM_XZ
+			XZ = libzippp::XZ,
+#endif
+#ifdef ZIP_CM_ZSTD
+			ZSTD = libzippp::ZSTD,
+#endif
+		};
+		enum ErrorCode {
+			OK = LIBZIPPP_OK,
+			NOT_OPEN = LIBZIPPP_ERROR_NOT_OPEN,
+			NOT_ALLOWED = LIBZIPPP_ERROR_NOT_ALLOWED,
+			INVALID_ENTRY = LIBZIPPP_ERROR_INVALID_ENTRY,
+			INVALID_PARAMETER = LIBZIPPP_ERROR_INVALID_PARAMETER,
+			MEMORY_ALLOCATION = LIBZIPPP_ERROR_MEMORY_ALLOCATION,
+			FOPEN_FAILURE = LIBZIPPP_ERROR_FOPEN_FAILURE,
+			FREAD_FAILURE = LIBZIPPP_ERROR_FREAD_FAILURE,
+			OWRITE_FAILURE = LIBZIPPP_ERROR_OWRITE_FAILURE,
+			OWRITE_INDEX_FAILURE = LIBZIPPP_ERROR_OWRITE_INDEX_FAILURE,
+			HANDLE_FAILURE = LIBZIPPP_ERROR_HANDLE_FAILURE,
+			UNKNOWN = LIBZIPPP_ERROR_UNKNOWN
+		};
+
 		struct ZipEntryInfo
 		{
 			uint64_t index = 0;
@@ -65,7 +97,7 @@ namespace lstg
 		ZipArchive() = default;
 		~ZipArchive() override;
 		bool init(const std::string& path, const std::string& password, Encryption encryptionMethod);
-		bool initWithBuffer(Buffer* buffer_, OpenMode mode, bool checkConsistency);
+		bool initWithBuffer(Buffer* buffer_, bool checkConsistency);
 	public:
 		/**
 		 * Creates a new ZipArchive with the given path. If the password is defined, it
@@ -82,18 +114,13 @@ namespace lstg
 		static ZipArchive* create(const std::string& path,
 			const std::string& password = "", Encryption encryptionMethod = Encryption::None);
 		/**
-		 * Creates a new ZipArchive from the specified buffer. The archive will
-		 * directly be open with the given mode. If the archive fails to be open or
-		 * if the consistency check fails, this method will return null.
-		 * The buffer data must remain valid while the ZipArchive is alive.
-		 * The buffer won't be freed by the ZipArchive.
+		 * Opens a read-only snapshot of the Buffer, matching libzippp::fromBuffer.
+		 * Changes to the caller's Buffer do not affect the archive. Returns null on failure.
 		 */
-		static ZipArchive* createFromBuffer(
-			Buffer* buffer, OpenMode mode = OpenMode::ReadOnly, bool checkConsistency = false);
+		static ZipArchive* createFromBuffer(Buffer* buffer, bool checkConsistency = false);
 		/**
 		 * Open the ZipArchive with the given mode. This method will return true if the operation
-		 * is successful, false otherwise. If the OpenMode is NOT_OPEN an invalid_argument
-		 * will be thrown. If the archive is already open, this method returns true only if the
+		 * is successful, false otherwise. If the OpenMode is NotOpen, false is returned. If the archive is already open, this method returns true only if the
 		 * mode is the same.
 		 */
 		bool open(OpenMode mode = OpenMode::ReadOnly, bool checkConsistency = false);
@@ -102,20 +129,20 @@ namespace lstg
 		 * not open previously, this method does nothing. If the archive was open in modification
 		 * and some were done, they will be committed.
 		 * This method returns LIBZIPPP_OK if the archive was successfully closed, otherwise it
-		 * returns the value returned by the zip_close() function.
+		 * returns a negative libzippp error code. A failed close can be retried or discarded.
 		 */
-		bool close() { return archive->close() == LIBZIPPP_OK; }
+		int close();
 		/**
 		 * Closes the ZipArchive and releases all the resources held by it. If the ZipArchive was
 		 * not open previously, this method does nothing. If the archive was open in modification
 		 * and some were done, they will be rollbacked.
 		 */
-		void discard() { archive->discard(); }
+		void discard();
 		/**
 		 * Deletes the file denoted by the path. If the ZipArchive is open, all the changes will
 		 * be discarded and the file removed.
 		 */
-		bool unlink() { return archive->unlink(); }
+		bool unlink();
 
 		/**
 		 * Returns true if the ZipArchive is currently open.
@@ -165,10 +192,11 @@ namespace lstg
 		 * If you wanna know the "real" entries effectively in the archive, you might use
 		 * the getEntries method.
 		 */
-		int64_t getEntryCount(State state = State::Current) const;
+		int64_t getNbEntries(State state = State::Current) const;
+		int64_t getEntriesCount(State state = State::Current) const { return getNbEntries(state); }
 
 		/**
-		 * Returns all the entries of the ZipArchive. If the state is Original, then
+		 * Returns all entry names of the ZipArchive. If the state is Original, then
 		 * returns the entries in the original archive, any change will not be considered.
 		 * The zip file must be open otherwise an empty vector will be returned.
 		 */
@@ -184,8 +212,8 @@ namespace lstg
 
 		/**
 		 * Returns the entry for the specified index. If the index is out of range,
-		 * then a null-entry will be returned.
-		 * The zip file must be open otherwise a null-entry will be returned.
+		 * then an empty string will be returned.
+		 * The zip file must be open otherwise an empty string will be returned.
 		 */
 		std::string getEntryByIndex(int64_t index, State state = State::Current) const;
 
@@ -202,22 +230,20 @@ namespace lstg
 		 */
 		bool setEntryComment(const std::string& entry, const std::string& comment, State state = State::Current) const;
 
-		/**
-		 * Returns the compression method of an entry. If the ZipArchive is not open
-		 * or the entry is not linked to this archive, false will be returned.
-		 **/
-		bool isEntryCompressionEnabled(const std::string& entry, State state = State::Current) const;
-
-		/**
-		 * Defines the compression method of an entry. If the ZipArchive is not open
-		 * or the entry is not linked to this archive, false will be returned.
-		 **/
-		bool setEntryCompressionEnabled(const std::string& entry, bool value, State state = State::Current) const;
+		/** Returns a libzippp CompressionMethod, or DEFAULT if the entry is missing. */
+		CompressionMethod getEntryCompressionMethod(const std::string& entry, State state = State::Current) const;
+		/** Sets the entry's compression algorithm and level; unsupported codecs return false. */
+		bool setEntryCompressionConfig(const std::string& entry, CompressionMethod method = DEFAULT,
+			uint32_t level = 0, State state = State::Current) const;
+		/** Default compression settings for newly added files/data. Level zero uses the codec default. */
+		void setCompressionMethod(CompressionMethod method);
+		CompressionMethod getCompressionMethod() const;
+		void setCompressionLevel(uint32_t level);
+		uint32_t getCompressionLevel() const;
 
 		/**
 		 * Reads the specified entry of the ZipArchive and returns its content within
-		 * a char array. If there is an error while reading the entry, then null will be returned.
-		 * The data must be deleted by the developer once not used anymore.
+		 * an autoreleased Buffer. On failure, null is returned. Empty files return an empty Buffer.
 		 * The zip file must be opened otherwise null will be returned. If the entry was not
 		 * created by this ZipArchive, null will be returned. If the entry does not exist,
 		 * this method returns NULL.
@@ -227,9 +253,7 @@ namespace lstg
 		/**
 		 * Reads the specified entry of the ZipArchive and writes its content to
 		 * dstPath. If there is an error while reading the entry, then false will be returned.
-		 * The zip file must be opened otherwise null will be returned. If the entry was not
-		 * created by this ZipArchive, null will be returned. If the entry does not exist,
-		 * this method returns false.
+		 * The zip file must be open and the entry must exist, otherwise false is returned.
 		 */
 		bool extractEntry(const std::string& entry, const std::string& dstPath, State state = State::Current);
 
@@ -241,20 +265,19 @@ namespace lstg
 		 * by this ZipArchive or is a null-entry, then LIBZIPPP_ERROR_INVALID_ENTRY will be returned.
 		 * If an error occurs during deletion, this method will return LIBZIPPP_ERROR_UNKNOWN.
 		 * If the entry does not exist, this method returns LIBZIPPP_ERROR_INVALID_PARAMETER.
-		 * Note that this method does not affect the result returned by getEntryCount !
+		 * Note that this method does not affect the result returned by getEntriesCount !
 		 */
-		bool deleteEntry(const std::string& entry);
+		int deleteEntry(const std::string& entry);
 
 		/**
 		 * Renames the entry with the specified newName. The method returns the number of entries
 		 * that have been renamed, LIBZIPPP_ERROR_INVALID_PARAMETER if the new name is invalid,
 		 * LIBZIPPP_ERROR_NOT_ALLOWED if the mode doesn't allow modification or LIBZIPPP_ERROR_UNKNOWN if an error
-		 * occurred. If the entry is a directory, a '/' will automatically be appended at the end of newName if the
-		 * latter hasn't it already. All the files in the folder will be moved.
+		 * occurred. If the entry is a directory, newName must end with '/'. All the files in the folder will be moved.
 		 * If the ZipArchive is not open or the entry was not edited by this ZipArchive or is a null-entry,
 		 * then LIBZIPPP_ERROR_INVALID_ENTRY will be returned. If the entry does not exist, this method returns LIBZIPPP_ERROR_INVALID_PARAMETER.
 		 */
-		bool renameEntry(const std::string& entry, const std::string& newName);
+		int renameEntry(const std::string& entry, const std::string& newName);
 
 		/**
 		 * Adds the specified file in the archive with the given entry. If the entry already exists,
@@ -263,10 +286,10 @@ namespace lstg
 		 * If the entry denotes a directory, this method returns false.
 		 * The zip file must be open otherwise false will be returned.
 		 */
-		bool addFile(const std::string& entry, const std::string& file) const { return archive->addFile(entry, file); }
+		bool addFile(const std::string& entry, const std::string& file) const;
 
 		/**
-		 * Adds the given data to the specified entry name in the archive. If the entry already exists,
+		 * Copies the given data to the specified entry name in the archive. If the entry already exists,
 		 * its content will be erased.
 		 * If the entry contains folders that don't exist in the archive, they will be automatically created.
 		 * If the entry denotes a directory, this method returns false.
@@ -275,7 +298,7 @@ namespace lstg
 		bool addData(const std::string& entry, Buffer* data) const;
 
 		/**
-		 * Adds the given string to the specified entry name in the archive. If the entry already exists,
+		 * Copies the given string (including an empty string) to the specified entry name in the archive. If the entry already exists,
 		 * its content will be erased.
 		 * If the entry contains folders that don't exist in the archive, they will be automatically created.
 		 * If the entry denotes a directory, this method returns false.
@@ -300,6 +323,8 @@ namespace lstg
 		OpenMode getMode() const;
 
 		ZipEntryInfo getEntryInfo(const std::string& entry, State state = State::Current);
+		/** Diagnostic for opening, closing, reading, extraction, deletion, renaming, data addition and compression. */
+		std::string getLastError() const { return lastError; }
 
 		ZipArchive(const ZipArchive&) = delete;
 		ZipArchive& operator =(const ZipArchive&) = delete;
@@ -307,9 +332,13 @@ namespace lstg
 	private:
 		libzippp::ZipEntry getEntry(const std::string& name, State state) const;
 
+		bool addBytes(const std::string& entry, const void* data, size_t size) const;
+		bool applyCompression(const std::string& entry) const;
+		int recordResult(int result) const;
 		libzippp::ZipArchive* archive = nullptr;
 		Buffer* buffer = nullptr;
-		std::string lastError;
+		mutable std::string lastError;
+		mutable std::vector<std::unique_ptr<std::vector<uint8_t>>> addedData;
 	};
 }
 
