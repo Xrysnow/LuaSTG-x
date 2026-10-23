@@ -54,6 +54,10 @@ list(APPEND EXTERNAL_LIBS cc_imgui)
 # Live2D
 
 if(NOT LSTGX_NO_LIVE2D)
+	if(WINDOWS)
+		# Match the application's DLL CRT (/MDd in Debug).
+		set(CORE_CRL_MD ON)
+	endif()
 	add_subdirectory(${LSTGX_MOD_ROOT}/Live2D)
 	list(APPEND EXTERNAL_LIBS cc_live2d)
 else()
