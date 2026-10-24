@@ -30,19 +30,25 @@ namespace lua
 	template<typename T>
 	struct to_native<T*, std::enable_if_t<std::is_base_of_v<cocos2d::Ref, T>>> {
 		static bool F(lua_State* L, int lo, T** outValue, const char* fName = "") {
+			if (!L || !outValue)
+				return false;
 			LUA_CHECK_TO_NATIVE;
+			if (lo < 0 && lo > LUA_REGISTRYINDEX) {
+				lo = top + lo + 1;
+				if (lo <= 0) return false;
+			}
+			if (lo == 0) return false;
 			if(lua_isnil(L, lo)) {
 				*outValue = nullptr;
 				return true;
 			}
 			std::string className = getClassNameByType<T>();
-			if (className.empty()) className = "cc.Ref";
-			if (!isusertype(L, lo, className.c_str()))
+			if (className.empty() || !isusertype(L, lo, className.c_str()))
 				return false;
-			const auto u = lua_touserdata(L, lo);
-			if (!u)
-				return false; //note: return false when userdata is null
-			*outValue = static_cast<T*>(*(void**)u);
+			const auto p = static_cast<T*>(_tousertype(L, lo));
+			if (!p)
+				return false;
+			*outValue = p;
 			return true;
 		}
 	};
@@ -50,11 +56,21 @@ namespace lua
 	template<typename T>
 	struct to_native<T*, std::enable_if_t<!std::is_base_of_v<cocos2d::Ref, T>>> {
 		static bool F(lua_State* L, int lo, T** outValue, const char* fName = "") {
+			if (!L || !outValue)
+				return false;
 			LUA_CHECK_TO_NATIVE;
+			if (lo < 0 && lo > LUA_REGISTRYINDEX) {
+				lo = top + lo + 1;
+				if (lo <= 0) return false;
+			}
+			if (lo == 0) return false;
 			if(lua_isnil(L, lo)) {
 				*outValue = nullptr;
 				return true;
 			}
+			const auto className = getClassNameByType<T>();
+			if (className.empty() || !isusertype(L, lo, className.c_str()))
+				return false;
 			auto p = (T*)_tousertype(L, lo); //note: return false when userdata is null
 			if (!p)
 				return false;
@@ -617,6 +633,8 @@ namespace lua
 #define LUA_INVOKE_HEADER(CName_, FName_)\
 	constexpr auto LUA_OBJ_TYPE = CName_;\
 	constexpr auto LUA_FNAME = FName_;\
+	if (lua_isnil(lua_S, 1))\
+		return luaL_error(lua_S, "invalid class object in '%s'", LUA_FNAME);\
 	const int argc = lua_gettop(lua_S) - 1;\
 	int arg_cur = -1;\
 	bool ok = false;

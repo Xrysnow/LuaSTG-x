@@ -87,10 +87,15 @@ end
 
     inline int push_table_instance(lua_State* L, int lo)
     {
+        if (lo < 0 && lo > LUA_REGISTRYINDEX) {
+            lo = lua_gettop(L) + lo + 1;
+            if (lo <= 0)
+                return 0;
+        }
         if (lua_istable(L, lo)) {
             lua_pushstring(L, ".c_instance");
             lua_gettable(L, lo);
-            if (lua_isuserdata(L, -1)) {
+            if (lua_type(L, -1) == LUA_TUSERDATA) {
                 lua_replace(L, lo);
                 return 1;
             }
@@ -102,15 +107,22 @@ end
 
     inline int isusertype(lua_State* L, int lo, const char* type)
     {
-        if (lo < 0)
-            lo = lua_gettop(L) + lo + 1;
-        if (lo <= 0)
+        if (!L || !type || !*type)
             return 0;
-        if (!lua_isuserdata(L, lo)) {
+        if (lo < 0 && lo > LUA_REGISTRYINDEX) {
+            lo = lua_gettop(L) + lo + 1;
+            if (lo <= 0)
+                return 0;
+        }
+        if (lo == 0 || lo > lua_gettop(L))
+            return 0;
+        if (lua_type(L, lo) != LUA_TUSERDATA) {
             if (!push_table_instance(L, lo)) {
                 return 0;
             }
         }
+        if (lua_objlen(L, lo) != sizeof(void*))
+            return 0;
         if (lua_getmetatable(L, lo))        /* if metatable? */
         {
             lua_rawget(L, LUA_REGISTRYINDEX);  /* get registry[mt] */
@@ -124,6 +136,10 @@ end
                 /* check if it is a specialized class */
                 lua_pushstring(L, "tolua_super");
                 lua_rawget(L, LUA_REGISTRYINDEX); /* get super */
+                if (!lua_istable(L, -1)) {
+                    lua_pop(L, 1);
+                    return 0;
+                }
                 lua_getmetatable(L, lo);
                 lua_rawget(L, -2);                /* get super[mt] */
                 if (lua_istable(L, -1))
@@ -135,6 +151,8 @@ end
                     if (b)
                         return 1;
                 }
+                else
+                    lua_pop(L, 2);
             }
         }
         return 0;
@@ -142,10 +160,21 @@ end
 
     inline void* _tousertype(lua_State* L, int lo)
     {
-        if (!lua_isuserdata(L, lo)) {
+        if (!L)
+            return nullptr;
+        if (lo < 0 && lo > LUA_REGISTRYINDEX) {
+            lo = lua_gettop(L) + lo + 1;
+            if (lo <= 0)
+                return nullptr;
+        }
+        if (lo == 0 || lo > lua_gettop(L))
+            return nullptr;
+        if (lua_type(L, lo) != LUA_TUSERDATA) {
             if (!push_table_instance(L, lo))
                 return nullptr;
         }
+        if (lua_objlen(L, lo) != sizeof(void*))
+            return nullptr;
         const auto u = lua_touserdata(L, lo);
         return u ? *(void**)u : nullptr;
     }
@@ -961,6 +990,10 @@ end
 			T arg{};
 			if (!luaval_to_native(L, argTop + 1 - Index, &arg))
 				return false;
+			if constexpr (std::is_member_function_pointer_v<Callable> && sizeof...(Fargs) == 0) {
+				if (!arg)
+					return false;
+			}
 			static_assert(Index > 0);
 			return _invoke_helper<Index - 1, Callable, Targs...>::template F<Fargs..., Targ>(L, argTop, argCur, callable, std::forward<Fargs>(args)..., std::forward<Targ>(arg));
 		}

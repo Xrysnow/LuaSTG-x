@@ -102,7 +102,11 @@ bool lua::luaval_to_Color4B(lua_State* L, int lo, cocos2d::Color4B* outValue, co
 int lua_lstg_ResAudio_getFFT(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ResAudio", "lstg.ResAudio:getFFT");
+	if (!lua::isusertype(lua_S, 1, LUA_OBJ_TYPE))
+		return luaL_error(lua_S, "invalid class object in '%s'", LUA_FNAME);
 	auto cobj = (lstg::ResAudio*)tolua_tousertype(lua_S, 1, nullptr);
+	if (!cobj)
+		return luaL_error(lua_S, "invalid class object in '%s'", LUA_FNAME);
 	if (argc == (0) && !ok)
 	{
 		lstg::lua::cptr_to_luaval(lua_S, cobj->getFFT(), "float*");
