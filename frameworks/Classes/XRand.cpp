@@ -39,6 +39,7 @@ void Random::setSeed(uint32_t seed)
 	default:;
 	}
 	_seed = seed;
+	_clear_state();
 }
 
 uint32_t Random::getSeed()
