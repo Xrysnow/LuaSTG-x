@@ -255,17 +255,20 @@ elseif(IOS)
 		${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/Prefix.pch
 		${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/build-cfg.json
 		${APP_UI_RES}
+		${cc_common_res}
 	)
 elseif(MACOSX)
 	set(APP_UI_RES
 		${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/Icon.icns
 		${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/Info.plist
+		${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/ConsoleWindow.xib
 	)
 	list(APPEND GAME_SOURCE
 		${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/main.mm
 		${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/ConsoleWindowController.m
 		${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/Prefix.pch
 		${APP_UI_RES}
+		${cc_common_res}
 	)
 elseif(WINDOWS)
     list(APPEND GAME_HEADER

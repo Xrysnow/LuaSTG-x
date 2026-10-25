@@ -179,9 +179,17 @@ elseif(LINUX)
         file(COPY ${dll_file} DESTINATION ${depend_dest} FOLLOW_SYMLINK_CHAIN)
     endforeach()
 endif()
-# copy resource on linux or WINDOWS
-if(LINUX OR WINDOWS)
-    cocos_get_resource_path(APP_RES_DIR ${APP_NAME})
-    #cocos_copy_target_res(${APP_NAME} LINK_TO ${APP_RES_DIR}/res FOLDERS ${res_res_folders})
-    #cocos_copy_lua_scripts(${APP_NAME} ${res_src_folders} ${APP_RES_DIR}/src)
+# copy resource on linux next to the executable, matching FileUtilsLinux's root
+if(LINUX)
+    # Use the output directory set by setup_cocos_app_config. TARGET_FILE_DIR
+    # would create a dependency cycle with SYNC_RESOURCE under CMP0112 OLD.
+    get_target_property(APP_RES_DIR ${APP_NAME} RUNTIME_OUTPUT_DIRECTORY)
+    if(CMAKE_CONFIGURATION_TYPES)
+        string(APPEND APP_RES_DIR "/$<CONFIG>")
+    endif()
+    add_custom_command(TARGET SYNC_RESOURCE-${APP_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${res_res_folders}" "${APP_RES_DIR}/res"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${res_src_folders}" "${APP_RES_DIR}/src"
+        VERBATIM
+    )
 endif()
