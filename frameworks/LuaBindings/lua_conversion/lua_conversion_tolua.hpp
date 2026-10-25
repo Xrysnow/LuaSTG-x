@@ -999,15 +999,47 @@ end
 		}
 	};
 
+	inline void _invoke_in_frame(lua_State* L, int nargs, lua_CFunction entry, void* context) {
+		// retain args in the outer frame until invoke completes to avoid GC issues
+		const int top = lua_gettop(L);
+		const int prefix = top - nargs;
+		luaL_checkstack(L, prefix + 2, "native invocation stack overflow");
+		lua_pushlightuserdata(L, context); // ...prefix, ...args, context(call)
+		lua_pushcclosure(L, entry, 1); // ...prefix, ...args, closure
+		// reproduce the stack:
+		// ...prefix, ...args, closure, ...prefix
+		for (int i = 1; i <= prefix; ++i)
+			lua_pushvalue(L, i);
+		// inner may clear its stack
+		lua_call(L, prefix, LUA_MULTRET); // ...prefix, ...args, ...prefix?, ...result
+		// ...prefix?, ...result
+		for (int i = 0; i < top; ++i)
+			lua_remove(L, 1);
+	}
+
+	template<typename F>
+	int _invoke_frame_entry(lua_State* L) {
+		auto* call = static_cast<F*>(lua_touserdata(L, lua_upvalueindex(1)));
+		if (!call)
+			return luaL_error(L, "expired native invocation");
+		// debug code can retain the closure and may cause UB, so make it expire
+		lua_pushnil(L);
+		lua_replace(L, lua_upvalueindex(1));
+		return (*call)(L);
+	}
+
 	template<typename Callable>
 	struct _invoke_helper<0, Callable> {
 		template<typename... Fargs>
 		static bool F(lua_State* L, int argTop, int& argCur, Callable callable, Fargs&&... args) {
-			lua_pop(L, static_cast<int>(sizeof...(Fargs)));
-			if constexpr (std::is_same_v<std::invoke_result_t<Callable, Fargs...>, void>)
-				std::invoke(callable, std::forward<Fargs>(args)...);
-			else
-				native_to_luaval(L, std::invoke(callable, std::forward<Fargs>(args)...));
+			auto invoke = [&](lua_State* state) {
+				if constexpr (std::is_same_v<std::invoke_result_t<Callable, Fargs...>, void>)
+					std::invoke(callable, std::forward<Fargs>(args)...);
+				else
+					native_to_luaval(state, std::invoke(callable, std::forward<Fargs>(args)...));
+				return lua_gettop(state);
+			};
+			_invoke_in_frame(L, static_cast<int>(sizeof...(Fargs)), _invoke_frame_entry<decltype(invoke)>, &invoke);
 			return true;
 		}
 	};
