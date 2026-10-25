@@ -619,8 +619,7 @@ end
 	struct to_native<_Ty<T>> {\
 		static bool F(lua_State* L, int lo, _Ty<T>* outValue, const char* fName = "") {\
 			LUA_CHECK_TO_NATIVE;\
-			const auto type = lua_type(L, lo);\
-			if (!(type == LUA_TTABLE || type == LUA_TUSERDATA || type == LUA_TCDATA))\
+			if (!lua_istable(L, lo))\
 				return false;\
 			const size_t len = lua_objlen(L, lo);\
 			_Ty<T> result;\
@@ -766,9 +765,7 @@ end
 	struct to_native<std::array<T, Size>> {
 		static bool F(lua_State* L, int lo, std::array<T, Size>* outValue, const char* fName = "") {
 			LUA_CHECK_TO_NATIVE;
-			const auto type = lua_type(L, lo);
-			if (!(type == LUA_TTABLE || type == LUA_TUSERDATA || type == LUA_TCDATA))
-				return false;
+			if (!lua_istable(L, lo)) return false;
 			if (lua_objlen(L, lo) != Size) return false;
 			std::array<T, Size> result{};
 			for (size_t i = 0; i < Size; i++) {
@@ -847,9 +844,7 @@ end
 	struct to_native<std::bitset<Size>> {
 		static bool F(lua_State* L, int lo, std::bitset<Size>* outValue, const char* fName = "") {
 			LUA_CHECK_TO_NATIVE;
-			const auto type = lua_type(L, lo);
-			if (!(type == LUA_TTABLE || type == LUA_TUSERDATA || type == LUA_TCDATA))
-				return false;
+			if (!lua_istable(L, lo)) return false;
 			if (lua_objlen(L, lo) != Size) return false;
 			std::bitset<Size> result;
 			for (size_t i = 0; i < Size; i++) {
@@ -933,7 +928,7 @@ end
 	template<typename T>
 	bool luaval_to_native_array_inplace(lua_State* L, int lo, T* outValue, size_t size, const char* fName = "") {
 		LUA_CHECK_TO_NATIVE;
-		if (!is_indexable(L, lo)) return false;
+		if (!lua_istable(L, lo)) return false;
 		const size_t len = lua_objlen(L, lo);
 		if (len != size) return false;
 		bool ok = true;

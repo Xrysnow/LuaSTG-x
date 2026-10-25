@@ -109,7 +109,7 @@ namespace lua
 	struct to_native<hlookup::string_set> {
 		static bool F(lua_State* L, int lo, hlookup::string_set* outValue, const char* fName = "") {
 			LUA_CHECK_TO_NATIVE;
-			if (!is_indexable(L, lo)) return false;
+			if (!lua_istable(L, lo)) return false;
 			const size_t len = lua_objlen(L, lo);
 			hlookup::string_set result;
 			for (size_t i = 0; i < len; i++) {
@@ -167,7 +167,7 @@ namespace lua
 			{
 				lua_pushliteral(L, "points");
 				lua_gettable(L, lo);
-				ok = is_indexable(L, -1);
+				ok = lua_istable(L, -1);
 				if (ok)
 				{
 					const auto count = lua_objlen(L, -1);
@@ -357,7 +357,7 @@ namespace lua
 	struct to_native<cocos2d::Mat4> {
 		static bool F(lua_State* L, int lo, cocos2d::Mat4* outValue, const char* fName = "") {
 			LUA_CHECK_TO_NATIVE;
-			if (!is_indexable(L, lo)) return false;
+			if (!lua_istable(L, lo)) return false;
 			if (lua_objlen(L, lo) != 16) return false;
 			cocos2d::Mat4 result;
 			for (int i = 0; i < 16; ++i)
