@@ -205,12 +205,20 @@ end
 
 	////////////////////////////////////////////////////////////////////////////////
 
+	// fix stack indices and keep pseudo-indices, 0 means invalid
+	inline int _absolute_index(lua_State* L, int lo) {
+		if (!L) return 0;
+		if (lo <= LUA_REGISTRYINDEX) return lo;
+		const int top = lua_gettop(L);
+		if (lo < 0) lo += top + 1;
+		return lo > 0 && lo <= top ? lo : 0;
+	}
+
 	inline bool luaval_to_cptr(lua_State* L, int lo, void** outValue)
 	{
-		const auto top = lua_gettop(L);
-		if (lo < 0)
-			lo = top + 1 + lo;
-		if (lo < 1 || lo > top)
+		if (!L || !outValue) return false;
+		lo = _absolute_index(L, lo);
+		if (!lo)
 		{
 			*outValue = nullptr;
 			return false;
@@ -244,6 +252,8 @@ end
 	{
 		if (nullptr == L || nullptr == outValue)
 			return false;
+		lo = _absolute_index(L, lo);
+		if (!lo) return false;
 		constexpr bool isint64 = std::is_same_v<T, int64_t>;
 		const auto type = lua_type(L, lo);
 		if (type == LUA_TCDATA)
@@ -276,6 +286,7 @@ end
 		{
 			return false;
 		}
+		// do not use tolua_tonumber, since it rejects pseudo-indices
 		if (std::is_same_v<T, int64_t> && targetSize == 4)
 		{
 			// see luaval_to_int32
@@ -286,7 +297,7 @@ end
 				*outValue = (int64_t)(int32_t)lua_tonumber(L, lo);
 		}
 		else
-			*outValue = (T)tolua_tonumber(L, lo, 0);
+			*outValue = (T)lua_tonumber(L, lo);
 		return true;
 	}
 
@@ -304,7 +315,9 @@ end
 
 	inline int luafunction_to_handler(lua_State* L, int lo, const char* fName)
 	{
-		const int handler = toluafix_ref_function(L, lo, 0);
+		const int index = _absolute_index(L, lo);
+		if (!index) return 0;
+		const int handler = toluafix_ref_function(L, index, 0);
 		if (handler == 0)
 			return 0;
 		std::string key;
@@ -358,9 +371,9 @@ end
 	template<typename T, class Enable = void> struct to_native {};
 
 #define LUA_CHECK_TO_NATIVE\
-	const auto top = lua_gettop(L);\
+	const auto top = L ? lua_gettop(L) : 0;\
 	do {\
-		if (nullptr == L || nullptr == outValue || top < lo)\
+		if (nullptr == L || nullptr == outValue || !(lo = ::lua::_absolute_index(L, lo)))\
 			return false;\
 	} while (false)
 
@@ -643,7 +656,7 @@ end
 	template<typename T>
 	bool luaval_field_to_native(lua_State* L, int lo, const char* field, T* outValue, const char* fName = "") {
 		if (!field) return false;
-		if (lo < 0) lo += lua_gettop(L) + 1;
+		LUA_CHECK_TO_NATIVE;
 		lua_pushstring(L, field);
 		lua_gettable(L, lo);
 		const bool ret = to_native<T>::F(L, -1, outValue, fName);
@@ -653,7 +666,7 @@ end
 
 	template<typename T>
 	bool luaval_field_to_native(lua_State* L, int lo, const std::string& field, T* outValue, const char* fName = "") {
-		if (lo < 0) lo += lua_gettop(L) + 1;
+		LUA_CHECK_TO_NATIVE;
 		lua_pushlstring(L, field.c_str(), field.size());
 		lua_gettable(L, lo);
 		const bool ret = to_native<T>::F(L, -1, outValue, fName);
@@ -663,7 +676,7 @@ end
 
 	template<typename T>
 	bool luaval_field_to_native(lua_State* L, int lo, int field, T* outValue, const char* fName = "") {
-		if (lo < 0) lo += lua_gettop(L) + 1;
+		LUA_CHECK_TO_NATIVE;
 		lua_pushinteger(L, field);
 		lua_gettable(L, lo);
 		const bool ret = to_native<T>::F(L, -1, outValue, fName);
@@ -673,6 +686,7 @@ end
 
 	template<typename T>
 	bool luaval_to_native_array(lua_State* L, int lo, T* outValue, size_t size, const char* fName = "") {
+		LUA_CHECK_TO_NATIVE;
 		std::vector<T> value;
 		if(!to_native<std::vector<T>>::F(L, lo, &value, fName))
 			return false;
@@ -874,7 +888,7 @@ end
 	void native_to_luaval_field(lua_State* L, int lo, const char* field, T&& inValue) {
 		using type = std::remove_cv_t<std::remove_reference_t<T>>;
 		if (!field) return;
-		if (lo < 0) lo += lua_gettop(L) + 1;
+		if (!L || !(lo = _absolute_index(L, lo))) return;
 		lua_pushstring(L, field);
 		to_lua<type>::F(L, inValue);
 		lua_settable(L, lo);
@@ -883,7 +897,7 @@ end
 	template<typename T>
 	void native_to_luaval_field(lua_State* L, int lo, const std::string& field, T&& inValue) {
 		using type = std::remove_cv_t<std::remove_reference_t<T>>;
-		if (lo < 0) lo += lua_gettop(L) + 1;
+		if (!L || !(lo = _absolute_index(L, lo))) return;
 		lua_pushlstring(L, field.c_str(), field.size());
 		to_lua<type>::F(L, inValue);
 		lua_settable(L, lo);
@@ -892,7 +906,7 @@ end
 	template<typename T>
 	void native_to_luaval_field(lua_State* L, int lo, int field, T&& inValue) {
 		using type = std::remove_cv_t<std::remove_reference_t<T>>;
-		if (lo < 0) lo += lua_gettop(L) + 1;
+		if (!L || !(lo = _absolute_index(L, lo))) return;
 		lua_pushinteger(L, field);
 		to_lua<type>::F(L, inValue);
 		lua_settable(L, lo);
@@ -925,10 +939,10 @@ end
 	template<typename R, typename... Targs>
 	struct to_native<std::function<R(Targs...)>> {
 		static bool F(lua_State* L, int lo, std::function<R(Targs...)>* outValue, const char* fName = "") {
-			const auto top = lua_gettop(L);
-			if (nullptr == L || nullptr == outValue || top < lo)
+			const int index = _absolute_index(L, lo);
+			if (!outValue || !index)
 				return false;
-			if (lua_isnil(L, lo)) {
+			if (lua_isnil(L, index)) {
 				*outValue = nullptr;
 				return true;
 			}
@@ -956,10 +970,10 @@ end
 	template<typename... Targs>
 	struct to_native<std::function<void(Targs...)>> {
 		static bool F(lua_State* L, int lo, std::function<void(Targs...)>* outValue, const char* fName = "") {
-			const auto top = lua_gettop(L);
-			if (nullptr == L || nullptr == outValue || top < lo)
+			const int index = _absolute_index(L, lo);
+			if (!outValue || !index)
 				return false;
-			if (lua_isnil(L, lo)) {
+			if (lua_isnil(L, index)) {
 				*outValue = nullptr;
 				return true;
 			}
