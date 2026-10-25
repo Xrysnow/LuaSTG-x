@@ -628,7 +628,7 @@ namespace lua
 			if (!L) return;
 			lua_createtable(L, 0, 4);
 			native_to_luaval_field(L, -1, "writeMask", inValue.writeMask);
-			native_to_luaval_field(L, -1, "blendEnabled", inValue.writeMask);
+			native_to_luaval_field(L, -1, "blendEnabled", inValue.blendEnabled);
 			native_to_luaval_field(L, -1, "rgbBlendOperation", inValue.rgbBlendOperation);
 			native_to_luaval_field(L, -1, "alphaBlendOperation", inValue.alphaBlendOperation);
 			native_to_luaval_field(L, -1, "sourceRGBBlendFactor", inValue.sourceRGBBlendFactor);
