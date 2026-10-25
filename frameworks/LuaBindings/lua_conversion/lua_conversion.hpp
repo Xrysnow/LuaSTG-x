@@ -340,6 +340,7 @@ namespace lua
 			else if (type == LUA_TNIL)
 			{
 				*outValue = cocos2d::Value::Null;
+				ok = true;
 			}
 			return ok;
 		}
@@ -574,6 +575,9 @@ namespace lua
 			if (!L) return;
 			switch (inValue.getTypeFamily())
 			{
+			case cocos2d::Value::Type::NONE:
+				lua_pushnil(L);
+				break;
 			case cocos2d::Value::Type::BOOLEAN:
 				lua_pushboolean(L, inValue.asBool());
 				break;
@@ -597,6 +601,7 @@ namespace lua
 				native_to_luaval(L, inValue.asIntKeyMap());
 				break;
 			default:
+				luaL_error(L, "unsupported cocos2d::Value type: %d", static_cast<int>(inValue.getType()));
 				break;
 			}
 		}
