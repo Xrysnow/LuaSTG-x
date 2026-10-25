@@ -3,6 +3,7 @@
 #include "tolua_fix.h"
 #include <array>
 #include <bitset>
+#include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
@@ -54,6 +55,16 @@ local ptr = ffi.cast('int64_t*', store)
 return function(value)
 	store[0] = value
     return ptr
+end
+)__";
+	// Keep 64-bit integers exact; other numeric cdata can use the number path.
+	constexpr auto _ffi_integer_number = R"__(
+local ffi = require('ffi')
+local istype, tonumber = ffi.istype, tonumber
+local signed, unsigned = ffi.typeof('int64_t'), ffi.typeof('uint64_t')
+return function(value)
+    if istype(signed, value) or istype(unsigned, value) then return nil end
+    return tonumber(value)
 end
 )__";
 	constexpr auto _ffi_convert_ptr = R"__(
@@ -250,12 +261,39 @@ end
 		return ok;
 	}
 
-	// Both integer helpers return storage for exactly one 64-bit value.
+	// Truncate, then wrap modulo 2^64 without an out-of-range floating cast.
+	inline uint64_t _integer_bits_from_number(lua_Number value)
+	{
+		if (!std::isfinite(value)) return 0;
+		const auto magnitude = static_cast<uint64_t>(
+			std::fmod(std::trunc(std::fabs(value)), 0x1p64));
+		return value < 0 ? uint64_t(0) - magnitude : magnitude;
+	}
+
+	// Both legacy integer helpers return storage for exactly one 64-bit value.
 	inline bool _luaval_to_integer_cdata(lua_State* L, int lo, void* outValue,
 		const char* key, const char* def)
 	{
 		const int top = lua_gettop(L);
-		bool ok = _try_get_internal_helper(L, key, def);
+		// FFI floating-to-integer overflow is platform-specific. Extract those
+		// numbers first, without changing the legacy pre-registered helpers.
+		bool ok = _try_get_internal_helper(L, "ffi.integer_number", _ffi_integer_number);
+		if (ok)
+		{
+			lua_pushvalue(L, lo);
+			ok = lua_pcall(L, 1, 1, 0) == 0;
+			if (ok && lua_type(L, -1) == LUA_TNUMBER)
+			{
+				const auto bits = _integer_bits_from_number(lua_tonumber(L, -1));
+				std::memcpy(outValue, &bits, sizeof(bits));
+				lua_settop(L, top);
+				return true;
+			}
+			ok = ok && lua_isnil(L, -1);
+		}
+		lua_settop(L, top);
+		if (!ok) return false;
+		ok = _try_get_internal_helper(L, key, def);
 		if (ok)
 		{
 			lua_pushvalue(L, lo);
@@ -277,33 +315,32 @@ end
 		T* outValue,
 		size_t targetSize, const char* funcName)
 	{
-		if (nullptr == L || nullptr == outValue)
+		if (nullptr == L || nullptr == outValue ||
+			(targetSize != 1 && targetSize != 2 && targetSize != 4 && targetSize != 8))
 			return false;
 		lo = _absolute_index(L, lo);
 		if (!lo) return false;
 		constexpr bool isint64 = std::is_same_v<T, int64_t>;
 		const auto type = lua_type(L, lo);
+		uint64_t bits;
 		if (type == LUA_TCDATA)
-			return _luaval_to_integer_cdata(L, lo, outValue,
+		{
+			if (!_luaval_to_integer_cdata(L, lo, &bits,
 				isint64 ? "ffi.cast_int64" : "ffi.cast_uint64",
-				isint64 ? _ffi_cast_int64 : _ffi_cast_uint64);
-		bool is_number = type == LUA_TNUMBER;
-		if (!is_number)
-		{
-			return false;
+				isint64 ? _ffi_cast_int64 : _ffi_cast_uint64)) return false;
 		}
-		// do not use tolua_tonumber, since it rejects pseudo-indices
-		if (std::is_same_v<T, int64_t> && targetSize == 4)
-		{
-			// see luaval_to_int32
-			const auto estimateValue = (uint32_t)lua_tonumber(L, lo);
-			if (estimateValue == (uint32_t)std::numeric_limits<int32_t>::min())
-				*outValue = (int32_t)estimateValue;
-			else
-				*outValue = (int64_t)(int32_t)lua_tonumber(L, lo);
-		}
+		else if (type == LUA_TNUMBER)
+			bits = _integer_bits_from_number(lua_tonumber(L, lo));
 		else
-			*outValue = (T)lua_tonumber(L, lo);
+			return false;
+		const uint64_t mask = UINT64_MAX >> ((8 - targetSize) * 8);
+		bits &= mask;
+		if constexpr (isint64)
+			// Complement fits int64_t whenever the target sign bit is set.
+			*outValue = bits > (mask >> 1)
+				? -static_cast<int64_t>(mask ^ bits) - 1 : static_cast<int64_t>(bits);
+		else
+			*outValue = bits;
 		return true;
 	}
 
@@ -622,11 +659,13 @@ end
 #define TO_NATIVE_SIGNED(_T) template<>\
 	struct to_native<_T> {\
 		static bool F(lua_State* L, int lo, _T* outValue, const char* funcName = ""){\
+			if (!outValue) return false;\
 			int64_t i; bool ret = luaval_to_int(L, lo, &i, sizeof(_T), funcName);\
 			if (ret) *outValue = (_T)(i); return ret; } }
 #define TO_NATIVE_UNSIGNED(_T) template<>\
 	struct to_native<_T> {\
 		static bool F(lua_State* L, int lo, _T* outValue, const char* funcName = ""){\
+			if (!outValue) return false;\
 			uint64_t i; bool ret = luaval_to_uint(L, lo, &i, sizeof(_T), funcName);\
 			if (ret) *outValue = (_T)(i); return ret; } }
 
