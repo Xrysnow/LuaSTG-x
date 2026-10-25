@@ -55,6 +55,15 @@ set(COCOS2DX_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/frameworks/cocos2d-x)
 set(CMAKE_MODULE_PATH ${COCOS2DX_ROOT_PATH}/cmake/Modules/)
 
 include(CocosBuildSet)
+if(APPLE)
+    enable_language(OBJC OBJCXX)
+    # Keep Objective-C and Objective-C++ aligned with the C/C++ settings.
+    set(CMAKE_OBJC_STANDARD ${CMAKE_C_STANDARD})
+    set(CMAKE_OBJC_STANDARD_REQUIRED ${CMAKE_C_STANDARD_REQUIRED})
+    set(CMAKE_OBJCXX_STANDARD ${CMAKE_CXX_STANDARD})
+    set(CMAKE_OBJCXX_STANDARD_REQUIRED ${CMAKE_CXX_STANDARD_REQUIRED})
+    set(CMAKE_OBJCXX_EXTENSIONS ${CMAKE_CXX_EXTENSIONS})
+endif()
 set(BUILD_LUA_LIBS ON)
 add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos ${ENGINE_BINARY_PATH}/cocos/core)
 
