@@ -167,7 +167,13 @@ namespace lua
 			{
 				lua_pushliteral(L, "points");
 				lua_gettable(L, lo);
-				ok = luaval_to_native_array(L, -1, v.points, 4, fName);
+				ok = is_indexable(L, -1);
+				if (ok)
+				{
+					const auto count = lua_objlen(L, -1);
+					ok = count <= v.POINT_MAX && luaval_to_native_array(L, -1, v.points, count, fName);
+					if (ok) v.count = static_cast<int>(count);
+				}
 				lua_pop(L, 1);
 			}
 			if (ok) *outValue = v;
@@ -507,11 +513,16 @@ namespace lua
 	struct to_lua<cocos2d::PhysicsContactData> {
 		static void F(lua_State* L, const cocos2d::PhysicsContactData& inValue) {
 			if (!L) return;
+			if (inValue.count < 0 || inValue.count > inValue.POINT_MAX)
+			{
+				luaL_error(L, "invalid cocos2d::PhysicsContactData count: %d", inValue.count);
+				return;
+			}
 			lua_createtable(L, 0, 3);
 			native_to_luaval_field(L, -1, "normal", inValue.normal);
 			native_to_luaval_field(L, -1, "POINT_MAX", inValue.POINT_MAX);
 			lua_pushstring(L, "points");
-			native_array_to_luaval(L, inValue.points, inValue.POINT_MAX);
+			native_array_to_luaval(L, inValue.points, inValue.count);
 			lua_settable(L, -3);
 		}
 	};
