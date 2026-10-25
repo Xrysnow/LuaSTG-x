@@ -268,11 +268,12 @@ namespace lua
 				luaval_field_to_native(L, lo, "shadowBlur", &v._shadow._shadowBlur, fName);
 				luaval_field_to_native(L, lo, "shadowOpacity", &v._shadow._shadowOpacity, fName);
 			}
-			if (v._shadow._shadowEnabled)
+			if (v._stroke._strokeEnabled)
 			{
 				luaval_field_to_native(L, lo, "strokeColor", &v._stroke._strokeColor, fName);
 				luaval_field_to_native(L, lo, "strokeSize", &v._stroke._strokeSize, fName);
 			}
+			*outValue = v;
 			return true;
 		}
 	};
@@ -557,7 +558,7 @@ namespace lua
 			native_to_luaval_field(L, -1, "shadowOffset", inValue._shadow._shadowOffset);
 			native_to_luaval_field(L, -1, "shadowBlur", inValue._shadow._shadowBlur);
 			native_to_luaval_field(L, -1, "shadowOpacity", inValue._shadow._shadowOpacity);
-			native_to_luaval_field(L, -1, "shadowEnabled", inValue._stroke._strokeEnabled);
+			native_to_luaval_field(L, -1, "strokeEnabled", inValue._stroke._strokeEnabled);
 			native_to_luaval_field(L, -1, "strokeColor", inValue._stroke._strokeColor);
 			native_to_luaval_field(L, -1, "strokeSize", inValue._stroke._strokeSize);
 		}
