@@ -560,6 +560,25 @@ end
 			return false;\
 	} while (false)
 
+	template<typename K>
+	bool _to_native_map_key(lua_State* L, int lo, K* outValue, const char* fName) {
+		// String keys are strict; ordinary string arguments keep their coercion rules.
+		if constexpr (std::is_same_v<K, std::string> || std::is_same_v<K, const char*>
+#ifdef __cpp_lib_string_view
+			|| std::is_same_v<K, std::string_view>
+#endif
+			) {
+			if (lua_type(L, lo) != LUA_TSTRING) return false;
+		}
+		const auto top = lua_gettop(L);
+		// A converter may replace its slot (e.g. lua_tolstring on a number).
+		// Never expose lua_next's live iteration key to such a conversion.
+		lua_pushvalue(L, lo);
+		const bool ok = to_native<K>::F(L, top + 1, outValue, fName);
+		lua_settop(L, top);
+		return ok;
+	}
+
 #define LUA_TO_NATIVE_VECTOR(_Ty, _Setter) template<typename T>\
 	struct to_native<_Ty<T>> {\
 		static bool F(lua_State* L, int lo, _Ty<T>* outValue, const char* fName = "") {\
@@ -568,39 +587,38 @@ end
 			if (!(type == LUA_TTABLE || type == LUA_TUSERDATA || type == LUA_TCDATA))\
 				return false;\
 			const size_t len = lua_objlen(L, lo);\
-			T value;\
-			bool ok = true;\
+			_Ty<T> result;\
 			for (size_t i = 0; i < len; i++) {\
+				T value{};\
 				lua_pushnumber(L, i + 1);\
 				lua_gettable(L, lo);\
-				ok &= to_native<T>::F(L, top + 1, &value, fName);\
-				lua_pop(L, 1);\
-				if (ok)\
-					outValue->_Setter(value);\
-				else\
-					break;\
+				const bool ok = to_native<T>::F(L, top + 1, &value, fName);\
+				lua_settop(L, top);\
+				if (!ok) return false;\
+				result._Setter(value);\
 			}\
+			*outValue = std::move(result);\
 			return true; } };
 
 #define LUA_TO_NATIVE_MAP(_Ty, _Setter) template<typename K, typename V>\
 	struct to_native<_Ty<K, V>> {\
 		static bool F(lua_State* L, int lo, _Ty<K, V>* outValue, const char* fName = "") {\
 			LUA_CHECK_TO_NATIVE;\
-			const auto type = lua_type(L, lo);\
-			if (!(type == LUA_TTABLE || type == LUA_TUSERDATA || type == LUA_TCDATA))\
-				return false;\
-			K key; V value;\
+			if (!lua_istable(L, lo)) return false;\
+			_Ty<K, V> result;\
 			lua_pushnil(L);\
 			while (lua_next(L, lo) != 0) {\
-				if(!to_native<K>::F(L, top + 1, &key, fName)) {\
-					lua_pop(L, 1); /* removes 'value'; keep 'key' for next iteration*/\
-					continue;\
+				K key{}; V value{};\
+				if (!_to_native_map_key(L, top + 1, &key, fName) ||\
+					!to_native<V>::F(L, top + 2, &value, fName)) {\
+					lua_settop(L, top);\
+					return false;\
 				}\
-				if (to_native<V>::F(L, top + 2, &value, fName))\
-					(*outValue)_Setter;\
-				lua_pop(L, 1);\
+				result _Setter;\
+				lua_settop(L, top + 1);\
 			}\
-			return true; } };\
+			*outValue = std::move(result);\
+			return true; } };
 
 #define TO_NATIVE_SIGNED(_T) template<>\
 	struct to_native<_T> {\
@@ -713,19 +731,16 @@ end
 			const auto type = lua_type(L, lo);
 			if (!(type == LUA_TTABLE || type == LUA_TUSERDATA || type == LUA_TCDATA))
 				return false;
-			const size_t len = std::min(lua_objlen(L, lo), Size);
-			T value;
-			bool ok = true;
-			for (size_t i = 0; i < len; i++) {
+			if (lua_objlen(L, lo) != Size) return false;
+			std::array<T, Size> result{};
+			for (size_t i = 0; i < Size; i++) {
 				lua_pushnumber(L, i + 1);
 				lua_gettable(L, lo);
-				ok &= to_native<T>::F(L, top + 1, &value, fName);
-				lua_pop(L, 1);
-				if (ok)
-					outValue->operator[](i) = value;
-				else
-					break;
+				const bool ok = to_native<T>::F(L, top + 1, &result[i], fName);
+				lua_settop(L, top);
+				if (!ok) return false;
 			}
+			*outValue = std::move(result);
 			return true;
 		}
 	};
@@ -797,19 +812,18 @@ end
 			const auto type = lua_type(L, lo);
 			if (!(type == LUA_TTABLE || type == LUA_TUSERDATA || type == LUA_TCDATA))
 				return false;
-			const size_t len = std::min(lua_objlen(L, lo), Size);
-			bool value;
-			bool ok = true;
-			for (size_t i = 0; i < len; i++) {
+			if (lua_objlen(L, lo) != Size) return false;
+			std::bitset<Size> result;
+			for (size_t i = 0; i < Size; i++) {
+				bool value = false;
 				lua_pushnumber(L, i + 1);
 				lua_gettable(L, lo);
-				ok &= to_native<bool>::F(L, top + 1, &value, fName);
-				lua_pop(L, 1);
-				if (ok)
-					outValue->set(i, value);
-				else
-					break;
+				const bool ok = to_native<bool>::F(L, top + 1, &value, fName);
+				lua_settop(L, top);
+				if (!ok) return false;
+				result.set(i, value);
 			}
+			*outValue = result;
 			return true;
 		}
 	};

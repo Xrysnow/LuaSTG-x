@@ -86,19 +86,21 @@ namespace lua
 		static bool F(lua_State* L, int lo, hlookup::string_map<T>* outValue, const char* fName = "") {
 			LUA_CHECK_TO_NATIVE;
 			if (!lua_istable(L, lo)) return false;
-			std::string key; T value;
+			hlookup::string_map<T> result;
 			lua_pushnil(L);
 			while (lua_next(L, lo) != 0)
 			{
-				if (!to_native<std::string>::F(L, top + 1, &key, fName))
+				std::string key; T value{};
+				if (!_to_native_map_key(L, top + 1, &key, fName) ||
+					!to_native<T>::F(L, top + 2, &value, fName))
 				{
-					lua_pop(L, 1);
-					continue;
+					lua_settop(L, top);
+					return false;
 				}
-				if (to_native<T>::F(L, top + 2, &value, fName))
-					outValue->operator[](key) = value;
-				lua_pop(L, 1);
+				result[key] = value;
+				lua_settop(L, top + 1);
 			}
+			*outValue = std::move(result);
 			return true;
 		}
 	};
@@ -109,19 +111,17 @@ namespace lua
 			LUA_CHECK_TO_NATIVE;
 			if (!is_indexable(L, lo)) return false;
 			const size_t len = lua_objlen(L, lo);
-			std::string value;
-			lua_pushnil(L);
-			bool ok = true;
+			hlookup::string_set result;
 			for (size_t i = 0; i < len; i++) {
+				std::string value;
 				lua_pushnumber(L, i + 1);
 				lua_gettable(L, lo);
-				ok &= to_native<std::string>::F(L, top + 1, &value, fName);
-				lua_pop(L, 1);
-				if (ok)
-					outValue->insert(value);
-				else
-					break;
+				const bool ok = to_native<std::string>::F(L, top + 1, &value, fName);
+				lua_settop(L, top);
+				if (!ok) return false;
+				result.insert(value);
 			}
+			*outValue = std::move(result);
 			return true;
 		}
 	};
@@ -352,11 +352,13 @@ namespace lua
 			LUA_CHECK_TO_NATIVE;
 			if (!is_indexable(L, lo)) return false;
 			if (lua_objlen(L, lo) != 16) return false;
+			cocos2d::Mat4 result;
 			for (int i = 0; i < 16; ++i)
 			{
-				if (!luaval_field_to_native(L, lo, i + 1, &outValue->m[i], fName))
-					outValue->m[i] = 0;
+				if (!luaval_field_to_native(L, lo, i + 1, &result.m[i], fName))
+					return false;
 			}
+			*outValue = result;
 			return true;
 		}
 	};
