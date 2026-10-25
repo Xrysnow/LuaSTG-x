@@ -11,11 +11,14 @@
 #include <limits>
 #include <list>
 #include <map>
+#include <memory>
+#include <mutex>
 #include <new>
 #include <queue>
 #include <set>
 #include <stack>
 #include <string>
+#include <thread>
 #include <tuple>
 #include <type_traits>
 #include <typeinfo>
@@ -327,11 +330,7 @@ end
 			lua_pushstring(L, TOLUA_REFID_FUNCTION_MAPPING);
 			lua_rawget(L, LUA_REGISTRYINDEX); // ... t
 			lua_pushlstring(L, key.c_str(), key.size()); // ... t k
-			lua_rawget(L, -2); // ... t v
-			if (lua_isnumber(L, -1))
-				toluafix_remove_function_by_refid(L, (int)lua_tointeger(L, -1));
-			lua_pop(L, 1); // ... t
-			lua_pushlstring(L, key.c_str(), key.size()); // ... t k
+			// Names are lookup aliases, not ownership or replacement keys.
 			lua_pushinteger(L, handler); // ... t k v
 			lua_settable(L, -3); // ... t
 			lua_pop(L, 1);
@@ -365,6 +364,194 @@ end
 		else
 			lua_pushnil(L);
     }
+
+	// A Lua-owned anchor also keeps an in-flight callback alive if it clears its
+	// own C++ slot. On a Lua error it is collected with the unwound Lua frame.
+	template<typename T>
+	struct _callback_userdata {
+		using value_type = std::shared_ptr<T>;
+		value_type* value;
+		alignas(value_type) unsigned char storage[sizeof(value_type)];
+		static void* key() { static char k; return &k; }
+		// Keep the userdata rooted during reset: destroying its value may enter Lua.
+		static void reset(_callback_userdata* p) {
+			if (p->value) {
+				auto* value = p->value;
+				// Invalidate first so reentrant __gc cannot destroy the value twice.
+				p->value = nullptr;
+				value->~value_type();
+			}
+		}
+		static int collect(lua_State* L) {
+			if (lua_type(L, 1) != LUA_TUSERDATA || lua_objlen(L, 1) != sizeof(_callback_userdata)
+				|| !lua_getmetatable(L, 1)) return 0;
+			lua_pushlightuserdata(L, key());
+			lua_rawget(L, LUA_REGISTRYINDEX);
+			const bool matches = lua_rawequal(L, -1, -2) != 0;
+			lua_pop(L, 2);
+			if (matches) reset(static_cast<_callback_userdata*>(lua_touserdata(L, 1)));
+			return 0;
+		}
+		static _callback_userdata* push(lua_State* L, const value_type& value) {
+			lua_pushlightuserdata(L, key());
+			lua_rawget(L, LUA_REGISTRYINDEX);
+			if (lua_isnil(L, -1)) {
+				lua_pop(L, 1);
+				lua_createtable(L, 0, 1);
+				lua_pushcfunction(L, collect);
+				lua_setfield(L, -2, "__gc");
+				lua_pushlightuserdata(L, key());
+				lua_pushvalue(L, -2);
+				lua_rawset(L, LUA_REGISTRYINDEX);
+			}
+			auto* p = new (lua_newuserdata(L, sizeof(_callback_userdata))) _callback_userdata{};
+			lua_insert(L, -2);
+			lua_setmetatable(L, -2);
+			p->value = new (p->storage) value_type(value);
+			return p;
+		}
+	};
+
+	struct _callback_reference;
+	// The mutex protects cross-thread release bookkeeping, not the Lua VM.
+	struct _callback_state {
+		const std::thread::id thread = std::this_thread::get_id();
+		std::mutex mutex;
+		bool alive = true;
+		_callback_reference* pending = nullptr;
+		bool callable() {
+			std::lock_guard<std::mutex> lock(mutex);
+			return alive && thread == std::this_thread::get_id();
+		}
+		void drain(lua_State* L);
+		void close();
+	};
+
+	// One registration, shared by C++ copies and temporary call anchors.
+	struct _callback_reference {
+		std::shared_ptr<_callback_state> state;
+		lua_State* L;
+		// Own the diagnostic name; the caller's fName may be temporary.
+		std::string name;
+		std::string key;
+		int handler = 0;
+		int thread_ref = LUA_NOREF;
+		_callback_reference* next = nullptr;
+		void unref(lua_State* current) {
+			if (handler) {
+				toluafix_remove_function_by_refid(current, handler);
+				if (!key.empty()) {
+					lua_pushstring(current, TOLUA_REFID_FUNCTION_MAPPING);
+					lua_rawget(current, LUA_REGISTRYINDEX);
+					lua_pushlstring(current, key.data(), key.size());
+					lua_rawget(current, -2);
+					// An older callback must not remove a newer callback's alias.
+					const bool matches = lua_isnumber(current, -1)
+						&& lua_tointeger(current, -1) == handler;
+					lua_pop(current, 1);
+					if (matches) {
+						lua_pushlstring(current, key.data(), key.size());
+						lua_pushnil(current);
+						lua_rawset(current, -3);
+					}
+					lua_pop(current, 1);
+				}
+			}
+			// Last: current may itself be the coroutine kept alive by this ref.
+			luaL_unref(current, LUA_REGISTRYINDEX, thread_ref);
+		}
+		static void release(_callback_reference* p) {
+			bool active;
+			{
+				std::lock_guard<std::mutex> lock(p->state->mutex);
+				active = p->state->alive;
+				if (active && p->state->thread != std::this_thread::get_id()) {
+					// Never access Lua from a worker. No allocation in this deleter.
+					// Drain on the next owner-thread registration/call, or discard on close.
+					p->next = p->state->pending;
+					p->state->pending = p;
+					return;
+				}
+			}
+			if (active) p->unref(p->L);
+			delete p;
+		}
+		static _callback_userdata<_callback_reference>* hold(const std::shared_ptr<_callback_reference>& value) {
+			// Survive GC triggered while creating the Lua anchor.
+			auto keep = value;
+			if (!keep->state->callable()) return nullptr;
+			keep->state->drain(keep->L);
+			return _callback_userdata<_callback_reference>::push(keep->L, keep);
+		}
+	};
+
+	inline void _callback_state::drain(lua_State* L) {
+		_callback_reference* list;
+		{
+			std::lock_guard<std::mutex> lock(mutex);
+			list = pending;
+			pending = nullptr;
+		}
+		// Unref outside the lock: Lua GC can reenter callback destruction.
+		while (list) {
+			auto* p = list;
+			list = p->next;
+			p->unref(L);
+			delete p;
+		}
+	}
+	inline void _callback_state::close() {
+		_callback_reference* list;
+		{
+			std::lock_guard<std::mutex> lock(mutex);
+			alive = false;
+			list = pending;
+			pending = nullptr;
+		}
+		while (list) {
+			auto* p = list;
+			list = p->next;
+			delete p; // lua_close owns the registry; do not use Lua here.
+		}
+	}
+	// Only the registry owns this sentinel; its finalizer marks surviving refs closed.
+	struct _callback_lifetime {
+		std::shared_ptr<_callback_state> state = std::make_shared<_callback_state>();
+		~_callback_lifetime() { state->close(); }
+	};
+	// Coroutines share the registry and therefore the same lifetime sentinel.
+	inline std::shared_ptr<_callback_state> _get_callback_state(lua_State* L) {
+		static char key;
+		using holder = _callback_userdata<_callback_lifetime>;
+		lua_pushlightuserdata(L, &key);
+		lua_rawget(L, LUA_REGISTRYINDEX);
+		if (lua_isnil(L, -1)) {
+			lua_pop(L, 1);
+			holder::push(L, std::make_shared<_callback_lifetime>());
+			lua_pushlightuserdata(L, &key);
+			lua_pushvalue(L, -2);
+			lua_rawset(L, LUA_REGISTRYINDEX);
+		}
+		auto* p = static_cast<holder*>(lua_touserdata(L, -1));
+		auto state = p->value ? (*p->value)->state : nullptr;
+		lua_pop(L, 1);
+		if (state && state->callable()) state->drain(L);
+		return state;
+	}
+	inline std::shared_ptr<_callback_reference> _own_luafunction(lua_State* L, int lo, const char* name) {
+		const int index = _absolute_index(L, lo);
+		if (!index || !lua_isfunction(L, index)) return nullptr;
+		auto state = _get_callback_state(L);
+		if (!state || !state->callable()) return nullptr;
+		auto ref = std::shared_ptr<_callback_reference>(new _callback_reference{
+			state, L, name ? name : "", "" }, _callback_reference::release);
+		if (!ref->name.empty()) ref->key = ref->name + "::" + std::to_string(lo);
+		// Pin the originating coroutine while native code holds the callback.
+		lua_pushthread(L);
+		ref->thread_ref = luaL_ref(L, LUA_REGISTRYINDEX);
+		ref->handler = luafunction_to_handler(L, lo, name);
+		return ref->handler ? ref : nullptr;
+	}
 
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -946,21 +1133,30 @@ end
 				*outValue = nullptr;
 				return true;
 			}
-			const int handler = luafunction_to_handler(L, lo, fName);
-			if (handler == 0)
+			auto ref = _own_luafunction(L, lo, fName);
+			if (!ref)
 				return false;
-			*outValue = [=](Targs... args)
+			*outValue = [ref = std::move(ref)](Targs... args)
 			{
 				R ret = {};
-				handler_to_luafunction(L, handler);
+				auto* held = _callback_reference::hold(ref);
+				if (!held) return ret;
+				auto* callback = held->value->get();
+				auto* L = callback->L;
+				const int anchor = lua_gettop(L);
+				handler_to_luafunction(L, callback->handler);
 				if (!lua_isfunction(L, -1)) {
 					lua_pop(L, 1);
+					_callback_userdata<_callback_reference>::reset(held);
+					lua_remove(L, anchor);
 					return ret;
 				}
 				_to_lua_function_helper<sizeof...(Targs), Targs...>::F(L, std::forward<Targs>(args)...);
 				lua_call(L, sizeof...(Targs), 1);
-				if (!luaval_to_native(L, -1, &ret, fName))
-					luaL_error(L, "invalid return value in handler (%s)", fName);
+				if (!luaval_to_native(L, -1, &ret, callback->name.c_str()))
+					luaL_error(L, "invalid return value in handler (%s)", callback->name.c_str());
+				_callback_userdata<_callback_reference>::reset(held);
+				lua_remove(L, anchor);
 				return ret;
 			};
 			return true;
@@ -977,18 +1173,27 @@ end
 				*outValue = nullptr;
 				return true;
 			}
-			const int handler = luafunction_to_handler(L, lo, fName);
-			if (handler == 0)
+			auto ref = _own_luafunction(L, lo, fName);
+			if (!ref)
 				return false;
-			*outValue = [=](Targs... args)
+			*outValue = [ref = std::move(ref)](Targs... args)
 			{
-				handler_to_luafunction(L, handler);
+				auto* held = _callback_reference::hold(ref);
+				if (!held) return;
+				auto* callback = held->value->get();
+				auto* L = callback->L;
+				const int anchor = lua_gettop(L);
+				handler_to_luafunction(L, callback->handler);
 				if (!lua_isfunction(L, -1)) {
 					lua_pop(L, 1);
+					_callback_userdata<_callback_reference>::reset(held);
+					lua_remove(L, anchor);
 					return;
 				}
 				_to_lua_function_helper<sizeof...(Targs), Targs...>::F(L, std::forward<Targs>(args)...);
 				lua_call(L, sizeof...(Targs), 0);
+				_callback_userdata<_callback_reference>::reset(held);
+				lua_remove(L, anchor);
 			};
 			return true;
 		}
