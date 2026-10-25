@@ -445,11 +445,12 @@ namespace lua
 		static void F(lua_State* L, const hlookup::string_map<T>& inValue) {
 			if (!L) return;
 			lua_createtable(L, 0, (int)inValue.size());
+			const int table = lua_gettop(L);
 			for (auto&& it : inValue)
 			{
 				lua_pushlstring(L, it.first.c_str(), it.first.size());
 				to_lua<T>::F(L, it.second);
-				lua_settable(L, -1);
+				lua_settable(L, table);
 			}
 		}
 	};
@@ -459,11 +460,12 @@ namespace lua
 		static void F(lua_State* L, const hlookup::string_set& inValue) {
 			if (!L) return;
 			lua_createtable(L, (int)inValue.size(), 0);
+			const int table = lua_gettop(L);
 			int i = 1;
 			for (auto&& it : inValue)
 			{
 				lua_pushlstring(L, it.c_str(), it.size());
-				lua_rawseti(L, -1, i);
+				lua_rawseti(L, table, i);
 				++i;
 			}
 		}
