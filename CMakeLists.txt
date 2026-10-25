@@ -44,17 +44,20 @@ set(CC_USE_GFX "${LSTGX_USE_GFX}")
 set(USE_JOB_SYSTEM_TASKFLOW ON)
 set(USE_JOB_SYSTEM_TBB OFF)
 
-if(XCODE)
-    if(NOT DEFINED CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET)
-        set(CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET 13.0)
-    endif()
-endif()
-
 set(RUNTIME_SRC_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/frameworks/runtime-src)
 set(COCOS2DX_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/frameworks/cocos2d-x)
 set(CMAKE_MODULE_PATH ${COCOS2DX_ROOT_PATH}/cmake/Modules/)
 
 include(CocosBuildSet)
+# Apply Xcode defaults after IOS/MACOSX detection and before creating targets.
+# Preserve deployment versions supplied through CMake or Xcode attributes.
+if(XCODE AND "${CMAKE_OSX_DEPLOYMENT_TARGET}" STREQUAL "")
+    if(IOS AND NOT DEFINED CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET)
+        set(CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET 13.0)
+    elseif(MACOSX AND NOT DEFINED CMAKE_XCODE_ATTRIBUTE_MACOSX_DEPLOYMENT_TARGET)
+        set(CMAKE_XCODE_ATTRIBUTE_MACOSX_DEPLOYMENT_TARGET 10.15)
+    endif()
+endif()
 if(APPLE)
     enable_language(OBJC OBJCXX)
     # Keep Objective-C and Objective-C++ aligned with the C/C++ settings.
