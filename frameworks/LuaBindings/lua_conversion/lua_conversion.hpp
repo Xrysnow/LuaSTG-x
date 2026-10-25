@@ -204,11 +204,12 @@ namespace lua
 		static bool F(lua_State* L, int lo, cocos2d::Color4B* outValue, const char* fName = "") {
 			LUA_CHECK_TO_NATIVE;
 			if (lua_type(L, lo) == LUA_TUSERDATA) {
-				auto p = static_cast<cocos2d::Color4B*>(luaL_checkudata(L, lo, "lstgColor"));
-				if (p) {
-					*outValue = *p;
-					return true;
-				}
+				if (lua_objlen(L, lo) != sizeof(cocos2d::Color4B))
+					return false;
+				auto p = static_cast<cocos2d::Color4B*>(luaL_testudata(L, lo, "lstgColor"));
+				if (!p) return false;
+				*outValue = *p;
+				return true;
 			}
 			if (!is_indexable(L, lo))
 				return false;
