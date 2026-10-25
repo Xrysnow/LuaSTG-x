@@ -874,8 +874,6 @@ end
 
 	LUA_TO_NATIVE_MAP(std::map, [key] = value);
 	LUA_TO_NATIVE_MAP(std::unordered_map, [key] = value);
-	LUA_TO_NATIVE_MAP(std::multimap, .emplace(key, value));
-	LUA_TO_NATIVE_MAP(std::unordered_multimap, .emplace(key, value));
 
 	template<typename T>
 	bool luaval_to_native(lua_State* L, int lo, T* outValue, const char* fName = "") {
@@ -1103,8 +1101,6 @@ end
 
 	LUA_TO_LUA_MAP(std::map);
 	LUA_TO_LUA_MAP(std::unordered_map);
-	LUA_TO_LUA_MAP(std::multimap);
-	LUA_TO_LUA_MAP(std::unordered_multimap);
 
 	template<typename T>
 	void native_to_luaval(lua_State* L, T&& inValue) {
