@@ -4,6 +4,7 @@
 #include <array>
 #include <bitset>
 #include <cstdint>
+#include <cstdio>
 #include <cstring>
 #include <deque>
 #include <forward_list>
@@ -365,8 +366,7 @@ end
 			lua_pushnil(L);
     }
 
-	// A Lua-owned anchor also keeps an in-flight callback alive if it clears its
-	// own C++ slot. On a Lua error it is collected with the unwound Lua frame.
+	// Lua-owned storage for the state lifetime sentinel.
 	template<typename T>
 	struct _callback_userdata {
 		using value_type = std::shared_ptr<T>;
@@ -475,13 +475,6 @@ end
 			}
 			if (active) p->unref(p->L);
 			delete p;
-		}
-		static _callback_userdata<_callback_reference>* hold(const std::shared_ptr<_callback_reference>& value) {
-			// Survive GC triggered while creating the Lua anchor.
-			auto keep = value;
-			if (!keep->state->callable()) return nullptr;
-			keep->state->drain(keep->L);
-			return _callback_userdata<_callback_reference>::push(keep->L, keep);
 		}
 	};
 
@@ -1123,6 +1116,87 @@ end
 		}
 	};
 
+	// Do not invoke tostring/metamethods outside a protected Lua frame.
+	inline const char* _callback_error_text(lua_State* L, int index) {
+		return lua_type(L, index) == LUA_TSTRING ? lua_tostring(L, index)
+			: lua_typename(L, lua_type(L, index));
+	}
+	inline void _callback_log_error(lua_State* L, const char* name) {
+		std::fprintf(stderr, "[LUA ERROR] callback (%s): %s\n", name, _callback_error_text(L, -1));
+	}
+	inline int _callback_report_error(lua_State* L) {
+		lua_pushfstring(L, "[LUA ERROR] callback (%s): %s",
+			lua_tostring(L, lua_upvalueindex(1)), _callback_error_text(L, 1));
+		// Match LuaStack's reporting hook, but protect the reporter too. Its return
+		// value is irrelevant (the application's hook does not return a string).
+		lua_pushliteral(L, "__G__TRACKBACK__");
+		lua_rawget(L, LUA_GLOBALSINDEX);
+		if (lua_isfunction(L, -1)) {
+			lua_pushvalue(L, 2);
+			if (lua_pcall(L, 1, 0, 0) != 0) {
+				std::fprintf(stderr, "%s\n[LUA ERROR] callback reporter: %s\n",
+					lua_tostring(L, 2), _callback_error_text(L, -1));
+			}
+		} else {
+			std::fprintf(stderr, "%s\n", lua_tostring(L, 2));
+		}
+		lua_pushvalue(L, 2);
+		return 1;
+	}
+
+	template<typename F>
+	struct _callback_call {
+		_callback_reference* callback;
+		F* invoke;
+		bool completed = false;
+		static int run(lua_State* L) {
+			auto* context = static_cast<_callback_call*>(lua_touserdata(L, lua_upvalueindex(1)));
+			if (!context) return luaL_error(L, "expired Lua callback invocation");
+			// A debug-retained trampoline must not retain a pointer to this C++ frame.
+			lua_pushnil(L);
+			lua_replace(L, lua_upvalueindex(1));
+			(*context->invoke)(L);
+			context->completed = true;
+			return 0;
+		}
+		static int enter(lua_State* L) {
+			auto* context = lua_type(L, 1) == LUA_TLIGHTUSERDATA
+				? static_cast<_callback_call*>(lua_touserdata(L, 1)) : nullptr;
+			if (!context) return luaL_error(L, "expired Lua callback setup");
+			lua_settop(L, 0);
+			context->callback->state->drain(L);
+			lua_pushlstring(L, context->callback->name.data(), context->callback->name.size());
+			lua_pushcclosure(L, _callback_report_error, 1);
+			lua_pushlightuserdata(L, context);
+			lua_pushcclosure(L, run, 1);
+			const int status = lua_pcall(L, 0, 0, 1);
+			if (status != 0) {
+				context->completed = false;
+				if (status != LUA_ERRRUN)
+					_callback_log_error(L, context->callback->name.c_str());
+			}
+			return 0;
+		}
+	};
+
+	template<typename F>
+	bool _call_luafunction(const std::shared_ptr<_callback_reference>& ref, F&& invoke) {
+		// All C++ owners live outside both protected frames, including when the
+		// callback clears its own slot or the reporting hook triggers GC/reentry.
+		auto keep = ref;
+		if (!keep->state->callable()) return false;
+		auto* L = keep->L;
+		const int top = lua_gettop(L);
+		_callback_call<F> context{ keep.get(), &invoke };
+		// cpcall also protects frame setup, argument conversion and result conversion.
+		if (lua_cpcall(L, _callback_call<F>::enter, &context) != 0) {
+			context.completed = false;
+			_callback_log_error(L, keep->name.c_str());
+		}
+		lua_settop(L, top);
+		return context.completed;
+	}
+
 	template<typename R, typename... Targs>
 	struct to_native<std::function<R(Targs...)>> {
 		static bool F(lua_State* L, int lo, std::function<R(Targs...)>* outValue, const char* fName = "") {
@@ -1139,24 +1213,17 @@ end
 			*outValue = [ref = std::move(ref)](Targs... args)
 			{
 				R ret = {};
-				auto* held = _callback_reference::hold(ref);
-				if (!held) return ret;
-				auto* callback = held->value->get();
-				auto* L = callback->L;
-				const int anchor = lua_gettop(L);
-				handler_to_luafunction(L, callback->handler);
-				if (!lua_isfunction(L, -1)) {
-					lua_pop(L, 1);
-					_callback_userdata<_callback_reference>::reset(held);
-					lua_remove(L, anchor);
-					return ret;
-				}
-				_to_lua_function_helper<sizeof...(Targs), Targs...>::F(L, std::forward<Targs>(args)...);
-				lua_call(L, sizeof...(Targs), 1);
-				if (!luaval_to_native(L, -1, &ret, callback->name.c_str()))
-					luaL_error(L, "invalid return value in handler (%s)", callback->name.c_str());
-				_callback_userdata<_callback_reference>::reset(held);
-				lua_remove(L, anchor);
+				auto* callback = ref.get();
+				const bool ok = _call_luafunction(ref, [&](lua_State* L) {
+					handler_to_luafunction(L, callback->handler);
+					if (!lua_isfunction(L, -1)) return;
+					luaL_checkstack(L, sizeof...(Targs), "Lua callback argument stack overflow");
+					_to_lua_function_helper<sizeof...(Targs), Targs...>::F(L, std::forward<Targs>(args)...);
+					lua_call(L, sizeof...(Targs), 1);
+					if (!luaval_to_native(L, -1, &ret, callback->name.c_str()))
+						luaL_error(L, "invalid return value in handler (%s)", callback->name.c_str());
+				});
+				if (!ok) return R{};
 				return ret;
 			};
 			return true;
@@ -1178,22 +1245,14 @@ end
 				return false;
 			*outValue = [ref = std::move(ref)](Targs... args)
 			{
-				auto* held = _callback_reference::hold(ref);
-				if (!held) return;
-				auto* callback = held->value->get();
-				auto* L = callback->L;
-				const int anchor = lua_gettop(L);
-				handler_to_luafunction(L, callback->handler);
-				if (!lua_isfunction(L, -1)) {
-					lua_pop(L, 1);
-					_callback_userdata<_callback_reference>::reset(held);
-					lua_remove(L, anchor);
-					return;
-				}
-				_to_lua_function_helper<sizeof...(Targs), Targs...>::F(L, std::forward<Targs>(args)...);
-				lua_call(L, sizeof...(Targs), 0);
-				_callback_userdata<_callback_reference>::reset(held);
-				lua_remove(L, anchor);
+				auto* callback = ref.get();
+				_call_luafunction(ref, [&](lua_State* L) {
+					handler_to_luafunction(L, callback->handler);
+					if (!lua_isfunction(L, -1)) return;
+					luaL_checkstack(L, sizeof...(Targs), "Lua callback argument stack overflow");
+					_to_lua_function_helper<sizeof...(Targs), Targs...>::F(L, std::forward<Targs>(args)...);
+					lua_call(L, sizeof...(Targs), 0);
+				});
 			};
 			return true;
 		}
