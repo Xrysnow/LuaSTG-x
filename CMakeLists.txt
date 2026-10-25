@@ -68,7 +68,13 @@ if(APPLE)
     set(CMAKE_OBJCXX_EXTENSIONS ${CMAKE_CXX_EXTENSIONS})
 endif()
 set(BUILD_LUA_LIBS ON)
+# Rebuild the auto-link list for this configure; disabled extensions must not persist.
+unset(CC_EXTENSION_LIBS)
+set(CC_EXTENSION_LIBS "" CACHE INTERNAL "extensions for auto link to target application" FORCE)
 add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos ${ENGINE_BINARY_PATH}/cocos/core)
+list(REMOVE_ITEM CC_EXTENSION_LIBS "")
+list(REMOVE_DUPLICATES CC_EXTENSION_LIBS)
+set(CC_EXTENSION_LIBS "${CC_EXTENSION_LIBS}" CACHE INTERNAL "extensions for auto link to target application" FORCE)
 
 # script and source files info, not need to compile
 set(res_res_folders
