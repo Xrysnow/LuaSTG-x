@@ -7,7 +7,6 @@
 #include <cstdio>
 #include <cstring>
 #include <deque>
-#include <forward_list>
 #include <functional>
 #include <limits>
 #include <list>
@@ -830,7 +829,6 @@ end
 
 	LUA_TO_NATIVE_VECTOR(std::vector, push_back);
 	LUA_TO_NATIVE_VECTOR(std::deque, push_back);
-	LUA_TO_NATIVE_VECTOR(std::forward_list, push_front);
 	LUA_TO_NATIVE_VECTOR(std::list, push_back);
 	LUA_TO_NATIVE_VECTOR(std::set, insert);
 	LUA_TO_NATIVE_VECTOR(std::multiset, insert);
@@ -1063,7 +1061,6 @@ end
 
 	LUA_TO_LUA_VECTOR(std::vector);
 	LUA_TO_LUA_VECTOR(std::deque);
-	LUA_TO_LUA_VECTOR(std::forward_list);
 	LUA_TO_LUA_VECTOR(std::list);
 	LUA_TO_LUA_VECTOR(std::set);
 	LUA_TO_LUA_VECTOR(std::multiset);
