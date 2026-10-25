@@ -42,7 +42,9 @@ LUA_REGISTER_MODULE(x_ZipArchive, luaReg_ZipArchive);
 	#include "lua_cc_fairygui_auto.hpp"
 	LUA_REGISTER_MODULE(cc_fairygui, luaReg_fgui);
 	#include "lua_cc_fairygui_manual.hpp"
-	LUA_REGISTER_MODULE(cc_fairygui_manual, register_all_cc_fairygui_manual);
+	// Manual overrides must run after the generated modules (priority 0).
+	static CC_UNUSED auto& fairyGuiManualModule = LuaModuleRegistry::addModule(
+		"cc_fairygui_manual", register_all_cc_fairygui_manual, 1);
 #endif
 
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_ANDROID) && (CC_TARGET_PLATFORM != CC_PLATFORM_IOS)
@@ -123,3 +125,34 @@ int luaReg_ResAudio_manual(lua_State* lua_S)
 	return 0;
 }
 LUA_REGISTER_MODULE(x_ResAudio_manual, luaReg_ResAudio_manual);
+
+#include "Resource/ResFont.h"
+
+static int lua_lstg_ResFont_HGE2BMF_manual(lua_State* lua_S)
+{
+	LUA_SINVOKE_HEADER("lstg.ResFont", "lstg.ResFont:HGE2BMF");
+	if (argc != 1)
+		return luaL_error(lua_S, "wrong number of arguments in '%s': %d, expects 1", LUA_FNAME, argc);
+	if (!lua_isstring(lua_S, 2))
+		return luaL_error(lua_S, "invalid argument #1 in '%s'", LUA_FNAME);
+	std::string data, textureName;
+	lua::luaval_to_native(lua_S, 2, &data);
+	const auto bmf = lstg::ResFont::HGE2BMF(data, textureName);
+	lua::native_to_luaval(lua_S, bmf);
+	lua::native_to_luaval(lua_S, textureName);
+	return 2;
+}
+
+int luaReg_ResFont_manual(lua_State* lua_S)
+{
+	if (!lua_S)
+		return 0;
+	LUA_ENTRY("lstg");
+	LUA_ENTRY("ResFont");
+	LUA_METHOD("HGE2BMF", lua_lstg_ResFont_HGE2BMF_manual);
+	LUA_ENTRY_END(2);
+	return 0;
+}
+// ResFont is defined by x_Resource at the default priority.
+static CC_UNUSED auto& resFontManualModule = LuaModuleRegistry::addModule(
+	"x_ResFont_manual", luaReg_ResFont_manual, 1);
