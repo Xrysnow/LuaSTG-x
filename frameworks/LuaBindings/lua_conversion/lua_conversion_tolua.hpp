@@ -1054,7 +1054,7 @@ end
 			if (!L) return;
 			lua_createtable(L, (int)inValue.size(), 0);
 			for (size_t i = 0; i < Size; ++i) {
-				lua_pushnumber(L, (lua_Number)i);
+				lua_pushnumber(L, (lua_Number)(i + 1));
 				to_lua<bool>::F(L, inValue.test(i));
 				lua_rawset(L, -3);
 			}
