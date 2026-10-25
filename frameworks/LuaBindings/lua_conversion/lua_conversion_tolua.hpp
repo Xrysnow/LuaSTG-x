@@ -184,21 +184,31 @@ end
         return u ? *(void**)u : nullptr;
     }
 
+    // Success leaves one function on the stack; failure leaves the stack unchanged.
     inline bool _try_get_internal_helper(lua_State* L, const char* key, const char* def)
     {
-		lua_pushstring(L, key); // 1
-		lua_rawget(L, LUA_REGISTRYINDEX); // 1
-		auto tfunc = lua_type(L, -1);
-		if (tfunc == LUA_TNIL)
+		const int top = lua_gettop(L);
+		lua_pushstring(L, key);
+		lua_rawget(L, LUA_REGISTRYINDEX);
+		if (lua_isnil(L, -1))
 		{
-			lua_pop(L, 1); // 0
-			luaL_dostring(L, def); // 1
-			lua_setfield(L, LUA_REGISTRYINDEX, key); // 0
-			lua_pushstring(L, key); // 1
-			lua_rawget(L, LUA_REGISTRYINDEX); // 1
-			tfunc = lua_type(L, -1);
+			lua_pop(L, 1);
+			if (luaL_loadstring(L, def) != 0 || lua_pcall(L, 0, 1, 0) != 0)
+			{
+				lua_settop(L, top);
+				return false;
+			}
+			if (lua_isfunction(L, -1))
+			{
+				lua_pushstring(L, key);
+				lua_pushvalue(L, -2);
+				lua_rawset(L, LUA_REGISTRYINDEX);
+			}
 		}
-		return tfunc == LUA_TFUNCTION;
+		if (lua_isfunction(L, -1))
+			return true;
+		lua_settop(L, top);
+		return false;
     }
 
 	inline bool is_indexable(lua_State* L, int lo)
@@ -227,26 +237,40 @@ end
 			*outValue = nullptr;
 			return false;
 		}
-		const auto ok = _try_get_internal_helper(L, "ffi.convert_ptr", _ffi_convert_ptr);
+		const int top = lua_gettop(L);
+		void* ret = nullptr;
+		bool ok = _try_get_internal_helper(L, "ffi.convert_ptr", _ffi_convert_ptr);
 		if (ok)
 		{
-			void* ret = nullptr;
 			lua_pushvalue(L, lo);
 			lua_pushlightuserdata(L, &ret);
-			if (lua_pcall(L, 2, 0, 0) == 0)
-			{
-				*outValue = ret;
-				return true;
-			}
-			*outValue = nullptr;
-			return false;
+			ok = lua_pcall(L, 2, 0, 0) == 0;
 		}
-		else
+		lua_settop(L, top);
+		*outValue = ok ? ret : nullptr;
+		return ok;
+	}
+
+	// Both integer helpers return storage for exactly one 64-bit value.
+	inline bool _luaval_to_integer_cdata(lua_State* L, int lo, void* outValue,
+		const char* key, const char* def)
+	{
+		const int top = lua_gettop(L);
+		bool ok = _try_get_internal_helper(L, key, def);
+		if (ok)
 		{
-			lua_pop(L, 1);
-			*outValue = nullptr;
-			return false;
+			lua_pushvalue(L, lo);
+			ok = lua_pcall(L, 1, 1, 0) == 0;
+			if (ok)
+			{
+				void* ret = nullptr;
+				ok = luaval_to_cptr(L, -1, &ret) && ret != nullptr;
+				if (ok)
+					std::memcpy(outValue, ret, sizeof(uint64_t));
+			}
 		}
+		lua_settop(L, top);
+		return ok;
 	}
 
 	template<typename T, typename Enable = std::enable_if_t<std::is_same_v<T, int64_t> || std::is_same_v<T, uint64_t>, T>>
@@ -261,30 +285,9 @@ end
 		constexpr bool isint64 = std::is_same_v<T, int64_t>;
 		const auto type = lua_type(L, lo);
 		if (type == LUA_TCDATA)
-		{
-			const char* key = isint64 ? "ffi.cast_int64" : "ffi.cast_uint64";
-			const char* def = isint64 ? _ffi_cast_int64 : _ffi_cast_uint64;
-			const auto ok = _try_get_internal_helper(L, key, def);
-			if (ok)
-			{
-				void* ret = nullptr;
-				lua_pushvalue(L, lo);
-				lua_pushlightuserdata(L, &ret);
-				if (lua_pcall(L, 1, 1, 0) == 0)
-				{
-					luaval_to_cptr(L, -1, &ret);
-					if (ret)
-					{
-						*outValue = *(T*)ret;
-						return true;
-					}
-				}
-			}
-			else
-			{
-				lua_pop(L, 1);
-			}
-		}
+			return _luaval_to_integer_cdata(L, lo, outValue,
+				isint64 ? "ffi.cast_int64" : "ffi.cast_uint64",
+				isint64 ? _ffi_cast_int64 : _ffi_cast_uint64);
 		bool is_number = type == LUA_TNUMBER;
 		if (!is_number)
 		{
