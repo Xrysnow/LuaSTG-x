@@ -130,6 +130,12 @@ endif()
 
 include(CMakeModules.cmake)
 
+if(MSVC AND TARGET fairygui)
+    # Avoid exhausting PDB streams with repeated covariant-return debug sources.
+    # /Z7 keeps full debug symbols in the objects instead of a compiler PDB.
+    target_compile_options(fairygui PRIVATE "$<$<CONFIG:Debug>:/Z7>")
+endif()
+
 if(APPLE)
     set_target_properties(${APP_NAME} PROPERTIES RESOURCE "${APP_UI_RES}")
     if(MACOSX)
