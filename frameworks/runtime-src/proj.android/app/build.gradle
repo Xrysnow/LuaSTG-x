@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     namespace "org.cocos.game"
     compileSdkVersion PROP_COMPILE_SDK_VERSION.toInteger()
-    ndkVersion "26.3.11579264"
+    ndkVersion "30.0.16248370"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
