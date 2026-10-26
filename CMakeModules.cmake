@@ -9,22 +9,33 @@ set(LSTGX_EXT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/frameworks/external)
 # ffmpeg, video
 
 if(NOT LSTGX_NO_VIDEO)
-	set(CC_VIDEO_DEPEND_LIBS)
+	set(CC_VIDEO_DEPEND_LIBS ext_ffmpeg)
 	add_subdirectory(${LSTGX_EXT_ROOT}/ffmpeg)
 	if(APPLE)
-		include_directories(${LSTGX_EXT_ROOT}/ffmpeg/include)
-		#target_link_libraries(${APP_NAME} ${FFMPEG_LIBRARY})
-		target_link_options(${APP_NAME} PRIVATE -F ${FFMPEG_FRAMEWORK_PATH})
-		target_link_options(${APP_NAME} PRIVATE -framework libffmpeg.4.dylib)
-		# copy to Frameworks, need to check sign option in Xcode project
-		target_sources(${APP_NAME} PUBLIC ${FFMPEG_LIBRARY})
-		set_source_files_properties(${FFMPEG_LIBRARY} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks HEADER_FILE_ONLY 1)
-		set_target_properties(${APP_NAME} PROPERTIES XCODE_ATTRIBUTE_FRAMEWORK_SEARCH_PATHS ${FFMPEG_FRAMEWORK_PATH})
+		if(XCODE)
+			# Xcode selects the slice and embeds/signs its dynamic framework.
+			set_property(TARGET ${APP_NAME} APPEND PROPERTY XCODE_EMBED_FRAMEWORKS "${FFMPEG_LIBRARY}")
+			set_target_properties(${APP_NAME} PROPERTIES
+				XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY ON
+				XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY ON
+			)
+		else()
+			# LOCATION on an imported XCFramework resolves to the selected framework.
+			get_target_property(FFMPEG_SELECTED_FRAMEWORK ext_ffmpeg LOCATION)
+			# Preserve the versioned macOS framework's symlinks when copying.
+			add_custom_command(TARGET ${APP_NAME} POST_BUILD
+				COMMAND /usr/bin/ditto
+					"${FFMPEG_SELECTED_FRAMEWORK}"
+					"$<TARGET_BUNDLE_CONTENT_DIR:${APP_NAME}>/Frameworks/FFmpeg.framework"
+				VERBATIM
+			)
+		endif()
 		# set rpath
-		target_link_options(${APP_NAME} PRIVATE -Wl,-rpath,@loader_path/../Frameworks/${FFMPEG_FRAMEWORK})
-		# set_target_properties(${APP_NAME} PROPERTIES LINK_FLAGS "-Wl,-rpath,@loader_path/../Frameworks/${FFMPEG_FRAMEWORK}")
-	else()
-		list(APPEND CC_VIDEO_DEPEND_LIBS ext_ffmpeg)
+		if(MACOSX)
+			target_link_options(${APP_NAME} PRIVATE -Wl,-rpath,@loader_path/../Frameworks)
+		else()
+			target_link_options(${APP_NAME} PRIVATE -Wl,-rpath,@executable_path/Frameworks)
+		endif()
 	endif()
 	add_subdirectory(${LSTGX_MOD_ROOT}/Video)
 	list(APPEND EXTERNAL_LIBS cc_video)
