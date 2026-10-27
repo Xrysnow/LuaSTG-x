@@ -30,12 +30,14 @@ project(${APP_NAME})
 option(LSTGX_NO_LIVE2D    "No live2d module"     OFF)
 option(LSTGX_NO_VIDEO     "No video module"      OFF)
 option(LSTGX_NO_YUESCRIPT "No Yuescript module"   ON)
+option(LSTGX_NO_FAIRY_GUI "No FairyGUI module"   OFF)
 option(LSTGX_USE_ANGLE    "Use angle on windows" OFF)
 option(LSTGX_USE_GFX      "Use GFX beckend"       ON)
 
 message("LSTGX_NO_LIVE2D: ${LSTGX_NO_LIVE2D}")
 message("LSTGX_NO_VIDEO: ${LSTGX_NO_VIDEO}")
 message("LSTGX_NO_YUESCRIPT: ${LSTGX_NO_YUESCRIPT}")
+message("LSTGX_NO_FAIRY_GUI: ${LSTGX_NO_FAIRY_GUI}")
 message("LSTGX_USE_ANGLE: ${LSTGX_USE_ANGLE}")
 message("LSTGX_USE_GFX: ${LSTGX_USE_GFX}")
 
@@ -43,6 +45,12 @@ set(CC_USE_ANGLE "${LSTGX_USE_ANGLE}")
 set(CC_USE_GFX "${LSTGX_USE_GFX}")
 set(USE_JOB_SYSTEM_TASKFLOW ON)
 set(USE_JOB_SYSTEM_TBB OFF)
+
+# Override only this configure's effective value; keep the user's engine option
+# in the cache so removing the disable override restores their preference.
+if(LSTGX_NO_FAIRY_GUI)
+    set(CC_ENABLE_EXT_FAIRYGUI OFF)
+endif()
 
 set(RUNTIME_SRC_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/frameworks/runtime-src)
 set(COCOS2DX_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/frameworks/cocos2d-x)

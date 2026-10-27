@@ -89,8 +89,6 @@ set(GAME_HEADER
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_manual.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_ext.hpp
-	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_fairygui_auto.hpp
-	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_fairygui_manual.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_fix.h
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_FileDialog_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Latex_auto.hpp
@@ -191,8 +189,6 @@ set(GAME_SOURCE
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_manual.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_ext.cpp
-	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_fairygui_auto.cpp
-	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_fairygui_manual.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_fix.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_FileDialog_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Latex_auto.cpp
@@ -223,7 +219,7 @@ set(GAME_INCLUDE
 	${LSTGX_SRC_ROOT}/Video
 )
 
-if(NOT LSTGX_NO_FAIRY_GUI)
+if(TARGET fairygui)
 	list(APPEND GAME_HEADER
 		${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_fairygui_auto.hpp
 		${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_fairygui_manual.hpp

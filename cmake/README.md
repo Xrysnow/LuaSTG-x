@@ -1,3 +1,16 @@
+# FairyGUI
+
+FairyGUI is enabled by default. Disable it with either
+`-DLSTGX_NO_FAIRY_GUI=ON` or `-DCC_ENABLE_EXT_FAIRYGUI=OFF`.
+It is enabled only when the engine option is ON and the disable override is OFF.
+The library, Lua binding sources, and Lua registration follow the same state.
+Without FairyGUI, the bundled main scene uses the existing ImGui launcher.
+
+`LSTGX_NO_FAIRY_GUI` temporarily overrides the engine option without overwriting
+its cached value. Switching it back to OFF restores that preference; if
+`CC_ENABLE_EXT_FAIRYGUI` was explicitly OFF, also set it to ON to enable FairyGUI.
+Reconfigure the same build directory after changing either option.
+
 # Linux runtime deployment
 
 On native Linux, linking also creates a movable runtime directory at

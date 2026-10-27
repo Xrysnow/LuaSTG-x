@@ -38,7 +38,7 @@ LUA_REGISTER_MODULE(x_WindowHelper, luaReg_WindowHelper);
 #include "lua_ZipArchive_auto.hpp"
 LUA_REGISTER_MODULE(x_ZipArchive, luaReg_ZipArchive);
 
-#ifndef LSTGX_NO_FAIRY_GUI
+#ifdef CC_USE_FAIRYGUI
 	#include "lua_cc_fairygui_auto.hpp"
 	LUA_REGISTER_MODULE(cc_fairygui, luaReg_fgui);
 	#include "lua_cc_fairygui_manual.hpp"
