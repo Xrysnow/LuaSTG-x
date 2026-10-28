@@ -167,6 +167,11 @@ string XFileUtils::getFullPathForFilenameWithinDirectory(string_view directory, 
 	if (!isFileExistInternal(ret) && !isDirectoryExistInternal(ret))
 		ret = "";
 	return ret;
+#elif CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+	// The Apple implementation indexes directory[0]. Its default empty search
+	// directory denotes the bundle root; pass the equivalent nonempty path.
+	return _FileUtilsBase::getFullPathForFilenameWithinDirectory(
+		directory.empty() ? string_view{"./"} : directory, filename);
 #else
 	return _FileUtilsBase::getFullPathForFilenameWithinDirectory(directory, filename);
 #endif
