@@ -680,6 +680,25 @@ end
 #undef TO_NATIVE_SIGNED
 #undef TO_NATIVE_UNSIGNED
 
+	// Fixed-width aliases may omit long and unsigned long on LP64/LLP64.
+	// Existing explicit specializations keep priority over this fallback.
+	template<typename T>
+	struct to_native<T, std::enable_if_t<(std::is_same_v<T, long> ||
+		std::is_same_v<T, unsigned long>) && (sizeof(T) <= sizeof(uint64_t))>> {
+		static bool F(lua_State* L, int lo, T* outValue, const char* funcName = "") {
+			if (!outValue) return false;
+			using type = std::conditional_t<std::is_signed_v<T>, int64_t, uint64_t>;
+			type value;
+			bool ok;
+			if constexpr (std::is_signed_v<T>)
+				ok = luaval_to_int(L, lo, &value, sizeof(T), funcName);
+			else
+				ok = luaval_to_uint(L, lo, &value, sizeof(T), funcName);
+			if (ok) *outValue = static_cast<T>(value);
+			return ok;
+		}
+	};
+
 	template<typename T>
 	struct to_native<T, std::enable_if_t<std::is_enum_v<T>>> {
 		static bool F(lua_State* L, int lo, T* outValue, const char* fName = "") {
