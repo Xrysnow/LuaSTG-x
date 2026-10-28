@@ -545,7 +545,6 @@ int AppFrame::run()
 	//double pe_t1 = 0;
 	StopWatch sw, sw2;
 	LONGLONG sleep_skip = 0LL;
-	auto hdc = wglGetCurrentDC();
 
 	auto e = director->getEventDispatcher();
 	const auto listener = EventListenerCustom::create(Director::EVENT_AFTER_DRAW, [&](EventCustom* event)
@@ -609,8 +608,6 @@ int AppFrame::run()
 			QueryPerformanceCounter(&nNow);
 			nLast.QuadPart = nNow.QuadPart;
 		}
-
-		//wglSwapLayerBuffers(hdc, WGL_SWAP_MAIN_PLANE);
 	});
 	e->addEventListenerWithFixedPriority(listener, 9);
 	const auto listener2 = EventListenerCustom::create(
