@@ -23,6 +23,21 @@
 # ****************************************************************************/
 cmake_minimum_required(VERSION 3.28)
 
+# Consume the former backend option without allowing a legacy renderer build.
+if(DEFINED LSTGX_USE_GFX)
+    if(NOT LSTGX_USE_GFX)
+        message(FATAL_ERROR
+            "LSTGX_USE_GFX=OFF is no longer supported. LuaSTG-x always uses GFX. "
+            "Remove the old option with cmake -U LSTGX_USE_GFX -S . -B <build-directory>.")
+    endif()
+    message(STATUS "LSTGX_USE_GFX is obsolete; GFX is always enabled. Removing the cached option.")
+    unset(LSTGX_USE_GFX CACHE)
+    unset(LSTGX_USE_GFX)
+endif()
+
+# Keep the internal compatibility flag until all renderer branches are migrated.
+set(CC_USE_GFX ON)
+
 set(APP_NAME LuaSTG-x)
 
 project(${APP_NAME})
@@ -32,17 +47,14 @@ option(LSTGX_NO_VIDEO     "No video module"      OFF)
 option(LSTGX_NO_YUESCRIPT "No Yuescript module"   ON)
 option(LSTGX_NO_FAIRY_GUI "No FairyGUI module"   OFF)
 option(LSTGX_USE_ANGLE    "Use angle on windows" OFF)
-option(LSTGX_USE_GFX      "Use GFX beckend"       ON)
 
 message("LSTGX_NO_LIVE2D: ${LSTGX_NO_LIVE2D}")
 message("LSTGX_NO_VIDEO: ${LSTGX_NO_VIDEO}")
 message("LSTGX_NO_YUESCRIPT: ${LSTGX_NO_YUESCRIPT}")
 message("LSTGX_NO_FAIRY_GUI: ${LSTGX_NO_FAIRY_GUI}")
 message("LSTGX_USE_ANGLE: ${LSTGX_USE_ANGLE}")
-message("LSTGX_USE_GFX: ${LSTGX_USE_GFX}")
 
 set(CC_USE_ANGLE "${LSTGX_USE_ANGLE}")
-set(CC_USE_GFX "${LSTGX_USE_GFX}")
 set(USE_JOB_SYSTEM_TASKFLOW ON)
 set(USE_JOB_SYSTEM_TBB OFF)
 
@@ -158,9 +170,7 @@ target_include_directories(${APP_NAME} PRIVATE ${GAME_INCLUDE})
 # mark app resources, resource will be copy auto after mark
 setup_cocos_app_config(${APP_NAME})
 
-if(CC_USE_GFX)
-	target_compile_definitions(${APP_NAME} PUBLIC CC_USE_GFX)
-endif()
+target_compile_definitions(${APP_NAME} PUBLIC CC_USE_GFX)
 
 if(CC_EXTENSION_LIBS)
     target_link_libraries(${APP_NAME} ${CC_EXTENSION_LIBS})
