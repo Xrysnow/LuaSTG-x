@@ -27,13 +27,8 @@
 #include <unordered_set>
 #include <vector>
 
-#ifdef CC_USE_GFX
 extern std::unordered_map<uintptr_t, const char*> g_luaType;
 extern std::unordered_map<std::string, const char*> g_typeCast;
-#else
-extern std::unordered_map<std::string, std::string> g_luaType;
-extern std::unordered_map<std::string, std::string> g_typeCast;
-#endif
 
 namespace lua
 {
