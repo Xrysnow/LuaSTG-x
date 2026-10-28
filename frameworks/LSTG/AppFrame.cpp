@@ -626,7 +626,7 @@ int AppFrame::run()
 		XProfiler::getInstance()->tic("pullEvents");
 		director->mainLoop();
 
-		if (!director->isValid())
+		if (!glview->windowShouldClose() && !director->isValid())
 		{
 			glview->pollEvents();
 		}
