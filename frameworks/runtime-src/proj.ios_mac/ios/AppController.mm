@@ -78,6 +78,13 @@
     
     // IMPORTANT: Setting the GLView should be done after creating the RootViewController
     cocos2d::GLView *glview = cocos2d::GLViewImpl::createWithEAGLView((__bridge void *)_viewController.view);
+    if (!glview)
+    {
+        // GLViewImpl could not create the gfx Metal device/surface. Director::setOpenGLView
+        // asserts on a null view, so stop the launch instead of continuing half-initialized.
+        CCLOGERROR("iOS launch failed: unable to create the gfx Metal surface");
+        return NO;
+    }
     cocos2d::Director::getInstance()->setOpenGLView(glview);
     
     //run the cocos2d-x game scene
