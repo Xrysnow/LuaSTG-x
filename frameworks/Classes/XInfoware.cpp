@@ -13,14 +13,18 @@
 	#define INFOWARE_XCR_XFEATURE_ENABLED_MASK _XCR_XFEATURE_ENABLED_MASK
 	#pragma comment(lib, "wbemuuid.lib")
 #elif (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-	#include <cpuid.h>
-	#include <unistd.h>
-	#include <mach/mach.h>
-	#include <mach/vm_statistics.h>
-	#include <sys/sysctl.h>
-	#include <sys/types.h>
-	#include <sys/utsname.h>
-	#define INFOWARE_XCR_XFEATURE_ENABLED_MASK 0
+#if defined(__arm__) || defined(__arm) || defined(__ARM__) || defined(__ARM) || defined(__aarch64__)
+#define ARCH_ARM
+#else
+#include <cpuid.h>
+#endif
+#include <unistd.h>
+#include <mach/mach.h>
+#include <mach/vm_statistics.h>
+#include <sys/sysctl.h>
+#include <sys/types.h>
+#include <sys/utsname.h>
+#define INFOWARE_XCR_XFEATURE_ENABLED_MASK 0
 #else
 
 #if defined(__arm__) || defined(__arm) || defined(__ARM__) || defined(__ARM) || defined(__aarch64__)
@@ -37,7 +41,7 @@ using namespace infoware;
 
 std::array<int32_t, 4> detail::cpuid(int32_t x)
 {
-	int32_t out[4];
+	int32_t out[4]{};
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 	__cpuidex(out, x, 0);
 #elif !defined(ARCH_ARM)
