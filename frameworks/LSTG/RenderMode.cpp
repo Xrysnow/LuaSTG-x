@@ -4,9 +4,7 @@
 #include "LogSystem.h"
 #include "../Classes/MemPoolManager.h"
 #include "Renderer.h"
-#ifdef CC_USE_GFX
 #include "renderer/backend/gfx/ProgramGFX.h"
-#endif
 #include <cstring>
 
 using namespace std;
@@ -122,7 +120,6 @@ void RenderMode::setProgram(Program* program)
 
 	CC_SAFE_RELEASE(defaultState);
 	defaultState = new backend::ProgramState(_program);
-	setVertexLayout(defaultState);
 	defaultState->getFragmentUniformBuffer(&fragUniformBuffer, fragUniformBufferSize);
 	defaultState->getVertexUniformBuffer(&vertUniformBuffer, vertUniformBufferSize);
 
@@ -154,7 +151,6 @@ ProgramState* RenderMode::getDefaultProgramState() const
 ProgramState* RenderMode::newProgramState()
 {
 	const auto ret = new ProgramState(_program);
-	setVertexLayout(ret);
 	syncUniform(ret);
 	return ret;
 }
@@ -251,9 +247,6 @@ bool RenderMode::init(const std::string& name, backend::BlendOperation equation,
 	desc.sourceAlphaBlendFactor = backend::BlendFactor::ONE;
 	desc.destinationAlphaBlendFactor = backend::BlendFactor::ONE_MINUS_SRC_ALPHA;
 
-#ifndef CC_USE_GFX
-	SetDefaultVertexLayout(program, &defaultLayout);
-#endif // !CC_USE_GFX
 	setProgram(program);
 	return true;
 }
@@ -263,18 +256,8 @@ backend::ProgramState* RenderMode::tempraryProgramState()
 	if(!pool)
 		pool = LMP.getProgramStatePool(_program);
 	const auto ret = ((ProgramStatePool*)pool.get())->get();
-	setVertexLayout(ret);
 	syncUniform(ret);
 	return ret;
-}
-
-void RenderMode::setVertexLayout(ProgramState* state) const
-{
-	CC_ASSERT(state);
-#ifndef CC_USE_GFX
-	// VertexLayout is copyable
-	*state->getVertexLayout() = defaultLayout;
-#endif // !CC_USE_GFX
 }
 
 void RenderMode::syncUniform(ProgramState* state)
@@ -292,22 +275,6 @@ void RenderMode::syncUniform(ProgramState* state)
 	if (vBuffer)
 		std::memcpy(vBuffer, vertUniformBuffer, vertUniformBufferSize);
 
-#ifndef CC_USE_GFX
-	for (auto&& it : defaultState->getVertexTextureInfos())
-	{
-		UniformLocation loc;
-		loc.shaderStage = ShaderStage::VERTEX;
-		loc.location[0] = it.first;
-		state->setTextureArray(loc, it.second.slot, it.second.textures);
-	}
-	for (auto&& it : defaultState->getFragmentTextureInfos())
-	{
-		UniformLocation loc;
-		loc.shaderStage = ShaderStage::FRAGMENT;
-		loc.location[1] = it.first;
-		state->setTextureArray(loc, it.second.slot, it.second.textures);
-	}
-#else
 	for (auto&& it : defaultState->getVertexTextureInfos())
 	{
 		backend::UniformLocation loc;
@@ -329,7 +296,6 @@ void RenderMode::syncUniform(ProgramState* state)
 		CC_ASSERT(src);
 		src->syncTextures(dst);
 	}
-#endif
 }
 
 void RenderMode::setUniform(const std::string& name, const void* data, size_t size)

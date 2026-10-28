@@ -48,7 +48,6 @@ namespace lstg
 			cocos2d::backend::BlendFactor funcDst,
 			cocos2d::backend::Program* program);
 		cocos2d::backend::ProgramState* tempraryProgramState();
-		void setVertexLayout(cocos2d::backend::ProgramState* state) const;
 		void syncUniform(cocos2d::backend::ProgramState* state);
 		void setUniform(const std::string& name, const void* data, size_t size);
 		static void setAllUniform(const std::string& name, const void* data, size_t size);
@@ -62,7 +61,6 @@ namespace lstg
 		char* vertUniformBuffer = nullptr;
 		size_t fragUniformBufferSize = 0;
 		size_t vertUniformBufferSize = 0;
-		cocos2d::backend::VertexLayout defaultLayout;
 		std::unordered_map<std::string, cocos2d::backend::UniformLocation> locations;
 		std::vector<std::string> uniformNames;
 		std::shared_ptr<void> pool = nullptr;

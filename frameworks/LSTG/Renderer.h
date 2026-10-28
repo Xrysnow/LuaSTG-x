@@ -23,15 +23,13 @@ namespace lstg
 		static unsigned short* quadIndices9;
 		static unsigned short* quadIndices512;
 
-	private:
-		// options
+private:
+	// options
 
-		bool optVsync = true;
-		int optAALevel = 0;
+	int optAALevel = 0;
 
 		cocos2d::Renderer* pRenderer = nullptr;
-		bool bRenderStarted = false;
-		cocos2d::backend::CommandBuffer* commandBuffer = nullptr;
+	bool bRenderStarted = false;
 
 		// RenderMode
 		RenderMode* currentRenderMode = nullptr;

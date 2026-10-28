@@ -5,13 +5,8 @@
 #include "Util/Utility.h"
 #include "LogSystem.h"
 #include "renderer/backend/Backend.h"
-#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-#include <EGL/egl.h>
-#endif
-#ifdef CC_USE_GFX
 #include "gfx-base/GFXDevice.h"
 #include "renderer/backend/gfx/DeviceGFX.h"
-#endif
 
 //#ifdef CC_PLATFORM_PC
 //#define BATCH_COMMAND
@@ -118,8 +113,6 @@ bool XRenderer::init()
 	director->setProjection(Director::Projection::_2D);
 	director->setDisplayStats(false);
 
-	p->commandBuffer = p->pRenderer->getCommandBuffer();
-
 	return true;
 }
 
@@ -132,7 +125,6 @@ bool XRenderer::end()
 	CC_SAFE_DELETE(getInstance()->clearRectRenderMode);
 	CC_SAFE_RELEASE_NULL(getInstance()->tempRenderTexture);
 	CC_SAFE_RELEASE_NULL(getInstance()->clearRect);
-	CC_SAFE_RELEASE_NULL(getInstance()->commandBuffer);
 	LMP.clear();
 	RenderMode::modeMap.clear();
 	RenderMode::modeVector.clear();
@@ -144,11 +136,9 @@ bool XRenderer::end()
 
 bool XRenderer::isRenderTargetFlipped()
 {
-#if defined(CC_USE_GFX)
 	const auto api = cc::gfx::Device::getInstance()->getGfxAPI();
 	if (api == cc::gfx::API::VULKAN || api == cc::gfx::API::METAL)
 		return true;
-#endif
 	return false;
 }
 
@@ -180,27 +170,7 @@ void XRenderer::setAALevel(int lv)noexcept
 
 void XRenderer::setVsync(bool v)noexcept
 {
-	#if defined(CC_USE_GFX)
-		backend::DeviceGFX::setVsync(v);
-	#else
-	if (v == optVsync)
-		return;
-	optVsync = v;
-#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
-	// glfwSwapInterval usually not work on windows
-	glfwSwapInterval(v ? 1 : 0);
-	// NOTE: usually cannot turn on again after turn off
-	typedef BOOL(WINAPI *PFNWGLSWAPINTERVALEXTPROC)(int interval);
-	const auto wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
-	if (wglSwapIntervalEXT)
-		wglSwapIntervalEXT(v ? 1 : 0);
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_MAC
-	glfwSwapInterval(v ? 1 : 0);
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-	const auto eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
-	eglSwapInterval(eglDisplay, v ? 1 : 0);
-#endif
-#endif
+	backend::DeviceGFX::setVsync(v);
 }
 
 bool XRenderer::isVsync() const noexcept
@@ -311,7 +281,6 @@ bool XRenderer::endScene()noexcept
 	// restore Viewport, ProjectionMatrix
 	const auto f = [=]() {
 		pRenderer->setViewPort(storeViewport.x, storeViewport.y, storeViewport.w, storeViewport.h);
-		//commandBuffer->setViewport(storeViewport.x, storeViewport.y, storeViewport.w, storeViewport.h);
 		Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, storeProjection);
 	};
 	pushCallbackCommand(f);
@@ -346,19 +315,6 @@ void XRenderer::renderClear(const Color4F& c)noexcept
 	}
 	else
 	{
-#if !defined(CC_USE_METAL) && !defined(CC_USE_GFX)
-		// note: will clear all if not set scissor
-		const auto vp = currentVP;
-		pushCallbackCommand([=]()
-		{
-			commandBuffer->setScissorRect(true, (float)vp.x, (float)vp.y, (float)vp.w, (float)vp.h);
-		});
-		pRenderer->clear(ClearFlag::ALL, c, 1.f, 0, 0.f);
-		pushCallbackCommand([=]()
-		{
-			commandBuffer->setScissorRect(false, 0, 0, 0, 0);
-		});
-#else
 		const auto projBak = currentProjection;
 		setProjection(clearRectProj);
 
@@ -372,7 +328,6 @@ void XRenderer::renderClear(const Color4F& c)noexcept
 		renderTexture(clearRect->getTexture(), &clearRectQuad);
 
 		setProjection(projBak);
-#endif
 	}
 }
 
@@ -384,7 +339,6 @@ bool XRenderer::setViewport(int left, int right, int bottom, int top)noexcept
 	const unsigned int h = std::max(bottom, top) - y;
 	pushCallbackCommand([=]() {
 		pRenderer->setViewPort(x, y, w, h);
-		//commandBuffer->setViewport(x, y, w, h);
 	});
 	currentVP.x = x;
 	currentVP.y = y;

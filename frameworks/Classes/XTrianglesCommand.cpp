@@ -49,11 +49,7 @@ void XTrianglesCommand::init(float globalOrder, Texture2D* texture,
 		{
 			void* texture;
 			void* renderMode;
-#if defined(CC_USE_GFX)
 			size_t programHash;
-#else
-			void* program;
-#endif
 			uint32_t uniformID;
 			backend::BlendFactor src;
 			backend::BlendFactor dst;
@@ -61,11 +57,7 @@ void XTrianglesCommand::init(float globalOrder, Texture2D* texture,
 		memset(&hashMe, 0, sizeof(hashMe));
 		hashMe.texture = _texture;
 		hashMe.renderMode = renderMode;
-#if defined(CC_USE_GFX)
 		hashMe.programHash = static_cast<ProgramGFX*>(programState->getProgram())->getHash();
-#else
-		hashMe.program = programState->getProgram();
-#endif
 		hashMe.uniformID = _uniformID;
 		hashMe.src = _blendType.src;
 		hashMe.dst = _blendType.dst;
