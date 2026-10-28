@@ -40,6 +40,7 @@ set(CC_USE_GFX ON)
 
 set(APP_NAME LuaSTG-x)
 
+include(cmake/MSVCDebugInfo.cmake)
 project(${APP_NAME})
 
 option(LSTGX_NO_LIVE2D    "No live2d module"     OFF)
