@@ -81,7 +81,6 @@ namespace lstg
 		float gamma = 0.f;
 		bool visible = true;
 		bool cursorVisible = true;
-		bool vsync = true;
 
 		WindowHelper() = default;
 	};

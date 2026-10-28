@@ -2,6 +2,7 @@
 #include "../LSTG/Global.h"
 #include "../LSTG/LogSystem.h"
 #include "../LSTG/Renderer.h"
+#include "renderer/backend/gfx/DeviceGFX.h"
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 #include "../runtime-src/proj.win32/WindowHelperWin32.h"
@@ -119,14 +120,12 @@ bool WindowHelperDesktop::isFullscreen()
 
 void WindowHelperDesktop::setVsync(bool b)
 {
-	if (b == vsync)return;
-	vsync = b;
 	LRR.setVsync(b);
 }
 
 bool WindowHelperDesktop::isVsync()
 {
-	return vsync;
+	return backend::DeviceGFX::getInstance()->getVsync();
 }
 
 void WindowHelperDesktop::setVideoMode(VideoMode v)

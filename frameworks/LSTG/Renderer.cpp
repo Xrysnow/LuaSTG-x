@@ -180,14 +180,12 @@ void XRenderer::setAALevel(int lv)noexcept
 
 void XRenderer::setVsync(bool v)noexcept
 {
+	#if defined(CC_USE_GFX)
+		backend::DeviceGFX::setVsync(v);
+	#else
 	if (v == optVsync)
 		return;
 	optVsync = v;
-#if defined(CC_USE_GFX)
-	const auto device = backend::DeviceGFX::getInstance();
-	backend::DeviceGFX::setSwapchainInfo(
-		device->getWindowHandle(), v, device->getWidth(), device->getHeight());
-#else
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 	// glfwSwapInterval usually not work on windows
 	glfwSwapInterval(v ? 1 : 0);
@@ -203,6 +201,11 @@ void XRenderer::setVsync(bool v)noexcept
 	eglSwapInterval(eglDisplay, v ? 1 : 0);
 #endif
 #endif
+}
+
+bool XRenderer::isVsync() const noexcept
+{
+	return backend::DeviceGFX::getInstance()->getVsync();
 }
 
 void XRenderer::setOffscreen(bool b) noexcept

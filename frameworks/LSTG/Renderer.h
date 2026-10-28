@@ -85,7 +85,7 @@ namespace lstg
 		//TODO: should be set before GLViewImpl::create
 		void setAALevel(int lv)noexcept;
 		void setVsync(bool v)noexcept;
-		bool isVsync() const noexcept { return optVsync; }
+		bool isVsync() const noexcept;
 
 		void setUseFrameBuffer(bool v)noexcept { bUseFrameBuffer = v; }
 		bool isUseFrameBuffer() const noexcept { return bUseFrameBuffer; }
