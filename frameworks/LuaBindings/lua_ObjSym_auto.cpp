@@ -150,13 +150,6 @@ int lua_lstg_symbol_Block_clear(lua_State* lua_S)
 	LUA_TRY_INVOKE(0, &lstg::symbol::Block::clear);
 	LUA_INVOKE_FOOTER("0");
 }
-int lua_lstg_symbol_Block_executeLua(lua_State* lua_S)
-{
-	LUA_INVOKE_HEADER("lstg_sym.Block", "lstg_sym.Block:executeLua");
-	LUA_TRY_INVOKE(1, static_cast<void(lstg::symbol::Block::*)(lstg::GameObject*)>(&lstg::symbol::Block::executeLua));
-	LUA_TRY_INVOKE(0, static_cast<void(lstg::symbol::Block::*)()>(&lstg::symbol::Block::executeLua));
-	LUA_INVOKE_FOOTER("0,1");
-}
 int lua_lstg_symbol_Block_getNumOutput(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg_sym.Block", "lstg_sym.Block:getNumOutput");
@@ -183,7 +176,6 @@ int luaReg_ObjSym_lstg_symBlock(lua_State* lua_S)
 		nullptr, nullptr);
 	LUA_METHOD("addOutputNode", lua_lstg_symbol_Block_addOutputNode);
 	LUA_METHOD("clear", lua_lstg_symbol_Block_clear);
-	LUA_METHOD("executeLua", lua_lstg_symbol_Block_executeLua);
 	LUA_METHOD("getNumOutput", lua_lstg_symbol_Block_getNumOutput);
 	LUA_METHOD("push", lua_lstg_symbol_Block_push);
 	LUA_METHOD("create", lua_lstg_symbol_Block_create);

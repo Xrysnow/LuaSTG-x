@@ -88,6 +88,50 @@ LUA_REGISTER_MODULE(imgui, luaopen_imgui);
 #endif
 
 #include "Util/UtilLua.h"
+#include "Symbol/GameObjectSymbol.h"
+
+// Block::executeLua is a stack-producing helper, so its Lua adapter owns the
+// result suffix explicitly rather than treating it as an ordinary void method.
+static int lua_lstg_symbol_Block_executeLua_manual(lua_State* L)
+{
+	const int argc = lua_gettop(L) - 1;
+	if (argc != 0 && argc != 1)
+		return luaL_error(L, "wrong number of arguments in 'lstg_sym.Block:executeLua': %d, expects 0,1", argc);
+	// Keep the original self, including a .c_instance wrapper, on the input stack.
+	lua_pushvalue(L, 1);
+	lstg::symbol::Block* block = nullptr;
+	if (!lua::luaval_to_native(L, -1, &block) || !block)
+		return luaL_error(L, "invalid class object in 'lstg_sym.Block:executeLua'");
+	lua_pop(L, 1);
+	// The legacy symbol evaluator uses the engine's state, including when this
+	// adapter is entered on a coroutine. Reclaim only its own output suffix.
+	auto* state = lstg::lua::stack()->getLuaState();
+	const int base = lua_gettop(state);
+	if (argc == 1)
+	{
+		lstg::GameObject* object = nullptr;
+		if (!lstg::lua::luaval_to_GameObject(L, 2, &object))
+			return luaL_error(L, "invalid game object in 'lstg_sym.Block:executeLua'");
+		block->executeLua(object);
+	}
+	else
+		block->executeLua();
+	lua_settop(state, base);
+	// Preserve the established fluent setter return; helper outputs are private.
+	lua_settop(L, 1);
+	return 1;
+}
+
+static int luaReg_ObjSym_manual(lua_State* lua_S)
+{
+	LUA_ENTRY("lstg_sym");
+	LUA_ENTRY("Block");
+	LUA_METHOD("executeLua", lua_lstg_symbol_Block_executeLua_manual);
+	LUA_ENTRY_END(2);
+	return 0;
+}
+static CC_UNUSED auto& objSymManualModule = LuaModuleRegistry::addModule(
+	"x_ObjSym_manual", luaReg_ObjSym_manual, 1);
 
 bool lua::luaval_to_RenderMode(lua_State* L, int lo, lstg::RenderMode** outValue, const char* fName)
 {
