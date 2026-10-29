@@ -51,24 +51,34 @@ ControllerHelper::KeyCallBack getKeyCallBack(LUA_FUNCTION handler)
 {
 	return [=](Controller* controller, int keyCode, float value, bool isPressed, bool isAnalog)
 	{
-		const auto state = LuaEngine::getInstance()->getLuaStack()->getLuaState();
-		//object_to_luaval(state, "cc.Controller", controller);
-		// push id instead of object for better performance
-		lua_pushinteger(state, controller->getDeviceId());
-		lua_pushinteger(state, keyCode);
-		lua_pushnumber(state, value);
-		lua_pushboolean(state, isPressed);
-		lua_pushboolean(state, isAnalog);
-		LuaEngine::getInstance()->getLuaStack()->executeFunctionByHandler(handler, 5);
+		auto* callbackStack = LuaEngine::getInstance()->getLuaStack();
+		callbackStack->executeCallback([=]() mutable -> int {
+			const auto state = LuaEngine::getInstance()->getLuaStack()->getLuaState();
+			//object_to_luaval(state, "cc.Controller", controller);
+			// push id instead of object for better performance
+			lua_pushinteger(state, controller->getDeviceId());
+			lua_pushinteger(state, keyCode);
+			lua_pushnumber(state, value);
+			lua_pushboolean(state, isPressed);
+			lua_pushboolean(state, isAnalog);
+			LuaEngine::getInstance()->getLuaStack()->executeFunctionByHandler(handler, 5);
+
+			return 0;
+		});
 	};
 }
 ControllerHelper::ConnectCallBack getConnectCallBack(LUA_FUNCTION handler)
 {
 	return [=](Controller* controller)
 	{
-		const auto state = LuaEngine::getInstance()->getLuaStack()->getLuaState();
-		object_to_luaval(state, "cc.Controller", controller);
-		LuaEngine::getInstance()->getLuaStack()->executeFunctionByHandler(handler, 1);
+		auto* callbackStack = LuaEngine::getInstance()->getLuaStack();
+		callbackStack->executeCallback([=]() mutable -> int {
+			const auto state = LuaEngine::getInstance()->getLuaStack()->getLuaState();
+			object_to_luaval(state, "cc.Controller", controller);
+			LuaEngine::getInstance()->getLuaStack()->executeFunctionByHandler(handler, 1);
+
+			return 0;
+		});
 	};
 }
 LUA_REGISTER_FUNC_DEF(lstg, SetOnControllerKeyDown)

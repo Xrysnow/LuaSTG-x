@@ -126,17 +126,38 @@ std::string LogSystem::getPath() const
 
 bool LogSystem::write(const std::string& str)
 {
-	lock_guard<mutex> lock(mut);
 	try
 	{
-		if (onWrite)
-			onWrite(str);
-		if (logFile.is_open())
+		std::function<void(const std::string&)> callback;
+		bool written = false;
 		{
-			logFile << str;
-			logFile.flush();
-			return true;
+			lock_guard<mutex> lock(mut);
+			callback = onWrite;
+			if (logFile.is_open())
+			{
+				logFile << str;
+				logFile.flush();
+				written = true;
+			}
 		}
+		// A Lua callback may log again or replace itself. Invoke a retained copy
+		// outside the file lock and do not recursively deliver its own log output.
+		static thread_local bool callingCallback = false;
+		if (callback && !callingCallback)
+		{
+			callingCallback = true;
+			try
+			{
+				callback(str);
+			}
+			catch (...)
+			{
+				callingCallback = false;
+				throw;
+			}
+			callingCallback = false;
+		}
+		return written;
 	}
 	catch (const bad_alloc&)
 	{
@@ -157,5 +178,11 @@ void LogSystem::setConsoleLevel(int level)
 
 void LogSystem::setOnWrite(const std::function<void(const std::string&)>& f)
 {
-	onWrite = f;
+	std::function<void(const std::string&)> previous;
+	{
+		lock_guard<mutex> lock(mut);
+		previous.swap(onWrite);
+		onWrite = f;
+	}
+	// Destroy the previous callback outside the lock as well.
 }

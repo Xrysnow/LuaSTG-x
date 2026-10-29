@@ -88,7 +88,8 @@ int lua_cocos2dx_EventDispatcher_addCustomEventListener00(lua_State* tolua_S)
 		LUA_CHECK_PARAMETER(tolua_S, ok, LUA_FNAME);
 		arg1 = [=](cocos2d::EventCustom *)
 		{
-			LuaEngine::getInstance()->getLuaStack()->executeFunctionByHandler(handler, 0);
+			auto stack = LuaEngine::getInstance()->getLuaStack();
+			stack->executeCallback([=]() { return stack->executeFunctionByHandler(handler, 0); });
 		};
 		auto ret = cobj->addCustomEventListener(arg0, arg1);
 		native_to_luaval(tolua_S, ret);

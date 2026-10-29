@@ -155,6 +155,7 @@ GameObject* GameObjectManager::freeObject(GameObject* p) noexcept
 
 void GameObjectManager::DoFrame() noexcept
 {
+	const int base = lua_gettop(L);
 	inDoFrame = true;
 	GetObjectTable(L);  // ot
 	uint32_t last_classID = 0;
@@ -176,10 +177,10 @@ void GameObjectManager::DoFrame() noexcept
 			CCASSERT(cid != 0, "internal error");
 			if (cid != last_classID)
 			{
-				lua_settop(L, 1);  // ot
+				lua_settop(L, base + 1);  // ... ot
 				p->cls->pushLuaFrameFunc(L);  // ot f(frame)
 				lua_pushvalue(L, -1);  // ot f(frame) f(frame)
-				lua_rawgeti(L, 1, p->luaID + 1);  // ot f(frame) f(frame) obj
+				lua_rawgeti(L, base + 1, p->luaID + 1);  // ... ot f(frame) f(frame) obj
 				// lua_call is the most slow function here
 				lua_call(L, 1, 0);  // ot f(frame)
 				last_classID = cid;
@@ -187,7 +188,7 @@ void GameObjectManager::DoFrame() noexcept
 			else
 			{
 				lua_pushvalue(L, -1);  // ot f(frame) f(frame)
-				lua_rawgeti(L, 1, p->luaID + 1);  // ot f(frame) f(frame) obj
+				lua_rawgeti(L, base + 1, p->luaID + 1);  // ... ot f(frame) f(frame) obj
 				lua_call(L, 1, 0);  // ot f(frame)
 			}
 		}		
@@ -212,12 +213,13 @@ void GameObjectManager::DoFrame() noexcept
 	}
 	//XProfiler::getInstance()->toc("updateTransform");
 
-	lua_pop(L, 1);
+	lua_settop(L, base);
 	inDoFrame = false;
 }
 
 void GameObjectManager::DoRender()
 {
+	const int base = lua_gettop(L);
 	inDoRender = true;
 	//XProfiler::getInstance()->tic("updateTransformMat");
 	if (LTHP.empty())
@@ -275,7 +277,7 @@ void GameObjectManager::DoRender()
 				const auto cid = p->cls->id;
 				if (cid != last_classID)
 				{
-					lua_settop(L, 1);  // ot
+					lua_settop(L, base + 1);  // ... ot
 					p->cls->pushLuaRenderFunc(L);  // ot f(render)
 					if (lua_isnil(L, -1))
 					{
@@ -284,7 +286,7 @@ void GameObjectManager::DoRender()
 					else
 					{
 						lua_pushvalue(L, -1);  // ot f(render) f(render)
-						lua_rawgeti(L, 1, p->luaID + 1);  // ot f(render) f(render) obj
+						lua_rawgeti(L, base + 1, p->luaID + 1);  // ... ot f(render) f(render) obj
 						lua_call(L, 1, 0);  // ot f(render)
 					}
 					last_classID = cid;
@@ -299,14 +301,14 @@ void GameObjectManager::DoRender()
 					else
 					{
 						lua_pushvalue(L, -1);  // ot f(render) f(render)
-						lua_rawgeti(L, 1, p->luaID + 1);  // ot f(render) f(render) obj
+						lua_rawgeti(L, base + 1, p->luaID + 1);  // ... ot f(render) f(render) obj
 						lua_call(L, 1, 0);  // ot f(render)
 					}
 				}
 			}
 		}
 	}
-	lua_pop(L, 1);
+	lua_settop(L, base);
 	currentObj = nullptr;
 	inDoRender = false;
 }

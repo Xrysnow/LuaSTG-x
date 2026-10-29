@@ -6,6 +6,7 @@
 #include "Util/UtilLua.h"
 #include "tolua_fix.h"
 #include "CCLuaEngine.h"
+#include "scripting/lua-bindings/manual/lua_conversion/lua_conversion_tolua.hpp"
 #include "../Classes/XLuaModuleRegistry.h"
 
 using namespace std;
@@ -148,20 +149,12 @@ LUA_REGISTER_FUNC_DEF(lstg, GetBuildDate)
 
 LUA_REGISTER_FUNC_DEF(lstg, SetOnWriteLog)
 {
-	static int refid = 0;
-	const auto handler = toluafix_ref_function(L, 1, 0);
-	if (handler == 0)
+	if (!lua_isfunction(L, 1))
 		return luaL_error(L, "invalid argument");
-	if (refid != 0)
-		toluafix_remove_function_by_refid(L, refid);
-	refid = handler;
-	LLOGGER.setOnWrite([=](const std::string& str)
-	{
-		auto stack = cocos2d::LuaEngine::getInstance()->getLuaStack();
-		stack->pushString(str.c_str(), str.size());
-		stack->executeFunctionByHandler(handler, 1);
-		stack->clean();
-	});
+	std::function<void(const std::string&)> callback;
+	if (!::lua::to_native<decltype(callback)>::F(L, 1, &callback, "lstg.SetOnWriteLog"))
+		return luaL_error(L, "invalid argument");
+	LLOGGER.setOnWrite(callback);
 	return 0;
 }
 
@@ -209,10 +202,10 @@ LUA_REGISTER_FUNC_DEF(lstg, XXHash32)
 		}
 		return 1;
 	}
-	if (type == lua::LUA_TCDATA)
+	if (type == lstg::lua::LUA_TCDATA)
 	{
 		void* p = nullptr;
-		lua::luaval_to_cptr(L, 1, &p);
+		lstg::lua::luaval_to_cptr(L, 1, &p);
 		if (!p)
 			lua_pushinteger(L, 0);
 		else
@@ -236,7 +229,7 @@ LUA_REGISTER_FUNC_DEF(lstg, RC4XOR)
 	size_t key_size = 0;
 	const auto key = luaL_checklstring(L, 1, &key_size);
 	size_t size = 0;
-	const void* data = lua::luaval_to_const_data(L, 2, 3, &size);
+	const void* data = lstg::lua::luaval_to_const_data(L, 2, 3, &size);
 	if (data && size != 0)
 	{
 		vector<char> ret;
@@ -254,7 +247,7 @@ LUA_REGISTER_FUNC_DEF(lstg, RC4XOR)
 LUA_REGISTER_FUNC_DEF(lstg, MD5Hash)
 {
 	size_t size = 0;
-	const void* data = lua::luaval_to_const_data(L, 1, 2, &size);
+	const void* data = lstg::lua::luaval_to_const_data(L, 1, 2, &size);
 	if (data && size != 0)
 	{
 		const auto ret = MD5Hash(data, size);
@@ -271,7 +264,7 @@ LUA_REGISTER_FUNC_DEF(lstg, MD5Hash)
 LUA_REGISTER_FUNC_DEF(lstg, Base64Decode)
 {
 	size_t size = 0;
-	const void* data = lua::luaval_to_const_data(L, 1, 2, &size);
+	const void* data = lstg::lua::luaval_to_const_data(L, 1, 2, &size);
 	if (data && size != 0)
 	{
 		unsigned char* decoded = nullptr;
@@ -295,7 +288,7 @@ LUA_REGISTER_FUNC_DEF(lstg, Base64Decode)
 LUA_REGISTER_FUNC_DEF(lstg, Base64Encode)
 {
 	size_t size = 0;
-	const void* data = lua::luaval_to_const_data(L, 1, 2, &size);
+	const void* data = lstg::lua::luaval_to_const_data(L, 1, 2, &size);
 	if (data && size != 0)
 	{
 		char* encoded = nullptr;

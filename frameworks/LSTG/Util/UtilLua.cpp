@@ -536,6 +536,7 @@ bool lstg::lua::luaval_to_cptr(lua_State* L, int lo, void** outValue)
 			*outValue = ret;
 			return true;
 		}
+		lua_pop(L, 1); // remove only the helper's error, preserving caller inputs
 		*outValue = nullptr;
 		return false;
 	}
@@ -598,7 +599,8 @@ bool lstg::lua::luaval_to_async_callback(lua_State* L, int lo, std::function<voi
 	{
 		*outValue = [=]()
 		{
-			LuaEngine::getInstance()->getLuaStack()->executeFunctionByHandler(handler, 0);
+			auto stack = LuaEngine::getInstance()->getLuaStack();
+			stack->executeCallback([=]() { return stack->executeFunctionByHandler(handler, 0); });
 			// async_callback will ba called only once
 			LuaEngine::getInstance()->removeScriptHandler(handler);
 		};
