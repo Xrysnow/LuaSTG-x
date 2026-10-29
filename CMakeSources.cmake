@@ -8,6 +8,7 @@ set(GAME_HEADER
 	${LSTGX_SRC_ROOT}/Classes/MemPoolManager.h
 	${LSTGX_SRC_ROOT}/Classes/RandomWELL512.h
 	${LSTGX_SRC_ROOT}/Classes/WindowHelper.h
+	${LSTGX_SRC_ROOT}/Classes/XAudioStream.h
 	${LSTGX_SRC_ROOT}/Classes/XBinaryHelper.h
 	${LSTGX_SRC_ROOT}/Classes/XBuffer.h
 	${LSTGX_SRC_ROOT}/Classes/XFileDialog.h
@@ -84,6 +85,8 @@ set(GAME_HEADER
 	${LSTGX_SRC_ROOT}/LSTG/Util/UtilLuaConversion.h
 	${LSTGX_SRC_ROOT}/LSTG/Util/UtilLuaRes.h
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_BentLaser_auto.hpp
+	${LSTGX_SRC_ROOT}/LuaBindings/lua_audio_auto.hpp
+	${LSTGX_SRC_ROOT}/LuaBindings/lua_audio_manual.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Buffer_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_configuration_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_auto.hpp
@@ -111,6 +114,8 @@ set(GAME_SOURCE
 	${LSTGX_SRC_ROOT}/Classes/MemPoolManager.cpp
 	${LSTGX_SRC_ROOT}/Classes/RandomWELL512.cpp
 	${LSTGX_SRC_ROOT}/Classes/WindowHelper.cpp
+	${LSTGX_SRC_ROOT}/Classes/XAudioFileOpener.cpp
+	${LSTGX_SRC_ROOT}/Classes/XAudioStream.cpp
 	${LSTGX_SRC_ROOT}/Classes/XBinaryHelper.cpp
 	${LSTGX_SRC_ROOT}/Classes/XBuffer.cpp
 	${LSTGX_SRC_ROOT}/Classes/XFileDialog.cpp
@@ -184,6 +189,8 @@ set(GAME_SOURCE
 	${LSTGX_SRC_ROOT}/LSTG/Util/UtilLuaRes.cpp
 	${LSTGX_SRC_ROOT}/LSTG/Util/UtilShader.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_BentLaser_auto.cpp
+	${LSTGX_SRC_ROOT}/LuaBindings/lua_audio_auto.cpp
+	${LSTGX_SRC_ROOT}/LuaBindings/lua_audio_manual.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Buffer_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_configuration_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_auto.cpp
@@ -209,7 +216,6 @@ set(GAME_SOURCE
 # sources need to compile info, include dirs and source files
 set(GAME_INCLUDE
 	${LSTGX_SRC_ROOT}
-	${LSTGX_SRC_ROOT}/Audio
 	${LSTGX_SRC_ROOT}/Classes
 	${LSTGX_SRC_ROOT}/imgui
 	${LSTGX_SRC_ROOT}/Live2D

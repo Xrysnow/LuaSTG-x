@@ -2,6 +2,7 @@
 #include "Global.h"
 #include "Util/UtilLua.h"
 #include "Util/UtilColor.h"
+#include "lua_conversion/lua_conversion.hpp"
 #include "../Classes/XLuaModuleRegistry.h"
 
 using namespace std;
@@ -255,6 +256,17 @@ static int color_meta_newindex(lua_State* L)noexcept
 	return 0;
 }
 
+static bool color_to_native(lua_State* L, int lo, Color4B* outValue)
+{
+	if (lua_type(L, lo) != LUA_TUSERDATA || lua_objlen(L, lo) != sizeof(Color4B))
+		return false;
+	const auto color = static_cast<Color4B*>(luaL_testudata(L, lo, TYPENAME_COLOR));
+	if (!color)
+		return false;
+	*outValue = *color;
+	return true;
+}
+
 LUA_REGISTER_MODULE_DEF(lstg_Color)
 {
 	luaL_Reg tMethods[] =
@@ -303,6 +315,7 @@ LUA_REGISTER_MODULE_DEF(lstg_Color)
 	lua_pop(L, 1); // t mt
 
 	lua_pop(L, 2);
+	::lua::set_color4b_userdata_converter(L, color_to_native);
 	return 0;
 }
 

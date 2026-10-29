@@ -6,7 +6,6 @@
 #include "base/CCData.h"
 #include "base/CCRef.h"
 #include "XBuffer.h"
-#include "../Audio/AudioStream.h"
 
 namespace lstg
 {
@@ -134,41 +133,6 @@ namespace lstg
 
 		StreamMemory();
 		~StreamMemory() override;
-	};
-
-	class XAudioStream : public audio::Stream
-	{
-		cocos2d::RefPtr<lstg::Stream> _src;
-	public:
-		static XAudioStream* create(lstg::Stream* src) {
-			if (!src)
-				return nullptr;
-			auto ret = new (std::nothrow) XAudioStream();
-			if (ret) {
-				ret->_src = src;
-				ret->autorelease();
-				return ret;
-			}
-			return nullptr;
-		}
-
-		uint64_t size() override { return _src->size(); }
-		uint64_t tell() override { return _src->tell(); }
-		bool seek(audio::Stream::SeekOrigin origin, int64_t offset) override {
-			auto ori = lstg::Stream::BEG;
-			switch (origin) {
-			case SeekOrigin::BEGINNING: break;
-			case SeekOrigin::CURRENT: ori = lstg::Stream::CUR; break;
-			case SeekOrigin::END: ori = lstg::Stream::END; break;
-			default: return false;
-			}
-			return _src->seek(ori, offset);
-		}
-		bool read(uint8_t* dst, uint64_t length, uint64_t* bytesRead) override {
-			return _src->read(dst, length, bytesRead);
-		}
-		void lock() override { _src->lock(); }
-		void unlock() override { _src->unlock(); }
 	};
 
 }

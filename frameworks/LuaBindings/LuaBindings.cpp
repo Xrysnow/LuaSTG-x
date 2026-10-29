@@ -1,4 +1,4 @@
-﻿#include "LuaBindings.h"
+#include "LuaBindings.h"
 #include "../Classes/XLuaModuleRegistry.h"
 
 #include "lua_BentLaser_auto.hpp"
@@ -54,7 +54,7 @@ LUA_REGISTER_MODULE(cc_controller, register_all_cocos2dx_controller);
 LUA_REGISTER_MODULE(cc_controller_manual, register_all_cocos2dx_controller_manual);
 #endif
 
-#include "../Audio/lua_audio_auto.hpp"
+#include "lua_audio_auto.hpp"
 LUA_REGISTER_MODULE(cc_audio, register_all_cc_audio);
 
 #ifndef LSTGX_NO_VIDEO

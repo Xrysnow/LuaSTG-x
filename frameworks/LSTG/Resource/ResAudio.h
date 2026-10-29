@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "ResBase.h"
-#include "../Audio/AudioSource.h"
+#include "cocos/audio/AudioSource.h"
 #include "../Classes/XBuffer.h"
 #include "../Classes/XStream.h"
 
@@ -13,7 +13,7 @@ namespace lstg
 		// note: decoderBufferSize should >= bufferCopySize
 		static constexpr size_t bufferCopySize = 4096;
 		static constexpr size_t decoderBufferSize = 4096;
-		cocos2d::RefPtr<audio::Source> source;
+		cocos2d::RefPtr<cocos2d::AudioSource> source;
 		cocos2d::RefPtr<StreamMemory> stream;
 		std::string path;
 		std::array<uint8_t, bufferCopySize> bufferCopy;
@@ -36,7 +36,7 @@ namespace lstg
 
 		bool isStopped();
 
-		audio::Source* getSource() const { return source; }
+		cocos2d::AudioSource* getSource() const { return source; }
 		StreamMemory* getStream() const { return stream; }
 		const std::string& getPath() const override { return path; }
 

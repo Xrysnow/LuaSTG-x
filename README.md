@@ -95,8 +95,6 @@ LuaSTG-x\
 │　└ [Cubism SDK for Native](https://www.live2d.com/en/download/cubism-sdk/download-native)\
 ├　[cocos2d-x-video](https://github.com/Xrysnow/cocos2d-x-video)\
 │　　└ [FFmpeg](http://ffmpeg.org) (in lstgx_external)\
-├　[lstgx_Audio](https://github.com/Xrysnow/lstgx_Audio)\
-│　　└ [openal-soft](https://github.com/kcat/openal-soft) (in cocos-x-external)\
 ├　[lstgx_external](https://github.com/Xrysnow/lstgx_external)\
 │　　├ [ANGLE](https://github.com/google/angle) (optional)\
 │　　├ [BurstLinker](https://github.com/Xrysnow/BurstLinker)\

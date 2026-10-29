@@ -4,7 +4,8 @@
 #include "../Classes/XLuaModuleRegistry.h"
 #include "../Classes/XFileUtils.h"
 #include "../Classes/XInfoware.h"
-#include "../Audio/AudioEngine.h"
+#include "../Classes/XAudioStream.h"
+#include "cocos/audio/AudioEngine.h"
 #ifndef LSTGX_NO_VIDEO
 	#include "../Video/VideoCommon.h"
 #endif
@@ -104,6 +105,8 @@ bool AppFrame::applicationDidFinishLaunching()
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
 	XFileUtils::start();
 #endif
+	// Install before any launch script can call the audio file factories.
+	installAudioFileOpener();
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 	FileUtils::getInstance()->setWritablePath("./");
@@ -222,7 +225,7 @@ void AppFrame::applicationDidEnterBackground()
 {
 	//TODO: should be mutex to framefunc
 	LuaEngine::getInstance()->executeGlobalFunction(LFUNC_LOSEFOCUS);
-	audio::Engine::onEnterBackground();
+	AudioEngine::onEnterBackground();
 
 	Director::getInstance()->stopAnimation();
 
@@ -234,7 +237,7 @@ void AppFrame::applicationWillEnterForeground()
 {
 	// note: pop message here may cause dead loop, make sure no error is thrown
 	LuaEngine::getInstance()->executeGlobalFunction(LFUNC_GAINFOCUS);
-	audio::Engine::onEnterForeground();
+	AudioEngine::onEnterForeground();
 	Director::getInstance()->startAnimation();
 }
 
@@ -254,6 +257,8 @@ AppFrame::~AppFrame()
 	{
 		frameShutdown(true);
 	}
+	// Also covers launch failures before frameInit changed the status.
+	clearAudioFileOpener();
 	CC_SAFE_DELETE(threadPool);
 }
 
@@ -337,7 +342,7 @@ bool AppFrame::frameInit()
 	WindowHelperDesktop::getInstance()->setTitle("LuaSTG-x");
 #endif
 
-	audio::setLoggingFunction([](const std::string& s)
+	AudioEngine::setLoggingFunction([](const std::string& s)
 	{
 		LLOGGER.Log(LogType::Information, "%s", s.c_str());
 	});
@@ -349,9 +354,9 @@ bool AppFrame::frameInit()
 #endif
 
 	// audio engine
-	if (!audio::Engine::init())
+	if (!AudioEngine::init())
 	{
-		LERROR("Audio engine initialization failed: %s", audio::Engine::getLastError().c_str());
+		LERROR("Audio engine initialization failed: %s", AudioEngine::getLastError().c_str());
 		//return false;
 	}
 
@@ -451,7 +456,9 @@ void AppFrame::frameShutdown(bool fromNative)
 #endif
 
 	// note: must be after resources cleared
-	audio::Engine::end();
+	AudioEngine::end();
+	// The worker has stopped and resource cleanup can no longer open audio files.
+	clearAudioFileOpener();
 
 	InputManager::end();
 
@@ -469,7 +476,7 @@ bool AppFrame::frameReset()
 	L = LuaEngine::getInstance()->getLuaStack()->getLuaState();
 	gameObjectPool->ResetLua(L);
 	RenderMode::clearModes();
-	audio::Engine::stop();
+	AudioEngine::stop();
 	InputManager::getInstance()->clearState();
 	LRES.clearLocalFileCache();
 	LMP.clear();

@@ -4,8 +4,9 @@
 #include "ResourceMgr.h"
 #include "Util/Utility.h"
 #include "../Math/XFFT.h"
-#include "../Audio/AudioDecoder.h"
-#include "../Audio/AudioEngine.h"
+#include "../Classes/XAudioStream.h"
+#include "cocos/audio/AudioDecoder.h"
+#include "cocos/audio/AudioEngine.h"
 #include <algorithm>
 
 using namespace std;
@@ -101,8 +102,8 @@ size_t ResAudio::getMemorySize()
 {
 	size_t total = sizeof(ResAudio) + resName.size() + resPath.size() + path.size();
 	total += fftWorkset.size() + fftOutComplex.size() * sizeof(float);
-	if (source->getReferenceCount() == 1)
-		total += sizeof(audio::Source) + sizeof(audio::Decoder) + audio::Decoder::DEFAULT_BUFFER_SIZE;
+	if (source && source->getReferenceCount() == 1)
+		total += sizeof(cocos2d::AudioSource) + sizeof(cocos2d::AudioDecoder) + cocos2d::AudioDecoder::DEFAULT_BUFFER_SIZE;
 	return total;
 }
 
@@ -211,18 +212,18 @@ bool ResAudio::init(StreamMemory* stream_)
 	if (!stream_)
 		return false;
 	stream = stream_;
-	if (!audio::Engine::isValid())
+	if (!cocos2d::AudioEngine::isValid())
 		return true;
 	auto s = XAudioStream::create(stream);
 	if (!s)
 		return false;
-	auto d = audio::Decoder::createFromStream(s, decoderBufferSize, audio::Decoder::getDecoderTypeFromPath(path));
+	auto d = cocos2d::AudioDecoder::createFromStream(s, decoderBufferSize, cocos2d::AudioDecoder::getDecoderTypeFromPath(path));
 	if (!d)
 	{
 		XINFO("failed to create Decoder");
 		return false;
 	}
-	source = audio::Source::createFromDecoder(d);
+	source = cocos2d::AudioSource::createFromDecoder(d);
 	if (!source)
 	{
 		XINFO("failed to create Source");
@@ -255,7 +256,9 @@ bool ResSound::initWithBuffer(Buffer* data)
 		XINFO("failed to create StreamMemory");
 		return false;
 	}
-	return init(memory);
+	const auto result = init(memory);
+	memory->release();
+	return result;
 }
 
 ResSound::ResSound(const std::string& name, const std::string& path)
@@ -290,7 +293,9 @@ bool ResMusic::initWithBuffer(Buffer* data, double loopA, double loopB)
 	const auto memory = StreamMemory::create(data);
 	if (!memory)
 		return false;
-	if (!init(memory))
+	const auto result = init(memory);
+	memory->release();
+	if (!result)
 		return false;
 	if (source)
 	{

@@ -43,20 +43,6 @@ else()
 	target_compile_definitions(${APP_NAME} PUBLIC LSTGX_NO_VIDEO)
 endif()
 
-# audio
-
-set(CC_AUDIO_DEPEND_LIBS)
-# in cocos/external
-list(APPEND CC_AUDIO_DEPEND_LIBS ogg)
-list(APPEND CC_AUDIO_DEPEND_LIBS OpenAL)
-
-if(MACOSX OR IOS)
-	list(APPEND CC_AUDIO_DEPEND_LIBS ${COREMEDIA_LIBRARY})
-endif()
-
-add_subdirectory(${LSTGX_MOD_ROOT}/Audio)
-list(APPEND EXTERNAL_LIBS cc_audio)
-
 # imgui
 
 add_subdirectory(${LSTGX_MOD_ROOT}/imgui)
