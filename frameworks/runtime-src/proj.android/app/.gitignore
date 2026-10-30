@@ -1,2 +1,4 @@
-/build
 /.externalNativeBuild
+/assets
+/build
+/release
