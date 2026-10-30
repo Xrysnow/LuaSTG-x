@@ -11,7 +11,7 @@ using namespace std;
 using namespace lstg;
 using namespace cocos2d;
 
-static const char * COCOS2D_SHADER_UNIFORMS =
+static const char * CC_SHADER_UNIFORMS =
 "uniform mat4 CC_PMatrix;\n"
 "uniform mat4 CC_MultiViewPMatrix[4];\n"
 "uniform mat4 CC_MVMatrix;\n"
@@ -67,7 +67,7 @@ bool CheckShader(const string& src, bool isVertexShader)
 	//string convertedDefines;
 
 	const GLchar *sources[] = {
-		COCOS2D_SHADER_UNIFORMS,
+		CC_SHADER_UNIFORMS,
 		//convertedDefines.c_str(),
 		src.c_str() };
 
