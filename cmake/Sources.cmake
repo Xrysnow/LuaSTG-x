@@ -1,3 +1,16 @@
+# Collect scripts and resources for IDEs and platform packaging.
+set(res_res_folders
+    "${CMAKE_CURRENT_SOURCE_DIR}/res"
+)
+set(res_src_folders
+    "${CMAKE_CURRENT_SOURCE_DIR}/src"
+)
+if(APPLE OR VS)
+    cocos_mark_multi_resources(res_res RES_TO "Resources/res" FOLDERS ${res_res_folders})
+    cocos_mark_multi_resources(res_src RES_TO "Resources/src" FOLDERS ${res_src_folders})
+    set(cc_common_res ${res_res} ${res_src} ${res_script})
+endif()
+
 # sources, headers
 set(LSTGX_SRC_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/frameworks)
 set(GAME_HEADER

@@ -1,3 +1,29 @@
+# CMake structure
+
+The top-level `CMakeLists.txt` keeps project initialization, application target
+creation, and the order of the configuration steps. These modules are included
+in the top-level directory scope; their source and binary directory context is
+unchanged by the file layout.
+
+1. `MSVCDebugInfo.cmake` runs before `project()` to select embedded MSVC debug
+   information for compiler initialization.
+2. `Options.cmake` declares application options, fixes the internal `CC_USE_GFX`
+   flag to ON after the feature options, and applies Lua binding diagnostics.
+3. `CocosSetup.cmake` maps application options to cocos settings, detects the
+   platform, applies defaults before targets are created, and builds cocos and
+   its extensions. It also applies project-specific dependency target fixes.
+4. `Sources.cmake` collects resources, headers, sources, and platform entry
+   points. It runs after cocos so FairyGUI bindings follow the actual target.
+5. The top-level file creates the application, links Lua and cocos extensions,
+   and sets the output and resource synchronization targets.
+6. `Modules.cmake` adds application modules and their dependencies, including
+   module-specific deployment such as Apple FFmpeg embedding.
+7. `AppPlatform.cmake` configures application bundles, Windows DLL copying, and
+   Linux resource and runtime deployment after the module link graph is complete.
+
+The renderer always uses gfx. `CC_USE_GFX` is an internal compatibility flag;
+there is no public renderer-selection option.
+
 # FairyGUI
 
 FairyGUI is enabled by default. Disable it with either

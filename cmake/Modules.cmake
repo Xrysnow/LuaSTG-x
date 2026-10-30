@@ -1,10 +1,8 @@
-#
+# Application module dependencies and module-specific deployment.
 
 set(EXTERNAL_LIBS "")
 set(LSTGX_MOD_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/frameworks)
 set(LSTGX_EXT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/frameworks/external)
-
-# apple
 
 # ffmpeg, video
 
