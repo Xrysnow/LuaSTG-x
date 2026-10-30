@@ -41,6 +41,8 @@ Full release download:
 
         $ git clone --recursive https://github.com/Xrysnow/LuaSTG-x.git
 
+   The cocos-x engine submodule is located at `frameworks/cocos-x/`.
+
 2. For releases before 2023, clone external libraries into `frameworks/cocos2d-x/external` (or download from [release page](https://github.com/Xrysnow/cocos2d-x-3rd-party-libs-bin/releases)).
 
         $ cd LuaSTG-x/frameworks/cocos2d-x/external
@@ -53,7 +55,7 @@ Full release download:
    - If your target is macOS platform, add `-GXcode` parameter to CMake.
    - If your target is IOS platform, you can search for a bash script that helps to configure CMake.
    - If your target is macOS/IOS platform, you need to open `project setting -> TARGETS -> LuaSTG-x -> Build Phases -> Copy Files` and check `Code Sigh On Copy` for frameworks.
-   - If your target is Linux platform, you need to execute `frameworks/cocos2d-x/install-deps-linux.sh` before using CMake. It's recommended to add `-GNinja` parameter to use `ninja` since default `make` is very slow.
+   - If your target is Linux platform, you need to execute `frameworks/cocos-x/install-deps-linux.sh` before using CMake. It's recommended to add `-GNinja` parameter to use `ninja` since default `make` is very slow.
 
 5. Compile with your target compiler.
 

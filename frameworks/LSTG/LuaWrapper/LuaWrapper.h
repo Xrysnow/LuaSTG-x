@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "RenderMode.h"
-#include "../../cocos2d-x/external/lua/luajit/include/lua.hpp"
+#include "../../cocos-x/external/lua/luajit/include/lua.hpp"
 
 #define luaL_objerror(L) luaL_error(L, "invalid lstg object for '%s'", __FUNCTION__)
 

@@ -117,7 +117,7 @@ android.applicationVariants.all { variant ->
         }
 
         // copy {
-        //     from "${projectDir}/../../../cocos2d-x/cocos/scripting/lua-bindings/script"
+        //     from "${projectDir}/../../../cocos-x/cocos/scripting/lua-bindings/script"
         //     into  dest_assets_folder + "/src/cocos"
         // }
 
@@ -144,7 +144,7 @@ android.applicationVariants.all { variant ->
 dependencies {
     implementation fileTree(dir: '../libs', include: ['*.jar','*.aar'])
     implementation fileTree(dir: 'libs', include: ['*.jar','*.aar'])
-    implementation fileTree(dir: "../../../cocos2d-x/cocos/platform/android/java/libs", include: ['*.jar'])
+    implementation fileTree(dir: "../../../cocos-x/cocos/platform/android/java/libs", include: ['*.jar'])
     implementation project(':libcocos2dx')
     //implementation project(':libcocos')
 }

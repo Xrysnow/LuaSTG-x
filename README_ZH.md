@@ -41,6 +41,8 @@ LuaSTG-x 是一个基于 [cocos2d-x](https://github.com/cocos2d/cocos2d-x) 和 [
 
         $ git clone --recursive https://github.com/Xrysnow/LuaSTG-x.git
 
+   cocos-x 引擎子模块位于 `frameworks/cocos-x/`。
+
 2. 对于2023年之前的版本，克隆外部库至 `frameworks/cocos2d-x/external` （或从 [release 页面](https://github.com/Xrysnow/cocos2d-x-3rd-party-libs-bin/releases) 下载）
 
         $ cd LuaSTG-x/frameworks/cocos2d-x/external
@@ -53,7 +55,7 @@ LuaSTG-x 是一个基于 [cocos2d-x](https://github.com/cocos2d/cocos2d-x) 和 [
    - 若目标为 macOS 平台，需要向 CMake 添加 `-GXcode` 参数
    - 若目标为 IOS 平台，需要额外设置 CMake ，你可以找到一些 bash 脚本来实现
    - 若目标为 macOS/IOS 平台，需要打开 `project setting -> TARGETS -> LuaSTG-x -> Build Phases -> Copy Files` 并为 frameworks 勾选 `Code Sigh On Copy`
-   - 若目标为 Linux 平台，需要在使用 CMake 前执行 `frameworks/cocos2d-x/install-deps-linux.sh`，默认的 `make` 编译速度较慢，推荐添加 `-GNinja` 参数来使用 `ninja` 编译
+   - 若目标为 Linux 平台，需要在使用 CMake 前执行 `frameworks/cocos-x/install-deps-linux.sh`，默认的 `make` 编译速度较慢，推荐添加 `-GNinja` 参数来使用 `ninja` 编译
 
 5. 使用编译器进行编译
 

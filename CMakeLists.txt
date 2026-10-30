@@ -31,7 +31,7 @@ project(${APP_NAME})
 include(cmake/Options.cmake)
 
 set(RUNTIME_SRC_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/frameworks/runtime-src)
-set(COCOS2DX_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/frameworks/cocos2d-x)
+set(COCOS2DX_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/frameworks/cocos-x)
 
 include(cmake/CocosSetup.cmake)
 include(cmake/Sources.cmake)
