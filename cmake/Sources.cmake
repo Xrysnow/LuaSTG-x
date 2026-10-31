@@ -102,6 +102,8 @@ set(GAME_HEADER
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_audio_manual.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Buffer_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_configuration_auto.hpp
+	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_configuration_compat.hpp
+	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_configuration_manual.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_manual.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_ext.hpp
@@ -206,6 +208,7 @@ set(GAME_SOURCE
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_audio_manual.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Buffer_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_configuration_auto.cpp
+	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_configuration_manual.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_manual.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_ext.cpp
