@@ -47,6 +47,7 @@ android {
     externalNativeBuild {
         cmake {
             path "../../../../CMakeLists.txt"
+            version "4.1.2"
         }
     }
 
@@ -66,11 +67,15 @@ android {
         release {
             debuggable false
             jniDebuggable false
+            externalNativeBuild {
+                cmake {
+                    arguments "-DCMAKE_BUILD_TYPE=Release"
+                }
+            }
             // renderscriptDebuggable false
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
             if (project.hasProperty("RELEASE_STORE_FILE")) {
                 signingConfig signingConfigs.release
             }
@@ -96,46 +101,49 @@ android.applicationVariants.all { variant ->
     def project_root_folder = "${projectDir}/../../../.."
     def dest_assets_folder = "${projectDir}/assets"
 
-    // delete previous files first
-    delete dest_assets_folder
-
     def targetName = variant.name.capitalize()
     def copyTaskName = "copy${targetName}ResourcesToAssets"
    
     tasks.register(copyTaskName) {
-        copy {
-           from project_root_folder + "/res"
-           into dest_assets_folder + "/res"
-           exclude '*.bat'
-        }
+        inputs.dir file(project_root_folder + "/res")
+        inputs.dir file(project_root_folder + "/src")
+        outputs.dir file(dest_assets_folder + "/res")
+        outputs.dir file(dest_assets_folder + "/src")
+        doLast {
+            project.copy {
+               from project_root_folder + "/res"
+               into dest_assets_folder + "/res"
+               exclude '*.bat'
+            }
 
-        copy {
-            from project_root_folder + "/src"
-            into dest_assets_folder + "/src"
-           exclude '*.bat'
-           exclude '**/.idea/*'
-        }
+            project.copy {
+                from project_root_folder + "/src"
+                into dest_assets_folder + "/src"
+               exclude '*.bat'
+               exclude '**/.idea/*'
+            }
 
-        // copy {
-        //     from "${projectDir}/../../../cocos-x/cocos/scripting/lua-bindings/script"
-        //     into  dest_assets_folder + "/src/cocos"
-        // }
+            // copy {
+            //     from "${projectDir}/../../../cocos-x/cocos/scripting/lua-bindings/script"
+            //     into  dest_assets_folder + "/src/cocos"
+            // }
 
-        // compile & encrypt the scripts if necessary
-        def compileScript = (variant.name.compareTo('release') == 0)
-        if (project.hasProperty('PROP_COMPILE_SCRIPT')) {
-            compileScript = (PROP_COMPILE_SCRIPT.compareTo('1') == 0)
-        }
-        compileScript = false
+            // compile & encrypt the scripts if necessary
+            def compileScript = (variant.name.compareTo('release') == 0)
+            if (project.hasProperty('PROP_COMPILE_SCRIPT')) {
+                compileScript = (PROP_COMPILE_SCRIPT.compareTo('1') == 0)
+            }
+            compileScript = false
 
-        def encryptLua = project.hasProperty('PROP_LUA_ENCRYPT') && (PROP_LUA_ENCRYPT.compareTo('1') == 0)
-		encryptLua = false
-        if (compileScript || encryptLua) {
-            // -1 means not build bytecode
-            // 0 means build 32bit only
-            // 1 means build 64bit only
-            // 2 means build both 32bit & 64bit
-            def buildType = -1
+            def encryptLua = project.hasProperty('PROP_LUA_ENCRYPT') && (PROP_LUA_ENCRYPT.compareTo('1') == 0)
+            encryptLua = false
+            if (compileScript || encryptLua) {
+                // -1 means not build bytecode
+                // 0 means build 32bit only
+                // 1 means build 64bit only
+                // 2 means build both 32bit & 64bit
+                def buildType = -1
+            }
         }
     }
     tasks.getByName("pre${targetName}Build").dependsOn copyTaskName

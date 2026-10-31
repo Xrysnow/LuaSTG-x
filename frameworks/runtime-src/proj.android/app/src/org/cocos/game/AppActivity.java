@@ -24,17 +24,15 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-package org.cocos2dx.lua;
+package org.cocos.game;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import org.cocos2dx.lib.Cocos2dxActivity;
-import org.cocos2dx.lib.GameControllerActivity;
+import org.cocos.lib.GameControllerActivity;
 
-// public class AppActivity extends Cocos2dxActivity{
 public class AppActivity extends GameControllerActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
