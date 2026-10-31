@@ -51,7 +51,8 @@ LUA_REGISTER_MODULE(x_ZipArchive, luaReg_ZipArchive);
 #include "lua_cc_controller_auto.hpp"
 LUA_REGISTER_MODULE(cc_controller, register_all_cocos2dx_controller);
 #include "lua_cc_controller_manual.hpp"
-LUA_REGISTER_MODULE(cc_controller_manual, register_all_cocos2dx_controller_manual);
+static CC_UNUSED auto& controllerManualModule = LuaModuleRegistry::addModule(
+	"cc_controller_manual", register_all_cocos2dx_controller_manual, 1);
 #endif
 
 #include "lua_audio_auto.hpp"

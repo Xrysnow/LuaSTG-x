@@ -194,9 +194,6 @@ cc = cc or {}
 ccb = ccb or {}
 ccui = ccui or {}
 ccexp = ccexp or {}
-for k, v in pairs(ax) do cc[k] = v end
-for k, v in pairs(axb) do ccb[k] = v end
-for k, v in pairs(axui) do ccui[k] = v end
 )__");
 #endif // CC_VERSION
 

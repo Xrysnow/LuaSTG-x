@@ -98,10 +98,10 @@ int lua_cocos2dx_EventDispatcher_addCustomEventListener00(lua_State* tolua_S)
 	LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2");
 }
 #ifdef CC_VERSION
-extern int lua_ax_base_GLViewImpl_createWithRect(lua_State* tolua_S);
-extern int lua_ax_base_GLViewImpl_create(lua_State* tolua_S);
-#define lua_cocos2dx_GLViewImpl_createWithRect lua_ax_base_GLViewImpl_createWithRect
-#define lua_cocos2dx_GLViewImpl_create lua_ax_base_GLViewImpl_create
+extern int lua_cc_base_GLViewImpl_createWithRect(lua_State* tolua_S);
+extern int lua_cc_base_GLViewImpl_create(lua_State* tolua_S);
+#define lua_cocos2dx_GLViewImpl_createWithRect lua_cc_base_GLViewImpl_createWithRect
+#define lua_cocos2dx_GLViewImpl_create lua_cc_base_GLViewImpl_create
 #else
 extern int lua_cocos2dx_GLViewImpl_createWithRect(lua_State* tolua_S);
 extern int lua_cocos2dx_GLViewImpl_create(lua_State* tolua_S);
