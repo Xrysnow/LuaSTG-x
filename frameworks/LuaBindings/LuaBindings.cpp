@@ -48,8 +48,13 @@ LUA_REGISTER_MODULE(x_ZipArchive, luaReg_ZipArchive);
 #endif
 
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_ANDROID) && (CC_TARGET_PLATFORM != CC_PLATFORM_IOS)
+#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 #include "lua_cc_controller_auto.hpp"
 LUA_REGISTER_MODULE(cc_controller, register_all_cocos2dx_controller);
+#else
+#include "lua_cc_controller_legacy.hpp"
+LUA_REGISTER_MODULE(cc_controller, register_all_cocos2dx_controller_legacy);
+#endif
 #include "lua_cc_controller_manual.hpp"
 static CC_UNUSED auto& controllerManualModule = LuaModuleRegistry::addModule(
 	"cc_controller_manual", register_all_cocos2dx_controller_manual, 1);
