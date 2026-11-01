@@ -1,5 +1,5 @@
 #include "lua_cc_configuration_auto.hpp"
-#include "lua_cc_configuration_compat.hpp"
+#include "lua_conversion/lua_conversion.hpp"
 #include "base/CCConfiguration.h"
 
 int lua_cocos2d_Configuration_checkForGLExtension(lua_State* lua_S)
@@ -23,7 +23,7 @@ int lua_cocos2d_Configuration_getAnimate3DQuality(lua_State* lua_S)
 int lua_cocos2d_Configuration_getInfo(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("cc.Configuration", "cc.Configuration:getInfo");
-	LUA_TRY_INVOKE_R(0, static_cast<std::basic_string<char>(cocos2d::Configuration::*)()const>(&cocos2d::Configuration::getInfo));
+	LUA_TRY_INVOKE_R(0, static_cast<std::string(cocos2d::Configuration::*)()const>(&cocos2d::Configuration::getInfo));
 	LUA_INVOKE_FOOTER("0");
 }
 int lua_cocos2d_Configuration_getMaxAttributes(lua_State* lua_S)
@@ -68,6 +68,13 @@ int lua_cocos2d_Configuration_getMaxTextureUnits(lua_State* lua_S)
 	LUA_TRY_INVOKE_R(0, static_cast<int(cocos2d::Configuration::*)()const>(&cocos2d::Configuration::getMaxTextureUnits));
 	LUA_INVOKE_FOOTER("0");
 }
+int lua_cocos2d_Configuration_getValue(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("cc.Configuration", "cc.Configuration:getValue");
+	LUA_TRY_INVOKE_R(2, static_cast<const cocos2d::Value&(cocos2d::Configuration::*)(std::string_view, const cocos2d::Value&)const>(&cocos2d::Configuration::getValue));
+	LUA_TRY_INVOKE_R(1, [](const cocos2d::Configuration* obj,std::string_view arg0){{return obj->getValue(std::move(arg0));}});
+	LUA_INVOKE_FOOTER("1,2");
+}
 int lua_cocos2d_Configuration_init(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("cc.Configuration", "cc.Configuration:init");
@@ -79,6 +86,12 @@ int lua_cocos2d_Configuration_loadConfigFile(lua_State* lua_S)
 	LUA_INVOKE_HEADER("cc.Configuration", "cc.Configuration:loadConfigFile");
 	LUA_TRY_INVOKE(1, static_cast<void(cocos2d::Configuration::*)(std::string_view)>(&cocos2d::Configuration::loadConfigFile));
 	LUA_INVOKE_FOOTER("1");
+}
+int lua_cocos2d_Configuration_setValue(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("cc.Configuration", "cc.Configuration:setValue");
+	LUA_TRY_INVOKE(2, static_cast<void(cocos2d::Configuration::*)(std::string_view, const cocos2d::Value&)>(&cocos2d::Configuration::setValue));
+	LUA_INVOKE_FOOTER("2");
 }
 int lua_cocos2d_Configuration_supportsATITC(lua_State* lua_S)
 {
@@ -168,8 +181,10 @@ int luaReg_cc_configuration_ccConfiguration(lua_State* lua_S)
 	LUA_METHOD("getMaxSupportSpotLightInShader", lua_cocos2d_Configuration_getMaxSupportSpotLightInShader);
 	LUA_METHOD("getMaxTextureSize", lua_cocos2d_Configuration_getMaxTextureSize);
 	LUA_METHOD("getMaxTextureUnits", lua_cocos2d_Configuration_getMaxTextureUnits);
+	LUA_METHOD("getValue", lua_cocos2d_Configuration_getValue);
 	LUA_METHOD("init", lua_cocos2d_Configuration_init);
 	LUA_METHOD("loadConfigFile", lua_cocos2d_Configuration_loadConfigFile);
+	LUA_METHOD("setValue", lua_cocos2d_Configuration_setValue);
 	LUA_METHOD("supportsATITC", lua_cocos2d_Configuration_supportsATITC);
 	LUA_METHOD("supportsBGRA8888", lua_cocos2d_Configuration_supportsBGRA8888);
 	LUA_METHOD("supportsDiscardFramebuffer", lua_cocos2d_Configuration_supportsDiscardFramebuffer);
@@ -190,5 +205,5 @@ int luaReg_cc_configuration_ccConfiguration(lua_State* lua_S)
 int register_all_cc_configuration(lua_State* lua_S)
 {
 	luaReg_cc_configuration_ccConfiguration(lua_S);
-	return register_all_cc_configuration_manual(lua_S);
+	return 0;
 }
