@@ -55,7 +55,8 @@ else()
     target_link_libraries(lua_android_spec luacocos2d)
     target_link_libraries(${APP_NAME} -Wl,--whole-archive lua_android_spec -Wl,--no-whole-archive)
 
-    config_android_shared_libs("org.lstgx.lib" "${CMAKE_CURRENT_SOURCE_DIR}/frameworks/runtime-src/proj.android/app/src")
+    # CocosActivity loads the manifest's main library; its DT_NEEDED entries
+    # resolve native dependencies without generating Java in the source tree.
 endif()
 
 target_link_libraries(${APP_NAME} luacocos2d)

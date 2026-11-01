@@ -34,10 +34,13 @@ android {
 
     sourceSets.main {
         java.srcDir "src"
+        // Keep any old generated file on disk without compiling a second loader.
+        java.exclude "org/lstgx/lib/SharedLoader.java"
         res.srcDir "res"
         jniLibs.srcDir "libs"
         manifest.srcFile "AndroidManifest.xml"
-        assets.srcDir "assets"
+        // Legacy assets/ is retained locally; generated copies must not merge twice.
+        assets.setSrcDirs(["manual-assets"])
         jniLibs {
             // Vulkan validation layer
             // srcDir "${android.ndkDirectory}/sources/third_party/vulkan/src/build-android/jniLibs"
@@ -93,61 +96,7 @@ android {
     }
 }
 
-// a method used to invoke the cocos luacompile command
-def compileLua(srcDir, dstDir, doCompile, is64bit, doEncrypt) {
-}
-
-android.applicationVariants.all { variant ->
-    def project_root_folder = "${projectDir}/../../../.."
-    def dest_assets_folder = "${projectDir}/assets"
-
-    def targetName = variant.name.capitalize()
-    def copyTaskName = "copy${targetName}ResourcesToAssets"
-   
-    tasks.register(copyTaskName) {
-        inputs.dir file(project_root_folder + "/res")
-        inputs.dir file(project_root_folder + "/src")
-        outputs.dir file(dest_assets_folder + "/res")
-        outputs.dir file(dest_assets_folder + "/src")
-        doLast {
-            project.copy {
-               from project_root_folder + "/res"
-               into dest_assets_folder + "/res"
-               exclude '*.bat'
-            }
-
-            project.copy {
-                from project_root_folder + "/src"
-                into dest_assets_folder + "/src"
-               exclude '*.bat'
-               exclude '**/.idea/*'
-            }
-
-            // copy {
-            //     from "${projectDir}/../../../cocos-x/cocos/scripting/lua-bindings/script"
-            //     into  dest_assets_folder + "/src/cocos"
-            // }
-
-            // compile & encrypt the scripts if necessary
-            def compileScript = (variant.name.compareTo('release') == 0)
-            if (project.hasProperty('PROP_COMPILE_SCRIPT')) {
-                compileScript = (PROP_COMPILE_SCRIPT.compareTo('1') == 0)
-            }
-            compileScript = false
-
-            def encryptLua = project.hasProperty('PROP_LUA_ENCRYPT') && (PROP_LUA_ENCRYPT.compareTo('1') == 0)
-            encryptLua = false
-            if (compileScript || encryptLua) {
-                // -1 means not build bytecode
-                // 0 means build 32bit only
-                // 1 means build 64bit only
-                // 2 means build both 32bit & 64bit
-                def buildType = -1
-            }
-        }
-    }
-    tasks.getByName("pre${targetName}Build").dependsOn copyTaskName
-}
+apply from: 'lstgx-assets.gradle'
 
 dependencies {
     implementation fileTree(dir: '../libs', include: ['*.jar','*.aar'])

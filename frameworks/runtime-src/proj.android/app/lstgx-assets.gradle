@@ -1,0 +1,80 @@
+// AGP owns merge/package dependencies through this generated source provider.
+abstract class SyncLuaStgAssets extends Sync {
+    @OutputDirectory
+    abstract DirectoryProperty getOutputDirectory()
+
+    @InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
+    abstract DirectoryProperty getScriptsDirectory()
+
+    @InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
+    abstract DirectoryProperty getResourcesDirectory()
+
+    @InputFiles
+    @PathSensitive(PathSensitivity.RELATIVE)
+    abstract ConfigurableFileCollection getManualAssetDirectories()
+
+    SyncLuaStgAssets() {
+        into(outputDirectory)
+        from(scriptsDirectory) {
+            into 'src'
+            exclude '*.bat', '**/.idea/**', '**/.git/**', '**/.git'
+        }
+        from(resourcesDirectory) {
+            into 'res'
+            exclude '*.bat'
+        }
+        includeEmptyDirs = false
+        duplicatesStrategy = DuplicatesStrategy.FAIL
+
+        // Generated sources have overlay priority in AGP. Reject collisions so
+        // that a handwritten asset can never be silently hidden by that overlay.
+        doFirst {
+            def generated = new HashSet<String>()
+            [[scriptsDirectory.get().asFile, 'src'],
+             [resourcesDirectory.get().asFile, 'res']].each { source ->
+                project.fileTree(source[0]).matching {
+                    exclude '*.bat'
+                    if (source[1] == 'src') {
+                        exclude '**/.idea/**', '**/.git/**', '**/.git'
+                    }
+                }.visit { entry ->
+                    if (!entry.directory) {
+                        generated.add("${source[1]}/${entry.relativePath.pathString}".toString())
+                    }
+                }
+            }
+            def manual = new HashSet<String>()
+            def conflicts = new TreeSet<String>()
+            manualAssetDirectories.files.each { directory ->
+                project.fileTree(directory).visit { entry ->
+                    if (!entry.directory) {
+                        def path = entry.relativePath.pathString
+                        if (generated.contains(path) || !manual.add(path)) {
+                            conflicts.add(path)
+                        }
+                    }
+                }
+            }
+            if (!conflicts.empty) {
+                throw new GradleException("Conflicting manual/generated LuaSTG assets:\n" + conflicts.join('\n'))
+            }
+        }
+    }
+}
+
+androidComponents.onVariants(androidComponents.selector().all()) { variant ->
+    def syncAssets = tasks.register("generate${variant.name.capitalize()}LuaStgAssets", SyncLuaStgAssets) {
+        scriptsDirectory.set(layout.projectDirectory.dir('../../../../src'))
+        resourcesDirectory.set(layout.projectDirectory.dir('../../../../res'))
+        // Include main, build type and flavor assets, without our own generated
+        // output (which would create a task dependency cycle).
+        manualAssetDirectories.from(variant.sources.assets.static.map { it.flatten() })
+    }
+    variant.sources.assets.addGeneratedSourceDirectory(syncAssets) { it.outputDirectory }
+    // Register this after AGP wires its default generated-assets location.
+    syncAssets.configure {
+        outputDirectory.set(layout.buildDirectory.dir("generated/lstgxAssets/${variant.name}"))
+    }
+}
