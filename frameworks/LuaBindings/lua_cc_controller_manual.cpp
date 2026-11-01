@@ -33,6 +33,51 @@
 #define LUA_PARAMETER_ERROR(L, NAME, ARGC, EXPECT) return luaL_error((L), "wrong number of arguments in '%s': %d, expects %s", NAME, (ARGC), EXPECT);
 #endif
 
+#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
+// The public channel selector stays local; shared invoke owns conversion and calls.
+template<typename Callback>
+static int setControllerCallback(lua_State* lua_S,
+    Callback cocos2d::EventListenerController::*slot)
+{
+    LUA_INVOKE_HEADER("cc.EventListenerController", "cc.EventListenerController:registerScriptHandler");
+    LUA_TRY_INVOKE(2, [slot](cocos2d::EventListenerController* listener, Callback callback, int) {
+        listener->*slot = std::move(callback);
+    });
+    LUA_INVOKE_FOOTER("2");
+}
+
+static int tolua_cocos2dx_EventListenerController_registerScriptHandler(lua_State* lua_S)
+{
+    LUA_INVOKE_HEADER("cc.EventListenerController", "cc.EventListenerController:registerScriptHandler");
+    if (argc == 2)
+    {
+        int channel = 0;
+        arg_cur = 2;
+        // Resolve the channel before acquiring a Lua function reference.
+        if (lua::binding_read<int>::F<bool(CC_LUA_BINDING_CHECKS)>(lua_S, 3, &channel))
+        {
+            using Listener = cocos2d::EventListenerController;
+            using Type = ScriptHandlerMgr::HandlerType;
+            switch (static_cast<Type>(channel))
+            {
+            case Type::EVENT_CONTROLLER_CONNECTED:
+                return setControllerCallback(lua_S, &Listener::onConnected);
+            case Type::EVENT_CONTROLLER_DISCONNECTED:
+                return setControllerCallback(lua_S, &Listener::onDisconnected);
+            case Type::EVENT_CONTROLLER_KEYDOWN:
+                return setControllerCallback(lua_S, &Listener::onKeyDown);
+            case Type::EVENT_CONTROLLER_KEYUP:
+                return setControllerCallback(lua_S, &Listener::onKeyUp);
+            case Type::EVENT_CONTROLLER_KEYREPEAT:
+                return setControllerCallback(lua_S, &Listener::onKeyRepeat);
+            case Type::EVENT_CONTROLLER_AXIS:
+                return setControllerCallback(lua_S, &Listener::onAxisEvent);
+            }
+        }
+    }
+    LUA_INVOKE_FOOTER("2");
+}
+#else
 static void cloneEventListenerControllerHandler(const cocos2d::EventListenerController* src,cocos2d::EventListenerController* dst,  ScriptHandlerMgr::HandlerType type)
 {
     if (nullptr == src || nullptr == dst)
@@ -271,13 +316,17 @@ static int tolua_cocos2dx_EventListenerController_registerScriptHandler(lua_Stat
     LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "2");
 }
 
+#endif
+
 static void extendEventListenerController(lua_State* L)
 {
     lua_pushstring(L, "cc.EventListenerController");
     lua_rawget(L, LUA_REGISTRYINDEX);
     if (lua_istable(L,-1))
     {
+#if CC_TARGET_PLATFORM != CC_PLATFORM_WIN32
         tolua_function(L, "clone", tolua_cocos2dx_EventListenerController_clone);
+#endif
         tolua_function(L, "registerScriptHandler", tolua_cocos2dx_EventListenerController_registerScriptHandler);
     }
     lua_pop(L, 1);

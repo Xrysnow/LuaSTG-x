@@ -133,6 +133,12 @@ int luaReg_Controller_ccEventController(lua_State* lua_S)
 	LUA_ENTRY_END(1);
 	return 0;
 }
+int lua_cocos2d_EventListenerController_clone(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("cc.EventListenerController", "cc.EventListenerController:clone");
+	LUA_TRY_INVOKE_R(0, static_cast<cocos2d::EventListenerController*(cocos2d::EventListenerController::*)()>(&cocos2d::EventListenerController::clone));
+	LUA_INVOKE_FOOTER("0");
+}
 int lua_cocos2d_EventListenerController_create(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("cc.EventListenerController", "cc.EventListenerController:create");
@@ -145,6 +151,7 @@ int luaReg_Controller_ccEventListenerController(lua_State* lua_S)
 	LUA_CLS_DEF_BASE(cocos2d::EventListenerController, "EventListenerController", "cc.EventListenerController",
 		cocos2d::EventListener, "cc.EventListener",
 		nullptr, nullptr);
+	LUA_METHOD("clone", lua_cocos2d_EventListenerController_clone);
 	LUA_METHOD("create", lua_cocos2d_EventListenerController_create);
 	LUA_CLS_END();
 	LUA_ENTRY_END(1);
