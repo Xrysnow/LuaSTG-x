@@ -243,6 +243,17 @@ set(GAME_INCLUDE
 	${LSTGX_SRC_ROOT}/Video
 )
 
+if(NOT LSTGX_NO_VIDEO)
+	list(APPEND GAME_HEADER
+		${LSTGX_SRC_ROOT}/LuaBindings/lua_video_auto.hpp
+		${LSTGX_SRC_ROOT}/LuaBindings/lua_video_compat.hpp
+	)
+	list(APPEND GAME_SOURCE
+		${LSTGX_SRC_ROOT}/LuaBindings/lua_video_auto.cpp
+		${LSTGX_SRC_ROOT}/LuaBindings/lua_video_manual.cpp
+	)
+endif()
+
 if(TARGET fairygui)
 	list(APPEND GAME_HEADER
 		${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_fairygui_auto.hpp
