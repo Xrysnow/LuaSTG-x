@@ -64,7 +64,7 @@ ResTexture* ResTexture::create(const std::string& name, const std::string& path)
 {
 	try
 	{
-		const auto data = LRES.getBufferFromFile(path);
+		const auto data = LRES.getFileData(path);
 		if (!data)
 			return nullptr;
 		// must use new

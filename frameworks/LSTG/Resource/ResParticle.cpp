@@ -477,7 +477,7 @@ ResParticle* ResParticle::create(const std::string& name, const std::string& pat
 	const auto clone = Sprite::createWithSpriteFrame(sprite->getSprite()->getSpriteFrame());
 	if (!clone)
 		return nullptr;
-	const auto data = LRES.getBufferFromFile(path);
+	const auto data = LRES.getFileData(path);
 	if (!data)
 		return nullptr;
 	if (data->size() != sizeof(ParticleInfo))

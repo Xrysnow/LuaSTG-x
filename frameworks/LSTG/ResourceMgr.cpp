@@ -1,501 +1,448 @@
-﻿#include "ResourceMgr.h"
+#include "ResourceMgr.h"
 #include "AppFrame.h"
 #include "Util/Utility.h"
-#include "unzip/unzip.h"
 #include "XFileUtils.h"
 #include "LogSystem.h"
+#include "platform/CCFileStream.h"
+#include <atomic>
 
 using namespace std;
 using namespace lstg;
 using namespace cocos2d;
 
-////////////////////////////////////////////////////////////////////////////////
-/// ResourcePack
-////////////////////////////////////////////////////////////////////////////////
-
-ResourcePack::ResourcePack()
+namespace
 {
-}
-
-ResourcePack::~ResourcePack()
-{
-	unzClose(zipFile);
-}
-
-bool ResourcePack::init(const std::string& path_, const std::string& passwd)
-{
-	path = path_;
-	password = passwd;
-	zlib_filefunc64_def tZlibFileFunc;
-	memset(&tZlibFileFunc, 0, sizeof(tZlibFileFunc));
-	fill_fopen64_filefunc(&tZlibFileFunc);
-	zipFile = unzOpen2_64(FileUtils::getInstance()->getSuitableFOpen(path).c_str(), &tZlibFileFunc);
-	if (!zipFile)
+	string bytesToString(const FileBytes& data)
 	{
-		return false;
+		return data && !data->empty()
+			? string(reinterpret_cast<const char*>(data->data()), data->size()) : string{};
 	}
-	loadAllFileInfo();
-	return true;
-}
 
-void ResourcePack::loadAllFileInfo()
-{
-	sizeCompr = sizeUcompr = 0;
-	int status = unzGoToFirstFile(zipFile);
-	while (UNZ_OK == status)
+	// Legacy main-thread API only. Worker caches never own Refs.
+	Buffer* bufferView(const string& path, const FileBytes& data,
+		unordered_map<string, pair<FileBytes, RefPtr<Buffer>>>& views)
 	{
-		ZipFile f;
-		char zipName[MAX_PATH];
-		if (UNZ_OK == unzGetCurrentFileInfo(zipFile, &f.info, zipName, sizeof(zipName), nullptr, 0, nullptr, 0))
-		{
-			// note that f can be a file or folder
-			f.path = zipName;
-			f.pos = unzGetOffset64(zipFile);
-			// there may be duplicated path in a zip file, use the latter
-			if (files.find(f.path) != files.end())
-			{
-				LWARNING("ResourcePack '%s' has duplicate path '%s'", path.c_str(), f.path.c_str());
-			}
-			files[f.path] = f;
-			sizeCompr += f.info.compressed_size;
-			sizeUcompr += f.info.uncompressed_size;
-		}
-		status = unzGoToNextFile(zipFile);
-	}
-}
-
-Buffer* ResourcePack::loadFile(const std::string& fpath)
-{
-	const auto it = files.find(fpath);
-	if (it == files.end())
-		return nullptr;
-	auto pwd = password.empty() ? nullptr : password.c_str();
-	const auto check1 = unzSetOffset64(zipFile, it->second.pos) != UNZ_OK;
-	const auto open_ret = unzOpenCurrentFilePassword(zipFile, pwd);
-	const auto check2 = open_ret != UNZ_OK;
-	if (check1)
-		XERROR("can't set offset at %ld", it->second.pos);
-	if (check2)
-		XERROR("can't open file: %d", open_ret);
-	if (check1 || check2)
-	{
-		return nullptr;
-	}
-	auto ret = Buffer::create();
-	try
-	{
-		const auto unc_size = it->second.info.uncompressed_size;
-		ret->resize(sizeof(unsigned char) * unc_size);
-		if (unzReadCurrentFile(zipFile, ret->data(), unc_size) < 0)
-		{
-			unzCloseCurrentFile(zipFile);
+		if (!data)
 			return nullptr;
-		}
-	}
-	catch (const bad_alloc&)
-	{
-		unzCloseCurrentFile(zipFile);
-		XERROR("OOM");
-		return nullptr;
-	}
-	unzCloseCurrentFile(zipFile);
-	ret->setWritable(false);
-	ret->setResizable(false);
-	return ret;
-}
-
-ResourcePack* ResourcePack::create(const std::string& fullPath, const std::string& password)
-{
-	auto ret = new (std::nothrow) ResourcePack();
-	if (ret && ret->init(fullPath, password))
-	{
-		ret->autorelease();
+		const auto source = views.find(path);
+		if (source != views.end() && source->second.first == data)
+			return source->second.second;
+		const auto ret = Buffer::create();
+		if (!ret)
+			return nullptr;
+		ret->assign_values(*data);
+		ret->setWritable(false);
+		ret->setResizable(false);
+		// Pair the source and its view atomically; RAII also covers map allocation failure.
+		views.insert_or_assign(path, make_pair(data, RefPtr<Buffer>{ret}));
 		return ret;
 	}
+}
+
+// A queued task or in-flight reader owns this state independently of the Ref wrapper.
+struct ResourcePack::State
+{
+	struct ZipFile
+	{
+		unz_file_info info;
+		int64_t pos;
+	};
+	string path;
+	string password;
+	atomic<float> priority{0.f};
+	unzFile zipFile = nullptr;
+	mutex zipMutex;
+	unordered_map<string, ZipFile> files;
+	ResourceFileCache loadedFiles;
+
+	~State()
+	{
+		if (zipFile)
+			unzClose(zipFile);
+	}
+
+	bool init(const string& path_, const string& passwd)
+	{
+		path = path_;
+		password = passwd;
+		zlib_filefunc64_def funcs{};
+		fill_fopen64_filefunc(&funcs);
+		zipFile = unzOpen2_64(FileUtils::getInstance()->getSuitableFOpen(path).c_str(), &funcs);
+		if (!zipFile)
+			return false;
+		for (int status = unzGoToFirstFile(zipFile); status == UNZ_OK; status = unzGoToNextFile(zipFile))
+		{
+			ZipFile file{};
+			char name[MAX_PATH]{};
+			if (unzGetCurrentFileInfo(zipFile, &file.info, name, sizeof(name), nullptr, 0, nullptr, 0) == UNZ_OK
+				&& file.info.size_filename < sizeof(name))
+			{
+				file.pos = unzGetOffset64(zipFile);
+				files[name] = file;
+			}
+		}
+		return true;
+	}
+
+	FileBytes load(const string& fpath)
+	{
+		return loadedFiles.load(fpath, [this, &fpath]() -> FileBytes
+		{
+			const auto it = files.find(fpath);
+			if (it == files.end())
+				return nullptr;
+			lock_guard<mutex> lock(zipMutex);
+			if (unzSetOffset64(zipFile, it->second.pos) != UNZ_OK
+				|| unzOpenCurrentFilePassword(zipFile, password.empty() ? nullptr : password.c_str()) != UNZ_OK)
+				return nullptr;
+			struct CloseFile
+			{
+				unzFile file;
+				~CloseFile() { if (file) unzCloseCurrentFile(file); }
+			} close{zipFile};
+			auto data = make_shared<vector<uint8_t>>(it->second.info.uncompressed_size);
+			size_t offset = 0;
+			while (offset < data->size())
+			{
+				const auto length = static_cast<unsigned>(min(data->size() - offset, size_t(numeric_limits<int>::max())));
+				const auto count = unzReadCurrentFile(zipFile, data->data() + offset, length);
+				if (count <= 0)
+					return nullptr;
+				offset += count;
+			}
+			const auto status = unzCloseCurrentFile(zipFile);
+			close.file = nullptr;
+			return status == UNZ_OK ? data : nullptr;
+		});
+	}
+
+	void cacheAll()
+	{
+		for (const auto& file : files)
+			load(file.first);
+	}
+};
+
+ResourcePack::ResourcePack() : state(make_shared<State>()) {}
+ResourcePack::~ResourcePack() = default;
+
+bool ResourcePack::init(const string& path, const string& passwd)
+{
+	return state->init(path, passwd);
+}
+
+ResourcePack* ResourcePack::create(const string& fullPath, const string& password)
+{
+	ResourcePack* ret = nullptr;
+	try
+	{
+		ret = new (nothrow) ResourcePack();
+		if (ret && ret->init(fullPath, password))
+		{
+			ret->autorelease();
+			return ret;
+		}
+	}
+	catch (const bad_alloc&) {}
+	catch (const length_error&) {}
 	CC_SAFE_DELETE(ret);
 	return nullptr;
 }
 
-std::string ResourcePack::getPath() const
+string ResourcePack::getPath() const { return state->path; }
+size_t ResourcePack::getFileCount() const { return state->files.size(); }
+bool ResourcePack::isFileOrDirectoryExist(const string& path) const { return state->files.count(path) != 0; }
+float ResourcePack::getPriority() const { return state->priority.load(); }
+void ResourcePack::setPriority(float value) { state->priority.store(value); }
+
+uint32_t ResourcePack::getCRC32(const string& path)
 {
-	return path;
+	const auto it = state->files.find(path);
+	return it == state->files.end() ? 0 : it->second.info.crc;
 }
 
-size_t ResourcePack::getFileCount() const
+uint32_t ResourcePack::getCompressedSize(const string& path)
 {
-	return files.size();
+	const auto it = state->files.find(path);
+	return it == state->files.end() ? 0 : it->second.info.compressed_size;
 }
 
-bool ResourcePack::isFileOrDirectoryExist(const std::string& fpath) const
+uint32_t ResourcePack::getUncompressedSize(const string& path)
 {
-	return files.find(fpath) != files.end();
+	const auto it = state->files.find(path);
+	return it == state->files.end() ? 0 : it->second.info.uncompressed_size;
 }
 
-uint32_t ResourcePack::getCRC32(const std::string& fpath)
+FileBytes ResourcePack::getFileData(const string& path)
 {
-	const auto it = files.find(fpath);
-	if (it != files.end())
-		return it->second.info.crc;
-	return 0;
+	try { return state->load(path); }
+	catch (const bad_alloc&) { return nullptr; }
+	catch (const length_error&) { return nullptr; }
 }
 
-uint32_t ResourcePack::getCompressedSize(const std::string& fpath)
+Buffer* ResourcePack::loadAndCache(const string& path)
 {
-	const auto it = files.find(fpath);
-	if (it != files.end())
-		return it->second.info.compressed_size;
-	return 0;
+	try { return bufferView(path, getFileData(path), bufferViews); }
+	catch (const bad_alloc&) { return nullptr; }
+	catch (const length_error&) { return nullptr; }
 }
 
-uint32_t ResourcePack::getUncompressedSize(const std::string& fpath)
-{
-	const auto it = files.find(fpath);
-	if (it != files.end())
-		return it->second.info.uncompressed_size;
-	return 0;
-}
+string ResourcePack::getStringFromFile(const string& path) { return bytesToString(getFileData(path)); }
+bool ResourcePack::cacheFile(const string& path) { return !!getFileData(path); }
 
-Buffer* ResourcePack::loadAndCache(const string& fpath)
+void ResourcePack::cacheFileAsync(const string& path, const function<void()>& callback)
 {
-	lock_guard<mutex> lock(mut);
-
-	const auto it = loadedFiles.find(fpath);
-	if (it != loadedFiles.end())
-		return it->second;
-	const auto data = loadFile(fpath);
-	if (data)
-	{
-		loadedFiles.insert(fpath, data);
-		return data;
-	}
-	return nullptr;
-}
-
-std::string ResourcePack::getStringFromFile(const std::string& fpath)
-{
-	const auto data = loadAndCache(fpath);
-	if (!data)
-		return "";
-	return data->to_string();
-}
-
-bool ResourcePack::cacheFile(const std::string& fpath)
-{
-	return !!loadAndCache(fpath);
-}
-
-void ResourcePack::cacheFileAsync(const std::string& fpath, const std::function<void()>& callback)
-{
-	this->retain();
-	const auto cb = [this, callback](void*)
-	{
-		this->release();
-		if (callback)
-			callback();
-	};
-	const auto task = [this, fpath]()
-	{
-		this->loadAndCache(fpath);
-	};
-	AsyncTaskPool::getInstance()->enqueue(
-		AsyncTaskPool::TaskType::TASK_IO, cb, nullptr, task);
+	const auto data = state;
+	AsyncTaskPool::getInstance()->enqueue(AsyncTaskPool::TaskType::TASK_IO,
+		[callback](void*) { if (callback) callback(); }, nullptr,
+		[data, path]()
+		{
+			try { data->load(path); }
+			catch (const bad_alloc&) {}
+			catch (const length_error&) {}
+		});
 }
 
 void ResourcePack::cacheAllFiles()
 {
-	for (auto& f : files)
-		loadAndCache(f.first);
+	for (const auto& file : state->files)
+		getFileData(file.first);
 }
 
-void ResourcePack::cacheAllFilesAsync(const std::function<void()>& callback)
+void ResourcePack::cacheAllFilesAsync(const function<void()>& callback)
 {
-	this->retain();
-	const auto cb = [this, callback](void*)
-	{
-		this->release();
-		if (callback)
-			callback();
-	};
-	const auto task = [this]()
-	{
-		this->cacheAllFiles();
-	};
-	AsyncTaskPool::getInstance()->enqueue(
-		AsyncTaskPool::TaskType::TASK_IO, cb, nullptr, task);
+	const auto data = state;
+	AsyncTaskPool::getInstance()->enqueue(AsyncTaskPool::TaskType::TASK_IO,
+		[callback](void*) { if (callback) callback(); }, nullptr,
+		[data]()
+		{
+			try { data->cacheAll(); }
+			catch (const bad_alloc&) {}
+			catch (const length_error&) {}
+		});
 }
 
-bool ResourcePack::isFileCached(const std::string& fpath)
+bool ResourcePack::isFileCached(const string& path) { return state->loadedFiles.contains(path); }
+bool ResourcePack::removeFileCache(const string& path)
 {
-	lock_guard<mutex> lock(mut);
-	return loadedFiles.find(fpath) != loadedFiles.end();
+	bufferViews.erase(path);
+	return state->loadedFiles.remove(path);
 }
-
-bool ResourcePack::removeFileCache(const std::string& fpath)
-{
-	lock_guard<mutex> lock(mut);
-	const auto it = loadedFiles.find(fpath);
-	if (it == loadedFiles.end())
-		return false;
-	loadedFiles.erase(it);
-	return true;
-}
-
 void ResourcePack::clearFileCache()
 {
-	lock_guard<mutex> lock(mut);
-	loadedFiles.clear();
+	bufferViews.clear();
+	state->loadedFiles.clear();
 }
-
-size_t ResourcePack::getFileCacheSize()
-{
-	size_t total = 0;
-	for (auto&& it : loadedFiles)
-		total += it.second->size();
-	return total;
-}
-
+size_t ResourcePack::getFileCacheSize() { return state->loadedFiles.size(); }
 vector<string> ResourcePack::listFiles()
 {
-	lock_guard<mutex> lock(mut);
 	vector<string> ret;
-	for (auto& f : files)
-		ret.push_back(f.first);
+	for (const auto& file : state->files)
+		ret.push_back(file.first);
 	return ret;
 }
+vector<string> ResourcePack::listCachedFiles() { return state->loadedFiles.list(); }
 
-vector<string> ResourcePack::listCachedFiles()
-{
-	lock_guard<mutex> lock(mut);
-	vector<string> ret;
-	for (auto& f : loadedFiles)
-		ret.push_back(f.first);
-	return ret;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-/// ResourceMgr
-////////////////////////////////////////////////////////////////////////////////
-
-ResourceMgr::ResourceMgr()
-{
-}
-
-ResourceMgr::~ResourceMgr()
-{
-}
-
+ResourceMgr::ResourceMgr() = default;
+ResourceMgr::~ResourceMgr() = default;
 ResourceMgr* ResourceMgr::getInstance()
 {
-	static ResourceMgr ins;
-	return &ins;
+	static ResourceMgr instance;
+	return &instance;
 }
 
-Buffer* ResourceMgr::loadLocalFileAndCache(const std::string& fpath)
+FileBytes ResourceMgr::getLocalFileData(const string& path)
 {
-	lock_guard<mutex> lock(mut);
-	// from cache
-	const auto it = localFiles.find(fpath);
-	if (it != localFiles.end())
-		return it->second;
-	// from local path
 	try
 	{
-		const auto data = Buffer::create();
-		const auto path = FileUtils::getInstance()->fullPathForFilename(fpath);
-		if (FileUtils::getInstance()->getContents(path, data) == FileUtils::Status::OK)
-		{
-			localFiles.insert(fpath, data);
-			data->setWritable(false);
-			data->setResizable(false);
+		if (const auto data = localFiles.find(path))
 			return data;
-		}
+		return localFiles.load(path, [&path]() -> FileBytes
+		{
+			// The generation includes path resolution. No cache/map lock is held.
+			const auto fullPath = FileUtils::getInstance()->fullPathForFilename(path);
+			auto data = make_shared<vector<uint8_t>>();
+			return FileUtils::getInstance()->getContents(fullPath, data.get()) == FileUtils::Status::OK ? data : nullptr;
+		});
 	}
-	catch (const bad_alloc&)
-	{
-		XERROR("OOM");
-	}
-	return nullptr;
+	catch (const bad_alloc&) { return nullptr; }
+	catch (const length_error&) { return nullptr; }
 }
 
-std::string ResourceMgr::getStringFromLocalFile(const std::string& fpath)
+Buffer* ResourceMgr::loadLocalFileAndCache(const string& path)
 {
-	const auto data = loadLocalFileAndCache(fpath);
-	if (!data)
-		return "";
-	return data->to_string();
+	try { return bufferView(path, getLocalFileData(path), localBuffers); }
+	catch (const bad_alloc&) { return nullptr; }
+	catch (const length_error&) { return nullptr; }
 }
+string ResourceMgr::getStringFromLocalFile(const string& path) { return bytesToString(getLocalFileData(path)); }
+bool ResourceMgr::cacheLocalFile(const string& path) { return !!getLocalFileData(path); }
 
-bool ResourceMgr::cacheLocalFile(const std::string& fpath)
+void ResourceMgr::cacheLocalFileAsync(const string& path, const function<void()>& callback)
 {
-	return !!loadLocalFileAndCache(fpath);
+	AsyncTaskPool::getInstance()->enqueue(AsyncTaskPool::TaskType::TASK_IO,
+		[callback](void*) { if (callback) callback(); }, nullptr,
+		[this, path]() { cacheLocalFile(path); });
 }
 
-void ResourceMgr::cacheLocalFileAsync(const std::string& fpath, const std::function<void()>& callback)
+bool ResourceMgr::isLocalFileCached(const string& path) { return localFiles.contains(path); }
+bool ResourceMgr::removeLocalFileCache(const string& path)
 {
-	const auto cb = [callback](void*)
-	{
-		if (callback)
-			callback();
-	};
-	const auto task = [this, fpath]()
-	{
-		this->cacheLocalFile(fpath);
-	};
-	AsyncTaskPool::getInstance()->enqueue(
-		AsyncTaskPool::TaskType::TASK_IO, cb, nullptr, task);
+	localBuffers.erase(path);
+	return localFiles.remove(path);
 }
-
-bool ResourceMgr::isLocalFileCached(const std::string& fpath)
-{
-	lock_guard<mutex> lock(mut);
-	return localFiles.find(fpath) != localFiles.end();
-}
-
-bool ResourceMgr::removeLocalFileCache(const std::string& fpath)
-{
-	lock_guard<mutex> lock(mut);
-	const auto it = localFiles.find(fpath);
-	if (it == localFiles.end())
-		return false;
-	localFiles.erase(it);
-	return true;
-}
-
 void ResourceMgr::clearLocalFileCache()
 {
-	lock_guard<mutex> lock(mut);
+	localBuffers.clear();
 	localFiles.clear();
 }
-
-vector<string> ResourceMgr::listCachedLocalFiles()
-{
-	lock_guard<mutex> lock(mut);
-	vector<string> ret;
-	for (auto& it : localFiles)
-		ret.push_back(it.first);
-	return ret;
-}
+vector<string> ResourceMgr::listCachedLocalFiles() { return localFiles.list(); }
 
 size_t ResourceMgr::getFileCacheSize()
 {
-	size_t total = 0;
-	for (auto&& it : packs)
-		total += it.second->getFileCacheSize();
-	for (auto&& it : localFiles)
-		total += it.second->size();
+	size_t total = localFiles.size();
+	for (const auto& pack : getPackStates())
+		total += pack->loadedFiles.size();
 	return total;
 }
 
-ResourcePack* ResourceMgr::loadResourcePack(const std::string& fullPath, const std::string& password)
+ResourcePack* ResourceMgr::loadResourcePack(const string& path, const string& password)
 {
-	const auto loaded = getResourcePack(fullPath);
-	if (loaded)
+	if (const auto loaded = getResourcePack(path))
 		return loaded;
-	const auto pack = ResourcePack::create(fullPath, password);
+	const auto pack = ResourcePack::create(path, password);
 	if (!pack)
 		return nullptr;
-	pack->setPriority(packs.size());
-	packs.insert(fullPath, pack);
+	lock_guard<mutex> lock(mut);
+	pack->setPriority(static_cast<float>(packs.size()));
+	packs.insert(path, pack);
 	return pack;
 }
 
-bool ResourceMgr::isResourcePackLoaded(const std::string& packPath)
-{
-	return !!getResourcePack(packPath);
-}
-
+bool ResourceMgr::isResourcePackLoaded(const string& path) { return !!getResourcePack(path); }
 void ResourceMgr::addResourcePack(ResourcePack* pack, bool override)
 {
-	if (!override && isResourcePackLoaded(pack->getPath()))
+	if (!pack)
 		return;
-	packs.insert(pack->getPath(), pack);
+	lock_guard<mutex> lock(mut);
+	if (override || packs.find(pack->getPath()) == packs.end())
+		packs.insert(pack->getPath(), pack);
 }
-
-bool ResourceMgr::unloadResourcePack(const std::string& path)
+bool ResourceMgr::unloadResourcePack(const string& path)
 {
+	lock_guard<mutex> lock(mut);
 	const auto it = packs.find(path);
 	if (it == packs.end())
 		return false;
 	packs.erase(it);
 	return true;
 }
-
 void ResourceMgr::unloadAllResourcePacks()
 {
+	lock_guard<mutex> lock(mut);
 	packs.clear();
 }
-
-ResourcePack* ResourceMgr::getResourcePack(const std::string& packPath)
+ResourcePack* ResourceMgr::getResourcePack(const string& path)
 {
-	const auto it = packs.find(packPath);
-	if (it != packs.end())
-		return it->second;
-	return nullptr;
+	lock_guard<mutex> lock(mut);
+	const auto it = packs.find(path);
+	return it == packs.end() ? nullptr : it->second;
 }
-
 vector<ResourcePack*> ResourceMgr::getResourcePacks()
 {
+	lock_guard<mutex> lock(mut);
 	vector<ResourcePack*> ret;
-	for (auto& it : packs)
-		ret.push_back(it.second);
-	// ResourcePack with higher priority will be put at front
-	std::sort(ret.begin(), ret.end(),[](ResourcePack* a, ResourcePack* b)
-	{
-		return a->getPriority() > b->getPriority();
-	});
+	for (const auto& pack : packs)
+		ret.push_back(pack.second);
+	sort(ret.begin(), ret.end(), [](ResourcePack* a, ResourcePack* b) { return a->getPriority() > b->getPriority(); });
 	return ret;
 }
 
-bool ResourceMgr::isFileOrDirectoryExist(const std::string& fpath) const
+vector<shared_ptr<ResourcePack::State>> ResourceMgr::getPackStates() const
 {
-	if (fpath.empty())
-		return false;
-	for (auto& it: packs)
-	{
-		if (it.second->isFileOrDirectoryExist(fpath))
-			return true;
-	}
+	lock_guard<mutex> lock(mut);
+	vector<pair<float, shared_ptr<ResourcePack::State>>> ordered;
+	for (const auto& pack : packs)
+		ordered.emplace_back(pack.second->getPriority(), pack.second->state);
+	// Capture priority once: concurrent setPriority must not change the comparator
+	// during sort. Only standard shared ownership leaves the registry lock.
+	sort(ordered.begin(), ordered.end(), [](const auto& a, const auto& b) { return a.first > b.first; });
+	vector<shared_ptr<ResourcePack::State>> ret;
+	ret.reserve(ordered.size());
+	for (auto& pack : ordered)
+		ret.push_back(std::move(pack.second));
+	return ret;
+}
+
+bool ResourceMgr::isFileOrDirectoryExist(const string& path) const
+{
+	if (!path.empty())
+		for (const auto& pack : getPackStates())
+			if (pack->files.count(path))
+				return true;
 	return false;
 }
 
-Buffer* ResourceMgr::getBufferFromFile(const std::string& filePath)
+vector<string> ResourceMgr::listPackFiles(const string& directory) const
 {
-	// from packs
-	for (auto& it : getResourcePacks())
-	{
-		const auto d = it->loadAndCache(filePath);
-		if (d)
-			return d;
-	}
-	// from cache or local path
-	return loadLocalFileAndCache(filePath);
-}
-
-std::string ResourceMgr::getStringFromFile(const std::string& filePath)
-{
-	// from packs
-	for (auto& it : getResourcePacks())
-	{
-		const auto d = it->loadAndCache(filePath);
-		if (d)
-			return d->to_string();
-	}
-	// from cache or local path
-	return getStringFromLocalFile(filePath);
-}
-
-bool ResourceMgr::extractFile(const string& filePath, const string& targetPath)
-{
-	const auto data = getBufferFromFile(filePath);
-	if (!data)
-		return false;
-	Data d;
-	d.fastSet(data->data(), data->size());
-	const auto ret = FileUtils::getInstance()->writeDataToFile(d, targetPath);
-	d.fastSet(nullptr, 0);
+	vector<string> ret;
+	if (directory.empty())
+		return ret;
+	auto prefix = directory;
+	replace(prefix.begin(), prefix.end(), '\\', '/');
+	if (prefix.back() != '/')
+		prefix += '/';
+	for (const auto& pack : getPackStates())
+		for (const auto& file : pack->files)
+			if (file.first.compare(0, prefix.size(), prefix) == 0
+				&& file.first.find('/', prefix.size()) == string::npos)
+				ret.push_back(file.first);
 	return ret;
 }
 
+FileBytes ResourceMgr::getFileData(const string& path)
+{
+	try
+	{
+		for (const auto& pack : getPackStates())
+			if (const auto data = pack->load(path))
+				return data;
+		return getLocalFileData(path);
+	}
+	catch (const bad_alloc&) { return nullptr; }
+	catch (const length_error&) { return nullptr; }
+}
+
+Buffer* ResourceMgr::getBufferFromFile(const string& path)
+{
+	// Legacy Ref objects are materialized only on the main thread.
+	for (const auto& pack : getResourcePacks())
+		if (const auto data = pack->loadAndCache(path))
+			return data;
+	return loadLocalFileAndCache(path);
+}
+string ResourceMgr::getStringFromFile(const string& path) { return bytesToString(getFileData(path)); }
+
+bool ResourceMgr::extractFile(const string& path, const string& target)
+{
+	const auto data = getFileData(path);
+	if (!data)
+		return false;
+	// A stream handles empty files and keeps ownership independent of Data::fastSet.
+	const auto file = FileUtils::getInstance()->openFileStream(target, FileStream::Mode::WRITE);
+	if (!file || !file->isOpen())
+		return false;
+	size_t offset = 0;
+	while (offset < data->size())
+	{
+		const auto length = static_cast<unsigned>(min(data->size() - offset, size_t(numeric_limits<int>::max())));
+		const auto count = file->write(data->data() + offset, length);
+		if (count <= 0)
+			return false;
+		offset += count;
+	}
+	return file->close() == 0;
+}
 void ResourceMgr::clear()
 {
 	unloadAllResourcePacks();

@@ -272,7 +272,7 @@ double AppFrame::getFPS()
 void AppFrame::loadScript(const std::string& path)
 {
 	string err;
-	auto data = LRES.getBufferFromFile(path);
+	auto data = LRES.getFileData(path);
 	if (!data)
 	{
 		err = string("can't load script [") + path + "]";
@@ -282,8 +282,10 @@ void AppFrame::loadScript(const std::string& path)
 	}
 	// LUA_MULTRET will return the result
 	//if ((luaL_loadstring(L, s.c_str()) || lua_pcall(L, 0, LUA_MULTRET, 0)))
-	if (luaL_loadbuffer(L, (const char*)data->data(), (size_t)data->size(), path.c_str())
-		|| lua_pcall(L, 0, LUA_MULTRET, 0))
+	const auto loadResult = luaL_loadbuffer(L, (const char*)data->data(), (size_t)data->size(), path.c_str());
+	// Do not hold a C++ snapshot across Lua execution or luaL_error/longjmp.
+	data.reset();
+	if (loadResult || lua_pcall(L, 0, LUA_MULTRET, 0))
 	{
 		err = string("failed to compile [") + string(path) + "]:\n" + string(lua_tostring(L, -1));
 		LERROR("%s", err.c_str());

@@ -3,8 +3,11 @@
 #include "unzip/unzip.h"
 #include "Resource/GameResources.h"
 #include "../Classes/XBuffer.h"
+#include "ResourceFileCache.h"
 
 #define LRES (*lstg::ResourceMgr::getInstance())
+
+class XFileUtils;
 
 namespace lstg
 {
@@ -15,27 +18,13 @@ namespace lstg
 	 */
 	class ResourcePack : public cocos2d::Ref
 	{
-		struct ZipFile
-		{
-			unz_file_info info;
-			std::string path;
-			int64_t pos;
-		};
-		std::string path;
-		std::string password;
-		std::mutex mut;
-		float priority = 0.f;
-
-		unzFile zipFile = nullptr;
-		uint64_t sizeCompr = 0;
-		uint64_t sizeUcompr = 0;
-
-		std::unordered_map<std::string, ZipFile> files;
-		cocos2d::Map<std::string, Buffer*> loadedFiles;
+		// Workers retain only State, never this Ref or a Buffer/autorelease object.
+		struct State;
+		std::shared_ptr<State> state;
+		std::unordered_map<std::string, std::pair<FileBytes, cocos2d::RefPtr<Buffer>>> bufferViews;
+		friend class ResourceMgr;
 
 		bool init(const std::string& path_, const std::string& passwd);
-		void loadAllFileInfo();
-		Buffer* loadFile(const std::string& fpath);
 
 	public:
 		static ResourcePack* create(const std::string& fullPath, const std::string& password);
@@ -48,7 +37,10 @@ namespace lstg
 		uint32_t getCompressedSize(const std::string& fpath);
 		uint32_t getUncompressedSize(const std::string& fpath);
 		//
+		// Legacy Ref/Buffer and pack registry APIs are main-thread only.
 		Buffer* loadAndCache(const std::string& fpath);
+		// Native snapshot API; safe across cache eviction and pack unloading.
+		FileBytes getFileData(const std::string& fpath);
 		std::string getStringFromFile(const std::string& fpath);
 		//
 		bool cacheFile(const std::string& fpath);
@@ -67,8 +59,8 @@ namespace lstg
 		std::vector<std::string> listFiles();
 		std::vector<std::string> listCachedFiles();
 
-		float getPriority() const { return priority; }
-		void setPriority(float v) { priority = v; }
+		float getPriority() const;
+		void setPriority(float v);
 
 	private:
 		ResourcePack();
@@ -83,8 +75,14 @@ namespace lstg
 	class ResourceMgr
 	{
 		cocos2d::Map<std::string, ResourcePack*> packs;
-		std::mutex mut;
-		cocos2d::Map<std::string, Buffer*> localFiles;
+		mutable std::mutex mut;
+		ResourceFileCache localFiles;
+		// Buffer views are legacy main-thread API objects, separate from worker data.
+		std::unordered_map<std::string, std::pair<FileBytes, cocos2d::RefPtr<Buffer>>> localBuffers;
+		std::vector<std::shared_ptr<ResourcePack::State>> getPackStates() const;
+		FileBytes getLocalFileData(const std::string& fpath);
+		std::vector<std::string> listPackFiles(const std::string& directory) const;
+		friend class ::XFileUtils;
 
 		ResourceMgr();
 		~ResourceMgr();
@@ -92,6 +90,7 @@ namespace lstg
 
 		static ResourceMgr* getInstance();
 
+		// Buffer views and cache/registry mutation are main-thread API operations.
 		Buffer* loadLocalFileAndCache(const std::string& fpath);
 		std::string getStringFromLocalFile(const std::string& fpath);
 
@@ -122,6 +121,8 @@ namespace lstg
 
 		//
 		Buffer* getBufferFromFile(const std::string& filePath);
+		// C++ readers must hold this snapshot through consumption of its bytes.
+		FileBytes getFileData(const std::string& filePath);
 
 		std::string getStringFromFile(const std::string& filePath);
 

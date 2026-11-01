@@ -3,6 +3,7 @@
 #include "../LSTG/AppFrame.h"
 #include "Util/Utility.h"
 #include "ResourceMgr.h"
+#include <cstring>
 
 #define DECLARE_GUARD std::lock_guard<std::recursive_mutex> mutexGuard(_mutex)
 
@@ -82,15 +83,21 @@ Data XFileUtils::getDataFromFile(string_view filename) const
 	}
 	else
 	{
-		const auto data = LRES.getBufferFromFile(std::string{filename});
-		if(data)
-			d.copy(data->data(), data->size());
+		const auto data = LRES.getFileData(std::string{filename});
+		if (data && !data->empty() && data->size() <= size_t(numeric_limits<ssize_t>::max()))
+		{
+			// Data::copy asserts on nullptr for empty files and does not check malloc.
+			d.resize(static_cast<ssize_t>(data->size()));
+			if (d.size() == data->size())
+				memcpy(d.data(), data->data(), data->size());
+		}
 	}
 	return d;
 }
 
 string XFileUtils::fullPathForFilename(string_view filename) const
 {
+	DECLARE_GUARD;
 	if (filename.empty())
 		return "";
 	if (LRES.isFileOrDirectoryExist(std::string{filename}))
@@ -136,18 +143,7 @@ vector<string> XFileUtils::listFiles(string_view dirPath) const
 	vector<string> ret;
 	if (dirPath.empty())
 		return ret;
-	for (auto& pack : LRES.getResourcePacks())
-	{
-		if (pack->isFileOrDirectoryExist(std::string{dirPath}))
-		{
-			for (auto& p : pack->listFiles())
-			{
-				if (p.compare(0, dirPath.size(), dirPath) == 0
-					&& p.find('/', dirPath.size()) == string::npos)
-					ret.push_back(p);
-			}
-		}
-	}
+	ret = LRES.listPackFiles(std::string{dirPath});
 	if (ret.empty())
 		return _FileUtilsBase::listFiles(dirPath);
 	return ret;
