@@ -1,5 +1,6 @@
 #include "lua_video_auto.hpp"
-#include "lua_video_compat.hpp"
+#include "lua_conversion/lua_conversion.hpp"
+#include "lua_video_types.hpp"
 #include "VideoPlayer.h"
 
 int lua_video_Decoder_getAudioBitRate(lua_State* lua_S)
@@ -48,6 +49,13 @@ int lua_video_Decoder_getAudioStreamCount(lua_State* lua_S)
 	LUA_INVOKE_HEADER("video.Decoder", "video.Decoder:getAudioStreamCount");
 	LUA_TRY_INVOKE_R(0, static_cast<size_t(video::Decoder::*)()const>(&video::Decoder::getAudioStreamCount));
 	LUA_INVOKE_FOOTER("0");
+}
+int lua_video_Decoder_getAudioTimeBase(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("video.Decoder", "video.Decoder:getAudioTimeBase");
+	LUA_TRY_INVOKE_R(1, static_cast<AVRational(video::Decoder::*)(int)const>(&video::Decoder::getAudioTimeBase));
+	LUA_TRY_INVOKE_R(0, [](const video::Decoder* obj){{return obj->getAudioTimeBase();}});
+	LUA_INVOKE_FOOTER("0,1");
 }
 int lua_video_Decoder_getContainerBitRate(lua_State* lua_S)
 {
@@ -113,6 +121,13 @@ int lua_video_Decoder_getVideoFrameCount(lua_State* lua_S)
 	LUA_TRY_INVOKE_R(0, [](const video::Decoder* obj){{return obj->getVideoFrameCount();}});
 	LUA_INVOKE_FOOTER("0,1");
 }
+int lua_video_Decoder_getVideoFrameRate(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("video.Decoder", "video.Decoder:getVideoFrameRate");
+	LUA_TRY_INVOKE_R(1, static_cast<AVRational(video::Decoder::*)(int)const>(&video::Decoder::getVideoFrameRate));
+	LUA_TRY_INVOKE_R(0, [](const video::Decoder* obj){{return obj->getVideoFrameRate();}});
+	LUA_INVOKE_FOOTER("0,1");
+}
 int lua_video_Decoder_getVideoSize(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("video.Decoder", "video.Decoder:getVideoSize");
@@ -131,6 +146,13 @@ int lua_video_Decoder_getVideoTargetSize(lua_State* lua_S)
 	LUA_INVOKE_HEADER("video.Decoder", "video.Decoder:getVideoTargetSize");
 	LUA_TRY_INVOKE_R(0, static_cast<cocos2d::Size(video::Decoder::*)()const>(&video::Decoder::getVideoTargetSize));
 	LUA_INVOKE_FOOTER("0");
+}
+int lua_video_Decoder_getVideoTimeBase(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("video.Decoder", "video.Decoder:getVideoTimeBase");
+	LUA_TRY_INVOKE_R(1, static_cast<AVRational(video::Decoder::*)(int)const>(&video::Decoder::getVideoTimeBase));
+	LUA_TRY_INVOKE_R(0, [](const video::Decoder* obj){{return obj->getVideoTimeBase();}});
+	LUA_INVOKE_FOOTER("0,1");
 }
 int lua_video_Decoder_isVideoDecoderHardware(lua_State* lua_S)
 {
@@ -193,6 +215,7 @@ int luaReg_cc_video_videoDecoder(lua_State* lua_S)
 	LUA_METHOD("getAudioFrameCount", lua_video_Decoder_getAudioFrameCount);
 	LUA_METHOD("getAudioSampleRate", lua_video_Decoder_getAudioSampleRate);
 	LUA_METHOD("getAudioStreamCount", lua_video_Decoder_getAudioStreamCount);
+	LUA_METHOD("getAudioTimeBase", lua_video_Decoder_getAudioTimeBase);
 	LUA_METHOD("getContainerBitRate", lua_video_Decoder_getContainerBitRate);
 	LUA_METHOD("getContainerDuration", lua_video_Decoder_getContainerDuration);
 	LUA_METHOD("getContainerStartTime", lua_video_Decoder_getContainerStartTime);
@@ -203,9 +226,11 @@ int luaReg_cc_video_videoDecoder(lua_State* lua_S)
 	LUA_METHOD("getVideoFormat", lua_video_Decoder_getVideoFormat);
 	LUA_METHOD("getVideoFormatName", lua_video_Decoder_getVideoFormatName);
 	LUA_METHOD("getVideoFrameCount", lua_video_Decoder_getVideoFrameCount);
+	LUA_METHOD("getVideoFrameRate", lua_video_Decoder_getVideoFrameRate);
 	LUA_METHOD("getVideoSize", lua_video_Decoder_getVideoSize);
 	LUA_METHOD("getVideoStreamCount", lua_video_Decoder_getVideoStreamCount);
 	LUA_METHOD("getVideoTargetSize", lua_video_Decoder_getVideoTargetSize);
+	LUA_METHOD("getVideoTimeBase", lua_video_Decoder_getVideoTimeBase);
 	LUA_METHOD("isVideoDecoderHardware", lua_video_Decoder_isVideoDecoderHardware);
 	LUA_METHOD("tell", lua_video_Decoder_tell);
 	LUA_METHOD("getAllDecoderNames", lua_video_Decoder_getAllDecoderNames);
@@ -328,5 +353,5 @@ int register_all_cc_video(lua_State* lua_S)
 {
 	luaReg_cc_video_videoDecoder(lua_S);
 	luaReg_cc_video_videoPlayer(lua_S);
-	return register_all_cc_video_manual(lua_S);
+	return 0;
 }
