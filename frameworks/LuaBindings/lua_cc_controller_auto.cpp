@@ -1,7 +1,43 @@
 #include "lua_cc_controller_auto.hpp"
-#include "lua_cc_controller_compat.hpp"
+#include "lua_cc_controller_adapters.hpp"
 #include "base/CCGameController.h"
 
+int lua_cocos2d_Controller_getDeviceId(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("cc.Controller", "cc.Controller:getDeviceId");
+	LUA_TRY_INVOKE_R(0, static_cast<int(cocos2d::Controller::*)()const>(&cocos2d::Controller::getDeviceId));
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_cocos2d_Controller_getDeviceName(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("cc.Controller", "cc.Controller:getDeviceName");
+	LUA_TRY_INVOKE_R(0, static_cast<std::string_view(cocos2d::Controller::*)()const>(&cocos2d::Controller::getDeviceName));
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_cocos2d_Controller_getKeyStatus(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("cc.Controller", "cc.Controller:getKeyStatus");
+	LUA_TRY_INVOKE_R(1, static_cast<const cocos2d::Controller::KeyStatus&(cocos2d::Controller::*)(int)>(&cocos2d::Controller::getKeyStatus));
+	LUA_INVOKE_FOOTER("1");
+}
+int lua_cocos2d_Controller_getTag(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("cc.Controller", "cc.Controller:getTag");
+	LUA_TRY_INVOKE_R(0, static_cast<int(cocos2d::Controller::*)()const>(&cocos2d::Controller::getTag));
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_cocos2d_Controller_isConnected(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("cc.Controller", "cc.Controller:isConnected");
+	LUA_TRY_INVOKE_R(0, static_cast<bool(cocos2d::Controller::*)()const>(&cocos2d::Controller::isConnected));
+	LUA_INVOKE_FOOTER("0");
+}
+int lua_cocos2d_Controller_setTag(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("cc.Controller", "cc.Controller:setTag");
+	LUA_TRY_INVOKE(1, static_cast<void(cocos2d::Controller::*)(int)>(&cocos2d::Controller::setTag));
+	LUA_INVOKE_FOOTER("1");
+}
 int lua_cocos2d_Controller_getControllerByDeviceId(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("cc.Controller", "cc.Controller:getControllerByDeviceId");
@@ -31,6 +67,12 @@ int luaReg_Controller_ccController(lua_State* lua_S)
 	LUA_ENTRY("cc");
 	LUA_CLS_DEF(cocos2d::Controller, "Controller", "cc.Controller",
 		nullptr, nullptr);
+	LUA_METHOD("getDeviceId", lua_cocos2d_Controller_getDeviceId);
+	LUA_METHOD("getDeviceName", lua_cocos2d_Controller_getDeviceName);
+	LUA_METHOD("getKeyStatus", lua_cocos2d_Controller_getKeyStatus);
+	LUA_METHOD("getTag", lua_cocos2d_Controller_getTag);
+	LUA_METHOD("isConnected", lua_cocos2d_Controller_isConnected);
+	LUA_METHOD("setTag", lua_cocos2d_Controller_setTag);
 	LUA_METHOD("getControllerByDeviceId", lua_cocos2d_Controller_getControllerByDeviceId);
 	LUA_METHOD("getControllerByTag", lua_cocos2d_Controller_getControllerByTag);
 	LUA_METHOD("startDiscoveryController", lua_cocos2d_Controller_startDiscoveryController);

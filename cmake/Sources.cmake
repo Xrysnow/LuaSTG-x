@@ -103,7 +103,7 @@ set(GAME_HEADER
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Buffer_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_configuration_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_auto.hpp
-	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_compat.hpp
+	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_adapters.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_legacy.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_manual.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_ext.hpp
