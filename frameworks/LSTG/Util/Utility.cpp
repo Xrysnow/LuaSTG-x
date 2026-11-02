@@ -1059,8 +1059,6 @@ backend::Program* util::CreateProgramFromPath(const std::string& v, const std::s
 		ret->autorelease();
 		return ret;
 	}
-	CheckVertexShader(v_content);
-	CheckFragmentShader(f_content);
 	return nullptr;
 }
 
@@ -1072,8 +1070,6 @@ backend::Program* util::CreateProgramFromString(const std::string& v, const std:
 		ret->autorelease();
 		return ret;
 	}
-	CheckVertexShader(v);
-	CheckFragmentShader(f);
 	return nullptr;
 }
 
@@ -1098,7 +1094,5 @@ backend::Program* util::CreateProgramFromData(Data* v, Data* f)
 		return ret;
 	}
 	XERROR("can't load shader from given bytes");
-	CheckVertexShader(vdata);
-	CheckFragmentShader(fdata);
 	return nullptr;
 }

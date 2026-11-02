@@ -137,8 +137,6 @@ namespace lstg
 		cocos2d::backend::Program* CreateProgramFromPath(const std::string& v, const std::string& f);
 		cocos2d::backend::Program* CreateProgramFromString(const std::string& v, const std::string& f);
 		cocos2d::backend::Program* CreateProgramFromData(cocos2d::Data* v, cocos2d::Data* f);
-		bool CheckFragmentShader(const std::string& src);
-		bool CheckVertexShader(const std::string& src);
 		bool CheckBlendOperation(cocos2d::backend::BlendOperation equation);
 		bool CheckBlendFactor(cocos2d::backend::BlendFactor func);
 	}
