@@ -26,9 +26,7 @@
  ****************************************************************************/
 package org.cocos.game;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.os.Build;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import org.cocos.lib.GameControllerActivity;
@@ -54,8 +52,7 @@ public class AppActivity extends GameControllerActivity {
         //this.connectController(DRIVERTYPE_MOGA);
 //        this.connectController(DRIVERTYPE_OUYA);
 
-        getPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
-        getPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        StorageBridge.bind(this, savedInstanceState);
     }
 
     public static String getSDCardPath() {
@@ -75,21 +72,32 @@ public class AppActivity extends GameControllerActivity {
         return sContext.getRequestedOrientation();
     }
 
+    /** Returns granted state only; use StorageBridge.requestPermission for an asynchronous request. */
     public static boolean getPermission(String permission) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (sContext.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                if (sContext.shouldShowRequestPermissionRationale(permission)) {
-                    // rejected
-                    return false;
-                } else {
-                    // not rejected, request
-                    sContext.requestPermissions(new String[]{permission}, 1);
-                    return true;
-                }
-            } else {
-                return true;
-            }
-        }
-        return false;
+        return StorageBridge.hasPermission(permission);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle state) {
+        StorageBridge.saveState(state);
+        super.onSaveInstanceState(state);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!StorageBridge.onActivityResult(requestCode, resultCode, data))
+            super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grants) {
+        if (!StorageBridge.onRequestPermissionsResult(requestCode, permissions, grants))
+            super.onRequestPermissionsResult(requestCode, permissions, grants);
+    }
+
+    @Override
+    protected void onDestroy() {
+        StorageBridge.unbind(this, isFinishing());
+        super.onDestroy();
     }
 }

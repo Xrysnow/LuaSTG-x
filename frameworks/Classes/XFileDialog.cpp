@@ -97,7 +97,7 @@ std::string FileDialog::open(const std::string& filterList, const std::string& d
 
 std::vector<std::string> FileDialog::openMultiple(const std::string& filterList, const std::string& defaultPath)
 {
-	return { "" };
+	return {};
 }
 
 std::string FileDialog::save(const std::string& filterList, const std::string& defaultPath)
@@ -112,7 +112,7 @@ std::string FileDialog::pickFolder(const std::string& defaultPath)
 
 std::string FileDialog::getLastError()
 {
-	return "unsupport platform";
+	return "unsupported: synchronous file dialogs are unavailable; use platform.FileDialog.importAsync/exportAsync on Android";
 }
 
 #endif

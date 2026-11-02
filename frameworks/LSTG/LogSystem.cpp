@@ -18,9 +18,6 @@ LogSystem::LogSystem()
 	const string fileName = LLOGFILE;
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 	changePath(fileName);
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-	if (!changePath(string("/storage/emulated/0/lstg/") + fileName))
-		changePath(cocos2d::FileUtils::getInstance()->getWritablePath() + fileName);
 #else
 	changePath(cocos2d::FileUtils::getInstance()->getWritablePath() + fileName);
 #endif
@@ -31,9 +28,6 @@ LogSystem::LogSystem(const string& fileName)
 {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 	changePath(fileName);
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-	if (!changePath(string("/storage/emulated/0/lstg/") + fileName))
-		changePath(cocos2d::FileUtils::getInstance()->getWritablePath() + fileName);
 #else
 	changePath(cocos2d::FileUtils::getInstance()->getWritablePath() + fileName);
 #endif

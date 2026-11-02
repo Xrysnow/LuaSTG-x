@@ -6,3 +6,12 @@ src
 
 # Java heap dumps
 *.hprof
+
+# Keep the Android storage bridge visible without exposing other ignored src files.
+!frameworks/runtime-src/proj.android/app/src/
+frameworks/runtime-src/proj.android/app/src/**
+!frameworks/runtime-src/proj.android/app/src/org/
+!frameworks/runtime-src/proj.android/app/src/org/cocos/
+!frameworks/runtime-src/proj.android/app/src/org/cocos/game/
+!frameworks/runtime-src/proj.android/app/src/org/cocos/game/AppActivity.java
+!frameworks/runtime-src/proj.android/app/src/org/cocos/game/StorageBridge.java
