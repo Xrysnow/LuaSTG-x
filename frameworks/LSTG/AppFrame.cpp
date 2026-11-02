@@ -520,6 +520,10 @@ static void PVRFrameEnableControlWindow(bool bEnable)
 
 int AppFrame::run()
 {
+	if (!_opensslModulePathReady)
+	{
+		return 1;
+	}
 	PVRFrameEnableControlWindow(false);
 	// highest priority
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
