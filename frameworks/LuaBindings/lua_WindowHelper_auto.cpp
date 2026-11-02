@@ -195,6 +195,12 @@ int lua_lstg_WindowHelper_setVsync(lua_State* lua_S)
 	LUA_TRY_INVOKE(1, &lstg::WindowHelper::setVsync);
 	LUA_INVOKE_FOOTER("1");
 }
+int lua_lstg_WindowHelper_supportsOperation(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:supportsOperation");
+	LUA_TRY_INVOKE_R(1, &lstg::WindowHelper::supportsOperation);
+	LUA_INVOKE_FOOTER("1");
+}
 int lua_lstg_WindowHelper_getInstance(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:getInstance");
@@ -234,6 +240,7 @@ int luaReg_WindowHelper_lstgWindowHelper(lua_State* lua_S)
 	LUA_METHOD("setTitle", lua_lstg_WindowHelper_setTitle);
 	LUA_METHOD("setVisible", lua_lstg_WindowHelper_setVisible);
 	LUA_METHOD("setVsync", lua_lstg_WindowHelper_setVsync);
+	LUA_METHOD("supportsOperation", lua_lstg_WindowHelper_supportsOperation);
 	LUA_METHOD("getInstance", lua_lstg_WindowHelper_getInstance);
 	luaReg_WindowHelper_lstgWindowHelperCursorType(lua_S);
 	luaReg_WindowHelper_lstgWindowHelperOperation(lua_S);

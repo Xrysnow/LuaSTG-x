@@ -6,11 +6,80 @@
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 #include "../runtime-src/proj.win32/WindowHelperWin32.h"
+#elif CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+#include "platform/android/jni/JniHelper.h"
 #endif
 
 using namespace std;
 using namespace lstg;
 using namespace cocos2d;
+
+#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+namespace
+{
+	constexpr const char* androidHostClass = "org/cocos/lib/CocosEngine";
+
+	class WindowHelperAndroid : public WindowHelper
+	{
+	public:
+		Size getSize() override
+		{
+			const auto view = dynamic_cast<GLViewImpl*>(Director::getInstance()->getOpenGLView());
+			return view ? view->getNativeSurfaceSize() : Size{};
+		}
+
+		Vec2 getDisplayResolution() override
+		{
+			const auto size = JniHelper::callStaticIntArrayMethod(androidHostClass, "getDisplayResolution");
+			return size.size() == 2 ? Vec2(float(size[0]), float(size[1])) : Vec2{};
+		}
+
+		float getDpiScale() override
+		{
+			const int dpi = JniHelper::callStaticIntMethod(androidHostClass, "getDPI");
+			return dpi > 0 ? float(dpi) / 160.0f : 1.0f;
+		}
+
+		bool isVisible() override
+		{
+			const auto size = getSize();
+			return size.width > 0 && size.height > 0
+				&& JniHelper::callStaticBooleanMethod(androidHostClass, "isWindowVisible");
+		}
+
+		void setClipboardString(const std::string& s) override
+		{
+			JniHelper::callStaticVoidMethod(androidHostClass, "setClipboardString", s);
+		}
+
+		std::string getClipboardString() override
+		{
+			return JniHelper::callStaticStringMethod(androidHostClass, "getClipboardString");
+		}
+
+		void setImeEnabled(bool enabled) override
+		{
+			// Reuse the existing GLView channel; text submission belongs to that channel.
+			if (auto* view = Director::getInstance()->getOpenGLView())
+				view->setIMEKeyboardState(enabled);
+		}
+
+		bool isImeEnabled() override
+		{
+			return isVisible() && JniHelper::callStaticBooleanMethod(androidHostClass, "isImeVisible");
+		}
+
+		bool supportsOperation(const std::string& operation) override
+		{
+			return operation == "supportsOperation" || operation == "setDesignResolution"
+				|| operation == "getSize" || operation == "getDisplayResolution"
+				|| operation == "getDpiScale" || operation == "isVisible"
+				|| operation == "setClipboardString" || operation == "getClipboardString"
+				|| operation == "setImeEnabled" || operation == "isImeEnabled";
+		}
+	};
+}
+#endif
 
 WindowHelper* WindowHelper::getInstance()
 {
@@ -24,6 +93,8 @@ WindowHelper* WindowHelper::getInstance()
 	auto view = dynamic_cast<GLViewImpl*>(Director::getInstance()->getOpenGLView());
 	assert(view);
 	static WindowHelperDesktop instance(view);
+#elif CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+	static WindowHelperAndroid instance;
 #else
 	static WindowHelper instance;
 #endif
@@ -45,6 +116,32 @@ WindowHelperDesktop::WindowHelperDesktop(GLViewImpl* view): view(view)
 WindowHelperDesktop* WindowHelperDesktop::getInstance()
 {
 	return dynamic_cast<WindowHelperDesktop*>(WindowHelper::getInstance());
+}
+
+bool WindowHelperDesktop::supportsOperation(const std::string& operation)
+{
+	if (operation == "setImeEnabled" || operation == "isImeEnabled")
+	{
+#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
+		return true;
+#else
+		return false;
+#endif
+	}
+	return operation == "supportsOperation" || operation == "setDesignResolution"
+		|| operation == "setVsync" || operation == "isVsync" || operation == "operate"
+		|| operation == "setClipboardString" || operation == "getClipboardString"
+		|| operation == "hint" || operation == "resetHint"
+		|| operation == "setTitle" || operation == "getTitle"
+		|| operation == "setPosition" || operation == "getPosition"
+		|| operation == "setVisible" || operation == "isVisible"
+		|| operation == "setCursorVisible" || operation == "isCursorVisible"
+		|| operation == "setSize" || operation == "getSize"
+		|| operation == "setFullscreen" || operation == "isFullscreen"
+		|| operation == "moveToCenter" || operation == "setCustomCursor"
+		|| operation == "setDefaultCursor" || operation == "setStandardCursor"
+		|| operation == "getDpiScale" || operation == "getDisplayResolution"
+		|| operation == "enumDisplayResolution";
 }
 
 void WindowHelperDesktop::setTitle(const std::string& s)
