@@ -61,11 +61,6 @@ if(APPLE AND TARGET ext_gfx)
             "-framework MetalPerformanceShaders" "-framework CoreVideo")
     endif()
 endif()
-if(MACOSX AND TARGET libcurl)
-    # The bundled static curl uses SCDynamicStoreCopyProxies.
-    set_property(TARGET libcurl APPEND PROPERTY INTERFACE_LINK_LIBRARIES
-        "-framework SystemConfiguration")
-endif()
 list(REMOVE_ITEM CC_EXTENSION_LIBS "")
 list(REMOVE_DUPLICATES CC_EXTENSION_LIBS)
 set(CC_EXTENSION_LIBS "${CC_EXTENSION_LIBS}" CACHE INTERNAL "extensions for auto link to target application" FORCE)
