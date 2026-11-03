@@ -80,18 +80,17 @@ LuaSTG-x\
 │　　　　├ [glslang](https://github.com/KhronosGroup/glslang)\
 │　　　　├ [openal-soft](https://github.com/kcat/openal-soft)\
 │　　　　└ [SPIRV-Cross](https://github.com/KhronosGroup/SPIRV-Cross)\
-├　[cocos2d-x-imgui](https://github.com/Xrysnow/cocos2d-x-imgui)\
+├　[cocos-x-imgui](https://github.com/Xrysnow/cocos-x-imgui)\
 │　　├ [ImGui](https://github.com/ocornut/imgui)\
 │　　├ [imgui_markdown](https://github.com/juliettef/imgui_markdown)\
 │　　├ [ImGuiColorTextEdit](https://github.com/Xrysnow/ImGuiColorTextEdit)\
 │　　└ [implot](https://github.com/epezent/implot)\
-├　[cocos2d-x-live2d](https://github.com/Xrysnow/cocos2d-x-live2d) (optional)\
+├　[cocos-x-live2d](https://github.com/Xrysnow/cocos-x-live2d) (optional)\
 │　├ [CubismNativeFramework](https://github.com/Live2D/CubismNativeFramework)\
 │　└ [Cubism SDK for Native](https://www.live2d.com/en/download/cubism-sdk/download-native)\
 ├　[cocos2d-x-video](https://github.com/Xrysnow/cocos2d-x-video)\
 │　　└ [FFmpeg](http://ffmpeg.org) (in lstgx_external)\
 ├　[lstgx_external](https://github.com/Xrysnow/lstgx_external)\
-│　　├ [ANGLE](https://github.com/google/angle) (optional)\
 │　　├ [BurstLinker](https://github.com/Xrysnow/BurstLinker)\
 │　　├ [FFmpeg](http://ffmpeg.org) (optional)\
 │　　├ [libzippp](https://github.com/ctabin/libzippp)\
