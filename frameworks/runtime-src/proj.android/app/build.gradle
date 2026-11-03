@@ -30,6 +30,12 @@ android {
                     }
                 }
                 cppFlags "-frtti -fexceptions -fsigned-char -std=c++17"
+                ["MAKE", "HOST_CC", "MSYS_ROOT", "JOBS"].each { name ->
+                    def value = project.findProperty("CC_LUAJIT_${name}")
+                    if (value != null) {
+                        arguments "-DCC_LUAJIT_${name}=${value}"
+                    }
+                }
             }
             ndk {
                 abiFilters PROP_APP_ABI.split(':')

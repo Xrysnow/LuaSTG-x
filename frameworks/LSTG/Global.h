@@ -33,7 +33,7 @@
 #endif
 
 // luajit
-#include "../cocos-x/external/lua/luajit/include/lua.hpp"
+#include "lua.hpp"
 
 // macros
 
