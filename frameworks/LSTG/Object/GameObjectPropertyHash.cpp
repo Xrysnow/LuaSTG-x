@@ -1,20 +1,12 @@
 ﻿#include "GameObjectPropertyHash.h"
-#include "cocos2d.h"
-#include "scripting/lua-bindings/manual/CCLuaEngine.h"
-#include "platform/CCPlatformMacros.h"
-#include "LogSystem.h"
-#include <unordered_map>
-#if CC_64BITS && (CC_TARGET_PLATFORM != CC_PLATFORM_WIN32) && (CC_TARGET_PLATFORM != CC_PLATFORM_LINUX)
-#define HASH_OFFSET (-3)
-#else
-#define HASH_OFFSET (-2)
-#endif
+#include "lua.hpp"
+#include <new>
 
 using namespace std;
 using namespace lstg;
 //#define PROP_OLD_STYLE
 
-static unordered_map<string, GameObjectProperty> prop_map = {
+static const unordered_map<string_view, GameObjectProperty> prop_map = {
 	{ "x",		GameObjectProperty::X		},
 	{ "y",		GameObjectProperty::Y		},
 	{ "dx",		GameObjectProperty::DX		},
@@ -71,43 +63,54 @@ static unordered_map<string, GameObjectProperty> prop_map = {
 	{ "zscale",	GameObjectProperty::ZSCALE	},
 	{ "quat",	GameObjectProperty::QUAT	},
 };
-static unordered_map<uint32_t, GameObjectProperty> prop_hash_map;
-
-void lstg::InitGameObjectPropertyHash()
+namespace
 {
-	prop_hash_map.clear();
-	const auto L = cocos2d::LuaEngine::getInstance()->getLuaStack()->getLuaState();
-	const auto top = lua_gettop(L);
-	if (!luaL_dostring(L, "return ffi.abi('gc64')"))
+	struct PropertyCache
 	{
-		const auto gc64 = lua_toboolean(L, -1);
-#if HASH_OFFSET == -3
-		if (!gc64)
-#else
-		if (gc64)
-#endif
-		{
-			const auto msg = cocos2d::StringUtils::format(
-				"HASH_OFFSET is invalid, please set it to %d and recompile", gc64 ? -3 : -2);
-			XERROR("%s", msg.c_str());
-			cocos2d::ccMessageBox(msg.c_str(), "Error");
-		}
-	}
-	lua_settop(L, top);
-	for (auto& it : prop_map)
+		unordered_map<const char*, GameObjectProperty> properties;
+	};
+	char property_cache_key;
+
+	int destroyPropertyCache(lua_State* L)
 	{
-		lua_pushstring(L, it.first.c_str());
-		const auto hash = ((const uint32_t*)lua_tolstring(L, -1, nullptr))[HASH_OFFSET];
-		lua_pop(L, 1);
-		prop_hash_map[hash] = it.second;
+		static_cast<PropertyCache*>(lua_touserdata(L, 1))->~PropertyCache();
+		return 0;
 	}
 }
 
-GameObjectProperty lstg::GameObjectPropertyHash(const char* key)
+void lstg::InitGameObjectPropertyHash(lua_State* L)
 {
-	const auto hash = ((const uint32_t*)key)[HASH_OFFSET];
-	const auto it = prop_hash_map.find(hash);
-	if (it != prop_hash_map.end())
+	lua_newtable(L);
+	lua_pushcfunction(L, destroyPropertyCache);
+	lua_setfield(L, -2, "__gc");
+	auto cache = new (lua_newuserdata(L, sizeof(PropertyCache))) PropertyCache();
+	lua_pushvalue(L, -2);
+	lua_setmetatable(L, -2);
+	lua_remove(L, -2);
+	cache->properties.reserve(prop_map.size());
+
+	// The userdata environment keeps every interned name alive in this VM.
+	lua_createtable(L, 0, static_cast<int>(prop_map.size()));
+	for (const auto& it : prop_map)
+	{
+		lua_pushlstring(L, it.first.data(), it.first.size());
+		cache->properties.emplace(lua_tolstring(L, -1, nullptr), it.second);
+		lua_pushboolean(L, 1);
+		lua_rawset(L, -3);
+	}
+	lua_setfenv(L, -2);
+
+	// Registry ownership also releases the C++ map when this VM closes.
+	lua_pushlightuserdata(L, &property_cache_key);
+	lua_pushvalue(L, -2);
+	lua_rawset(L, LUA_REGISTRYINDEX);
+	lua_pop(L, 1);
+}
+
+GameObjectProperty lstg::GameObjectPropertyHash(string_view key)
+{
+	const auto it = prop_map.find(key);
+	if (it != prop_map.end())
 		return it->second;
 	return GameObjectProperty::_KEY_NOT_FOUND;
 }
@@ -117,15 +120,25 @@ GameObjectProperty lstg::GameObjectPropertyHash(lua_State* L, int lo, const char
 	const auto s = lua_tolstring(L, lo, nullptr);
 	if (str)
 		*str = s;
-	// hack into lua
-	const auto hash = ((const uint32_t*)s)[HASH_OFFSET];
-	const auto it = prop_hash_map.find(hash);
-	if (it != prop_hash_map.end())
+	if (!s)
+		return GameObjectProperty::_KEY_NOT_FOUND;
+	lua_pushlightuserdata(L, &property_cache_key);
+	lua_rawget(L, LUA_REGISTRYINDEX);
+	const auto cache = static_cast<PropertyCache*>(lua_touserdata(L, -1));
+	lua_pop(L, 1);
+	if (!cache)
+		return GameObjectProperty::_KEY_NOT_FOUND;
+	const auto it = cache->properties.find(s);
+	if (it != cache->properties.end())
 		return it->second;
 	return GameObjectProperty::_KEY_NOT_FOUND;
 }
 
 std::unordered_map<std::string, GameObjectProperty> lstg::GetGameObjectPropertyMap()
 {
-	return prop_map;
+	unordered_map<string, GameObjectProperty> result;
+	result.reserve(prop_map.size());
+	for (const auto& it : prop_map)
+		result.emplace(string(it.first), it.second);
+	return result;
 }

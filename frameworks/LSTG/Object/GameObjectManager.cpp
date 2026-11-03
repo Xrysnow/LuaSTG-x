@@ -1184,19 +1184,19 @@ int GameObjectManager::GetAttr(lua_State* L) noexcept
 	const char* key = luaL_checklstring(L, 2, &strlen);
 
 	// shortcut for x, y
-	if (key[0] == 'x' && key[1] == '\0')
+	if (strlen == 1 && key[0] == 'x')
 	{
 		lua_pushnumber(L, pool.x[id]);
 		return 1;
 	}
-	if (key[0] == 'y' && key[1] == '\0')
+	if (strlen == 1 && key[0] == 'y')
 	{
 		lua_pushnumber(L, pool.y[id]);
 		return 1;
 	}
 	// others
 	const auto cm = p->cm;
-	switch (GameObjectPropertyHash(key))
+	switch (GameObjectPropertyHash(L, 2, nullptr))
 	{
 	case GameObjectProperty::ROT:
 		lua_pushnumber(L, pool.rot[id] * LRAD2DEGREE_D);
@@ -1439,19 +1439,19 @@ int GameObjectManager::SetAttr(lua_State* L)
 	const char* key = luaL_checklstring(L, 2, &strlen);
 
 	// shortcut for x, y
-	if (key[0] == 'x' && key[1] == '\0')
+	if (strlen == 1 && key[0] == 'x')
 	{
 		p->cm->setX(luaL_checknumber(L, 3));
 		return 0;
 	}
-	if (key[0] == 'y' && key[1] == '\0')
+	if (strlen == 1 && key[0] == 'y')
 	{
 		p->cm->setY(luaL_checknumber(L, 3));
 		return 0;
 	}
 	// others
 	const auto cm = p->cm;
-	switch (GameObjectPropertyHash(key))
+	switch (GameObjectPropertyHash(L, 2, nullptr))
 	{
 	case GameObjectProperty::DX:
 		return luaL_error(L, "property 'dx' is readonly");

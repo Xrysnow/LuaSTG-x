@@ -163,7 +163,7 @@ bool AppFrame::applicationDidFinishLaunching()
 		lua_setglobal(L, "_ARGS");
 	}
 
-	InitGameObjectPropertyHash();
+	InitGameObjectPropertyHash(L);
 	CC_SAFE_DELETE(threadPool);
 	// note: on android, this is usually the number of current activated cores
 	const int nThr = std::thread::hardware_concurrency();

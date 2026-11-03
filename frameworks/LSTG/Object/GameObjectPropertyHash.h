@@ -1,5 +1,9 @@
 ﻿#pragma once
-#include "cocos2d.h"
+#include <string>
+#include <string_view>
+#include <unordered_map>
+
+struct lua_State;
 
 namespace lstg
 {
@@ -52,8 +56,8 @@ namespace lstg
 		_KEY_NOT_FOUND = -1
 	};
 
-	void InitGameObjectPropertyHash();
-	GameObjectProperty GameObjectPropertyHash(const char* key);
+	void InitGameObjectPropertyHash(lua_State* L);
+	GameObjectProperty GameObjectPropertyHash(std::string_view key);
 	GameObjectProperty GameObjectPropertyHash(lua_State* L, int lo, const char** str);
 	std::unordered_map<std::string, GameObjectProperty> GetGameObjectPropertyMap();
 }

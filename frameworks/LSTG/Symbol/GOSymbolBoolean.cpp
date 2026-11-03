@@ -17,7 +17,7 @@ Boolean* Boolean::createWithValue(bool v)
 
 Boolean* Boolean::createWithObjProperty(const std::string& property)
 {
-	Boolean* ret = BooleanFromGameObject::create(GameObjectPropertyHash(property.c_str()));
+	Boolean* ret = BooleanFromGameObject::create(GameObjectPropertyHash(property));
 	if (!ret)
 		ret = BooleanFromGameObjectLua::create(property);
 	return ret;

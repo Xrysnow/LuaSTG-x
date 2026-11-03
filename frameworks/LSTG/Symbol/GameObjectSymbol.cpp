@@ -784,7 +784,7 @@ bool Assigment::initWithObjProperty(const std::string& objProperty, ComputeNode*
 	is_atomic = var->isAtomic();
 	require_luaobj = var->requireLuaObj();
 	objField = objProperty;
-	const auto t = GameObjectPropertyHash(objProperty.c_str());
+	const auto t = GameObjectPropertyHash(objProperty);
 	eval = SetGamePropertyByNode(t, var);
 	if (eval)
 		return true;

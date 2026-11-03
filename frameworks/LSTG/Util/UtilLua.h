@@ -117,9 +117,6 @@ namespace lstg
 		// push array by ffi method, about 3x faster
 		int pushCArray(lua_State* L, lua_Number* arr, uint32_t size);
 
-		const char* checkstring(lua_State* L, int lo, size_t* strlen, uint32_t* hash);
-		const char* tostring(lua_State* L, int lo, size_t* strlen, uint32_t* hash);
-
 		std::string getClassNameByTypeID(const char* typeID);
 	}
 }

@@ -14,7 +14,7 @@ Number* Number::createWithValue(float v)
 
 Number* Number::createWithObjProperty(const std::string& property)
 {
-	Number* ret = NumberFromGameObject::create(GameObjectPropertyHash(property.c_str()));
+	Number* ret = NumberFromGameObject::create(GameObjectPropertyHash(property));
 	if (!ret)
 		ret = NumberFromGameObjectLua::create(property);
 	return ret;

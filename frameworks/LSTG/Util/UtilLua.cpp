@@ -744,30 +744,6 @@ int lstg::lua::pushCArray(lua_State* L, lua_Number* arr, uint32_t size)
 	return 0;
 }
 
-// LJ_GC64 is off by default on win64
-#if CC_64BITS && CC_TARGET_PLATFORM != CC_PLATFORM_WIN32
-#define HASH_OFFSET (-3)
-#else
-#define HASH_OFFSET (-2)
-#endif
-
-const char* lstg::lua::checkstring(lua_State* L, int lo, size_t* strlen, uint32_t* hash)
-{
-	const auto ret = luaL_checklstring(L, lo, strlen);
-	// hack into lua
-	if (hash)
-		*hash = reinterpret_cast<const uint32_t*>(ret)[HASH_OFFSET];
-	return ret;
-}
-
-const char* lstg::lua::tostring(lua_State* L, int lo, size_t* strlen, uint32_t* hash)
-{
-	const auto ret = lua_tolstring(L, lo, strlen);
-	if (hash)
-		*hash = reinterpret_cast<const uint32_t*>(ret)[HASH_OFFSET];
-	return ret;
-}
-
 std::string lstg::lua::getClassNameByTypeID(const char* typeID)
 {
 	const auto it = g_luaType.find(reinterpret_cast<uintptr_t>(typeID));
