@@ -4,7 +4,7 @@
 
 ---
 
-LuaSTG-x 是一个基于 [cocos2d-x](https://github.com/cocos2d/cocos2d-x) 和 [LuaSTGPlus](https://github.com/9chu/LuaSTGPlus) 的多平台游戏引擎。其目标是为 [清版射击游戏](https://zh.wikipedia.org/wiki/%E6%B8%85%E7%89%88%E5%B0%84%E5%87%BB%E6%B8%B8%E6%88%8F) 和 [弹幕射击游戏](https://zh.wikipedia.org/wiki/%E5%BD%88%E5%B9%95%E5%B0%84%E6%93%8A%E9%81%8A%E6%88%B2) 提供好用的引擎。
+LuaSTG-x 是一个基于 [cocos](https://github.com/Xrysnow/cocos-x) 和 [LuaSTGPlus](https://github.com/9chu/LuaSTGPlus) 的多平台游戏引擎。其目标是为 [清版射击游戏](https://zh.wikipedia.org/wiki/%E6%B8%85%E7%89%88%E5%B0%84%E5%87%BB%E6%B8%B8%E6%88%8F) 和 [弹幕射击游戏](https://zh.wikipedia.org/wiki/%E5%BD%88%E5%B9%95%E5%B0%84%E6%93%8A%E9%81%8A%E6%88%B2) 提供好用的引擎。
 
 ---
 
@@ -19,12 +19,12 @@ LuaSTG-x 是一个基于 [cocos2d-x](https://github.com/cocos2d/cocos2d-x) 和 [
 
 ## 主要特性
 
-- 来自 [cocos2d-x](https://github.com/cocos2d/cocos2d-x) 的完整 2D 游戏引擎功能
-- [多平台的音频引擎](https://github.com/Xrysnow/lstgx_Audio)，支持声音效果
+- 来自 [cocos](https://github.com/Xrysnow/cocos-x) 的完整 2D 游戏引擎功能
+- [多平台的音频引擎](https://github.com/Xrysnow/cocos-x/tree/main/cocos/audio)，支持声音效果
 - [多平台的视频引擎](https://github.com/Xrysnow/lstgx_Video)，基于 FFmpeg
 - 基于 [creator_to_cocos2dx](https://github.com/cocos2d/creator_to_cocos2dx) 的 Cocos Creator 支持
-- [Live2D 支持及 Lua 绑定](https://github.com/Xrysnow/cocos2d-x-live2d)
-- [ImGui 支持及 Lua 绑定](https://github.com/Xrysnow/cocos2d-x-imgui)
+- [Live2D 支持及 Lua 绑定](https://github.com/Xrysnow/cocos-x-live2d)
+- [ImGui 支持及 Lua 绑定](https://github.com/Xrysnow/cocos-x-imgui)
 - 多线程优化
 
 ## 相关链接
@@ -41,42 +41,35 @@ LuaSTG-x 是一个基于 [cocos2d-x](https://github.com/cocos2d/cocos2d-x) 和 [
 
         $ git clone --recursive https://github.com/Xrysnow/LuaSTG-x.git
 
-   cocos-x 引擎子模块位于 `frameworks/cocos-x/`。
+2. 若需要使用 live2d 模块，请下载 Cubism SDK （[指南](https://github.com/Xrysnow/cocos-x-live2d)）
 
-2. 对于2023年之前的版本，克隆外部库至 `frameworks/cocos2d-x/external` （或从 [release 页面](https://github.com/Xrysnow/cocos2d-x-3rd-party-libs-bin/releases) 下载）
-
-        $ cd LuaSTG-x/frameworks/cocos2d-x/external
-        $ git clone --recursive https://github.com/Xrysnow/cocos2d-x-3rd-party-libs-bin.git
-
-3. 若需要使用 live2d 模块，请下载 Cubism SDK （[指南](https://github.com/Xrysnow/cocos2d-x-live2d)）
-
-4. 使用 CMake 生成工程文件 ([指南](https://github.com/cocos2d/cocos2d-x/blob/v4/cmake/README.md)).
+3. 使用 CMake 生成工程文件 ([指南](https://github.com/cocos2d/cocos2d-x/blob/v4/cmake/README.md)).
    - 若目标为安卓平台，只需用 Android Studio 打开 `frameworks/runtime-src/proj.android`
    - 若目标为 macOS 平台，需要向 CMake 添加 `-GXcode` 参数
    - 若目标为 IOS 平台，需要额外设置 CMake ，你可以找到一些 bash 脚本来实现
    - 若目标为 macOS/IOS 平台，需要打开 `project setting -> TARGETS -> LuaSTG-x -> Build Phases -> Copy Files` 并为 frameworks 勾选 `Code Sigh On Copy`
    - 若目标为 Linux 平台，需要在使用 CMake 前执行 `frameworks/cocos-x/install-deps-linux.sh`，默认的 `make` 编译速度较慢，推荐添加 `-GNinja` 参数来使用 `ninja` 编译
 
-5. 使用编译器进行编译
+4. 使用编译器进行编译
 
 ## 编译要求
 
-- CMake 3.20+
-- Android Studio 2021.1.1+ 和 NDK r22+
-- 编译器支持 C++17 的 Linux (推荐使用Clang)
-- macOS 11.3+ 和 Xcode 13+
-- Windows 7+ 和 VS 2019+
+- CMake 3.28+
+- Android Studio 2025.1.1+ 和 NDK r30+
+- 编译器支持 C++20 的 Linux (推荐使用Clang)
+- macOS 14+ 和 Xcode 16.3+
+- Windows 7+ 和 VS 2022+
 
 ## 运行要求
 
 运行要求实际上由编译器决定，但大多数情况下应满足如下要求：
 
-- Android 5.0+
-- iOS 13+
-- macOS 10.15+
+- Android 7.0+
+- iOS 17+
+- macOS 12+
 - Windows 7+ 和 visual c++ 运行时
 
-注意，iOS 13+ 和 macOS 10.15+ 是必须的，因为需要使用 `std::filesystem` （[来源](https://developer.apple.com/documentation/xcode-release-notes/xcode-11-release-notes)）。
+注意，iOS 和 macOS 的版本要求是必须的，因为需要支持项目的 C++ 版本特性。
 
 ## 依赖图
 
