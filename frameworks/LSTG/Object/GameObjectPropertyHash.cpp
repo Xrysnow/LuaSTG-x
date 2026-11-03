@@ -68,12 +68,55 @@ namespace
 	struct PropertyCache
 	{
 		unordered_map<const char*, GameObjectProperty> properties;
+		lua_State* state = nullptr;
 	};
+	struct PropertyCacheOwner
+	{
+		PropertyCache* cache = nullptr;
+	};
+	struct PropertyCacheIndex
+	{
+		unordered_map<lua_State*, PropertyCache*> states;
+		lua_State* last_state = nullptr;
+		PropertyCache* last_cache = nullptr;
+	};
+	// VM initialization, lookup and finalization use the owning host thread.
+	thread_local PropertyCacheIndex property_cache_index;
 	char property_cache_key;
+
+	PropertyCache* getRegistryPropertyCache(lua_State* L)
+	{
+		lua_pushlightuserdata(L, &property_cache_key);
+		lua_rawget(L, LUA_REGISTRYINDEX);
+		const auto owner = static_cast<PropertyCacheOwner*>(lua_touserdata(L, -1));
+		const auto cache = owner ? owner->cache : nullptr;
+		lua_pop(L, 1);
+		return cache;
+	}
+
+	void unindexPropertyCache(PropertyCache* cache)
+	{
+		auto& index = property_cache_index;
+		if (index.last_cache == cache)
+		{
+			index.last_state = nullptr;
+			index.last_cache = nullptr;
+		}
+		const auto it = index.states.find(cache->state);
+		// A replaced owner's finalizer must not erase the new binding.
+		if (it != index.states.end() && it->second == cache)
+			index.states.erase(it);
+	}
 
 	int destroyPropertyCache(lua_State* L)
 	{
-		static_cast<PropertyCache*>(lua_touserdata(L, 1))->~PropertyCache();
+		const auto owner = static_cast<PropertyCacheOwner*>(lua_touserdata(L, 1));
+		if (const auto cache = owner->cache)
+		{
+			owner->cache = nullptr;
+			unindexPropertyCache(cache);
+			delete cache;
+		}
 		return 0;
 	}
 }
@@ -83,10 +126,12 @@ void lstg::InitGameObjectPropertyHash(lua_State* L)
 	lua_newtable(L);
 	lua_pushcfunction(L, destroyPropertyCache);
 	lua_setfield(L, -2, "__gc");
-	auto cache = new (lua_newuserdata(L, sizeof(PropertyCache))) PropertyCache();
+	const auto owner = new (lua_newuserdata(L, sizeof(PropertyCacheOwner))) PropertyCacheOwner();
 	lua_pushvalue(L, -2);
 	lua_setmetatable(L, -2);
 	lua_remove(L, -2);
+	const auto cache = owner->cache = new PropertyCache();
+	cache->state = L;
 	cache->properties.reserve(prop_map.size());
 
 	// The userdata environment keeps every interned name alive in this VM.
@@ -98,7 +143,15 @@ void lstg::InitGameObjectPropertyHash(lua_State* L)
 		lua_pushboolean(L, 1);
 		lua_rawset(L, -3);
 	}
+	// Init may be called on a coroutine: keep the indexed state alive too.
+	lua_pushthread(L);
+	lua_pushboolean(L, 1);
+	lua_rawset(L, -3);
 	lua_setfenv(L, -2);
+
+	if (const auto old_cache = getRegistryPropertyCache(L))
+		unindexPropertyCache(old_cache);
+	property_cache_index.states[L] = cache;
 
 	// Registry ownership also releases the C++ map when this VM closes.
 	lua_pushlightuserdata(L, &property_cache_key);
@@ -122,10 +175,24 @@ GameObjectProperty lstg::GameObjectPropertyHash(lua_State* L, int lo, const char
 		*str = s;
 	if (!s)
 		return GameObjectProperty::_KEY_NOT_FOUND;
-	lua_pushlightuserdata(L, &property_cache_key);
-	lua_rawget(L, LUA_REGISTRYINDEX);
-	const auto cache = static_cast<PropertyCache*>(lua_touserdata(L, -1));
-	lua_pop(L, 1);
+	auto& index = property_cache_index;
+	auto cache = index.last_cache;
+	if (index.last_state != L)
+	{
+		const auto state = index.states.find(L);
+		if (state != index.states.end())
+		{
+			cache = state->second;
+			index.last_state = L;
+			index.last_cache = cache;
+		}
+		else
+		{
+			// Unregistered coroutines can be collected before VM close. Do not
+			// retain their addresses in either the state table or the fast path.
+			cache = getRegistryPropertyCache(L);
+		}
+	}
 	if (!cache)
 		return GameObjectProperty::_KEY_NOT_FOUND;
 	const auto it = cache->properties.find(s);

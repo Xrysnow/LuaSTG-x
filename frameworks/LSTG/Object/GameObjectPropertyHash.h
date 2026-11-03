@@ -56,6 +56,7 @@ namespace lstg
 		_KEY_NOT_FOUND = -1
 	};
 
+	// Initialize, query and close each VM on its owning host thread.
 	void InitGameObjectPropertyHash(lua_State* L);
 	GameObjectProperty GameObjectPropertyHash(std::string_view key);
 	GameObjectProperty GameObjectPropertyHash(lua_State* L, int lo, const char** str);
