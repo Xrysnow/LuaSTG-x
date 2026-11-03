@@ -20,6 +20,16 @@ android {
         externalNativeBuild {
             cmake {
                 arguments "-DCMAKE_FIND_ROOT_PATH=", "-DANDROID_STL=c++_shared", "-DANDROID_TOOLCHAIN=clang", "-DANDROID_ARM_NEON=TRUE", "-DANDROID_LD=gold"
+                // Explicit local source inputs use the same CC_* interface as
+                // CMake. Paths belong to the explicitly selected build host.
+                ["SOURCE_DIR", "ARCHIVE", "SOURCE_LAYOUT", "PROFILE", "WORK_ROOT",
+                 "PERL", "MAKE", "JOBS", "BUILD_TESTS", "BUILD_DEMOS", "RUNTIME_OPENSSLDIR",
+                 "ANDROID_WINDOWS_HOST", "MSYS_ROOT", "PERL5LIB"].each { name ->
+                    def value = project.findProperty("CC_OPENSSL_${name}")
+                    if (value != null) {
+                        arguments "-DCC_OPENSSL_${name}=${value}"
+                    }
+                }
                 cppFlags "-frtti -fexceptions -fsigned-char -std=c++17"
             }
             ndk {
