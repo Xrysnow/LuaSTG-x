@@ -112,13 +112,6 @@ list(APPEND EXTERNAL_LIBS ${COCOS_EXTENSION_LIBS})
 
 if(WINDOWS)
 	list(APPEND EXTERNAL_LIBS imm32.lib)
-	# ANGLE
-	if(LSTGX_USE_ANGLE)
-		add_subdirectory(${LSTGX_EXT_ROOT}/ANGLE)
-		target_include_directories(cocos2d PUBLIC ${LSTGX_EXT_ROOT}/ANGLE/include)
-		target_compile_definitions(cocos2d PUBLIC CC_USE_ANGLE)
-		list(APPEND EXTERNAL_LIBS ext_ANGLE ext_ANGLE_es2)
-	endif()
 endif()
 
 target_link_libraries(${APP_NAME} ${EXTERNAL_LIBS})

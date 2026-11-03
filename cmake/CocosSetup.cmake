@@ -1,6 +1,5 @@
 # Configure cocos and its extensions before collecting application sources.
 
-set(CC_USE_ANGLE "${LSTGX_USE_ANGLE}")
 set(USE_JOB_SYSTEM_TASKFLOW ON)
 set(USE_JOB_SYSTEM_TBB OFF)
 
@@ -13,11 +12,6 @@ endif()
 set(CMAKE_MODULE_PATH ${COCOS2DX_ROOT_PATH}/cmake/Modules/)
 
 include(CocosBuildSet)
-if(MACOSX)
-    if(LSTGX_USE_ANGLE)
-        message(FATAL_ERROR "macOS requires LSTGX_USE_ANGLE=OFF (GFX Metal).")
-    endif()
-endif()
 # Apply Xcode defaults after IOS/MACOSX detection and before creating targets.
 # Preserve deployment versions supplied through CMake or Xcode attributes.
 if(XCODE AND "${CMAKE_OSX_DEPLOYMENT_TARGET}" STREQUAL "")
