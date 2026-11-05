@@ -67,10 +67,13 @@ when a distribution must exclude obsolete resources or dependencies.
 # Apple FFmpeg
 
 Apple builds use the expanded avbuild FFmpeg 9.0 lite package at
-`frameworks/external/ffmpeg/prebuilt_apple/`: `FFmpeg.xcframework` and its matching
-`include/` directory. CMake uses these files directly, without extracting or
+`frameworks/cocos-x/external/ffmpeg-prebuilt/apple/`: `FFmpeg.xcframework` and its
+matching `include/` directory. CMake uses these files directly, without extracting or
 copying the package during configuration. The original archive is retained in
 `_misc/_external/ffmpeg-9.0/`.
+
+Set `-DCC_ENABLE_VIDEO_TEXTURE=ON` to link cocos2d with the bundled FFmpeg.
+LuaSTG-x's video module still uses `LSTGX_NO_VIDEO` independently.
 
 Preserve the macOS framework's relative symbolic links (`Versions/Current`,
 `FFmpeg`, and `Resources`). On Windows, enable Developer Mode and Git's
@@ -91,4 +94,4 @@ Use the Xcode generator (`-G Xcode`) for automatic framework embedding and
 code signing with the application's signing settings. Other generators copy
 the selected framework into the app's `Frameworks` directory after linking;
 signing the completed app remains a separate deployment step.
-Apple prebuilt libraries are maintained only in `prebuilt_apple`.
+Apple prebuilt libraries are maintained only in `apple/`.

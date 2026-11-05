@@ -8,37 +8,41 @@ set(LSTGX_EXT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/frameworks/external)
 
 if(NOT LSTGX_NO_VIDEO)
 	set(CC_VIDEO_DEPEND_LIBS ext_ffmpeg)
-	add_subdirectory(${LSTGX_EXT_ROOT}/ffmpeg)
-	if(APPLE)
-		if(XCODE)
-			# Xcode selects the slice and embeds/signs its dynamic framework.
-			set_property(TARGET ${APP_NAME} APPEND PROPERTY XCODE_EMBED_FRAMEWORKS "${FFMPEG_LIBRARY}")
-			set_target_properties(${APP_NAME} PROPERTIES
-				XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY ON
-				XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY ON
-			)
-		else()
-			# LOCATION on an imported XCFramework resolves to the selected framework.
-			get_target_property(FFMPEG_SELECTED_FRAMEWORK ext_ffmpeg LOCATION)
-			# Preserve the versioned macOS framework's symlinks when copying.
-			add_custom_command(TARGET ${APP_NAME} POST_BUILD
-				COMMAND /usr/bin/ditto
-					"${FFMPEG_SELECTED_FRAMEWORK}"
-					"$<TARGET_BUNDLE_CONTENT_DIR:${APP_NAME}>/Frameworks/FFmpeg.framework"
-				VERBATIM
-			)
-		endif()
-		# set rpath
-		if(MACOSX)
-			target_link_options(${APP_NAME} PRIVATE -Wl,-rpath,@loader_path/../Frameworks)
-		else()
-			target_link_options(${APP_NAME} PRIVATE -Wl,-rpath,@executable_path/Frameworks)
-		endif()
+	if(NOT TARGET ext_ffmpeg)
+		add_subdirectory("${COCOS2DX_ROOT_PATH}/external/ffmpeg-prebuilt"
+			"${ENGINE_BINARY_PATH}/external/ffmpeg-prebuilt")
 	endif()
 	add_subdirectory(${LSTGX_MOD_ROOT}/Video)
 	list(APPEND EXTERNAL_LIBS cc_video)
 else()
 	target_compile_definitions(${APP_NAME} PUBLIC LSTGX_NO_VIDEO)
+endif()
+
+if(APPLE AND TARGET ext_ffmpeg)
+	if(XCODE)
+		# Xcode selects the slice and embeds/signs its dynamic framework.
+		set_property(TARGET ${APP_NAME} APPEND PROPERTY XCODE_EMBED_FRAMEWORKS "${FFMPEG_LIBRARY}")
+		set_target_properties(${APP_NAME} PROPERTIES
+			XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY ON
+			XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY ON
+		)
+	else()
+		# LOCATION on an imported XCFramework resolves to the selected framework.
+		get_target_property(FFMPEG_SELECTED_FRAMEWORK ext_ffmpeg LOCATION)
+		# Preserve the versioned macOS framework's symlinks when copying.
+		add_custom_command(TARGET ${APP_NAME} POST_BUILD
+			COMMAND /usr/bin/ditto
+				"${FFMPEG_SELECTED_FRAMEWORK}"
+				"$<TARGET_BUNDLE_CONTENT_DIR:${APP_NAME}>/Frameworks/FFmpeg.framework"
+			VERBATIM
+		)
+	endif()
+	# set rpath
+	if(MACOSX)
+		target_link_options(${APP_NAME} PRIVATE -Wl,-rpath,@loader_path/../Frameworks)
+	else()
+		target_link_options(${APP_NAME} PRIVATE -Wl,-rpath,@executable_path/Frameworks)
+	endif()
 endif()
 
 # imgui
