@@ -20,6 +20,10 @@ android {
         externalNativeBuild {
             cmake {
                 arguments "-DCMAKE_FIND_ROOT_PATH=", "-DANDROID_STL=c++_shared", "-DANDROID_TOOLCHAIN=clang", "-DANDROID_ARM_NEON=TRUE", "-DANDROID_LD=gold"
+                def videoTexture = project.findProperty("CC_ENABLE_VIDEO_TEXTURE")
+                if (videoTexture != null) {
+                    arguments "-DCC_ENABLE_VIDEO_TEXTURE=${videoTexture}"
+                }
                 // Build-host tools and output paths use the same interface as
                 // CMake. OpenSSL always builds the bundled source and profile.
                 ["WORK_ROOT", "PERL", "MAKE", "JOBS", "RUNTIME_OPENSSLDIR",

@@ -6,8 +6,8 @@
 #include "../Classes/XInfoware.h"
 #include "../Classes/XAudioStream.h"
 #include "cocos/audio/AudioEngine.h"
-#ifndef LSTGX_NO_VIDEO
-	#include "../Video/VideoCommon.h"
+#ifdef CC_ENABLE_VIDEO_TEXTURE
+	#include "video/VideoCommon.h"
 #endif
 #ifndef LSTGX_NO_LIVE2D
 	#include "../Live2D/L2DFramework.h"
@@ -344,7 +344,7 @@ bool AppFrame::frameInit()
 	{
 		LLOGGER.Log(LogType::Information, "%s", s.c_str());
 	});
-#ifndef LSTGX_NO_VIDEO
+#ifdef CC_ENABLE_VIDEO_TEXTURE
 	video::setLoggingFunction([](const std::string& s)
 	{
 		LLOGGER.Log(LogType::Information, "%s", s.c_str());

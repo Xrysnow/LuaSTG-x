@@ -77,6 +77,7 @@ LuaSTG-x\
 ├　[cocos-x](https://github.com/Xrysnow/cocos-x)\
 │　　└ [cocos-x-external](https://github.com/Xrysnow/cocos-x-external)\
 │　　　　├ [cocos2d-x-gfx](https://github.com/Xrysnow/cocos2d-x-gfx)\
+│　　　　├ [FFmpeg](https://ffmpeg.org)（视频纹理）\
 │　　　　├ [glslang](https://github.com/KhronosGroup/glslang)\
 │　　　　├ [openal-soft](https://github.com/kcat/openal-soft)\
 │　　　　└ [SPIRV-Cross](https://github.com/KhronosGroup/SPIRV-Cross)\
@@ -88,11 +89,8 @@ LuaSTG-x\
 ├　[cocos-x-live2d](https://github.com/Xrysnow/cocos-x-live2d) (optional)\
 │　├ [CubismNativeFramework](https://github.com/Live2D/CubismNativeFramework)\
 │　└ [Cubism SDK for Native](https://www.live2d.com/en/download/cubism-sdk/download-native)\
-├　[cocos2d-x-video](https://github.com/Xrysnow/cocos2d-x-video)\
-│　　└ [FFmpeg](http://ffmpeg.org) (in lstgx_external)\
 ├　[lstgx_external](https://github.com/Xrysnow/lstgx_external)\
 │　　├ [BurstLinker](https://github.com/Xrysnow/BurstLinker)\
-│　　├ [FFmpeg](http://ffmpeg.org) (optional)\
 │　　├ [libzippp](https://github.com/ctabin/libzippp)\
 │　　│　└ [libzip](https://github.com/nih-at/libzip)\
 │　　├ [Lua CJSON](https://kyne.com.au/~mark/software/lua-cjson.php)\

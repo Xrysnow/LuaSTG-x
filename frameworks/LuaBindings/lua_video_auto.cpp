@@ -1,7 +1,7 @@
 #include "lua_video_auto.hpp"
 #include "lua_conversion/lua_conversion.hpp"
 #include "lua_video_types.hpp"
-#include "VideoPlayer.h"
+#include "video/VideoPlayer.h"
 
 int lua_video_Decoder_getAudioBitRate(lua_State* lua_S)
 {

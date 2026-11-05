@@ -4,21 +4,8 @@ set(EXTERNAL_LIBS "")
 set(LSTGX_MOD_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/frameworks)
 set(LSTGX_EXT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/frameworks/external)
 
-# ffmpeg, video
-
-if(NOT LSTGX_NO_VIDEO)
-	set(CC_VIDEO_DEPEND_LIBS ext_ffmpeg)
-	if(NOT TARGET ext_ffmpeg)
-		add_subdirectory("${COCOS2DX_ROOT_PATH}/external/ffmpeg-prebuilt"
-			"${ENGINE_BINARY_PATH}/external/ffmpeg-prebuilt")
-	endif()
-	add_subdirectory(${LSTGX_MOD_ROOT}/Video)
-	list(APPEND EXTERNAL_LIBS cc_video)
-else()
-	target_compile_definitions(${APP_NAME} PUBLIC LSTGX_NO_VIDEO)
-endif()
-
-if(APPLE AND TARGET ext_ffmpeg)
+# Embed the FFmpeg framework linked by cocos2d.
+if(APPLE AND CC_ENABLE_VIDEO_TEXTURE)
 	if(XCODE)
 		# Xcode selects the slice and embeds/signs its dynamic framework.
 		set_property(TARGET ${APP_NAME} APPEND PROPERTY XCODE_EMBED_FRAMEWORKS "${FFMPEG_LIBRARY}")

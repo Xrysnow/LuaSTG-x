@@ -7,9 +7,6 @@
 [submodule "frameworks/Math"]
 	path = frameworks/Math
 	url = https://github.com/Xrysnow/lstgx_Math.git
-[submodule "frameworks/Video"]
-	path = frameworks/Video
-	url = https://github.com/Xrysnow/cocos2d-x-video.git
 [submodule "frameworks/external"]
 	path = frameworks/external
 	url = https://github.com/Xrysnow/lstgx_external.git

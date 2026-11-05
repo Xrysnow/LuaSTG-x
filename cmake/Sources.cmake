@@ -237,10 +237,9 @@ set(GAME_INCLUDE
 	${LSTGX_SRC_ROOT}/LSTG
 	${LSTGX_SRC_ROOT}/LuaBindings
 	${LSTGX_SRC_ROOT}/Math
-	${LSTGX_SRC_ROOT}/Video
 )
 
-if(NOT LSTGX_NO_VIDEO)
+if(CC_ENABLE_VIDEO_TEXTURE)
 	list(APPEND GAME_HEADER
 		${LSTGX_SRC_ROOT}/LuaBindings/lua_video_auto.hpp
 		${LSTGX_SRC_ROOT}/LuaBindings/lua_video_types.hpp
