@@ -12,15 +12,6 @@ endif()
 set(CMAKE_MODULE_PATH ${COCOS2DX_ROOT_PATH}/cmake/Modules/)
 
 include(CocosBuildSet)
-if(APPLE)
-    enable_language(OBJC OBJCXX)
-    # Keep Objective-C and Objective-C++ aligned with the C/C++ settings.
-    set(CMAKE_OBJC_STANDARD ${CMAKE_C_STANDARD})
-    set(CMAKE_OBJC_STANDARD_REQUIRED ${CMAKE_C_STANDARD_REQUIRED})
-    set(CMAKE_OBJCXX_STANDARD ${CMAKE_CXX_STANDARD})
-    set(CMAKE_OBJCXX_STANDARD_REQUIRED ${CMAKE_CXX_STANDARD_REQUIRED})
-    set(CMAKE_OBJCXX_EXTENSIONS ${CMAKE_CXX_EXTENSIONS})
-endif()
 set(BUILD_LUA_LIBS ON)
 # Rebuild the auto-link list for this configure; disabled extensions must not persist.
 unset(CC_EXTENSION_LIBS)

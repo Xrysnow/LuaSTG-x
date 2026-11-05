@@ -23,20 +23,6 @@ if(DEFINED LSTGX_LUA_BINDING_CHECKS)
     unset(LSTGX_LUA_BINDING_CHECKS)
 endif()
 
-# AUTO follows cocos' CC_DEBUG > 0 in the binding header. Only explicit
-# overrides are supplied to every target instantiating the templates.
-set(CC_LUA_BINDING_CHECKS "AUTO" CACHE STRING "Lua binding diagnostics: AUTO, ON or OFF")
-set_property(CACHE CC_LUA_BINDING_CHECKS PROPERTY STRINGS AUTO ON OFF)
-string(TOUPPER "${CC_LUA_BINDING_CHECKS}" _cc_lua_binding_checks)
-if(_cc_lua_binding_checks STREQUAL "ON")
-    add_compile_definitions(CC_LUA_BINDING_CHECKS=1)
-elseif(_cc_lua_binding_checks STREQUAL "OFF")
-    add_compile_definitions(CC_LUA_BINDING_CHECKS=0)
-elseif(NOT _cc_lua_binding_checks STREQUAL "AUTO")
-    message(FATAL_ERROR "CC_LUA_BINDING_CHECKS must be AUTO, ON or OFF")
-endif()
-unset(_cc_lua_binding_checks)
-
 message("LSTGX_NO_LIVE2D: ${LSTGX_NO_LIVE2D}")
 message("LSTGX_NO_VIDEO: ${LSTGX_NO_VIDEO}")
 message("LSTGX_NO_YUESCRIPT: ${LSTGX_NO_YUESCRIPT}")

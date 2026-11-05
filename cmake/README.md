@@ -8,10 +8,12 @@ unchanged by the file layout.
 1. `MSVCDebugInfo.cmake` runs before `project()` to select embedded MSVC debug
    information for compiler initialization.
 2. `Options.cmake` declares application options, fixes the internal `CC_USE_GFX`
-   flag to ON after the feature options, and applies Lua binding diagnostics.
-3. `CocosSetup.cmake` maps application options to cocos settings, detects the
-   platform, applies defaults before targets are created, and builds cocos and
-   its extensions. It also applies project-specific dependency target fixes.
+   flag to ON after the feature options, and migrates the legacy Lua binding
+   diagnostics option.
+3. `CocosSetup.cmake` maps application options to cocos settings and includes
+   `CocosBuildSet.cmake` for platform detection, Apple build defaults, and Lua
+   binding diagnostics. It then builds cocos and its extensions and applies
+   project-specific dependency target fixes.
 4. `Sources.cmake` collects resources, headers, sources, and platform entry
    points. It runs after cocos so FairyGUI bindings follow the actual target.
 5. The top-level file creates the application, links Lua and cocos extensions,
