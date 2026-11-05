@@ -65,11 +65,6 @@ static CC_UNUSED auto& controllerManualModule = LuaModuleRegistry::addModule(
 #include "lua_audio_auto.hpp"
 LUA_REGISTER_MODULE(cc_audio, register_all_cc_audio);
 
-#ifdef CC_ENABLE_VIDEO_TEXTURE
-	#include "lua_video_auto.hpp"
-	LUA_REGISTER_MODULE(cc_video, register_all_cc_video);
-#endif
-
 #ifndef LSTGX_NO_LIVE2D
 	#include "../Live2D/lua_live2d_auto.hpp"
 	LUA_REGISTER_MODULE(cc_l2d, register_all_live2d);
