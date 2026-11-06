@@ -1,161 +1,98 @@
 #include "XBinaryHelper.h"
+#include <new>
+#include <stdexcept>
 
 using namespace std;
 using namespace lstg;
+using namespace cocos2d::io;
 
-BinaryReader::BinaryReader(Stream* pStream)
-	: stream(pStream)
+namespace
 {
-	if (!stream)
-		throw runtime_error("invalid stream in BinaryReader");
+	StreamError readError(const IoResult& result)
+	{
+		if (result.error)
+			return result.error;
+		switch (result.status)
+		{
+		case IoStatus::EndOfStream: return {ErrorCode::OutOfRange};
+		case IoStatus::WouldBlock: return {ErrorCode::WouldBlock};
+		case IoStatus::Cancelled: return {ErrorCode::Cancelled};
+		case IoStatus::Timeout: return {ErrorCode::Timeout};
+		default: return {ErrorCode::InvalidBackend};
+		}
+	}
+
+	template<class T>
+	Result<T> readValue(Stream& stream)
+	{
+		T value{};
+		const auto result = stream.readExact(&value, sizeof value);
+		if (!result)
+			return Result<T>::failure(readError(result));
+		return Result<T>::success(value);
+	}
 }
 
-Stream* BinaryReader::getStream() const
+BinaryReader::BinaryReader(StreamPtr pStream)
+	: stream(std::move(pStream))
 {
-	return stream;
+	if (!stream || !stream->isOpen() || !hasCapability(stream->capabilities(), Capability::Read))
+		throw invalid_argument("invalid stream in BinaryReader");
 }
 
-uint8_t BinaryReader::readByte() const
+Result<uint8_t> BinaryReader::readByte() const { return readValue<uint8_t>(*stream); }
+Result<int16_t> BinaryReader::readInt16() const { return readValue<int16_t>(*stream); }
+Result<uint16_t> BinaryReader::readUInt16() const { return readValue<uint16_t>(*stream); }
+Result<int32_t> BinaryReader::readInt32() const { return readValue<int32_t>(*stream); }
+Result<uint32_t> BinaryReader::readUInt32() const { return readValue<uint32_t>(*stream); }
+Result<int64_t> BinaryReader::readInt64() const { return readValue<int64_t>(*stream); }
+Result<uint64_t> BinaryReader::readUInt64() const { return readValue<uint64_t>(*stream); }
+Result<float> BinaryReader::readFloat() const { return readValue<float>(*stream); }
+Result<double> BinaryReader::readDouble() const { return readValue<double>(*stream); }
+
+IoResult BinaryReader::readBytes(void* outBuffer, size_t length) const
 {
-	uint8_t tRet = 0;
-	stream->read(&tRet, sizeof tRet);
-	return tRet;
+	return stream->readExact(outBuffer, length);
 }
 
-void BinaryReader::readBytes(uint8_t* outBuffer, uint64_t length) const
+Result<string> BinaryReader::readString(size_t length) const
 {
-	stream->read(outBuffer, length);
+	string value;
+	try { value.resize(length); }
+	catch (const bad_alloc&) { return Result<string>::failure({ErrorCode::OutOfMemory}); }
+	catch (const length_error&) { return Result<string>::failure({ErrorCode::Overflow}); }
+	const auto result = stream->readExact(value.data(), length);
+	if (!result)
+	{
+		value.resize(result.transferred);
+		return {std::move(value), readError(result)};
+	}
+	return Result<string>::success(std::move(value));
 }
 
-std::string BinaryReader::readString(uint64_t length) const
+BinaryWriter::BinaryWriter(StreamPtr pStream)
+	: stream(std::move(pStream))
 {
-	std::string tRet;
-	tRet.resize(length);
-	stream->read((uint8_t*)tRet.data(), length);
-	return tRet;
+	if (!stream || !stream->isOpen() || !hasCapability(stream->capabilities(), Capability::Write))
+		throw invalid_argument("invalid stream in BinaryWriter");
 }
 
-int16_t BinaryReader::readInt16() const
+IoResult BinaryWriter::writeByte(uint8_t value) const { return stream->writeAll(&value, sizeof value); }
+IoResult BinaryWriter::writeInt16(int16_t value) const { return stream->writeAll(&value, sizeof value); }
+IoResult BinaryWriter::writeUInt16(uint16_t value) const { return stream->writeAll(&value, sizeof value); }
+IoResult BinaryWriter::writeInt32(int32_t value) const { return stream->writeAll(&value, sizeof value); }
+IoResult BinaryWriter::writeUInt32(uint32_t value) const { return stream->writeAll(&value, sizeof value); }
+IoResult BinaryWriter::writeInt64(int64_t value) const { return stream->writeAll(&value, sizeof value); }
+IoResult BinaryWriter::writeUInt64(uint64_t value) const { return stream->writeAll(&value, sizeof value); }
+IoResult BinaryWriter::writeFloat(float value) const { return stream->writeAll(&value, sizeof value); }
+IoResult BinaryWriter::writeDouble(double value) const { return stream->writeAll(&value, sizeof value); }
+
+IoResult BinaryWriter::writeBytes(const void* buffer, size_t length) const
 {
-	int16_t tRet = 0;
-	stream->read((uint8_t*)&tRet, sizeof tRet);
-	return tRet;
+	return stream->writeAll(buffer, length);
 }
 
-uint16_t BinaryReader::readUInt16() const
+IoResult BinaryWriter::writeString(const string& value) const
 {
-	uint16_t tRet = 0;
-	stream->read((uint8_t*)&tRet, sizeof tRet);
-	return tRet;
-}
-
-int32_t BinaryReader::readInt32() const
-{
-	int32_t tRet = 0;
-	stream->read((uint8_t*)&tRet, sizeof tRet);
-	return tRet;
-}
-
-uint32_t BinaryReader::readUInt32() const
-{
-	uint32_t tRet = 0;
-	stream->read((uint8_t*)&tRet, sizeof tRet);
-	return tRet;
-}
-
-int64_t BinaryReader::readInt64() const
-{
-	int64_t tRet = 0;
-	stream->read((uint8_t*)&tRet, sizeof tRet);
-	return tRet;
-}
-
-uint64_t BinaryReader::readUInt64() const
-{
-	uint64_t tRet = 0;
-	stream->read((uint8_t*)&tRet, sizeof tRet);
-	return tRet;
-}
-
-float BinaryReader::readFloat() const
-{
-	float tRet = 0;
-	stream->read((uint8_t*)&tRet, sizeof tRet);
-	return tRet;
-}
-
-double BinaryReader::readDouble() const
-{
-	double tRet = 0;
-	stream->read((uint8_t*)&tRet, sizeof tRet);
-	return tRet;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-BinaryWriter::BinaryWriter(Stream* pStream)
-	: stream(pStream)
-{
-	if (!stream || !stream->isWritable())
-		throw runtime_error("invalid stream in BinaryWriter");
-}
-
-Stream* BinaryWriter::getStream() const
-{
-	return stream;
-}
-
-void BinaryWriter::writeByte(uint8_t value) const
-{
-	stream->write(&value, sizeof value);
-}
-
-void BinaryWriter::writeBytes(const uint8_t* buffer, uint64_t length) const
-{
-	stream->write(buffer, length);
-}
-
-void BinaryWriter::writeString(const std::string& value) const
-{
-	stream->write((const uint8_t*)value.c_str(), value.size());
-}
-
-void BinaryWriter::writeInt16(int16_t value) const
-{
-	stream->write((uint8_t*)&value, sizeof value);
-}
-
-void BinaryWriter::writeUInt16(uint16_t value) const
-{
-	stream->write((uint8_t*)&value, sizeof value);
-}
-
-void BinaryWriter::writeInt32(int32_t value) const
-{
-	stream->write((uint8_t*)&value, sizeof value);
-}
-
-void BinaryWriter::writeUInt32(uint32_t value) const
-{
-	stream->write((uint8_t*)&value, sizeof value);
-}
-
-void BinaryWriter::writeInt64(int64_t value) const
-{
-	stream->write((uint8_t*)&value, sizeof value);
-}
-
-void BinaryWriter::writeUInt64(uint64_t value) const
-{
-	stream->write((uint8_t*)&value, sizeof value);
-}
-
-void BinaryWriter::writeFloat(float value) const
-{
-	stream->write((uint8_t*)&value, sizeof value);
-}
-
-void BinaryWriter::writeDouble(double value) const
-{
-	stream->write((uint8_t*)&value, sizeof value);
+	return stream->writeAll(value.data(), value.size());
 }

@@ -21,7 +21,7 @@ set(GAME_HEADER
 	${LSTGX_SRC_ROOT}/Classes/MemPoolManager.h
 	${LSTGX_SRC_ROOT}/Classes/RandomWELL512.h
 	${LSTGX_SRC_ROOT}/Classes/WindowHelper.h
-	${LSTGX_SRC_ROOT}/Classes/XAudioStream.h
+	${LSTGX_SRC_ROOT}/Classes/XAudioIO.h
 	${LSTGX_SRC_ROOT}/Classes/XBinaryHelper.h
 	${LSTGX_SRC_ROOT}/Classes/XBuffer.h
 	${LSTGX_SRC_ROOT}/Classes/XFileDialog.h
@@ -35,7 +35,6 @@ set(GAME_HEADER
 	${LSTGX_SRC_ROOT}/Classes/XRand.h
 	${LSTGX_SRC_ROOT}/Classes/XRefAdapter.h
 	${LSTGX_SRC_ROOT}/Classes/XStopWatch.h
-	${LSTGX_SRC_ROOT}/Classes/XStream.h
 	${LSTGX_SRC_ROOT}/Classes/XThreadPool.hpp
 	${LSTGX_SRC_ROOT}/Classes/XTriangles.h
 	${LSTGX_SRC_ROOT}/Classes/XTrianglesCommand.h
@@ -117,7 +116,7 @@ set(GAME_HEADER
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_ResourceMgr_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Resource_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_StopWatch_auto.hpp
-	${LSTGX_SRC_ROOT}/LuaBindings/lua_Stream_auto.hpp
+	${LSTGX_SRC_ROOT}/LuaBindings/lua_Stream_manual.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Triangles_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_WindowHelper_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_ZipArchive_auto.hpp
@@ -130,7 +129,7 @@ set(GAME_SOURCE
 	${LSTGX_SRC_ROOT}/Classes/RandomWELL512.cpp
 	${LSTGX_SRC_ROOT}/Classes/WindowHelper.cpp
 	${LSTGX_SRC_ROOT}/Classes/XAudioFileOpener.cpp
-	${LSTGX_SRC_ROOT}/Classes/XAudioStream.cpp
+	${LSTGX_SRC_ROOT}/Classes/XAudioIO.cpp
 	${LSTGX_SRC_ROOT}/Classes/XBinaryHelper.cpp
 	${LSTGX_SRC_ROOT}/Classes/XBuffer.cpp
 	${LSTGX_SRC_ROOT}/Classes/XFileDialog.cpp
@@ -144,7 +143,6 @@ set(GAME_SOURCE
 	${LSTGX_SRC_ROOT}/Classes/XRand.cpp
 	${LSTGX_SRC_ROOT}/Classes/XRefAdapter.cpp
 	${LSTGX_SRC_ROOT}/Classes/XStopWatch.cpp
-	${LSTGX_SRC_ROOT}/Classes/XStream.cpp
 	${LSTGX_SRC_ROOT}/Classes/XTriangles.cpp
 	${LSTGX_SRC_ROOT}/Classes/XTrianglesCommand.cpp
 	${LSTGX_SRC_ROOT}/Classes/XZipArchive.cpp
@@ -221,7 +219,7 @@ set(GAME_SOURCE
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_ResourceMgr_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Resource_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_StopWatch_auto.cpp
-	${LSTGX_SRC_ROOT}/LuaBindings/lua_Stream_auto.cpp
+	${LSTGX_SRC_ROOT}/LuaBindings/lua_Stream_manual.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Triangles_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_WindowHelper_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_ZipArchive_auto.cpp

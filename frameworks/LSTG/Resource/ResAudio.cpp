@@ -4,7 +4,7 @@
 #include "ResourceMgr.h"
 #include "Util/Utility.h"
 #include "../Math/XFFT.h"
-#include "../Classes/XAudioStream.h"
+#include "audio/AudioStreamAdapter.h"
 #include "cocos/audio/AudioDecoder.h"
 #include "cocos/audio/AudioEngine.h"
 #include <algorithm>
@@ -207,17 +207,17 @@ bool ResAudio::doFFT()
 	return true;
 }
 
-bool ResAudio::init(StreamMemory* stream_)
+bool ResAudio::init(cocos2d::io::StreamPtr stream_)
 {
 	if (!stream_)
 		return false;
-	stream = stream_;
+	stream = std::move(stream_);
 	if (!cocos2d::AudioEngine::isValid())
 		return true;
-	auto s = XAudioStream::create(stream);
+	auto s = cocos2d::AudioStreamAdapter::create(stream);
 	if (!s)
 		return false;
-	auto d = cocos2d::AudioDecoder::createFromStream(s, decoderBufferSize, cocos2d::AudioDecoder::getDecoderTypeFromPath(path));
+	auto d = cocos2d::AudioDecoder::createFromStream(s.value.get(), decoderBufferSize, cocos2d::AudioDecoder::getDecoderTypeFromPath(path));
 	if (!d)
 	{
 		XINFO("failed to create Decoder");
@@ -246,21 +246,6 @@ ResAudio::~ResAudio()
 		source->stop();
 }
 
-bool ResSound::initWithBuffer(Buffer* data)
-{
-	if (!data)
-		return false;
-	const auto memory = StreamMemory::create(data);
-	if(!memory)
-	{
-		XINFO("failed to create StreamMemory");
-		return false;
-	}
-	const auto result = init(memory);
-	memory->release();
-	return result;
-}
-
 ResSound::ResSound(const std::string& name, const std::string& path)
 	:ResAudio(name, ResourceType::SoundEffect, path)
 {
@@ -272,11 +257,11 @@ ResSound::~ResSound()
 
 ResSound* ResSound::create(const std::string& name, const std::string& path)
 {
-	const auto data = LRES.getBufferFromFile(path);
-	if (!data)
+	auto input = LRES.openReadStream(path);
+	if (!input)
 		return nullptr;
 	auto ret = new (nothrow) ResSound(name, path);
-	if (ret && ret->initWithBuffer(data))
+	if (ret && ret->init(std::move(input.value)))
 	{
 		// autoreleased in Resource ctor
 		//ret->autorelease();
@@ -286,16 +271,9 @@ ResSound* ResSound::create(const std::string& name, const std::string& path)
 	return nullptr;
 }
 
-bool ResMusic::initWithBuffer(Buffer* data, double loopA, double loopB)
+bool ResMusic::initWithStream(cocos2d::io::StreamPtr input, double loopA, double loopB)
 {
-	if (!data)
-		return false;
-	const auto memory = StreamMemory::create(data);
-	if (!memory)
-		return false;
-	const auto result = init(memory);
-	memory->release();
-	if (!result)
+	if (!init(std::move(input)))
 		return false;
 	if (source)
 	{
@@ -316,11 +294,11 @@ ResMusic::~ResMusic()
 
 ResMusic* ResMusic::create(const std::string& name, const std::string& path, double loopStart, double loopEnd)
 {
-	const auto data = LRES.getBufferFromFile(path);
-	if (!data)
+	auto input = LRES.openReadStream(path);
+	if (!input)
 		return nullptr;
 	auto ret = new (nothrow) ResMusic(name, path);
-	if (ret && ret->initWithBuffer(data, loopStart, loopEnd))
+	if (ret && ret->initWithStream(std::move(input.value), loopStart, loopEnd))
 	{
 		// autoreleased in Resource ctor
 		//ret->autorelease();

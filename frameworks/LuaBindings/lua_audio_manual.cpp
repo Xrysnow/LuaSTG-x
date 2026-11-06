@@ -1,36 +1,64 @@
 #include "lua_audio_manual.hpp"
 #include "lua_conversion/lua_conversion.hpp"
-#include "../Classes/XAudioStream.h"
+#include "../Classes/XAudioIO.h"
 #include "cocos/audio/AudioSoundData.h"
 
 namespace
 {
 
+cocos2d::AudioStream* luaAudioInput(lstg::AudioInputResult result)
+{
+	if (!result)
+		return nullptr;
+	// Only the AudioStream adapter enters Lua. Its generic io stream has no Lua
+	// metadata. Transfer an additional reference to the main-thread pool before
+	// the owning result leaves scope; the regular Ref converter then handles Lua.
+	auto raw = result.value.get();
+	raw->retain();
+	raw->autorelease();
+	return raw;
+}
+
+cocos2d::AudioDecoder* luaAudioDecoder(lstg::AudioDecodeResult result)
+{
+	// Core decoder creation already registered one pool reference. The new host
+	// factory added an independent owning reference, released with this result.
+	return result ? result.value.get() : nullptr;
+}
+
 int lua_audio_Stream_createFromStringData(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("cc.AudioStream", "cc.AudioStream:createFromStringData");
-	LUA_TRY_INVOKE_R(1, &lstg::createAudioStreamFromStringData);
+	LUA_TRY_INVOKE_R(1, [](const std::string& bytes) {
+		return luaAudioInput(lstg::createAudioInputFromStringData(bytes));
+	});
 	LUA_SINVOKE_FOOTER("1");
 }
 
 int lua_audio_Stream_createFromSoundData(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("cc.AudioStream", "cc.AudioStream:createFromSoundData");
-	LUA_TRY_INVOKE_R(1, &lstg::createAudioStreamFromSoundData);
+	LUA_TRY_INVOKE_R(1, [](cocos2d::AudioSoundData* data) {
+		return luaAudioInput(lstg::createAudioInputFromSoundData(data));
+	});
 	LUA_SINVOKE_FOOTER("1");
 }
 
 int lua_audio_Decoder_createFromStringData(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("cc.AudioDecoder", "cc.AudioDecoder:createFromStringData");
-	LUA_TRY_INVOKE_R(3, &lstg::createAudioDecoderFromStringData);
+	LUA_TRY_INVOKE_R(3, [](const std::string& bytes, size_t bufferSize, cocos2d::AudioDecoder::DecoderType type) {
+		return luaAudioDecoder(lstg::decodeAudioStringData(bytes, bufferSize, type));
+	});
 	LUA_SINVOKE_FOOTER("3");
 }
 
 int lua_audio_Decoder_createFromSoundData(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("cc.AudioDecoder", "cc.AudioDecoder:createFromSoundData");
-	LUA_TRY_INVOKE_R(3, &lstg::createAudioDecoderFromSoundData);
+	LUA_TRY_INVOKE_R(3, [](cocos2d::AudioSoundData* data, size_t bufferSize, cocos2d::AudioDecoder::DecoderType type) {
+		return luaAudioDecoder(lstg::decodeAudioSoundData(data, bufferSize, type));
+	});
 	LUA_SINVOKE_FOOTER("3");
 }
 

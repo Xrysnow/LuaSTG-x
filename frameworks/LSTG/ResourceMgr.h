@@ -4,6 +4,7 @@
 #include "Resource/GameResources.h"
 #include "../Classes/XBuffer.h"
 #include "ResourceFileCache.h"
+#include "io/Stream.h"
 
 #define LRES (*lstg::ResourceMgr::getInstance())
 
@@ -123,6 +124,9 @@ namespace lstg
 		Buffer* getBufferFromFile(const std::string& filePath);
 		// C++ readers must hold this snapshot through consumption of its bytes.
 		FileBytes getFileData(const std::string& filePath);
+		// Each call opens an independent read-only cursor over a shared snapshot.
+		// The stream keeps its bytes alive across cache eviction and pack unloading.
+		cocos2d::io::Result<cocos2d::io::StreamPtr> openReadStream(const std::string& filePath);
 
 		std::string getStringFromFile(const std::string& filePath);
 

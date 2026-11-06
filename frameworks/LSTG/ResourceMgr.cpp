@@ -4,6 +4,7 @@
 #include "XFileUtils.h"
 #include "LogSystem.h"
 #include "platform/CCFileStream.h"
+#include "io/MemoryStream.h"
 #include <atomic>
 
 using namespace std;
@@ -12,6 +13,17 @@ using namespace cocos2d;
 
 namespace
 {
+	// Only this Atomic owner and immutable native bytes cross thread boundaries;
+	// resource caches keep their existing FileBytes ownership and generation rules.
+	class FileSnapshotOwner final : public Ref
+	{
+	public:
+		FileSnapshotOwner(RefConstructionToken token, FileBytes bytes)
+			: Ref(token), bytes(std::move(bytes)) {}
+	private:
+		FileBytes bytes;
+	};
+
 	string bytesToString(const FileBytes& data)
 	{
 		return data && !data->empty()
@@ -411,6 +423,24 @@ FileBytes ResourceMgr::getFileData(const string& path)
 	}
 	catch (const bad_alloc&) { return nullptr; }
 	catch (const length_error&) { return nullptr; }
+}
+
+io::Result<io::StreamPtr> ResourceMgr::openReadStream(const string& path)
+{
+	using Output = io::Result<io::StreamPtr>;
+	const auto bytes = getFileData(path);
+	// The snapshot loader does not distinguish a missing file from other errors.
+	if (!bytes)
+		return Output::failure({io::ErrorCode::IoError});
+	try
+	{
+		auto owner = makeThreadSafeRef<FileSnapshotOwner>(bytes);
+		auto stream = io::MemoryStream::borrow(bytes->data(), bytes->size(), std::move(owner));
+		if (!stream)
+			return Output::failure(stream.error);
+		return Output::success(std::move(stream.value));
+	}
+	catch (const bad_alloc&) { return Output::failure({io::ErrorCode::OutOfMemory}); }
 }
 
 Buffer* ResourceMgr::getBufferFromFile(const string& path)

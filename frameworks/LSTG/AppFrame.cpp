@@ -4,7 +4,7 @@
 #include "../Classes/XLuaModuleRegistry.h"
 #include "../Classes/XFileUtils.h"
 #include "../Classes/XInfoware.h"
-#include "../Classes/XAudioStream.h"
+#include "../Classes/XAudioIO.h"
 #include "cocos/audio/AudioEngine.h"
 #ifdef CC_ENABLE_VIDEO_TEXTURE
 	#include "video/VideoCommon.h"

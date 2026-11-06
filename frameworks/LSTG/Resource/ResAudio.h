@@ -1,8 +1,7 @@
 ﻿#pragma once
 #include "ResBase.h"
 #include "cocos/audio/AudioSource.h"
-#include "../Classes/XBuffer.h"
-#include "../Classes/XStream.h"
+#include "io/Stream.h"
 
 namespace lstg
 {
@@ -14,7 +13,7 @@ namespace lstg
 		static constexpr size_t bufferCopySize = 4096;
 		static constexpr size_t decoderBufferSize = 4096;
 		cocos2d::RefPtr<cocos2d::AudioSource> source;
-		cocos2d::RefPtr<StreamMemory> stream;
+		cocos2d::io::StreamPtr stream;
 		std::string path;
 		std::array<uint8_t, bufferCopySize> bufferCopy;
 		std::array<float, bufferCopySize / 8> wavValue;
@@ -37,7 +36,7 @@ namespace lstg
 		bool isStopped();
 
 		cocos2d::AudioSource* getSource() const { return source; }
-		StreamMemory* getStream() const { return stream; }
+		const cocos2d::io::StreamPtr& getStream() const { return stream; }
 		const std::string& getPath() const override { return path; }
 
 		size_t getFFTSize() const;
@@ -51,7 +50,7 @@ namespace lstg
 		bool checkFFT();
 		bool doFFT();
 
-		bool init(StreamMemory* stream_);
+		bool init(cocos2d::io::StreamPtr stream_);
 		ResAudio(const std::string& name, ResourceType type, const std::string& _path);
 	public:
 		~ResAudio() override;
@@ -60,7 +59,6 @@ namespace lstg
 	class ResSound :
 		public ResAudio
 	{
-		bool initWithBuffer(Buffer* data);
 		ResSound(const std::string& name, const std::string& path);
 		~ResSound() override;
 	public:
@@ -70,7 +68,7 @@ namespace lstg
 	class ResMusic :
 		public ResAudio
 	{
-		bool initWithBuffer(Buffer* data, double loopA, double loopB);
+		bool initWithStream(cocos2d::io::StreamPtr stream_, double loopA, double loopB);
 		ResMusic(const std::string& name, const std::string& path);
 		~ResMusic() override;
 	public:
