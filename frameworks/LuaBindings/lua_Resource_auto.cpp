@@ -1,5 +1,4 @@
 #include "lua_Resource_auto.hpp"
-#include "lua_Stream_manual.hpp"
 #include "Resource/GameResources.h"
 
 int lua_lstg_Resource_getInfo(lua_State* lua_S)
@@ -1248,15 +1247,6 @@ int lua_lstg_ResAudio_getSource(lua_State* lua_S)
 	LUA_TRY_INVOKE_R(0, &lstg::ResAudio::getSource);
 	LUA_INVOKE_FOOTER("0");
 }
-int lua_lstg_ResAudio_getStream(lua_State* lua_S)
-{
-	if (lua_gettop(lua_S) != 1)
-		return luaL_error(lua_S, "lstg.ResAudio:getStream expects no arguments");
-	lstg::ResAudio* resource = nullptr;
-	if (!lua::luaval_to_native(lua_S, 1, &resource) || !resource)
-		return luaL_error(lua_S, "invalid class object in lstg.ResAudio:getStream");
-	return pushLuaStream(lua_S, resource->getStream());
-}
 int lua_lstg_ResAudio_isPlaying(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ResAudio", "lstg.ResAudio:isPlaying");
@@ -1303,7 +1293,6 @@ int luaReg_Resource_lstgResAudio(lua_State* lua_S)
 		nullptr, nullptr);
 	LUA_METHOD("getFFTSize", lua_lstg_ResAudio_getFFTSize);
 	LUA_METHOD("getSource", lua_lstg_ResAudio_getSource);
-	LUA_METHOD("getStream", lua_lstg_ResAudio_getStream);
 	LUA_METHOD("isPlaying", lua_lstg_ResAudio_isPlaying);
 	LUA_METHOD("isStopped", lua_lstg_ResAudio_isStopped);
 	LUA_METHOD("pause", lua_lstg_ResAudio_pause);

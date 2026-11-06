@@ -29,8 +29,6 @@ LUA_REGISTER_MODULE(x_Resource, luaReg_Resource);
 LUA_REGISTER_MODULE(x_ResourceMgr, luaReg_ResourceMgr);
 #include "lua_StopWatch_auto.hpp"
 LUA_REGISTER_MODULE(x_StopWatch, luaReg_StopWatch);
-#include "lua_Stream_manual.hpp"
-LUA_REGISTER_MODULE(x_Stream, luaReg_Stream_manual);
 #include "lua_Triangles_auto.hpp"
 LUA_REGISTER_MODULE(x_Triangles, luaReg_Triangles);
 #include "lua_WindowHelper_auto.hpp"

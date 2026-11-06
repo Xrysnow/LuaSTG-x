@@ -116,7 +116,6 @@ set(GAME_HEADER
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_ResourceMgr_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Resource_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_StopWatch_auto.hpp
-	${LSTGX_SRC_ROOT}/LuaBindings/lua_Stream_manual.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Triangles_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_WindowHelper_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_ZipArchive_auto.hpp
@@ -219,7 +218,6 @@ set(GAME_SOURCE
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_ResourceMgr_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Resource_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_StopWatch_auto.cpp
-	${LSTGX_SRC_ROOT}/LuaBindings/lua_Stream_manual.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Triangles_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_WindowHelper_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_ZipArchive_auto.cpp
