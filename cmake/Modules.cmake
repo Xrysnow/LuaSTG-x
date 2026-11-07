@@ -67,37 +67,43 @@ list(APPEND EXTERNAL_LIBS ext_BurstLinker)
 add_subdirectory(${LSTGX_EXT_ROOT}/MicroTeX)
 list(APPEND EXTERNAL_LIBS ext_MicroTeX)
 
-# lua
+# Keep standalone third-party modules on their existing language defaults.
+block(SCOPE_FOR VARIABLES PROPAGATE EXTERNAL_LIBS)
+	set(CMAKE_CXX_STANDARD 17)
+	set(CMAKE_OBJCXX_STANDARD 17)
 
-add_subdirectory(${LSTGX_EXT_ROOT}/LuaExtensions/cjson)
-list(APPEND EXTERNAL_LIBS ext_cjson)
-add_subdirectory(${LSTGX_EXT_ROOT}/LuaExtensions/lfs)
-list(APPEND EXTERNAL_LIBS ext_lfs)
-add_subdirectory(${LSTGX_EXT_ROOT}/LuaExtensions/lpeg)
-list(APPEND EXTERNAL_LIBS ext_lpeg)
-add_subdirectory(${LSTGX_EXT_ROOT}/LuaExtensions/lua53)
-list(APPEND EXTERNAL_LIBS ext_lua53)
+	# lua
 
-# libzippp
+	add_subdirectory(${LSTGX_EXT_ROOT}/LuaExtensions/cjson)
+	list(APPEND EXTERNAL_LIBS ext_cjson)
+	add_subdirectory(${LSTGX_EXT_ROOT}/LuaExtensions/lfs)
+	list(APPEND EXTERNAL_LIBS ext_lfs)
+	add_subdirectory(${LSTGX_EXT_ROOT}/LuaExtensions/lpeg)
+	list(APPEND EXTERNAL_LIBS ext_lpeg)
+	add_subdirectory(${LSTGX_EXT_ROOT}/LuaExtensions/lua53)
+	list(APPEND EXTERNAL_LIBS ext_lua53)
 
-add_subdirectory(${LSTGX_EXT_ROOT}/libzippp)
-list(APPEND EXTERNAL_LIBS ext_libzippp)
+	# libzippp
 
-# nfd
+	add_subdirectory(${LSTGX_EXT_ROOT}/libzippp)
+	list(APPEND EXTERNAL_LIBS ext_libzippp)
 
-if(WINDOWS OR LINUX OR MACOSX)
-	add_subdirectory(${LSTGX_EXT_ROOT}/NativeFileDialog)
-	list(APPEND EXTERNAL_LIBS ext_NativeFileDialog)
-endif()
+	# nfd
 
-# Yuescript
+	if(WINDOWS OR LINUX OR MACOSX)
+		add_subdirectory(${LSTGX_EXT_ROOT}/NativeFileDialog)
+		list(APPEND EXTERNAL_LIBS ext_NativeFileDialog)
+	endif()
 
-if(NOT LSTGX_NO_YUESCRIPT)
-	add_subdirectory(${LSTGX_EXT_ROOT}/Yuescript)
-	list(APPEND EXTERNAL_LIBS ext_Yuescript)
-else()
-	target_compile_definitions(${APP_NAME} PUBLIC LSTGX_NO_YUESCRIPT)
-endif()
+	# Yuescript
+
+	if(NOT LSTGX_NO_YUESCRIPT)
+		add_subdirectory(${LSTGX_EXT_ROOT}/Yuescript)
+		list(APPEND EXTERNAL_LIBS ext_Yuescript)
+	else()
+		target_compile_definitions(${APP_NAME} PUBLIC LSTGX_NO_YUESCRIPT)
+	endif()
+endblock()
 
 list(APPEND EXTERNAL_LIBS ${COCOS_EXTENSION_LIBS})
 

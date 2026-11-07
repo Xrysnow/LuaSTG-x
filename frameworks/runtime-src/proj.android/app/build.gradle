@@ -33,7 +33,7 @@ android {
                         arguments "-DCC_OPENSSL_${name}=${value}"
                     }
                 }
-                cppFlags "-frtti -fexceptions -fsigned-char -std=c++17"
+                cppFlags "-frtti -fexceptions -fsigned-char"
                 ["MAKE", "HOST_CC", "MSYS_ROOT", "JOBS"].each { name ->
                     def value = project.findProperty("CC_LUAJIT_${name}")
                     if (value != null) {
