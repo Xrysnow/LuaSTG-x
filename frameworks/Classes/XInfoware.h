@@ -35,6 +35,7 @@ namespace infoware
 		};
 		struct quickscope_wrapper {
 			std::function<void()> func;
+			explicit quickscope_wrapper(std::function<void()> callback) : func(std::move(callback)) {}
 			quickscope_wrapper(const quickscope_wrapper&) = delete;
 			~quickscope_wrapper() {
 				if (func)

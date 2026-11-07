@@ -35,6 +35,7 @@ endif()
 # imgui
 
 add_subdirectory(${LSTGX_MOD_ROOT}/imgui)
+target_link_libraries(cc_imgui PUBLIC cocos2d)
 list(APPEND EXTERNAL_LIBS cc_imgui)
 
 # Live2D
@@ -45,6 +46,7 @@ if(NOT LSTGX_NO_LIVE2D)
 		set(CORE_CRL_MD ON)
 	endif()
 	add_subdirectory(${LSTGX_MOD_ROOT}/Live2D)
+	target_link_libraries(cc_live2d PUBLIC cocos2d)
 	list(APPEND EXTERNAL_LIBS cc_live2d)
 else()
 	target_compile_definitions(${APP_NAME} PUBLIC LSTGX_NO_LIVE2D)
