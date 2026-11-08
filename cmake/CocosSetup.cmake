@@ -25,18 +25,6 @@ if(APPLE AND XCODE AND TARGET OpenAL)
     set_property(TARGET OpenAL PROPERTY
         XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_BINARY_DIR}/lib/$(CONFIGURATION)")
 endif()
-if(APPLE AND TARGET ext_gfx)
-    # The Metal backend needs cocos math headers when compiling ext_gfx.
-    target_include_directories(ext_gfx PRIVATE "${COCOS2DX_ROOT_PATH}/cocos")
-    if(MACOSX)
-        target_link_libraries(ext_gfx PUBLIC "-framework MetalPerformanceShaders")
-    elseif(IOS)
-        # The Metal driver also uses MPS filters and CoreVideo's CVMetalTextureCache
-        # (external texture import) on iOS.
-        target_link_libraries(ext_gfx PUBLIC
-            "-framework MetalPerformanceShaders" "-framework CoreVideo")
-    endif()
-endif()
 list(REMOVE_ITEM CC_EXTENSION_LIBS "")
 list(REMOVE_DUPLICATES CC_EXTENSION_LIBS)
 set(CC_EXTENSION_LIBS "${CC_EXTENSION_LIBS}" CACHE INTERNAL "extensions for auto link to target application" FORCE)
