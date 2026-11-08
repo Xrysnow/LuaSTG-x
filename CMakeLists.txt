@@ -25,6 +25,9 @@ cmake_minimum_required(VERSION 3.28)
 
 set(APP_NAME LuaSTG-x)
 
+# Stable storage identity; independent of the executable name and build version.
+set(CC_APP_DIRECTORY_DEFAULT_ID "com.xrysnow.lstgx")
+
 include(cmake/MSVCDebugInfo.cmake)
 project(${APP_NAME})
 
