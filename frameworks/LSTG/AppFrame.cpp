@@ -109,11 +109,25 @@ bool AppFrame::applicationDidFinishLaunching()
 	installAudioFileOpener();
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
-	FileUtils::getInstance()->setWritablePath("./");
+	if (!FileUtils::getInstance()->setWritablePath("./"))
+	{
+		ccMessageBox("Could not resolve the working directory for writable files.", "LuaSTG-x");
+		return false;
+	}
 #elif CC_TARGET_PLATFORM == CC_PLATFORM_MAC
-        const auto wp = FileUtils::getInstance()->getWritablePath() + "lstg/";
-	if (FileUtils::getInstance()->isDirectoryExist(wp))
-		FileUtils::getInstance()->setWritablePath(wp);
+	const auto defaultWritablePath = FileUtils::getInstance()->getWritablePath();
+	if (defaultWritablePath.empty())
+	{
+		ccMessageBox("The default writable directory is unavailable.", "LuaSTG-x");
+		return false;
+	}
+	const auto wp = defaultWritablePath + "lstg/";
+	if (FileUtils::getInstance()->isDirectoryExist(wp) &&
+		!FileUtils::getInstance()->setWritablePath(wp))
+	{
+		ccMessageBox("Could not configure the writable directory.", "LuaSTG-x");
+		return false;
+	}
 #elif CC_TARGET_PLATFORM == CC_PLATFORM_LINUX
 #endif
 

@@ -1,11 +1,25 @@
 ﻿#include "LogSystem.h"
 #include "Global.h"
 #include "Util/Utility.h"
+#include "base/filesystem.h"
+#include "base/ccUTF8.h"
+#if defined(_WIN32)
+#include "ntcvt/ntcvt.hpp"
+#endif
 
 using namespace std;
 using namespace lstg;
 
-// note: FileUtils uses "wb" and will call fopen/fclose once at each writing
+// Log files are physical files. Prepare their parent explicitly instead of
+// depending on FileUtils writable-path queries to create directories.
+static stdfs::path nativeLogPath(std::string_view path)
+{
+#if defined(_WIN32)
+	return stdfs::path{ntcvt::from_chars(path)};
+#else
+	return stdfs::path{path};
+#endif
+}
 
 LogSystem* LogSystem::getInstance()
 {
@@ -19,7 +33,11 @@ LogSystem::LogSystem()
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 	changePath(fileName);
 #else
-	changePath(cocos2d::FileUtils::getInstance()->getWritablePath() + fileName);
+	const auto writablePath = cocos2d::FileUtils::getInstance()->getWritablePath();
+	if (!writablePath.empty())
+		changePath(writablePath + fileName);
+	else
+		CCLOGERROR("The writable directory for the log is unavailable.");
 #endif
 	CCASSERT(logFile.is_open(), "can't create log file.");
 }
@@ -29,7 +47,11 @@ LogSystem::LogSystem(const string& fileName)
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 	changePath(fileName);
 #else
-	changePath(cocos2d::FileUtils::getInstance()->getWritablePath() + fileName);
+	const auto writablePath = cocos2d::FileUtils::getInstance()->getWritablePath();
+	if (!writablePath.empty())
+		changePath(writablePath + fileName);
+	else
+		CCLOGERROR("The writable directory for the log is unavailable.");
 #endif
 	CCASSERT(logFile.is_open(), "can't create log file.");
 }
@@ -79,32 +101,48 @@ void LogSystem::Log(LogType type, const char* info, ...)
 
 bool LogSystem::changePath(const std::string& path)
 {
-	//lock_guard<mutex> lock(mut);
+	lock_guard<mutex> lock(mut);
+	if (path.empty() || path.find('\0') != std::string::npos ||
+		!cocos2d::StringUtils::isLegalUTF8String(path.data(), path.size()))
+		return false;
 	if (logFileName == path)
-		return true;
+		return logFile.is_open();
 	try
 	{
+		const auto nativePath = nativeLogPath(path);
+		const auto parent = nativePath.parent_path();
+		if (!parent.empty())
+		{
+			std::error_code error;
+			stdfs::create_directories(parent, error);
+			if (error || !stdfs::is_directory(parent, error) || error)
+				return false;
+		}
 		stringstream s;
 		if(logFile.is_open())
 		{
 			ifstream f;
-			f.open(logFileName);
+			f.open(nativeLogPath(logFileName).c_str());
 			if(f.is_open())
 				s << f.rdbuf();
 			f.close();
 			logFile.close();
 			logFile.clear();
 		}
-		logFile.open(path, ios::out);
+		logFile.open(nativePath.c_str(), ios::out);
 		if (!logFile.is_open())
 		{
-			logFile.open(logFileName, ios::app | ios::out);
+			logFile.open(nativeLogPath(logFileName).c_str(), ios::app | ios::out);
 			return false;
 		}
 		logFile << s.str();
 		logFile.flush();
 		logFileName = path;
 		return true;
+	}
+	catch (const stdfs::filesystem_error&)
+	{
+		return false;
 	}
 	catch (const bad_alloc&)
 	{
