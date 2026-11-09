@@ -6,9 +6,14 @@ if(APPLE)
         set_target_properties(${APP_NAME} PROPERTIES
             MACOSX_BUNDLE_INFO_PLIST "${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/Info.plist"
         )
-        set_target_properties(${APP_NAME} PROPERTIES
-            LINK_FLAGS "-pagezero_size 10000 -image_base 100000000"
-        )
+        # The legacy Intel LuaJIT layout produces an invalid low-address arm64
+        # executable. Keep the platform's normal image/pagezero layout on arm64.
+        if(CMAKE_OSX_ARCHITECTURES STREQUAL "x86_64"
+           OR (NOT CMAKE_OSX_ARCHITECTURES AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64"))
+            set_target_properties(${APP_NAME} PROPERTIES
+                LINK_FLAGS "-pagezero_size 10000 -image_base 100000000"
+            )
+        endif()
     elseif(IOS)
         set_target_properties(${APP_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/Info.plist")
         set_xcode_property(${APP_NAME} ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon")
