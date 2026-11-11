@@ -248,9 +248,18 @@ void WindowHelperDesktop::moveToCenter()
 {
 	if (isFullscreen())
 		return;
+	auto monitor = view->getMonitor();
+	if (!monitor)
+		monitor = glfwGetPrimaryMonitor();
+	if (!monitor)
+		return;
+	const auto mode = glfwGetVideoMode(monitor);
+	if (!mode)
+		return;
 	int xpos = 0, ypos = 0;
-	glfwGetMonitorPos(view->getMonitor(), &xpos, &ypos);
-	const auto s = (view->getMonitorSize() - getSize()) / 2 + Vec2(xpos, ypos);
+	glfwGetMonitorPos(monitor, &xpos, &ypos);
+	const auto monitorSize = Size(float(mode->width), float(mode->height));
+	const auto s = (monitorSize - getSize()) / 2 + Vec2(xpos, ypos);
 	setPosition(Vec2(s.width, s.height));
 }
 
