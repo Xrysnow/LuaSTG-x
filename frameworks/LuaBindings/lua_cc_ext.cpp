@@ -1,8 +1,27 @@
 #include "lua_cc_ext.hpp"
+#include "2d/CCSprite.h"
+#include "base/CCRefPtr.h"
 #include "platform/CCImage.h"
+#include "renderer/CCTexture2D.h"
 #include "../Classes/XBuffer.h"
 #include "Util/Utility.h"
 #include "lua_conversion/lua_conversion.hpp"
+
+namespace
+{
+template <class RasterSize>
+cocos2d::Sprite* createSVGSprite(const std::string& path, const RasterSize& size)
+{
+    using namespace cocos2d;
+    RefPtr<Image> image(ReferencedObject<Image>{new Image()});
+    if (!lstg::initImageWithSVG(image.get(), path, size))
+        return nullptr;
+    RefPtr<Texture2D> texture(ReferencedObject<Texture2D>{new Texture2D()});
+    if (!texture->initWithImage(image.get()))
+        return nullptr;
+    return Sprite::createWithTexture(texture.get());
+}
+}
 
 // These adapters describe buffers and readback regions. Conversion, overload
 // checks, diagnostics and self returns use the shared binding implementation.
@@ -80,6 +99,24 @@ int lua_cc_ext_Sprite_newImage(lua_State* lua_S)
     LUA_INVOKE_FOOTER("0,1");
 }
 
+int lua_cc_ext_Sprite_createWithSVGFile(lua_State* lua_S)
+{
+    // The old Lua helper omitted a nil size through unpack({path, size}).
+    if (lua_gettop(lua_S) == 3 && lua_isnil(lua_S, 3))
+        lua_pop(lua_S, 1);
+    LUA_SINVOKE_HEADER("cc.Sprite", "cc.Sprite:createWithSVGFile");
+    LUA_TRY_INVOKE_R(1, [](const std::string& path) {
+        return createSVGSprite(path, cocos2d::Size());
+    });
+    LUA_TRY_INVOKE_R_OVERLOAD(2, [](const std::string& path, float scale) {
+        return createSVGSprite(path, scale);
+    });
+    LUA_TRY_INVOKE_R_OVERLOAD(2, [](const std::string& path, const cocos2d::Size& size) {
+        return createSVGSprite(path, size);
+    });
+    LUA_SINVOKE_FOOTER("1,2");
+}
+
 int register_all_cc_ext(lua_State* tolua_S)
 {
     if (nullptr == tolua_S)
@@ -103,7 +140,10 @@ int register_all_cc_ext(lua_State* tolua_S)
     lua_pushstring(tolua_S, "cc.Sprite");
     lua_rawget(tolua_S, LUA_REGISTRYINDEX);
     if (lua_istable(tolua_S, -1))
+    {
         tolua_function(tolua_S, "newImage", lua_cc_ext_Sprite_newImage);
+        tolua_function(tolua_S, "createWithSVGFile", lua_cc_ext_Sprite_createWithSVGFile);
+    }
     lua_pop(tolua_S, 1);
     return 0;
 }
