@@ -372,7 +372,9 @@ std::vector<cocos2d::Vec2> WindowHelperDesktop::enumDisplayResolution()
 {
 	std::vector<cocos2d::Vec2> res{};
 	GLFWmonitor* monitor = view->getMonitor();
-	int count;
+	if (!monitor)
+		return res;
+	int count = 0;
 	const GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
 	for (int i = 0; i < count; i++)
 	{
