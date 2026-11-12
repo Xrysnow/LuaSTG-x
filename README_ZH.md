@@ -67,7 +67,7 @@ LuaSTG-x 是一个基于 [cocos](https://github.com/Xrysnow/cocos-x) 和 [LuaSTG
 - Android 7.0+
 - iOS 17+
 - macOS 12+
-- Windows 7+ 和 visual c++ 运行时
+- Windows 7+ 和 Visual C++ 运行时
 
 注意，iOS 和 macOS 的版本要求是必须的，因为需要支持项目的 C++ 版本特性。
 

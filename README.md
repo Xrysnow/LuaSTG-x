@@ -67,7 +67,7 @@ Runtime requirements is actually decided by your compiler, but in most cases the
 - Android 7.0+
 - iOS 17+
 - macOS 12+
-- Windows 7+ and visual c++ runtime
+- Windows 7+ and Visual C++ runtime
 
 Note that iOS and macOS versions are always required for project C++ features.
 

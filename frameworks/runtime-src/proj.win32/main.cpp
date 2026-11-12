@@ -27,6 +27,33 @@
 
 USING_NS_CC;
 
+// A portable release keeps legacy relative data/save paths beside the EXE.
+// Development launches without the marker retain their chosen working directory.
+static bool preparePortableDirectory()
+{
+    std::vector<WCHAR> path(512);
+    for (;;)
+    {
+        const DWORD length = GetModuleFileNameW(nullptr, path.data(), static_cast<DWORD>(path.size()));
+        if (!length)
+            return false;
+        if (length < path.size())
+            break;
+        if (path.size() >= 32768)
+            return false;
+        path.resize(std::min<size_t>(path.size() * 2, 32768));
+    }
+    const std::wstring executable(path.data());
+    const auto separator = executable.find_last_of(L"\\/");
+    if (separator == std::wstring::npos)
+        return false;
+    const auto directory = executable.substr(0, separator + 1);
+    const auto attributes = GetFileAttributesW((directory + L"portable.flag").c_str());
+    if (attributes == INVALID_FILE_ATTRIBUTES || (attributes & FILE_ATTRIBUTE_DIRECTORY))
+        return true;
+    return SetCurrentDirectoryW(directory.c_str()) != FALSE;
+}
+
 int WINAPI _tWinMain(HINSTANCE hInstance,
                        HINSTANCE hPrevInstance,
                        LPTSTR    lpCmdLine,
@@ -35,15 +62,23 @@ int WINAPI _tWinMain(HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
+	if (!preparePortableDirectory())
+	{
+		MessageBoxW(nullptr, L"Unable to open the application directory.", L"LuaSTG-x", MB_OK | MB_ICONERROR);
+		return 1;
+	}
+
 	bool useConsole = false;
 	std::vector<std::string> args;
 	for (int i = 0; i < __argc; ++i)
 	{
-		size_t len = wcslen(__wargv[i]);
-		char* buf = (char*)malloc(len);
-		wcstombs(buf, __wargv[i], len);
-		args.emplace_back(buf, len);
-		free(buf);
+		const int length = WideCharToMultiByte(CP_UTF8, 0, __wargv[i], -1, nullptr, 0, nullptr, nullptr);
+		if (length <= 0)
+			return 1;
+		std::string argument(static_cast<size_t>(length), '\0');
+		WideCharToMultiByte(CP_UTF8, 0, __wargv[i], -1, argument.data(), length, nullptr, nullptr);
+		argument.pop_back();
+		args.emplace_back(std::move(argument));
 		if (args.back() == "--console" && !useConsole)
 		{
 			AllocConsole();
