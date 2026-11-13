@@ -5,6 +5,11 @@ if(APPLE)
     if(MACOSX)
         set_target_properties(${APP_NAME} PROPERTIES
             MACOSX_BUNDLE_INFO_PLIST "${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/Info.plist"
+            # Run the built bundle with its embedded frameworks, including
+            # when it is moved away from the build tree or video is disabled.
+            BUILD_WITH_INSTALL_RPATH TRUE
+            INSTALL_RPATH "@executable_path/../Frameworks"
+            INSTALL_RPATH_USE_LINK_PATH FALSE
         )
         # The legacy Intel LuaJIT layout produces an invalid low-address arm64
         # executable. Keep the platform's normal image/pagezero layout on arm64.
@@ -27,6 +32,8 @@ if(APPLE)
         # Keep the user's CMAKE_XCODE_ATTRIBUTE_* signing settings. Xcode's
         # defaults also allow unsigned compile/link checks without a team.
         target_link_options(${APP_NAME} PRIVATE -Wl,-rpath,@executable_path/Frameworks)
+    endif()
+    if(MACOSX OR IOS)
         get_target_property(LSTGX_OPENAL_FRAMEWORK OpenAL FRAMEWORK)
         if(LSTGX_OPENAL_FRAMEWORK)
             if(XCODE)
