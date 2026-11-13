@@ -98,6 +98,9 @@ if not view then
         view = cc.GLViewImpl:createWithRect(title, rect(0, 0, width, height))
     end
     director:setOpenGLView(view)
+    if lstg.GetPlatform() == 'linux' then
+        view:setIcon('icon.png')
+    end
     if cc.Configuration then
         local cfg = cc.Configuration:getInstance()
         local backend_device = cfg:getValue('renderer', 'N/A')
