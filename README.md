@@ -12,19 +12,18 @@ LuaSTG-x is a multi-platform game engine based on [cocos](https://github.com/Xry
 
 ## Download
 
-Full release download:
+Runtime assets and full release download:
 
-- [mega](https://mega.nz/folder/WVAQwYzA#X9g-KiulLMUZfdn8DDV72g)
-- [baidu](https://pan.baidu.com/s/11TeRowwODzz7ZjMEmeJkbA) (bmna)
+- [mega](https://mega.nz/folder/SAQmjbbR#kLBQU_UNMZwmoYJhnQZjZA)
+- [baidu](https://pan.baidu.com/s/1HBgVs32_QVsUhJy8FPOHBg?pwd=lstg)
 
 ## Main Features
 
-- Complete 2D game engine functions from [cocos](https://github.com/Xrysnow/cocos-x).
+- Complete game engine functions from [cocos](https://github.com/Xrysnow/cocos-x).
 - [Multi-platform audio engine](https://github.com/Xrysnow/cocos-x/tree/main/cocos/audio), supports audio effects.
-- [Multi-platform video engine](https://github.com/Xrysnow/lstgx_Video) based on FFmpeg.
-- Cocos Creator support from [creator_to_cocos2dx](https://github.com/cocos2d/creator_to_cocos2dx).
-- [Live2D support with Lua binding](https://github.com/Xrysnow/cocos-x-live2d).
-- [ImGui support with Lua binding](https://github.com/Xrysnow/cocos-x-imgui).
+- [Multi-platform video engine](https://github.com/Xrysnow/cocos-x/tree/main/cocos/video) based on FFmpeg.
+- [Live2D support](https://github.com/Xrysnow/cocos-x-live2d).
+- [ImGui support](https://github.com/Xrysnow/cocos-x-imgui).
 - Multi-thread optimizations.
 
 ## Relevant Link
@@ -37,20 +36,7 @@ Full release download:
 
 ## Build Instructions
 
-1. Clone the repo and submodules from GitHub (or download from [release page](https://github.com/Xrysnow/LuaSTG-x/releases)).
-
-        $ git clone --recursive https://github.com/Xrysnow/LuaSTG-x.git
-
-2. Download extra files from Cubism SDK if you need live2d module. ([instructions](https://github.com/Xrysnow/cocos-x-live2d)).
-
-3. Generate project using CMake ([instructions](https://github.com/cocos2d/cocos2d-x/blob/v4/cmake/README.md)).
-   - If your target is Android platform, just open `frameworks/runtime-src/proj.android` with Android Studio.
-   - If your target is macOS platform, add `-GXcode` parameter to CMake.
-   - If your target is IOS platform, you can search for a bash script that helps to configure CMake.
-   - If your target is macOS/IOS platform, you need to open `project setting -> TARGETS -> LuaSTG-x -> Build Phases -> Copy Files` and check `Code Sigh On Copy` for frameworks.
-   - If your target is Linux platform, you need to execute `frameworks/cocos-x/install-deps-linux.sh` before using CMake. It's recommended to add `-GNinja` parameter to use `ninja` since default `make` is very slow.
-
-4. Compile with your target compiler.
+[Detailed build guides](document/build/BUILD_EN.md)
 
 ## Build Requirements
 
@@ -76,11 +62,6 @@ Note that iOS and macOS versions are always required for project C++ features.
 LuaSTG-x\
 ├　[cocos-x](https://github.com/Xrysnow/cocos-x)\
 │　　└ [cocos-x-external](https://github.com/Xrysnow/cocos-x-external)\
-│　　　　├ [cocos2d-x-gfx](https://github.com/Xrysnow/cocos2d-x-gfx)\
-│　　　　├ [FFmpeg](https://ffmpeg.org) (video textures)\
-│　　　　├ [glslang](https://github.com/KhronosGroup/glslang)\
-│　　　　├ [openal-soft](https://github.com/kcat/openal-soft)\
-│　　　　└ [SPIRV-Cross](https://github.com/KhronosGroup/SPIRV-Cross)\
 ├　[cocos-x-imgui](https://github.com/Xrysnow/cocos-x-imgui)\
 │　　├ [ImGui](https://github.com/ocornut/imgui)\
 │　　├ [imgui_markdown](https://github.com/juliettef/imgui_markdown)\

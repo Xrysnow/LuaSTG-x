@@ -12,19 +12,18 @@ LuaSTG-x 是一个基于 [cocos](https://github.com/Xrysnow/cocos-x) 和 [LuaSTG
 
 ## 下载
 
-完整发布版本下载：
+运行素材与完整发布版本下载：
 
-- [百度网盘](https://pan.baidu.com/s/11TeRowwODzz7ZjMEmeJkbA) (提取码：bmna)
-- [mega](https://mega.nz/folder/WVAQwYzA#X9g-KiulLMUZfdn8DDV72g)
+- [百度网盘](https://pan.baidu.com/s/1HBgVs32_QVsUhJy8FPOHBg?pwd=lstg)
+- [mega](https://mega.nz/folder/SAQmjbbR#kLBQU_UNMZwmoYJhnQZjZA)
 
 ## 主要特性
 
-- 来自 [cocos](https://github.com/Xrysnow/cocos-x) 的完整 2D 游戏引擎功能
-- [多平台的音频引擎](https://github.com/Xrysnow/cocos-x/tree/main/cocos/audio)，支持声音效果
-- [多平台的视频引擎](https://github.com/Xrysnow/lstgx_Video)，基于 FFmpeg
-- 基于 [creator_to_cocos2dx](https://github.com/cocos2d/creator_to_cocos2dx) 的 Cocos Creator 支持
-- [Live2D 支持及 Lua 绑定](https://github.com/Xrysnow/cocos-x-live2d)
-- [ImGui 支持及 Lua 绑定](https://github.com/Xrysnow/cocos-x-imgui)
+- 来自 [cocos](https://github.com/Xrysnow/cocos-x) 的完整游戏引擎功能
+- [多平台音频引擎](https://github.com/Xrysnow/cocos-x/tree/main/cocos/audio)，支持声音效果
+- [多平台视频引擎](https://github.com/Xrysnow/cocos-x/tree/main/cocos/video)，基于 FFmpeg
+- [Live2D 支持](https://github.com/Xrysnow/cocos-x-live2d)
+- [ImGui 支持](https://github.com/Xrysnow/cocos-x-imgui)
 - 多线程优化
 
 ## 相关链接
@@ -37,20 +36,7 @@ LuaSTG-x 是一个基于 [cocos](https://github.com/Xrysnow/cocos-x) 和 [LuaSTG
 
 ## 编译指南
 
-1. 克隆本仓库及子模块（或从 [release 页面](https://github.com/Xrysnow/LuaSTG-x/releases) 下载）
-
-        $ git clone --recursive https://github.com/Xrysnow/LuaSTG-x.git
-
-2. 若需要使用 live2d 模块，请下载 Cubism SDK （[指南](https://github.com/Xrysnow/cocos-x-live2d)）
-
-3. 使用 CMake 生成工程文件 ([指南](https://github.com/cocos2d/cocos2d-x/blob/v4/cmake/README.md)).
-   - 若目标为安卓平台，只需用 Android Studio 打开 `frameworks/runtime-src/proj.android`
-   - 若目标为 macOS 平台，需要向 CMake 添加 `-GXcode` 参数
-   - 若目标为 IOS 平台，需要额外设置 CMake ，你可以找到一些 bash 脚本来实现
-   - 若目标为 macOS/IOS 平台，需要打开 `project setting -> TARGETS -> LuaSTG-x -> Build Phases -> Copy Files` 并为 frameworks 勾选 `Code Sigh On Copy`
-   - 若目标为 Linux 平台，需要在使用 CMake 前执行 `frameworks/cocos-x/install-deps-linux.sh`，默认的 `make` 编译速度较慢，推荐添加 `-GNinja` 参数来使用 `ninja` 编译
-
-4. 使用编译器进行编译
+[详细编译指南](document/build/BUILD_ZH.md)
 
 ## 编译要求
 
@@ -76,17 +62,12 @@ LuaSTG-x 是一个基于 [cocos](https://github.com/Xrysnow/cocos-x) 和 [LuaSTG
 LuaSTG-x\
 ├　[cocos-x](https://github.com/Xrysnow/cocos-x)\
 │　　└ [cocos-x-external](https://github.com/Xrysnow/cocos-x-external)\
-│　　　　├ [cocos2d-x-gfx](https://github.com/Xrysnow/cocos2d-x-gfx)\
-│　　　　├ [FFmpeg](https://ffmpeg.org)（视频纹理）\
-│　　　　├ [glslang](https://github.com/KhronosGroup/glslang)\
-│　　　　├ [openal-soft](https://github.com/kcat/openal-soft)\
-│　　　　└ [SPIRV-Cross](https://github.com/KhronosGroup/SPIRV-Cross)\
 ├　[cocos-x-imgui](https://github.com/Xrysnow/cocos-x-imgui)\
 │　　├ [ImGui](https://github.com/ocornut/imgui)\
 │　　├ [imgui_markdown](https://github.com/juliettef/imgui_markdown)\
 │　　├ [ImGuiColorTextEdit](https://github.com/Xrysnow/ImGuiColorTextEdit)\
 │　　└ [implot](https://github.com/epezent/implot)\
-├　[cocos-x-live2d](https://github.com/Xrysnow/cocos-x-live2d) (optional)\
+├　[cocos-x-live2d](https://github.com/Xrysnow/cocos-x-live2d) (可选)\
 │　├ [CubismNativeFramework](https://github.com/Live2D/CubismNativeFramework)\
 │　└ [Cubism SDK for Native](https://www.live2d.com/en/download/cubism-sdk/download-native)\
 ├　[lstgx_external](https://github.com/Xrysnow/lstgx_external)\
@@ -99,6 +80,6 @@ LuaSTG-x\
 │　　├ [MicroTeX](https://github.com/Xrysnow/MicroTeX)\
 │　　├ [nanosvg](https://github.com/memononen/nanosvg)\
 │　　├ [NativeFileDialog](https://github.com/mlabbe/nativefiledialog)\
-│　　└ [Yuescript](https://github.com/pigpigyyy/Yuescript) (optional)\
+│　　└ [Yuescript](https://github.com/pigpigyyy/Yuescript) (可选)\
 ├　[lstgx_Math](https://github.com/Xrysnow/lstgx_Math)\
 └　[lstgx_LuaCore](https://github.com/Xrysnow/lstgx_LuaCore)
