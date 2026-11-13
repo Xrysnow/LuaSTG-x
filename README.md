@@ -40,11 +40,13 @@ Runtime assets and full release download:
 
 ## Build Requirements
 
+The latest is the best. The lower bounds are:
+
 - CMake 3.28+
 - Android Studio 2025.1.1+ and NDK r30+
 - Linux with compiler supports C++20 (Clang is recommended)
 - macOS 14+ and Xcode 16.3+
-- Windows 7+ and VS 2022+
+- Windows 10+ and VS 2022+
 
 ## Runtime Requirements
 
@@ -53,7 +55,7 @@ Runtime requirements is actually decided by your compiler, but in most cases the
 - Android 7.0+
 - iOS 17+
 - macOS 12+
-- Windows 7+ and Visual C++ runtime
+- Windows 10+ and [Visual C++ runtime](https://aka.ms/vc14/vc_redist.x64.exe)
 
 Note that iOS and macOS versions are always required for project C++ features.
 

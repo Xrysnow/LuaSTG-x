@@ -40,11 +40,13 @@ LuaSTG-x 是一个基于 [cocos](https://github.com/Xrysnow/cocos-x) 和 [LuaSTG
 
 ## 编译要求
 
+建议使用最新版本的工具，最低要求为：
+
 - CMake 3.28+
 - Android Studio 2025.1.1+ 和 NDK r30+
-- 编译器支持 C++20 的 Linux (推荐使用Clang)
+- 编译器支持 C++20 的 Linux (推荐使用 Clang)
 - macOS 14+ 和 Xcode 16.3+
-- Windows 7+ 和 VS 2022+
+- Windows 10+ 和 VS 2022+
 
 ## 运行要求
 
@@ -53,9 +55,9 @@ LuaSTG-x 是一个基于 [cocos](https://github.com/Xrysnow/cocos-x) 和 [LuaSTG
 - Android 7.0+
 - iOS 17+
 - macOS 12+
-- Windows 7+ 和 Visual C++ 运行时
+- Windows 10+ 和 [Visual C++ 运行时](https://aka.ms/vc14/vc_redist.x64.exe)
 
-注意，iOS 和 macOS 的版本要求是必须的，因为需要支持项目的 C++ 版本特性。
+注意：iOS 和 macOS 的版本要求是必须的，因为需要支持项目的 C++ 版本特性。
 
 ## 依赖图
 
