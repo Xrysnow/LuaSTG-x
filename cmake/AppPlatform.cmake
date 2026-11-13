@@ -15,10 +15,34 @@ if(APPLE)
             )
         endif()
     elseif(IOS)
-        set_target_properties(${APP_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/Info.plist")
+        if(NOT MACOSX_BUNDLE_GUI_IDENTIFIER)
+            set(MACOSX_BUNDLE_GUI_IDENTIFIER "com.xrysnow.lstgx")
+        endif()
+        set_target_properties(${APP_NAME} PROPERTIES
+            MACOSX_BUNDLE_INFO_PLIST "${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/Info.plist"
+            MACOSX_BUNDLE_GUI_IDENTIFIER "${MACOSX_BUNDLE_GUI_IDENTIFIER}"
+            XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${MACOSX_BUNDLE_GUI_IDENTIFIER}"
+        )
         set_xcode_property(${APP_NAME} ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon")
-        set_xcode_property(${APP_NAME} DEVELOPMENT_TEAM "")
-        set_xcode_property(${APP_NAME} CODE_SIGN_IDENTITY "iPhone Developer")
+        # Keep the user's CMAKE_XCODE_ATTRIBUTE_* signing settings. Xcode's
+        # defaults also allow unsigned compile/link checks without a team.
+        target_link_options(${APP_NAME} PRIVATE -Wl,-rpath,@executable_path/Frameworks)
+        get_target_property(LSTGX_OPENAL_FRAMEWORK OpenAL FRAMEWORK)
+        if(LSTGX_OPENAL_FRAMEWORK)
+            if(XCODE)
+                set_property(TARGET ${APP_NAME} APPEND PROPERTY XCODE_EMBED_FRAMEWORKS OpenAL)
+                set_target_properties(${APP_NAME} PROPERTIES
+                    XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY ON
+                    XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY ON
+                )
+            else()
+                add_custom_command(TARGET ${APP_NAME} POST_BUILD
+                    COMMAND /usr/bin/ditto "$<TARGET_BUNDLE_DIR:OpenAL>"
+                        "$<TARGET_BUNDLE_CONTENT_DIR:${APP_NAME}>/Frameworks/soft_oal.framework"
+                    VERBATIM
+                )
+            endif()
+        endif()
     endif()
 elseif(WINDOWS)
     cocos_copy_target_dll(${APP_NAME})

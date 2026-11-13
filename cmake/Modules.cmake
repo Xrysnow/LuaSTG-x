@@ -27,8 +27,6 @@ if(APPLE AND CC_ENABLE_VIDEO_TEXTURE)
 	# set rpath
 	if(MACOSX)
 		target_link_options(${APP_NAME} PRIVATE -Wl,-rpath,@loader_path/../Frameworks)
-	else()
-		target_link_options(${APP_NAME} PRIVATE -Wl,-rpath,@executable_path/Frameworks)
 	endif()
 endif()
 
