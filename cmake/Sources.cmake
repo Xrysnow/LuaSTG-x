@@ -9,6 +9,11 @@ if(APPLE OR VS)
     cocos_mark_multi_resources(res_res RES_TO "Resources/res" FOLDERS ${res_res_folders})
     cocos_mark_multi_resources(res_src RES_TO "Resources/src" FOLDERS ${res_src_folders})
     set(cc_common_res ${res_res} ${res_src} ${res_script})
+    if(VS AND cc_common_res)
+        # Keep assets visible without treating them as C++ header units during
+        # Visual Studio's background module dependency scanning.
+        set_source_files_properties(${cc_common_res} PROPERTIES VS_TOOL_OVERRIDE "None")
+    endif()
 endif()
 
 # sources, headers
