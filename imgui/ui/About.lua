@@ -55,10 +55,11 @@ function M:ctor(isPopup)
             hh = -1
         end
 
-        if im.beginChildFrame(im.getID('lstg.about'), im.vec2(-1, hh)) then
+        if im.beginChild(im.getID('lstg.about'), im.vec2(-1, hh),
+                im.ImGuiChildFlags.ImGuiChildFlags_FrameStyle) then
             M.renderContent()
         end
-        im.endChildFrame()
+        im.endChild()
     end)
 
     if isPopup then

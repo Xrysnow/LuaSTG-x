@@ -301,8 +301,10 @@ M._push_pop_wrapper = push_pop_wrapper
 ---@param allow_keyboard_focus boolean
 function M.AllowKeyboardFocus(allow_keyboard_focus)
     return push_pop_wrapper(
-            imgui.pushAllowKeyboardFocus,
-            imgui.popAllowKeyboardFocus,
+            function(value)
+                imgui.pushItemFlag(imgui.ImGuiItemFlags.ImGuiItemFlags_NoTabStop, not value)
+            end,
+            imgui.popItemFlag,
             { allow_keyboard_focus })
 end
 
