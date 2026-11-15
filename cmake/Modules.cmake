@@ -29,7 +29,6 @@ endif()
 # imgui
 
 add_subdirectory(${LSTGX_MOD_ROOT}/imgui)
-target_link_libraries(cc_imgui PUBLIC cocos2d)
 list(APPEND EXTERNAL_LIBS cc_imgui)
 
 # Live2D
