@@ -23,9 +23,9 @@ function M.renderContent()
     local build_date = lstg.GetBuildDate and lstg.GetBuildDate() or 'N/A'
     local d = M._data
 
-    im.setWindowFontScale(1.5)
+    im.pushFont(nil, im.getStyle().FontSizeBase * 1.5)
     im.textWrapped('LuaSTG-x')
-    im.setWindowFontScale(1)
+    im.popFont()
     im.separator()
     im.textWrapped(i18n(d[1]))
     im.textWrapped(i18n(d[2]) .. ': https://github.com/Xrysnow/LuaSTG-x')

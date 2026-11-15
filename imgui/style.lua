@@ -45,7 +45,7 @@ function M.styleVarsDefault()
     style.MouseCursorScale = 1.0
     style.AntiAliasedLines = true
     style.AntiAliasedFill = true
-    style.CurveTessellationTol = 1.25
+    style.CurveTessellationMaxError = math.sqrt(1.25)
     style.CircleSegmentMaxError = 1.60
 end
 

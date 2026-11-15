@@ -310,8 +310,10 @@ end
 ---@param repeat_ boolean
 function M.buttonRepeat(repeat_)
     return push_pop_wrapper(
-            imgui.pushButtonRepeat,
-            imgui.popButtonRepeat,
+            function(value)
+                imgui.pushItemFlag(imgui.ImGuiItemFlags.ImGuiItemFlags_ButtonRepeat, value)
+            end,
+            imgui.popItemFlag,
             { repeat_ })
 end
 

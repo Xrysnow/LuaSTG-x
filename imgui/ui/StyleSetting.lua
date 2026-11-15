@@ -9,17 +9,17 @@ function M:ctor(...)
     local sel = -1
     self:addChild(function()
         local ret
-        local io = im.getIO()
+        local style = im.getStyle()
         --
         im.textUnformatted('Global font scale')
         im.pushID('sliderFloat')
-        ret, io.FontGlobalScale = im.sliderFloat('', io.FontGlobalScale, 0.5, 2)
+        ret, style.FontScaleMain = im.sliderFloat('', style.FontScaleMain, 0.5, 2)
         im.popID()
 
         im.sameLine()
         ret = im.button('Reset')
         if ret then
-            io.FontGlobalScale = 1
+            style.FontScaleMain = 1
         end
         im.separator()
         --

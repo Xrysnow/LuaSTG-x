@@ -91,13 +91,15 @@ function M:_render()
         local cpos = input:getCursorPosition()
 
         local font_scale = setting.xe.code_editor_font_scale
+        local base_font_size = im.getStyle().FontSizeBase
         if font_scale then
-            im.setWindowFontScale(font_scale / 100)
+            im.pushFont(nil, base_font_size * font_scale / 100)
         end
 
         --local hh = -im.getFrameHeightWithSpacing()
         local hh = -im.getTextLineHeightWithSpacing()
-        im.pushFont(require('xe.main'):getInstance()._font_mono)
+        local font = require('xe.main'):getInstance()._font_mono
+        im.pushFont(font, (font and font.LegacySize or base_font_size) * (font_scale or 100) / 100)
         input:render(self._title, im.vec2(-1, hh), true)
         im.popFont()
 
@@ -109,7 +111,7 @@ function M:_render()
         end
 
         if font_scale then
-            im.setWindowFontScale(1)
+            im.popFont()
         end
 
         im.text(('%6d/%6d %6d lines  | %s | %s'):format(
