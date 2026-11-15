@@ -69,15 +69,7 @@ function M:onCreate()
         cfg.OversampleH = 2
         cfg.OversampleV = 1
     end
-    local font_default = im.addFontTTF('font/WenQuanYiMicroHeiMono.ttf', 14 * dpiScale, cfg, {
-        --0x0080, 0x00FF, -- Basic Latin + Latin Supplement
-        0x2000, 0x206F, -- General Punctuation
-        0x3000, 0x30FF, -- CJK Symbols and Punctuations, Hiragana, Katakana
-        0x31F0, 0x31FF, -- Katakana Phonetic Extensions
-        0xFF00, 0xFFEF, -- Half-width characters
-        0x4e00, 0x9FAF, -- CJK Ideograms
-        0,
-    })
+    local font_default = im.addFontTTF('font/WenQuanYiMicroHeiMono.ttf', 14 * dpiScale, cfg)
     self._font_default = font_default
     --
     cfg = im.ImFontConfig()
@@ -85,7 +77,7 @@ function M:onCreate()
     cfg.OversampleV = 3
     cfg.MergeMode = true
     cfg.DstFont = font_default
-    im.addFontTTF('font/NotoSansDisplay-Regular.ttf', 18 * dpiScale, cfg, im.GlyphRanges.Default)
+    im.addFontTTF('font/NotoSansDisplay-Regular.ttf', 18 * dpiScale, cfg)
     --
     local fa = require('xe.ifont')
     cfg = im.ImFontConfig()
@@ -95,19 +87,13 @@ function M:onCreate()
     cfg.DstFont = font_default
     cfg.GlyphMinAdvanceX = 12
     cfg.GlyphMaxAdvanceX = 12
-    im.addFontTTF('font/' .. fa.FontIconFileName, 14 * dpiScale, cfg, {
-        fa.IconMin, fa.IconMax, 0
-    })
+    im.addFontTTF('font/' .. fa.FontIconFileName, 14 * dpiScale, cfg)
     --
     cfg = im.ImFontConfig()
     cfg.OversampleH = 2
     cfg.OversampleV = 2
     cfg.MergeMode = false
-    local font_mono = im.addFontTTF('font/JetBrainsMono-Regular.ttf', 14 * dpiScale, cfg, {
-        0x0020, 0x00FF, -- Basic Latin + Latin Supplement
-        0x2000, 0x206F, -- General Punctuation
-        0
-    })
+    local font_mono = im.addFontTTF('font/JetBrainsMono-Regular.ttf', 14 * dpiScale, cfg)
     self._font_mono = font_mono
 
     -- Add a CJK fallback source before drawing; JetBrains Mono keeps priority.
@@ -117,12 +103,7 @@ function M:onCreate()
         cfg.OversampleV = 2
         cfg.MergeMode = true
         cfg.DstFont = font_mono
-        im.addFontTTF('font/WenQuanYiMicroHeiMono.ttf', 14 * dpiScale, cfg, {
-            0x3000, 0x30FF,
-            0x31F0, 0x31FF,
-            0xFF00, 0xFFEF,
-            0x4e00, 0x9FAF,
-        })
+        im.addFontTTF('font/WenQuanYiMicroHeiMono.ttf', 14 * dpiScale, cfg)
     end
 
     --

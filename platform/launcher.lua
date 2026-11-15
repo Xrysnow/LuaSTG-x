@@ -169,10 +169,7 @@ function M:_initImGui()
     local layer = self._layer
     layer:setVisible(true)
     if not M._font then
-        M._font = im.addFontTTF('font/WenQuanYiMicroHeiMono.ttf', 36, nil, {
-            0x0020, 0x00FF, 0x2000, 0x206F, 0x3000, 0x30FF,
-            0x4E00, 0x9FAF, 0xFF00, 0xFFEF, 0,
-        })
+        M._font = im.addFontTTF('font/WenQuanYiMicroHeiMono.ttf', 36)
     end
     if not self._renderer then
         self._renderer = require('imgui.Widget').Widget()
