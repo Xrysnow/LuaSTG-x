@@ -84,7 +84,7 @@ LUA_REGISTER_FUNC_DEF(lstg, RenderSector)
 	LRR.updateRenderMode(p->getRenderMode());
 	auto tex = p->getSprite()->getTexture();
 
-	const int nBlocks = n / LGOBJ_MAXLASERNODE + 1;
+	const int nBlocks = 1 + (n - 1) / LGOBJ_MAXLASERNODE;
 	for (int j = 0; j < nBlocks; ++j)
 	{
 		int nj = j*LGOBJ_MAXLASERNODE;

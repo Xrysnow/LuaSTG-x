@@ -799,6 +799,9 @@ void XRenderer::addCommand(RenderCommand* cmd)
 void XRenderer::addXTCommand(XTrianglesCommand* cmd)
 {
 	CCASSERT(bRenderStarted, "not in render!");
+	// Empty geometry must not reach batching or a zero-byte GPU buffer update.
+	if (cmd->getVertexCount() == 0 || cmd->getIndexCount() == 0)
+		return;
 #ifdef BATCH_COMMAND
 	if (triToDraw.empty() || triToDraw.back()->getMaterialID() == cmd->getMaterialID())
 	{
