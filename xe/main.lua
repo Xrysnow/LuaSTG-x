@@ -84,6 +84,7 @@ function M:onCreate()
     cfg.OversampleH = 3
     cfg.OversampleV = 3
     cfg.MergeMode = true
+    cfg.DstFont = font_default
     im.addFontTTF('font/NotoSansDisplay-Regular.ttf', 18 * dpiScale, cfg, im.GlyphRanges.Default)
     --
     local fa = require('xe.ifont')
@@ -91,6 +92,7 @@ function M:onCreate()
     cfg.OversampleH = 2
     cfg.OversampleV = 2
     cfg.MergeMode = true
+    cfg.DstFont = font_default
     cfg.GlyphMinAdvanceX = 12
     cfg.GlyphMaxAdvanceX = 12
     im.addFontTTF('font/' .. fa.FontIconFileName, 14 * dpiScale, cfg, {
@@ -108,20 +110,20 @@ function M:onCreate()
     })
     self._font_mono = font_mono
 
-    local built
-    la:addChild(wi.Widget(function()
-        if built then
-            return
-        end
-        built = im.getIO().Fonts:isBuilt()
-        if built then
-            -- reuse CJK glyphs
-            font_mono:mergeGlyphs(font_default, 0x3000, 0x30FF)
-            font_mono:mergeGlyphs(font_default, 0x31F0, 0x31FF)
-            font_mono:mergeGlyphs(font_default, 0xFF00, 0xFFEF)
-            font_mono:mergeGlyphs(font_default, 0x4e00, 0x9FAF)
-        end
-    end))
+    -- Add a CJK fallback source before drawing; JetBrains Mono keeps priority.
+    if font_mono then
+        cfg = im.ImFontConfig()
+        cfg.OversampleH = 2
+        cfg.OversampleV = 2
+        cfg.MergeMode = true
+        cfg.DstFont = font_mono
+        im.addFontTTF('font/WenQuanYiMicroHeiMono.ttf', 14 * dpiScale, cfg, {
+            0x3000, 0x30FF,
+            0x31F0, 0x31FF,
+            0xFF00, 0xFFEF,
+            0x4e00, 0x9FAF,
+        })
+    end
 
     --
     local dock = wi.wrapper(function()

@@ -383,16 +383,6 @@ function imgui.ImFontConfig.__call()
     return {}
 end
 
----
----@param path string
----@param size number
----@param config table
----@param ranges number
----@return imgui.ImFont
-function imgui.ImFontAtlas.addFontFromFileTTF(path, size, config, ranges)
-    return imgui.addFontTTF(path, size, config, ranges)
-end
-
 local GlyphRanges = {}
 imgui.GlyphRanges = GlyphRanges
 --- Basic Latin, Extended Latin
