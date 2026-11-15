@@ -4,7 +4,7 @@ local M = class('im.TextFilter')
 function M:ctor()
     self._filters = {}
     self._grep = 0
-    self._input = ''
+    self._buf = ''
 end
 
 function M:build(s)
