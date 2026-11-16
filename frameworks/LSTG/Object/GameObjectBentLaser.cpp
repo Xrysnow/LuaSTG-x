@@ -20,15 +20,14 @@ GameObjectBentLaser::~GameObjectBentLaser()
 {
 }
 
-GameObjectBentLaser* GameObjectBentLaser::create()
+cc::IntrusivePtr<GameObjectBentLaser> GameObjectBentLaser::create()
 {
-	auto ret = new (std::nothrow) GameObjectBentLaser();
+	cc::IntrusivePtr<GameObjectBentLaser> ret{new (std::nothrow) GameObjectBentLaser()};
 	if (ret)
 	{
 		ret->reset();
 		return ret;
 	}
-	CC_SAFE_DELETE(ret);
 	return nullptr;
 }
 

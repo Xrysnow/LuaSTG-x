@@ -11,13 +11,13 @@ public:
 		STRING_TEXTURE
 	};
 
-	static XLabel* createWithBMFont(const std::string& bmfontPath, const std::string& text,
+	static cc::IntrusivePtr<XLabel> createWithBMFont(const std::string& bmfontPath, const std::string& text,
 		const cocos2d::Vec2& imageOffset = cocos2d::Vec2::ZERO);
 
-	static XLabel* createWithTTF(const cocos2d::TTFConfig& ttfConfig, const std::string& text,
+	static cc::IntrusivePtr<XLabel> createWithTTF(const cocos2d::TTFConfig& ttfConfig, const std::string& text,
 		cocos2d::TextHAlignment hAlignment = cocos2d::TextHAlignment::LEFT, int maxLineWidth = 0);
 
-	static XLabel* createWithSystemFont(const std::string& text, const std::string& font, float fontSize,
+	static cc::IntrusivePtr<XLabel> createWithSystemFont(const std::string& text, const std::string& font, float fontSize,
 		const cocos2d::Size& dimensions = cocos2d::Size::ZERO,
 		cocos2d::TextHAlignment hAlignment = cocos2d::TextHAlignment::LEFT,
 		cocos2d::TextVAlignment vAlignment = cocos2d::TextVAlignment::TOP);

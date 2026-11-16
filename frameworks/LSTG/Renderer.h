@@ -41,16 +41,16 @@ private:
 		cocos2d::Viewport storeViewport;
 		cocos2d::Viewport currentVP;
 
-		cocos2d::Camera* movingCamera = nullptr;
+		cc::IntrusivePtr<cocos2d::Camera> movingCamera;
 
-		cocos2d::DrawNode* drawNode = nullptr;
-		cocos2d::Sprite* clearRect = nullptr;
+		cc::IntrusivePtr<cocos2d::DrawNode> drawNode;
+		cc::IntrusivePtr<cocos2d::Sprite> clearRect;
 		cocos2d::V3F_C4B_T2F_Quad clearRectQuad;
 		cocos2d::Mat4 clearRectProj;
 		RenderMode* clearRectRenderMode = nullptr;
 
 		bool bUseFrameBuffer = true;
-		cocos2d::RenderTexture* frameBuffer = nullptr;
+		cc::IntrusivePtr<cocos2d::RenderTexture> frameBuffer;
 		cocos2d::Mat4 _FBProjection;
 		cocos2d::Size _lastFBSize;
 		bool bOffscreen = false;
@@ -87,7 +87,7 @@ private:
 
 		void setUseFrameBuffer(bool v)noexcept { bUseFrameBuffer = v; }
 		bool isUseFrameBuffer() const noexcept { return bUseFrameBuffer; }
-		cocos2d::RenderTexture* getFrameBuffer() const noexcept { return frameBuffer; }
+		cocos2d::RenderTexture* getFrameBuffer() const noexcept { return frameBuffer.get(); }
 		void setOffscreen(bool b) noexcept;
 		bool isOffscreen() const noexcept { return bOffscreen; }
 
@@ -195,10 +195,10 @@ private:
 		void renderFrameBuffer(float scale, bool copy = false);
 
 	public:
-		cocos2d::RenderTexture* copyFrameBuffer(bool transparent = false);
+		cc::IntrusivePtr<cocos2d::RenderTexture> copyFrameBuffer(bool transparent = false);
 
 		cocos2d::Renderer* getRenderer() const noexcept { return pRenderer; }
-		cocos2d::DrawNode* getDrawNode() const noexcept { return drawNode; }
+		cocos2d::DrawNode* getDrawNode() const noexcept { return drawNode.get(); }
 		const cocos2d::Mat4& getCurrentProjection() const noexcept { return currentProjection; }
 		cocos2d::Viewport getCurrentViewport() const noexcept { return currentVP; }
 

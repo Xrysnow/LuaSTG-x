@@ -667,16 +667,16 @@ Image* lstg::getTextureImage(Texture2D* texture,
 		format = texture->getBackendTexture()->getTextureFormat();
 	if(format != backend::PixelFormat::RGBA8888)
 		return nullptr;
-	const auto image = new Image();
+	cc::IntrusivePtr<Image> image{new Image()};
 	const auto bytePerPixel = texture->getBitsPerPixelForFormat() / 8;
-	auto callback = [=](const unsigned char* data, std::size_t w, std::size_t h) {
+	auto callback = [image, texture, bytePerPixel](const unsigned char* data, std::size_t w, std::size_t h) {
 		image->initWithRawData(data, w * h * bytePerPixel,
 			w, h, bytePerPixel * 8, texture->hasPremultipliedAlpha());
 	};
 	//texture->getBackendTexture()->getBytes(x, y, width, height, flipImage, callback);
 	((cocos2d::backend::Texture2DGFX*)texture->getBackendTexture())->getBytes(
 		x, y, width, height, flipImage, callback);
-	return image;
+	return image.detach();
 }
 
 Image* lstg::getSpriteImage(Sprite* sprite, bool flipImage)
@@ -1048,32 +1048,30 @@ bool util::BlendFactorFromString(const std::string& str, backend::BlendFactor& v
 	return true;
 }
 
-backend::Program* util::CreateProgramFromPath(const std::string& v, const std::string& f)
+cc::IntrusivePtr<cocos2d::backend::Program> util::CreateProgramFromPath(const std::string& v, const std::string& f)
 {	
 	auto fu = FileUtils::getInstance();
 	const auto v_content = fu->getStringFromFile(fu->fullPathForFilename(v));
 	const auto f_content = fu->getStringFromFile(fu->fullPathForFilename(f));
-	const auto ret = backend::Device::getInstance()->newProgram(v_content, f_content);
+	cc::IntrusivePtr<backend::Program> ret{backend::Device::getInstance()->newProgram(v_content, f_content), cc::adopt_ref};
 	if (ret)
 	{
-		ret->autorelease();
 		return ret;
 	}
 	return nullptr;
 }
 
-backend::Program* util::CreateProgramFromString(const std::string& v, const std::string& f)
+cc::IntrusivePtr<cocos2d::backend::Program> util::CreateProgramFromString(const std::string& v, const std::string& f)
 {
-	const auto ret = backend::Device::getInstance()->newProgram(v, f);
+	cc::IntrusivePtr<backend::Program> ret{backend::Device::getInstance()->newProgram(v, f), cc::adopt_ref};
 	if (ret)
 	{
-		ret->autorelease();
 		return ret;
 	}
 	return nullptr;
 }
 
-backend::Program* util::CreateProgramFromData(Data* v, Data* f)
+cc::IntrusivePtr<cocos2d::backend::Program> util::CreateProgramFromData(Data* v, Data* f)
 {
 	if (!v || !f)
 	{
@@ -1087,10 +1085,9 @@ backend::Program* util::CreateProgramFromData(Data* v, Data* f)
 		XERROR("invalid data");
 		return nullptr;
 	}
-	const auto ret = backend::Device::getInstance()->newProgram(vdata, fdata);
+	cc::IntrusivePtr<backend::Program> ret{backend::Device::getInstance()->newProgram(vdata, fdata), cc::adopt_ref};
 	if (ret)
 	{
-		ret->autorelease();
 		return ret;
 	}
 	XERROR("can't load shader from given bytes");

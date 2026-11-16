@@ -9,7 +9,7 @@ namespace lstg
 	{
 		bool init(ResAnimation* res);
 	public:
-		static ComponentDataAni* create(ResAnimation* res);
+		static cc::IntrusivePtr<ComponentDataAni> create(ResAnimation* res);
 
 		float interval = 1.f;
 		int32_t timer = 0;

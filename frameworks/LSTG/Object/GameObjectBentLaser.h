@@ -48,7 +48,7 @@ namespace lstg
 		std::set<float> ySet;
 		std::set<float> hwSet;
 	public:
-		static GameObjectBentLaser* create();
+		static cc::IntrusivePtr<GameObjectBentLaser> create();
 
 		size_t getNodeCount() const { return queue.size(); }
 		float getLength() const { return laserLength; }

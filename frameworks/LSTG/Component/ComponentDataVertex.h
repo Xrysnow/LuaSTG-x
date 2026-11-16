@@ -11,7 +11,7 @@ namespace lstg
 	public:
 		~ComponentDataVertex();
 		cocos2d::TrianglesCommand::Triangles tri;
-		static ComponentDataVertex* create(ResTexture* res);
+		static cc::IntrusivePtr<ComponentDataVertex> create(ResTexture* res);
 	protected:
 		bool init(ResTexture* res);
 	};

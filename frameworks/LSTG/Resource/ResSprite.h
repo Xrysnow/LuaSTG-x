@@ -6,8 +6,8 @@ namespace lstg {
 	class ResSprite :
 		public ResourceQuad
 	{
-		cocos2d::RefPtr<cocos2d::Sprite> sprite;
-		cocos2d::RefPtr<cocos2d::Texture2D> normalMap;
+		cc::IntrusivePtr<cocos2d::Sprite> sprite;
+		cc::IntrusivePtr<cocos2d::Texture2D> normalMap;
 	public:
 		cocos2d::Sprite* getSprite() const { return sprite; }
 		cocos2d::Texture2D* getTexture() const { return sprite->getTexture(); }
@@ -20,7 +20,7 @@ namespace lstg {
 		bool render4v(float x1, float y1, float z1, float x2, float y2, float z2,
 			float x3, float y3, float z3, float x4, float y4, float z4);
 
-		ResSprite* clone(const std::string& newName);
+		cc::IntrusivePtr<ResSprite> clone(const std::string& newName);
 		std::unordered_map<std::string, std::string> getInfo() const override;
 		size_t getMemorySize() override;
 
@@ -28,10 +28,10 @@ namespace lstg {
 			XColliderType colliType, double a, double b, const std::string& path = "");
 		~ResSprite() override;
 
-		static ResSprite* create(const std::string& name, ResTexture* texture,
+		static cc::IntrusivePtr<ResSprite> create(const std::string& name, ResTexture* texture,
 			double x, double y, double w, double h,
 			double a, double b, XColliderType colliType);
-		static ResSprite* createWithSprite(const std::string& name, cocos2d::Sprite* sprite,
+		static cc::IntrusivePtr<ResSprite> createWithSprite(const std::string& name, cocos2d::Sprite* sprite,
 			double a, double b, XColliderType colliType);
 	};
 }

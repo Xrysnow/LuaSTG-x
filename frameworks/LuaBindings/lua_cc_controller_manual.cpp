@@ -149,7 +149,7 @@ static int tolua_cocos2dx_EventListenerController_clone(lua_State* tolua_S)
     const int argc = lua_gettop(tolua_S) - 1;
     if (argc == 0)
     {
-        cocos2d::EventListenerController* tolua_ret = cocos2d::EventListenerController::create();
+        cc::IntrusivePtr<cocos2d::EventListenerController> tolua_ret = cocos2d::EventListenerController::create();
         if(nullptr == tolua_ret)
             return 0;
 
@@ -162,7 +162,7 @@ static int tolua_cocos2dx_EventListenerController_clone(lua_State* tolua_S)
 
         int ID = (tolua_ret) ? (int)tolua_ret->_ID : -1;
         int* luaID = (tolua_ret) ? &tolua_ret->_luaID : NULL;
-        toluafix_pushusertype_ccobject(tolua_S, ID, luaID, (void*)tolua_ret,"cc.EventListenerController");
+        toluafix_pushusertype_ccobject(tolua_S, ID, luaID, (void*)cocos2d::transferToAutoreleasePool(std::move(tolua_ret)),"cc.EventListenerController");
         return 1;
     }
     LUA_PARAMETER_ERROR(tolua_S, LUA_FNAME, argc, "0");
@@ -437,11 +437,10 @@ int lua_cocos2dx_controller_Controller_receiveExternalKeyEvent(lua_State* tolua_
 }
 
 template<typename Value>
-static cocos2d::EventController* createControllerEvent(
+static cc::IntrusivePtr<cocos2d::EventController> createControllerEvent(
     cocos2d::EventController::ControllerEventType type, cocos2d::Controller* controller, Value value)
 {
-    auto* event = new cocos2d::EventController(type, controller, value);
-    event->autorelease();
+    auto* event = cocos2d::transferToAutoreleasePool(cc::IntrusivePtr<cocos2d::EventController>{new cocos2d::EventController(type, controller, value)});
     return event;
 }
 

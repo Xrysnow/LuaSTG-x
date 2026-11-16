@@ -57,8 +57,6 @@ Resource* Resource::fromLua(lua_State* L, int idx, ResourceType type)
 Resource::Resource(ResourceType t, const std::string& name, const string& path)
 : resType(t), resName(name), resPath(path)
 {
-	instances.insert(this);
-	autorelease();
 }
 
 Resource::~Resource()

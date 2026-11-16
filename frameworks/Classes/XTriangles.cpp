@@ -1,9 +1,9 @@
 ﻿#include "XTriangles.h"
 #include <cstring>
 
-#define CREATE(_init) auto ret = new (std::nothrow) Triangles(); \
-if (ret&&ret->_init){ ret->autorelease(); return ret; } \
-CC_SAFE_DELETE(ret); return nullptr;
+#define CREATE(_init) cc::IntrusivePtr<Triangles> ret{new (std::nothrow) Triangles()}; \
+if (ret&&ret->_init) return ret; \
+return nullptr;
 
 using namespace lstg;
 using namespace cocos2d;
@@ -23,28 +23,28 @@ Triangles::~Triangles()
 	clear();
 }
 
-Triangles* Triangles::create(size_t nVertex, size_t nIndex)
+cc::IntrusivePtr<Triangles> Triangles::create(size_t nVertex, size_t nIndex)
 {
 	CREATE(init(nVertex, nIndex));
 }
 
-Triangles* Triangles::createQuad(const Vec2& scale, const Rect& texRect)
+cc::IntrusivePtr<Triangles> Triangles::createQuad(const Vec2& scale, const Rect& texRect)
 {
 	CREATE(initQuad(scale, texRect));
 }
 
-Triangles* Triangles::createGrid(size_t nCol, size_t nRow, const Vec2& scale, const Rect& texRect)
+cc::IntrusivePtr<Triangles> Triangles::createGrid(size_t nCol, size_t nRow, const Vec2& scale, const Rect& texRect)
 {
 	CREATE(initGrid(nCol, nRow, scale, texRect));
 }
 
-Triangles* Triangles::createSector(size_t nCol, size_t nRow, float rOuter, float rInner, float angle,
+cc::IntrusivePtr<Triangles> Triangles::createSector(size_t nCol, size_t nRow, float rOuter, float rInner, float angle,
 	const Rect& texRect)
 {
 	CREATE(initSector(nCol, nRow, rOuter, rInner, angle, texRect));
 }
 
-Triangles* Triangles::createCircle(size_t nCol, size_t nRow, float r, const Rect& texRect)
+cc::IntrusivePtr<Triangles> Triangles::createCircle(size_t nCol, size_t nRow, float r, const Rect& texRect)
 {
 	return createSector(nCol, nRow, r, 0, M_PI * 2, texRect);
 }
@@ -211,7 +211,7 @@ void Triangles::setIndex(size_t index, unsigned short value)
 	tri.indices[index] = value;
 }
 
-Triangles* Triangles::clone()
+cc::IntrusivePtr<Triangles> Triangles::clone()
 {
 	auto ret = create(tri.vertCount, tri.indexCount);
 	if (ret)

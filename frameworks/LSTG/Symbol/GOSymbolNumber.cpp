@@ -4,17 +4,17 @@
 using namespace lstg;
 using namespace lstg::symbol;
 
-#define CREATE_CHECK(p, _cond) if (_cond){(p)->autorelease();return (p);} CC_SAFE_DELETE(p); return nullptr;
+#define CREATE_CHECK(p, _cond) if (_cond) return p; return nullptr;
 
-Number* Number::createWithValue(float v)
+cc::IntrusivePtr<Number> Number::createWithValue(float v)
 {
-	auto ret = new(std::nothrow) Number();
+	cc::IntrusivePtr<Number> ret{new(std::nothrow) Number()};
 	CREATE_CHECK(ret, ret&&ret->initWithValue(v));
 }
 
-Number* Number::createWithObjProperty(const std::string& property)
+cc::IntrusivePtr<Number> Number::createWithObjProperty(const std::string& property)
 {
-	Number* ret = NumberFromGameObject::create(GameObjectPropertyHash(property));
+	cc::IntrusivePtr<Number> ret = NumberFromGameObject::create(GameObjectPropertyHash(property));
 	if (!ret)
 		ret = NumberFromGameObjectLua::create(property);
 	return ret;
@@ -33,9 +33,9 @@ void Number::pushLua(lua_State* L, uint32_t /*idxOut*/)
 	lua_pushnumber(L, _value);
 }
 
-NumberFromGameObject* NumberFromGameObject::create(GameObjectProperty p)
+cc::IntrusivePtr<NumberFromGameObject> NumberFromGameObject::create(GameObjectProperty p)
 {
-	auto ret = new (std::nothrow) NumberFromGameObject();
+	cc::IntrusivePtr<NumberFromGameObject> ret{new (std::nothrow) NumberFromGameObject()};
 	CREATE_CHECK(ret, ret&&ret->init(p));
 }
 
@@ -59,9 +59,9 @@ bool NumberFromGameObject::init(GameObjectProperty p)
 	return _eval != nullptr;
 }
 
-NumberFromGameObjectLua* NumberFromGameObjectLua::create(const std::string& field)
+cc::IntrusivePtr<NumberFromGameObjectLua> NumberFromGameObjectLua::create(const std::string& field)
 {
-	auto ret = new (std::nothrow) NumberFromGameObjectLua();
+	cc::IntrusivePtr<NumberFromGameObjectLua> ret{new (std::nothrow) NumberFromGameObjectLua()};
 	CREATE_CHECK(ret, ret&&ret->init(field));
 }
 

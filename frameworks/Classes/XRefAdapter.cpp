@@ -51,19 +51,17 @@ const char* RefAdapter::getLuaTypeName(const char* typeName)
 	return nullptr;
 }
 
-RefAdapter* RefAdapter::_create(void* obj, const std::string& className, const std::function<void(void*)>& dtor)
+cc::IntrusivePtr<RefAdapter> RefAdapter::_create(void* obj, const std::string& className, const std::function<void(void*)>& dtor)
 {
-	auto ret = new (std::nothrow) RefAdapter();
+	cc::IntrusivePtr<RefAdapter> ret{new (std::nothrow) RefAdapter()};
 	if (ret)
 	{
 		ret->_ptr = obj;
 		ret->_className = className;
 		ret->_dtor = dtor;
 		ret->_typeName = className;
-		ret->autorelease();
 		return ret;
 	}
-	delete ret;
 	return nullptr;
 }
 

@@ -149,7 +149,7 @@ int lua_lstg_WindowHelper_setDefaultCursor(lua_State* lua_S)
 int lua_lstg_WindowHelper_setFullscreen(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.WindowHelper", "lstg.WindowHelper:setFullscreen");
-	LUA_TRY_INVOKE(1, static_cast<void(lstg::WindowHelper::*)(bool)>(&lstg::WindowHelper::setFullscreen));
+	LUA_TRY_INVOKE(1, &lstg::WindowHelper::setFullscreen);
 	LUA_TRY_INVOKE(0, [](lstg::WindowHelper* obj){{return obj->setFullscreen();}});
 	LUA_INVOKE_FOOTER("0,1");
 }

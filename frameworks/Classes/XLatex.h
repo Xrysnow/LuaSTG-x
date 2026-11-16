@@ -8,7 +8,7 @@ namespace lstg
 		bool _init(const std::string& str,
 			int width, float textSize, float lineSpace, const cocos2d::Color4B& color);
 	public:
-		static Latex* create(const std::string& str,
+		static cc::IntrusivePtr<Latex> create(const std::string& str,
 			int width, float textSize, float lineSpace,
 			const cocos2d::Color4B& color = cocos2d::Color4B::BLACK);
 

@@ -134,9 +134,9 @@ namespace lstg
 
 		bool BlendOperationFromString(const std::string& str, cocos2d::backend::BlendOperation& val);
 		bool BlendFactorFromString(const std::string& str, cocos2d::backend::BlendFactor& val);
-		cocos2d::backend::Program* CreateProgramFromPath(const std::string& v, const std::string& f);
-		cocos2d::backend::Program* CreateProgramFromString(const std::string& v, const std::string& f);
-		cocos2d::backend::Program* CreateProgramFromData(cocos2d::Data* v, cocos2d::Data* f);
+		cc::IntrusivePtr<cocos2d::backend::Program> CreateProgramFromPath(const std::string& v, const std::string& f);
+		cc::IntrusivePtr<cocos2d::backend::Program> CreateProgramFromString(const std::string& v, const std::string& f);
+		cc::IntrusivePtr<cocos2d::backend::Program> CreateProgramFromData(cocos2d::Data* v, cocos2d::Data* f);
 		bool CheckBlendOperation(cocos2d::backend::BlendOperation equation);
 		bool CheckBlendFactor(cocos2d::backend::BlendFactor func);
 	}

@@ -5,8 +5,8 @@ namespace lstg {
 	class ResFX :
 		public Resource
 	{
-		cocos2d::RefPtr<cocos2d::backend::Program> program;
-		cocos2d::RefPtr<cocos2d::backend::ProgramState> state;
+		cc::IntrusivePtr<cocos2d::backend::Program> program;
+		cc::IntrusivePtr<cocos2d::backend::ProgramState> state;
 		RenderMode* renderMode = nullptr;
 		std::unordered_map<std::string, cocos2d::backend::UniformLocation> uniforms;
 		ResFX(const std::string& name, RenderMode* m);
@@ -32,11 +32,11 @@ namespace lstg {
 		std::unordered_map<std::string, std::string> getInfo() const override;
 		size_t getMemorySize() override;
 
-		static ResFX* create(const std::string& name,
+		static cc::IntrusivePtr<ResFX> create(const std::string& name,
 			const std::string& vsPath, const std::string& fsPath);
-		static ResFX* createWithString(const std::string& name,
+		static cc::IntrusivePtr<ResFX> createWithString(const std::string& name,
 			const std::string& vShader, const std::string& fShader);
-		static ResFX* createWithProgram(const std::string& name,
+		static cc::IntrusivePtr<ResFX> createWithProgram(const std::string& name,
 			cocos2d::backend::Program* program);
 	};
 }

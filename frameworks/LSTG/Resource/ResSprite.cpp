@@ -29,23 +29,23 @@ bool ResSprite::render4v(float x1, float y1, float z1, float x2, float y2, float
 	return LRR.render4V(this, x1, y1, z1, x2, y2, z2, x4, y4, z4, x3, y3, z3);
 }
 
-ResSprite* ResSprite::clone(const std::string& newName)
+cc::IntrusivePtr<ResSprite> ResSprite::clone(const std::string& newName)
 {
 	if (newName == resName)
 		return this;
-	const auto sp = Sprite::createWithSpriteFrame(sprite->getSpriteFrame());
+	const auto sp = Sprite::createWithSpriteFrame(sprite->getSpriteFrame().get());
 	if (!sp)
 	{
 		XERROR("failed when creating Sprite.");
 		return nullptr;
 	}
-	auto res = new (nothrow) ResSprite(newName, sp, colliderType, halfSizeX, halfSizeY, resPath);
+	cc::IntrusivePtr<ResSprite> res{new (nothrow) ResSprite(newName, sp, colliderType, halfSizeX, halfSizeY, resPath)};
 	if(!res)
 	{
 		XERROR("failed when creating ResSprite.");
 		return nullptr;
 	}
-	return res;
+	return Resource::finishConstruction(std::move(res));
 }
 
 std::unordered_map<std::string, std::string> ResSprite::getInfo() const
@@ -82,7 +82,7 @@ ResSprite::~ResSprite()
 {
 }
 
-ResSprite* ResSprite::create(const std::string& name, ResTexture* texture,
+cc::IntrusivePtr<ResSprite> ResSprite::create(const std::string& name, ResTexture* texture,
 	double x, double y, double w, double h,
 	double a, double b, XColliderType colliType)
 {
@@ -92,16 +92,17 @@ ResSprite* ResSprite::create(const std::string& name, ResTexture* texture,
 		texture->getTexture(), Rect(x, y, w, h));
 	if (!sp)
 		return nullptr;
-	auto ret = new (nothrow) ResSprite(name, sp, colliType, a, b);
+	cc::IntrusivePtr<ResSprite> ret{new (nothrow) ResSprite(name, sp, colliType, a, b)};
 	if (ret)
 		ret->resPath = texture->getPath();
-	return ret;
+	return Resource::finishConstruction(std::move(ret));
 }
 
-ResSprite* ResSprite::createWithSprite(const std::string& name, Sprite* sprite, double a, double b,
+cc::IntrusivePtr<ResSprite> ResSprite::createWithSprite(const std::string& name, Sprite* sprite, double a, double b,
 	XColliderType colliType)
 {
 	if (!sprite)
 		return nullptr;
-	return new (nothrow) ResSprite(name, sprite, colliType, a, b);
+	cc::IntrusivePtr<ResSprite> owner{new (nothrow) ResSprite(name, sprite, colliType, a, b)};
+	return Resource::finishConstruction(std::move(owner));
 }

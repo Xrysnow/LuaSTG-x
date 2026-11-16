@@ -20,18 +20,17 @@ lstg::ComponentDataParticle::~ComponentDataParticle()
 	}
 }
 
-lstg::ComponentDataParticle* lstg::ComponentDataParticle::create(ResParticle* res)
+cc::IntrusivePtr<lstg::ComponentDataParticle> lstg::ComponentDataParticle::create(ResParticle* res)
 {
-	ComponentDataParticle* pRet = new(std::nothrow) ComponentDataParticle();
+	cc::IntrusivePtr<ComponentDataParticle> pRet{new(std::nothrow) ComponentDataParticle()};
 	if (pRet && pRet->init(res))
 	{
-		pRet->autorelease();
+
 		return pRet;
 	}
 	else
 	{
-		delete pRet;
-		pRet = nullptr;
+
 		return nullptr;
 	}
 }

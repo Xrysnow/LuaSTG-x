@@ -65,6 +65,14 @@ namespace lstg
 		std::string resName;
 		std::string resPath;
 	public:
+		// Complete construction before publishing the resource to diagnostics/pool.
+		template <class T>
+		static cc::IntrusivePtr<T> finishConstruction(cc::IntrusivePtr<T>&& owner)
+		{
+			if (owner)
+				instances.insert(owner.get());
+			return owner;
+		}
 		static void destroyInstances();
 		static size_t getTotalMemorySize();
 

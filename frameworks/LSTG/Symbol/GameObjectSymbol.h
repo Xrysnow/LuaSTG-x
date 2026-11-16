@@ -137,7 +137,7 @@ namespace lstg
 			bool getInBoolean(uint32_t idx){ return inputs.at(idx)->getBoolean(); }
 			bool init(const std::string& name);
 		public:
-			static Operator* create(const std::string& name);
+			static cc::IntrusivePtr<Operator> create(const std::string& name);
 			void addInput(ComputeNode* node);
 			bool check();
 
@@ -173,8 +173,8 @@ namespace lstg
 			ComputeNode* rvalue = nullptr;
 			Operand* output = nullptr;
 		public:
-			static Assigment* create(ComputeNode* var);
-			static Assigment* createWithObjProperty(
+			static cc::IntrusivePtr<Assigment> create(ComputeNode* var);
+			static cc::IntrusivePtr<Assigment> createWithObjProperty(
 				const std::string& property, ComputeNode* var);
 
 			float getNumber() override;
@@ -203,7 +203,7 @@ namespace lstg
 
 			static cocos2d::Vector<Block*> created;
 		public:
-			static Block* create();
+			static cc::IntrusivePtr<Block> create();
 
 			void push(Statement* s);
 			void clear();

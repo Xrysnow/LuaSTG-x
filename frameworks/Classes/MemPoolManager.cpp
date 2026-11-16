@@ -91,9 +91,8 @@ void ProgramStatePool::alloc_()
 	auto p = std::make_shared<Vector<backend::ProgramState*>>();
 	for (size_t i = 0; i < ProgramStatePoolBlockSize; ++i)
 	{
-		const auto s = new backend::ProgramState(_program);
-		s->autorelease();
-		p->pushBack(s);
+		cc::IntrusivePtr<backend::ProgramState> s{new backend::ProgramState(_program)};
+		p->pushBack(s.get());
 	}
 	blocks.emplace_back(p);
 }

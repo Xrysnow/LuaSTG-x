@@ -5,61 +5,61 @@
 int lua_cocos2d_Controller_getDeviceId(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("cc.Controller", "cc.Controller:getDeviceId");
-	LUA_TRY_INVOKE_R(0, static_cast<int(cocos2d::Controller::*)()const>(&cocos2d::Controller::getDeviceId));
+	LUA_TRY_INVOKE_R(0, &cocos2d::Controller::getDeviceId);
 	LUA_INVOKE_FOOTER("0");
 }
 int lua_cocos2d_Controller_getDeviceName(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("cc.Controller", "cc.Controller:getDeviceName");
-	LUA_TRY_INVOKE_R(0, static_cast<std::string_view(cocos2d::Controller::*)()const>(&cocos2d::Controller::getDeviceName));
+	LUA_TRY_INVOKE_R(0, &cocos2d::Controller::getDeviceName);
 	LUA_INVOKE_FOOTER("0");
 }
 int lua_cocos2d_Controller_getKeyStatus(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("cc.Controller", "cc.Controller:getKeyStatus");
-	LUA_TRY_INVOKE_R(1, static_cast<const cocos2d::Controller::KeyStatus&(cocos2d::Controller::*)(int)>(&cocos2d::Controller::getKeyStatus));
+	LUA_TRY_INVOKE_R(1, &cocos2d::Controller::getKeyStatus);
 	LUA_INVOKE_FOOTER("1");
 }
 int lua_cocos2d_Controller_getTag(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("cc.Controller", "cc.Controller:getTag");
-	LUA_TRY_INVOKE_R(0, static_cast<int(cocos2d::Controller::*)()const>(&cocos2d::Controller::getTag));
+	LUA_TRY_INVOKE_R(0, &cocos2d::Controller::getTag);
 	LUA_INVOKE_FOOTER("0");
 }
 int lua_cocos2d_Controller_isConnected(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("cc.Controller", "cc.Controller:isConnected");
-	LUA_TRY_INVOKE_R(0, static_cast<bool(cocos2d::Controller::*)()const>(&cocos2d::Controller::isConnected));
+	LUA_TRY_INVOKE_R(0, &cocos2d::Controller::isConnected);
 	LUA_INVOKE_FOOTER("0");
 }
 int lua_cocos2d_Controller_setTag(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("cc.Controller", "cc.Controller:setTag");
-	LUA_TRY_INVOKE(1, static_cast<void(cocos2d::Controller::*)(int)>(&cocos2d::Controller::setTag));
+	LUA_TRY_INVOKE(1, &cocos2d::Controller::setTag);
 	LUA_INVOKE_FOOTER("1");
 }
 int lua_cocos2d_Controller_getControllerByDeviceId(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("cc.Controller", "cc.Controller:getControllerByDeviceId");
-	LUA_TRY_INVOKE_R(1, static_cast<cocos2d::Controller*(*)(int)>(&cocos2d::Controller::getControllerByDeviceId));
+	LUA_TRY_INVOKE_R(1, &cocos2d::Controller::getControllerByDeviceId);
 	LUA_SINVOKE_FOOTER("1");
 }
 int lua_cocos2d_Controller_getControllerByTag(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("cc.Controller", "cc.Controller:getControllerByTag");
-	LUA_TRY_INVOKE_R(1, static_cast<cocos2d::Controller*(*)(int)>(&cocos2d::Controller::getControllerByTag));
+	LUA_TRY_INVOKE_R(1, &cocos2d::Controller::getControllerByTag);
 	LUA_SINVOKE_FOOTER("1");
 }
 int lua_cocos2d_Controller_startDiscoveryController(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("cc.Controller", "cc.Controller:startDiscoveryController");
-	LUA_TRY_INVOKE(0, static_cast<void(*)()>(&cocos2d::Controller::startDiscoveryController));
+	LUA_TRY_INVOKE(0, &cocos2d::Controller::startDiscoveryController);
 	LUA_SINVOKE_FOOTER("0");
 }
 int lua_cocos2d_Controller_stopDiscoveryController(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("cc.Controller", "cc.Controller:stopDiscoveryController");
-	LUA_TRY_INVOKE(0, static_cast<void(*)()>(&cocos2d::Controller::stopDiscoveryController));
+	LUA_TRY_INVOKE(0, &cocos2d::Controller::stopDiscoveryController);
 	LUA_SINVOKE_FOOTER("0");
 }
 int luaReg_Controller_ccController(lua_State* lua_S)
@@ -84,37 +84,37 @@ int luaReg_Controller_ccController(lua_State* lua_S)
 int lua_cocos2d_EventController_getController(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("cc.EventController", "cc.EventController:getController");
-	LUA_TRY_INVOKE_R(0, static_cast<cocos2d::Controller*(cocos2d::EventController::*)()const>(&cocos2d::EventController::getController));
+	LUA_TRY_INVOKE_R(0, &cocos2d::EventController::getController);
 	LUA_INVOKE_FOOTER("0");
 }
 int lua_cocos2d_EventController_getControllerEventType(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("cc.EventController", "cc.EventController:getControllerEventType");
-	LUA_TRY_INVOKE_R(0, static_cast<cocos2d::EventController::ControllerEventType(cocos2d::EventController::*)()const>(&cocos2d::EventController::getControllerEventType));
+	LUA_TRY_INVOKE_R(0, &cocos2d::EventController::getControllerEventType);
 	LUA_INVOKE_FOOTER("0");
 }
 int lua_cocos2d_EventController_getKeyCode(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("cc.EventController", "cc.EventController:getKeyCode");
-	LUA_TRY_INVOKE_R(0, static_cast<int(cocos2d::EventController::*)()const>(&cocos2d::EventController::getKeyCode));
+	LUA_TRY_INVOKE_R(0, &cocos2d::EventController::getKeyCode);
 	LUA_INVOKE_FOOTER("0");
 }
 int lua_cocos2d_EventController_isConnected(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("cc.EventController", "cc.EventController:isConnected");
-	LUA_TRY_INVOKE_R(0, static_cast<bool(cocos2d::EventController::*)()const>(&cocos2d::EventController::isConnected));
+	LUA_TRY_INVOKE_R(0, &cocos2d::EventController::isConnected);
 	LUA_INVOKE_FOOTER("0");
 }
 int lua_cocos2d_EventController_setConnectStatus(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("cc.EventController", "cc.EventController:setConnectStatus");
-	LUA_TRY_INVOKE(1, static_cast<void(cocos2d::EventController::*)(bool)>(&cocos2d::EventController::setConnectStatus));
+	LUA_TRY_INVOKE(1, &cocos2d::EventController::setConnectStatus);
 	LUA_INVOKE_FOOTER("1");
 }
 int lua_cocos2d_EventController_setKeyCode(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("cc.EventController", "cc.EventController:setKeyCode");
-	LUA_TRY_INVOKE(1, static_cast<void(cocos2d::EventController::*)(int)>(&cocos2d::EventController::setKeyCode));
+	LUA_TRY_INVOKE(1, &cocos2d::EventController::setKeyCode);
 	LUA_INVOKE_FOOTER("1");
 }
 int luaReg_Controller_ccEventController(lua_State* lua_S)
@@ -133,16 +133,16 @@ int luaReg_Controller_ccEventController(lua_State* lua_S)
 	LUA_ENTRY_END(1);
 	return 0;
 }
-int lua_cocos2d_EventListenerController_clone(lua_State* lua_S)
+int lua_cocos2d_EventListenerController_clone_1(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("cc.EventListenerController", "cc.EventListenerController:clone");
-	LUA_TRY_INVOKE_R(0, static_cast<cocos2d::EventListenerController*(cocos2d::EventListenerController::*)()>(&cocos2d::EventListenerController::clone));
+	LUA_TRY_INVOKE_R(0, static_cast<cc::IntrusivePtr<cocos2d::EventListener>(cocos2d::EventListenerController::*)()>(&cocos2d::EventListenerController::clone));
 	LUA_INVOKE_FOOTER("0");
 }
 int lua_cocos2d_EventListenerController_create(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("cc.EventListenerController", "cc.EventListenerController:create");
-	LUA_TRY_INVOKE_R(0, static_cast<cocos2d::EventListenerController*(*)()>(&cocos2d::EventListenerController::create));
+	LUA_TRY_INVOKE_R(0, &cocos2d::EventListenerController::create);
 	LUA_SINVOKE_FOOTER("0");
 }
 int luaReg_Controller_ccEventListenerController(lua_State* lua_S)
@@ -151,7 +151,7 @@ int luaReg_Controller_ccEventListenerController(lua_State* lua_S)
 	LUA_CLS_DEF_BASE(cocos2d::EventListenerController, "EventListenerController", "cc.EventListenerController",
 		cocos2d::EventListener, "cc.EventListener",
 		nullptr, nullptr);
-	LUA_METHOD("clone", lua_cocos2d_EventListenerController_clone);
+	LUA_METHOD("clone", lua_cocos2d_EventListenerController_clone_1);
 	LUA_METHOD("create", lua_cocos2d_EventListenerController_create);
 	LUA_CLS_END();
 	LUA_ENTRY_END(1);

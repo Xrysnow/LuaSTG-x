@@ -7,8 +7,8 @@ namespace lstg {
 	class ResTexture :
 		public Resource
 	{
-		cocos2d::RefPtr<cocos2d::Texture2D> texture;
-		cocos2d::RefPtr<Triangles> triangles;
+		cc::IntrusivePtr<cocos2d::Texture2D> texture;
+		cc::IntrusivePtr<Triangles> triangles;
 	public:
 		cocos2d::Texture2D* getTexture() const { return texture; }
 		bool isTextureFlipped();
@@ -25,7 +25,7 @@ namespace lstg {
 		ResTexture(const std::string& name, cocos2d::Texture2D* tex);
 		~ResTexture() override;
 
-		static ResTexture* create(const std::string& name, const std::string& path);
-		static ResTexture* createWithTexture(const std::string& name, cocos2d::Texture2D* texture);
+		static cc::IntrusivePtr<ResTexture> create(const std::string& name, const std::string& path);
+		static cc::IntrusivePtr<ResTexture> createWithTexture(const std::string& name, cocos2d::Texture2D* texture);
 	};
 }

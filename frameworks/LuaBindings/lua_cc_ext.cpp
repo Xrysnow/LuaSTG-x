@@ -10,13 +10,13 @@
 namespace
 {
 template <class RasterSize>
-cocos2d::Sprite* createSVGSprite(const std::string& path, const RasterSize& size)
+cc::IntrusivePtr<cocos2d::Sprite> createSVGSprite(const std::string& path, const RasterSize& size)
 {
     using namespace cocos2d;
-    RefPtr<Image> image(ReferencedObject<Image>{new Image()});
+    cc::IntrusivePtr<Image> image{new Image()};
     if (!lstg::initImageWithSVG(image.get(), path, size))
         return nullptr;
-    RefPtr<Texture2D> texture(ReferencedObject<Texture2D>{new Texture2D()});
+    cc::IntrusivePtr<Texture2D> texture{new Texture2D()};
     if (!texture->initWithImage(image.get()))
         return nullptr;
     return Sprite::createWithTexture(texture.get());

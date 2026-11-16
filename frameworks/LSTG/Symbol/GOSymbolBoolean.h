@@ -9,8 +9,8 @@ namespace lstg
 		{
 			bool _value = false;
 		public:
-			static Boolean* createWithValue(bool v);
-			static Boolean* createWithObjProperty(const std::string& property);
+			static cc::IntrusivePtr<Boolean> createWithValue(bool v);
+			static cc::IntrusivePtr<Boolean> createWithObjProperty(const std::string& property);
 
 		protected:
 			Boolean() { _type = Type::Boolean; }
@@ -34,7 +34,7 @@ namespace lstg
 			std::function<bool()> _eval;
 			GameObjectProperty _p = GameObjectProperty::_KEY_NOT_FOUND;
 		public:
-			static BooleanFromGameObject* create(GameObjectProperty p);
+			static cc::IntrusivePtr<BooleanFromGameObject> create(GameObjectProperty p);
 			bool getBoolean() override;
 			void pushLua(lua_State* L, uint32_t idxOut) override;
 		private:
@@ -45,7 +45,7 @@ namespace lstg
 		{
 			std::string _field;
 		public:
-			static BooleanFromGameObjectLua* create(const std::string& field);
+			static cc::IntrusivePtr<BooleanFromGameObjectLua> create(const std::string& field);
 			bool getBoolean() override;
 			void pushLua(lua_State* L, uint32_t idxOut) override;
 		private:

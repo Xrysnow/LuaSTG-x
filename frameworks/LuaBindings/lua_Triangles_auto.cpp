@@ -64,29 +64,29 @@ int lua_lstg_Triangles_create(lua_State* lua_S)
 int lua_lstg_Triangles_createCircle(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("lstg.Triangles", "lstg.Triangles:createCircle");
-	LUA_TRY_INVOKE_R(4, static_cast<lstg::Triangles*(*)(size_t, size_t, float, const cocos2d::Rect&)>(&lstg::Triangles::createCircle));
-	LUA_TRY_INVOKE_R(3, [](size_t arg0,size_t arg1,float arg2){{return lstg::Triangles::createCircle(std::move(arg0),std::move(arg1),std::move(arg2));}});
+	LUA_TRY_INVOKE_R(4, &lstg::Triangles::createCircle);
+	LUA_TRY_INVOKE_R(3, ([](size_t arg0,size_t arg1,float arg2){{return lstg::Triangles::createCircle(std::move(arg0),std::move(arg1),std::move(arg2));}}));
 	LUA_SINVOKE_FOOTER("3,4");
 }
 int lua_lstg_Triangles_createGrid(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("lstg.Triangles", "lstg.Triangles:createGrid");
-	LUA_TRY_INVOKE_R(4, static_cast<lstg::Triangles*(*)(size_t, size_t, const cocos2d::Vec2&, const cocos2d::Rect&)>(&lstg::Triangles::createGrid));
-	LUA_TRY_INVOKE_R(3, [](size_t arg0,size_t arg1,const cocos2d::Vec2& arg2){{return lstg::Triangles::createGrid(std::move(arg0),std::move(arg1),arg2);}});
+	LUA_TRY_INVOKE_R(4, &lstg::Triangles::createGrid);
+	LUA_TRY_INVOKE_R(3, ([](size_t arg0,size_t arg1,const cocos2d::Vec2& arg2){{return lstg::Triangles::createGrid(std::move(arg0),std::move(arg1),arg2);}}));
 	LUA_SINVOKE_FOOTER("3,4");
 }
 int lua_lstg_Triangles_createQuad(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("lstg.Triangles", "lstg.Triangles:createQuad");
-	LUA_TRY_INVOKE_R(2, static_cast<lstg::Triangles*(*)(const cocos2d::Vec2&, const cocos2d::Rect&)>(&lstg::Triangles::createQuad));
+	LUA_TRY_INVOKE_R(2, &lstg::Triangles::createQuad);
 	LUA_TRY_INVOKE_R(1, [](const cocos2d::Vec2& arg0){{return lstg::Triangles::createQuad(arg0);}});
 	LUA_SINVOKE_FOOTER("1,2");
 }
 int lua_lstg_Triangles_createSector(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("lstg.Triangles", "lstg.Triangles:createSector");
-	LUA_TRY_INVOKE_R(6, static_cast<lstg::Triangles*(*)(size_t, size_t, float, float, float, const cocos2d::Rect&)>(&lstg::Triangles::createSector));
-	LUA_TRY_INVOKE_R(5, [](size_t arg0,size_t arg1,float arg2,float arg3,float arg4){{return lstg::Triangles::createSector(std::move(arg0),std::move(arg1),std::move(arg2),std::move(arg3),std::move(arg4));}});
+	LUA_TRY_INVOKE_R(6, &lstg::Triangles::createSector);
+	LUA_TRY_INVOKE_R(5, ([](size_t arg0,size_t arg1,float arg2,float arg3,float arg4){{return lstg::Triangles::createSector(std::move(arg0),std::move(arg1),std::move(arg2),std::move(arg3),std::move(arg4));}}));
 	LUA_SINVOKE_FOOTER("5,6");
 }
 int luaReg_Triangles_lstgTriangles(lua_State* lua_S)

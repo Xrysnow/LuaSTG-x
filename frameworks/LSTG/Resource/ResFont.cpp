@@ -163,9 +163,9 @@ size_t ResFont::getMemorySize()
 	return total;
 }
 
-Label* ResFont::createLabel()
+cc::IntrusivePtr<Label> ResFont::createLabel()
 {
-	Label* ret;
+	cc::IntrusivePtr<Label> ret;
 	const auto exist = FileUtils::getInstance()->isFileExist(config.fontFilePath);
 	switch (getLabelType())
 	{
@@ -262,7 +262,7 @@ ResFont::~ResFont()
 	LRR.getLabelPool().onResFontRemove(this);
 }
 
-ResFont* ResFont::createHGE(const std::string& name, const std::string& path)
+cc::IntrusivePtr<ResFont> ResFont::createHGE(const std::string& name, const std::string& path)
 {
 	if (!FileUtils::getInstance()->isFileExist(path))
 		return nullptr;
@@ -287,18 +287,18 @@ ResFont* ResFont::createHGE(const std::string& name, const std::string& path)
 		if (!lb)
 			return nullptr;
 		// construct
-		auto res = new (nothrow) ResFont(name, lb, LabelType::BMFONT);
+		cc::IntrusivePtr<ResFont> res{new (nothrow) ResFont(name, lb, LabelType::BMFONT)};
 		if (!res)
 			return nullptr;
 		res->getTTFConfig().fontFilePath = font_path;
 		res->resPath = font_path;
-		return res;
+		return Resource::finishConstruction(std::move(res));
 	}
 	catch (...){}
 	return nullptr;
 }
 
-ResFont* ResFont::createBMF(const std::string& name, const std::string& path)
+cc::IntrusivePtr<ResFont> ResFont::createBMF(const std::string& name, const std::string& path)
 {
 	try
 	{
@@ -306,18 +306,18 @@ ResFont* ResFont::createBMF(const std::string& name, const std::string& path)
 		const auto lb = XLabel::createWithBMFont(font_path, "");
 		if (!lb)
 			return nullptr;
-		auto res = new ResFont(name, lb, LabelType::BMFONT);
+		cc::IntrusivePtr<ResFont> res{new ResFont(name, lb, LabelType::BMFONT)};
 		if (!res)
 			return nullptr;
 		res->getTTFConfig().fontFilePath = font_path;
 		res->resPath = font_path;
-		return res;
+		return Resource::finishConstruction(std::move(res));
 	}
 	catch (...){}
 	return nullptr;
 }
 
-ResFont* ResFont::createTTF(const std::string& name, const std::string& path, float fontSize)
+cc::IntrusivePtr<ResFont> ResFont::createTTF(const std::string& name, const std::string& path, float fontSize)
 {
 	try
 	{
@@ -334,7 +334,8 @@ ResFont* ResFont::createTTF(const std::string& name, const std::string& path, fl
 			if (!lb)
 				return nullptr;
 		}
-		return new (nothrow) ResFont(name, lb, type);
+		cc::IntrusivePtr<ResFont> owner{new (nothrow) ResFont(name, lb, type)};
+		return Resource::finishConstruction(std::move(owner));
 	}
 	catch (...) {}
 	return nullptr;

@@ -148,8 +148,8 @@ int lua_lstg_Buffer_reserve(lua_State* lua_S)
 int lua_lstg_Buffer_resize(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.Buffer", "lstg.Buffer:resize");
-	LUA_TRY_INVOKE(2, static_cast<void(lstg::Buffer::*)(size_t, uint8_t)>(&lstg::Buffer::resize));
-	LUA_TRY_INVOKE(1, [](lstg::Buffer* obj, size_t arg0){{return obj->resize(std::move(arg0));}});
+	LUA_TRY_INVOKE(2, &lstg::Buffer::resize);
+	LUA_TRY_INVOKE(1, ([](lstg::Buffer* obj,size_t arg0){{return obj->resize(std::move(arg0));}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_lstg_Buffer_set(lua_State* lua_S)
@@ -215,7 +215,7 @@ int lua_lstg_Buffer_to_string(lua_State* lua_S)
 int lua_lstg_Buffer_create(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("lstg.Buffer", "lstg.Buffer:create");
-	LUA_TRY_INVOKE_R(1, static_cast<lstg::Buffer*(*)(size_t)>(&lstg::Buffer::create));
+	LUA_TRY_INVOKE_R(1, &lstg::Buffer::create);
 	LUA_TRY_INVOKE_R(0, [](){{return lstg::Buffer::create();}});
 	LUA_SINVOKE_FOOTER("0,1");
 }

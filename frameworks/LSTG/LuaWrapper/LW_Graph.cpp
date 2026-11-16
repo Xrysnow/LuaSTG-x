@@ -3,6 +3,7 @@
 #include "LuaWrapper.h"
 #include "scripting/lua-bindings/manual/CCLuaEngine.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
+#include "scripting/lua-bindings/manual/lua_conversion/lua_conversion.hpp"
 #include "Renderer.h"
 #include "Util/Utility.h"
 #include "Util/UtilLua.h"
@@ -12,7 +13,7 @@
 using namespace std;
 using namespace lstg;
 using namespace cocos2d;
-using lua::luaval_to_c4b;
+using lstg::lua::luaval_to_c4b;
 
 LUA_REGISTER_FUNC_DEF(lstg, BeginScene)
 {
@@ -80,7 +81,7 @@ LUA_REGISTER_FUNC_DEF(lstg, SetPerspective)
 }
 LUA_REGISTER_FUNC_DEF(lstg, PushRenderTarget)
 {
-	auto p = lua::toResRenderTarget(L, 1);
+	auto p = lstg::lua::toResRenderTarget(L, 1);
 	if (!p || !p->checkTarget())
 		return luaL_error(L, "can't find rendertarget");
 	if (!LRR.pushRenderTarget(p))
@@ -95,15 +96,15 @@ LUA_REGISTER_FUNC_DEF(lstg, PopRenderTarget)
 }
 LUA_REGISTER_FUNC_DEF(lstg, PostEffect)
 {
-	auto rt = lua::toResRenderTarget(L, 1);
+	auto rt = lstg::lua::toResRenderTarget(L, 1);
 	if (!rt)
 		return luaL_error(L, "can't find rendertarget");
-	auto fx = lua::toResFX(L, 2);
+	auto fx = lstg::lua::toResFX(L, 2);
 	if (!fx)
 		return luaL_error(L, "can't find effect");
 	auto blend = TranslateRenderMode(L, 3);
 	if (lua_gettop(L) >= 4)
-		lua::setResFX(fx, L, 4);
+		lstg::lua::setResFX(fx, L, 4);
 	if (!LRR.postEffect(rt, fx, blend))
 		return luaL_error(L, "PostEffect failed.");
 	return 0;
@@ -113,27 +114,27 @@ LUA_REGISTER_FUNC_DEF(lstg, CreateShaderProgramFromPath)
 {
 	const auto s1 = luaL_checkstring(L, 1);
 	const auto s2 = luaL_checkstring(L, 2);
-	const auto p = util::CreateProgramFromPath(s1, s2);
+	auto p = util::CreateProgramFromPath(s1, s2);
 	if (!p)
 		return luaL_error(L, "can't create Program from path [%s] and [%s]", s1, s2);
-	object_to_luaval<backend::Program>(L, "ccb.Program", p);
+	::lua::native_to_luaval(L, std::move(p));
 	return 1;
 }
 LUA_REGISTER_FUNC_DEF(lstg, CreateShaderProgramFromString)
 {
 	const auto s1 = luaL_checkstring(L, 1);
 	const auto s2 = luaL_checkstring(L, 2);
-	const auto p = util::CreateProgramFromString(s1, s2);
+	auto p = util::CreateProgramFromString(s1, s2);
 	if (!p)
 		return luaL_error(L, "can't create Program from string");
-	object_to_luaval<backend::Program>(L, "ccb.Program", p);
+	::lua::native_to_luaval(L, std::move(p));
 	return 1;
 }
 
 LUA_REGISTER_FUNC_DEF(lstg, CopyFrameBuffer)
 {
-	const auto p = LRR.copyFrameBuffer();
-	object_to_luaval<cocos2d::RenderTexture>(L, "cc.RenderTexture", p);
+	auto p = LRR.copyFrameBuffer();
+	::lua::to_lua<cc::IntrusivePtr<cocos2d::RenderTexture>>::F(L, std::move(p));
 	return 1;
 }
 LUA_REGISTER_FUNC_DEF(lstg, SetOffscreen)

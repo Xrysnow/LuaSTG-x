@@ -27,7 +27,7 @@ namespace
 			return AudioDecodeResult::failure(input.error);
 		try
 		{
-			RefPtr<AudioDecoder> decoder = AudioDecoder::createFromStream(input.value.get(), bufferSize, type);
+			cc::IntrusivePtr<AudioDecoder> decoder = AudioDecoder::createFromStream(input.value.get(), bufferSize, type);
 			if (!decoder)
 				return AudioDecodeResult::failure({io::ErrorCode::IoError});
 			return AudioDecodeResult::success(std::move(decoder));

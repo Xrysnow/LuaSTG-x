@@ -6,24 +6,14 @@
 namespace
 {
 
-cocos2d::AudioStream* luaAudioInput(lstg::AudioInputResult result)
+cc::IntrusivePtr<cocos2d::AudioStream> luaAudioInput(lstg::AudioInputResult result)
 {
-	if (!result)
-		return nullptr;
-	// Only the AudioStream adapter enters Lua. Its generic io stream has no Lua
-	// metadata. Transfer an additional reference to the main-thread pool before
-	// the owning result leaves scope; the regular Ref converter then handles Lua.
-	auto raw = result.value.get();
-	raw->retain();
-	raw->autorelease();
-	return raw;
+    return result ? std::move(result.value).asRef() : nullptr;
 }
 
-cocos2d::AudioDecoder* luaAudioDecoder(lstg::AudioDecodeResult result)
+cc::IntrusivePtr<cocos2d::AudioDecoder> luaAudioDecoder(lstg::AudioDecodeResult result)
 {
-	// Core decoder creation already registered one pool reference. The new host
-	// factory added an independent owning reference, released with this result.
-	return result ? result.value.get() : nullptr;
+    return result ? std::move(result.value) : nullptr;
 }
 
 int lua_audio_Stream_createFromStringData(lua_State* lua_S)

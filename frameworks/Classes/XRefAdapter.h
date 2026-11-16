@@ -13,15 +13,15 @@ namespace lstg
 		bool _isRef = false;
 
 		static const char* getLuaTypeName(const char* typeName);
-		static RefAdapter* _create(void* obj, const std::string& className,
+		static cc::IntrusivePtr<RefAdapter> _create(void* obj, const std::string& className,
 			const std::function<void(void*)>& dtor);
 	public:
 
 		template<typename T>
-		static RefAdapter* create(T* obj, const std::string& className,
+		static cc::IntrusivePtr<RefAdapter> create(T* obj, const std::string& className,
 			const std::function<void(void*)>& dtor)
 		{
-			RefAdapter* ret = _create(obj, className, dtor);
+			auto ret = _create(obj, className, dtor);
 			if (!ret)
 				return nullptr;
 			const auto name = getLuaTypeName(typeid(T).name());
@@ -32,7 +32,7 @@ namespace lstg
 		}
 
 		template<typename T>
-		static RefAdapter* create(T* obj, const std::string& className)
+		static cc::IntrusivePtr<RefAdapter> create(T* obj, const std::string& className)
 		{
 			auto ret = create(obj, className, nullptr);
 			if(!ret)

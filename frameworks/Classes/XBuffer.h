@@ -15,9 +15,9 @@ namespace lstg
 	public:
 		using value_type = uint8_t;
 
-		static Buffer* create(size_t size = 0);
-		static Buffer* createFromString(const std::string& s);
-		Buffer* clone() const;
+		static cc::IntrusivePtr<Buffer> create(size_t size = 0);
+		static cc::IntrusivePtr<Buffer> createFromString(const std::string& s);
+		cc::IntrusivePtr<Buffer> clone() const;
 
 		void setWritable(bool b);
 		void setAppendable(bool b);
@@ -98,6 +98,6 @@ namespace lstg
 		void gupdate(std::streamsize offset);
 		ptrdiff_t poff() const;
 		ptrdiff_t goff() const;
-		cocos2d::RefPtr<Buffer> buf;
+		cc::IntrusivePtr<Buffer> buf;
 	};
 }

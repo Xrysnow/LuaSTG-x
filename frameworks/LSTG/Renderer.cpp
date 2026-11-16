@@ -78,12 +78,9 @@ bool XRenderer::init()
 
 	// cocos objects
 	p->drawNode = DrawNode::create();
-	p->drawNode->retain();
 	p->movingCamera = Camera::create();
-	p->movingCamera->retain();
 	p->tempRenderTexture = nullptr;//note: init in PostEffectCapture
 	p->clearRect = Sprite::createWithTexture(nullptr, Rect(0, 0, 2, 2));
-	p->clearRect->retain();
 	p->clearRectQuad = p->clearRect->getQuad();
 	p->clearRectQuad.bl.vertices.set(0, 0, 1024.f);
 	p->clearRectQuad.br.vertices.set(1, 0, 1024.f);
@@ -91,7 +88,7 @@ bool XRenderer::init()
 	p->clearRectQuad.tr.vertices.set(1, 1, 1024.f);
 	Mat4::createOrthographicOffCenter(0, 1, 0, 1, -1024.f, 1024.f, &p->clearRectProj);
 
-	auto rm = new RenderMode();
+	cc::IntrusivePtr<RenderMode> rm{new RenderMode()};
 	rm->init(":RendererClearRect:", backend::BlendOperation::ADD,
 		backend::BlendFactor::ONE, backend::BlendFactor::ZERO,
 		p->clearRect->getProgramState()->getProgram());
@@ -99,7 +96,7 @@ bool XRenderer::init()
 	rm->desc.destinationRGBBlendFactor = backend::BlendFactor::ZERO;
 	rm->desc.sourceAlphaBlendFactor = backend::BlendFactor::ONE;
 	rm->desc.destinationAlphaBlendFactor = backend::BlendFactor::ZERO;
-	p->clearRectRenderMode = rm;
+	p->clearRectRenderMode = rm.detach();
 
 	const auto program = backend::ProgramCache::getInstance()->getBuiltinProgram(
 		backend::ProgramType::POSITION_TEXTURE_COLOR);
@@ -120,11 +117,12 @@ bool XRenderer::end()
 {
 	//CC_SAFE_DELETE(getInstance()->currentRoot);//note: do not delete
 	//CC_SAFE_DELETE(getInstance()->movingNode);
-	CC_SAFE_DELETE(getInstance()->drawNode);
-	CC_SAFE_DELETE(getInstance()->movingCamera);
+	getInstance()->drawNode.reset();
+	getInstance()->movingCamera.reset();
 	CC_SAFE_DELETE(getInstance()->clearRectRenderMode);
 	CC_SAFE_RELEASE_NULL(getInstance()->tempRenderTexture);
-	CC_SAFE_RELEASE_NULL(getInstance()->clearRect);
+	getInstance()->clearRect.reset();
+	getInstance()->frameBuffer.reset();
 	LMP.clear();
 	RenderMode::modeMap.clear();
 	RenderMode::modeVector.clear();
@@ -960,7 +958,7 @@ void XRenderer::frameBufferStart()
 		const auto fh = int(_lastFBSize.height);
 		if (fw != dw || fh != dh)
 		{
-			CC_SAFE_DELETE(frameBuffer);
+			frameBuffer.reset();
 		}
 	}
 	if (!frameBuffer)
@@ -977,7 +975,6 @@ void XRenderer::frameBufferStart()
 		}
 		else
 		{
-			frameBuffer->retain();
 			frameBuffer->setKeepMatrix(true);
 			LINFO("create frame buffer, size: (%d, %d)", dw, dh);
 		}
@@ -1068,7 +1065,7 @@ void XRenderer::renderFrameBuffer(float scale, bool copy)
 	addCommand(cmd);
 }
 
-RenderTexture* XRenderer::copyFrameBuffer(bool transparent)
+cc::IntrusivePtr<cocos2d::RenderTexture> XRenderer::copyFrameBuffer(bool transparent)
 {
 	if (!frameBuffer)
 		return nullptr;
@@ -1078,13 +1075,12 @@ RenderTexture* XRenderer::copyFrameBuffer(bool transparent)
 		backend::PixelFormat::RGBA8888,
 		backend::PixelFormat::D24S8,
 		false);
-	tmpRT->retain();
 	tmpRT->beginWithClear(0, 0, 0, transparent ? 0 : 1);
 	renderFrameBuffer(1.f, true);
 	tmpRT->end();
-	pushCallbackCommand([=]()
+	pushCallbackCommand([tmpRT]() mutable
 	{
-		tmpRT->release();
+		tmpRT.reset();
 	});
 	return tmpRT;
 }

@@ -55,7 +55,7 @@ RenderMode::~RenderMode()
 RenderMode* RenderMode::getDefault()
 {
 	if (!RenderModeDefault)
-		RenderModeDefault = new RenderMode();
+		RenderModeDefault = cc::IntrusivePtr<RenderMode>{new RenderMode()}.detach();
 	CC_ASSERT(RenderModeDefault);
 	return RenderModeDefault;
 }
@@ -66,24 +66,23 @@ void RenderMode::destructDefault()
 	RenderModeDefault = nullptr;
 }
 
-RenderMode* RenderMode::create(const std::string& name,
+cc::IntrusivePtr<RenderMode> RenderMode::create(const std::string& name,
 	backend::BlendOperation blendOp,
 	backend::BlendFactor blendFactorSrc,
 	backend::BlendFactor blendFactorDst,
 	Program* program)
 {
-	auto ret = new (std::nothrow) RenderMode();
+	cc::IntrusivePtr<RenderMode> ret{new (std::nothrow) RenderMode()};
 	if (ret&&ret->init(name, blendOp, blendFactorSrc, blendFactorDst, program))
 	{
-		ret->autorelease();
-		addMode(ret);
+
+		addMode(ret.get());
 		return ret;
 	}
-	CC_SAFE_DELETE(ret);
 	return nullptr;
 }
 
-RenderMode* RenderMode::create(const std::string& name, Program* program)
+cc::IntrusivePtr<RenderMode> RenderMode::create(const std::string& name, Program* program)
 {
 	return create(name,
 		backend::BlendOperation::ADD,
@@ -119,7 +118,7 @@ void RenderMode::setProgram(Program* program)
 	}
 
 	CC_SAFE_RELEASE(defaultState);
-	defaultState = new backend::ProgramState(_program);
+	defaultState = cc::IntrusivePtr<backend::ProgramState>{new backend::ProgramState(_program)}.detach();
 	defaultState->getFragmentUniformBuffer(&fragUniformBuffer, fragUniformBufferSize);
 	defaultState->getVertexUniformBuffer(&vertUniformBuffer, vertUniformBufferSize);
 
@@ -150,9 +149,9 @@ ProgramState* RenderMode::getDefaultProgramState() const
 
 ProgramState* RenderMode::newProgramState()
 {
-	const auto ret = new ProgramState(_program);
-	syncUniform(ret);
-	return ret;
+	cc::IntrusivePtr<ProgramState> ret{new ProgramState(_program)};
+	syncUniform(ret.get());
+	return ret.detach();
 }
 
 void RenderMode::setFloat(const std::string& uniform, float value)
@@ -215,7 +214,7 @@ std::string RenderMode::getUniformBuffer() const
 	return f + v;
 }
 
-RenderMode* RenderMode::clone(const std::string& newName)
+cc::IntrusivePtr<RenderMode> RenderMode::clone(const std::string& newName)
 {
 	if (newName == _name)
 		return this;

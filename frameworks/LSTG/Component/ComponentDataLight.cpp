@@ -26,18 +26,17 @@ bool ComponentDataLight::init()
 	return true;
 }
 
-ComponentDataLight* ComponentDataLight::create()
+cc::IntrusivePtr<ComponentDataLight> ComponentDataLight::create()
 {
-	auto pRet = new(std::nothrow) ComponentDataLight();
+	cc::IntrusivePtr<ComponentDataLight> pRet{new(std::nothrow) ComponentDataLight()};
 	if (pRet && pRet->init())
 	{
-		pRet->autorelease();
+
 		return pRet;
 	}
 	else
 	{
-		delete pRet;
-		pRet = nullptr;
+
 		return nullptr;
 	}
 }

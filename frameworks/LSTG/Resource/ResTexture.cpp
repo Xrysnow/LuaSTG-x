@@ -52,7 +52,7 @@ ResTexture::ResTexture(const std::string& name, Texture2D* tex)
 : Resource(ResourceType::Texture, name), texture(tex)
 {
 	const auto size = texture->getContentSize();
-	setTriangles(Triangles::createQuad(Vec2(size)));
+	setTriangles(Triangles::createQuad(Vec2(size)).get());
 }
 
 ResTexture::~ResTexture()
@@ -60,31 +60,25 @@ ResTexture::~ResTexture()
 	setTriangles(nullptr);
 }
 
-ResTexture* ResTexture::create(const std::string& name, const std::string& path)
+cc::IntrusivePtr<ResTexture> ResTexture::create(const std::string& name, const std::string& path)
 {
 	try
 	{
 		const auto data = LRES.getFileData(path);
 		if (!data)
 			return nullptr;
-		// must use new
-		auto image = new Image();
-		auto tex = new Texture2D();
-		tex->autorelease();
+		cc::IntrusivePtr<Image> image{new Image()};
+		cc::IntrusivePtr<Texture2D> tex{new Texture2D()};
 		if (image->initWithImageData(data->data(), data->size()))
 		{
-			if (tex->initWithImage(image))
+			if (tex->initWithImage(image.get()))
 			{
-				const auto ret = new (nothrow) ResTexture(name, tex);
+				cc::IntrusivePtr<ResTexture> ret{new (nothrow) ResTexture(name, tex.get())};
 				if (ret)
 					ret->resPath = path;
-				// delete
-				delete image;
-				return ret;
+				return Resource::finishConstruction(std::move(ret));
 			}
 		}
-		// delete
-		delete image;
 	}
 	catch (...)
 	{
@@ -92,9 +86,10 @@ ResTexture* ResTexture::create(const std::string& name, const std::string& path)
 	return nullptr;
 }
 
-ResTexture* ResTexture::createWithTexture(const std::string& name, Texture2D* texture)
+cc::IntrusivePtr<ResTexture> ResTexture::createWithTexture(const std::string& name, Texture2D* texture)
 {
 	if (!texture)
 		return nullptr;
-	return new (nothrow) ResTexture(name, texture);
+	cc::IntrusivePtr<ResTexture> owner{new (nothrow) ResTexture(name, texture)};
+	return Resource::finishConstruction(std::move(owner));
 }

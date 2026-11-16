@@ -77,7 +77,7 @@
     }
     
     // IMPORTANT: Setting the GLView should be done after creating the RootViewController
-    cocos2d::GLView *glview = cocos2d::GLViewImpl::createWithEAGLView((__bridge void *)_viewController.view);
+    cc::IntrusivePtr<cocos2d::GLView> glview = cocos2d::GLViewImpl::createWithEAGLView((__bridge void *)_viewController.view);
     if (!glview)
     {
         // GLViewImpl could not create the gfx Metal device/surface. Director::setOpenGLView

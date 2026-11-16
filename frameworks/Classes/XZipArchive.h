@@ -111,13 +111,13 @@ namespace lstg
 		 * The algorithm to be used by libzip when writing a zip file. The defined algorithm will use the password for each file within the zip file.
 		 *
 		 */
-		static ZipArchive* create(const std::string& path,
+		static cc::IntrusivePtr<ZipArchive> create(const std::string& path,
 			const std::string& password = "", Encryption encryptionMethod = Encryption::None);
 		/**
 		 * Opens a read-only snapshot of the Buffer, matching libzippp::fromBuffer.
 		 * Changes to the caller's Buffer do not affect the archive. Returns null on failure.
 		 */
-		static ZipArchive* createFromBuffer(Buffer* buffer, bool checkConsistency = false);
+		static cc::IntrusivePtr<ZipArchive> createFromBuffer(Buffer* buffer, bool checkConsistency = false);
 		/**
 		 * Open the ZipArchive with the given mode. This method will return true if the operation
 		 * is successful, false otherwise. If the OpenMode is NotOpen, false is returned. If the archive is already open, this method returns true only if the
@@ -248,7 +248,7 @@ namespace lstg
 		 * created by this ZipArchive, null will be returned. If the entry does not exist,
 		 * this method returns NULL.
 		 */
-		Buffer* readEntry(const std::string& entry, State state = State::Current);
+		cc::IntrusivePtr<Buffer> readEntry(const std::string& entry, State state = State::Current);
 
 		/**
 		 * Reads the specified entry of the ZipArchive and writes its content to

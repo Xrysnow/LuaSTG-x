@@ -8,7 +8,7 @@ namespace lstg
 	{
 		bool init() override;
 	public:
-		static ComponentDataLight* create();
+		static cc::IntrusivePtr<ComponentDataLight> create();
 
 		void reset();
 		void resetUniforms();

@@ -16,7 +16,7 @@ namespace lstg
 		GifRecoder();
 		~GifRecoder() override;
 	public:
-		static GifRecoder* create(
+		static cc::IntrusivePtr<GifRecoder> create(
 			const cocos2d::Rect& rect = cocos2d::Rect::ZERO,
 			bool transparent = true, int32_t defaultInterval = -1,
 			int32_t quantizerType = 0, int32_t ditherType = 0

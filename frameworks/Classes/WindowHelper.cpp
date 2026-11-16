@@ -317,7 +317,7 @@ void WindowHelperDesktop::setCustomCursor(const std::string& filename, const Vec
 		glfwDestroyCursor(cur_cunstom);
 		cur_cunstom = nullptr;
 	}
-	Image* ccImage = new (std::nothrow) Image();
+	cc::IntrusivePtr<Image> ccImage{new (std::nothrow) Image()};
 	if (ccImage && ccImage->initWithImageFile(filename)) {
 		GLFWimage image;
 		image.width = ccImage->getWidth();
@@ -330,7 +330,6 @@ void WindowHelperDesktop::setCustomCursor(const std::string& filename, const Vec
 			curType = CUSTOM;
 		}
 	}
-	CC_SAFE_DELETE(ccImage);
 }
 
 void WindowHelperDesktop::setDefaultCursor()
@@ -432,10 +431,10 @@ GLFWwindow* WindowHelperDesktop::getWindow()
 
 cocos2d::Map<void*, MonitorHelper*> MonitorHelper::instances;
 
-std::vector<MonitorHelper*> MonitorHelper::getMonitors()
+std::vector<cc::IntrusivePtr<MonitorHelper>> MonitorHelper::getMonitors()
 {
 #ifdef CC_PLATFORM_PC
-	std::vector<MonitorHelper*> ret;
+	std::vector<cc::IntrusivePtr<MonitorHelper>> ret;
 	int count = 0;
 	const auto arr = glfwGetMonitors(&count);
 	ret.reserve(count);
@@ -447,7 +446,7 @@ std::vector<MonitorHelper*> MonitorHelper::getMonitors()
 #endif
 }
 
-MonitorHelper* MonitorHelper::getPrimaryMonitor()
+cc::IntrusivePtr<MonitorHelper> MonitorHelper::getPrimaryMonitor()
 {
 #ifdef CC_PLATFORM_PC
 	const auto p = glfwGetPrimaryMonitor();
@@ -457,7 +456,7 @@ MonitorHelper* MonitorHelper::getPrimaryMonitor()
 #endif
 }
 
-MonitorHelper* MonitorHelper::getCurrentMonitor()
+cc::IntrusivePtr<MonitorHelper> MonitorHelper::getCurrentMonitor()
 {
 #ifdef CC_PLATFORM_PC
 	const auto view = dynamic_cast<GLViewImpl*>(Director::getInstance()->getOpenGLView());
@@ -577,15 +576,14 @@ MonitorHelperDesktop::MonitorHelperDesktop(GLFWmonitor* hdl)
 {
 }
 
-MonitorHelperDesktop* MonitorHelperDesktop::getOrCreate(GLFWmonitor* handle)
+cc::IntrusivePtr<MonitorHelperDesktop> MonitorHelperDesktop::getOrCreate(GLFWmonitor* handle)
 {
 	if (!handle)
 		return nullptr;
 	const auto it = instances.find(handle);
 	if (it != instances.end())
 		return (MonitorHelperDesktop*)it->second;
-	const auto instance = new MonitorHelperDesktop(handle);
-	instance->autorelease();
+	cc::IntrusivePtr<MonitorHelperDesktop> instance{new MonitorHelperDesktop(handle)};
 	return instance;
 }
 

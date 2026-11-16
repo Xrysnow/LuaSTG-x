@@ -81,7 +81,7 @@ public:
 		}
 		_style = style;
 	}
-	cocos2d::Label* createLabel(const std::string& str) const {
+	cc::IntrusivePtr<cocos2d::Label> createLabel(const std::string& str) const {
 		return cocos2d::Label::createWithTTF(cfg, str);
 	}
 };
@@ -102,14 +102,13 @@ class TexTextLayout : public tex::TextLayout
 {
 	sptr<TexFont> _font;
 	wstring _txt;
-	cocos2d::Label* _lb = nullptr;
+	cc::IntrusivePtr<cocos2d::Label> _lb;
 public:
 	TexTextLayout(const wstring& src, const sptr<TexFont>& font)
 	: _font(font), _txt(src)
 	{
 		const auto txt = util::WideCharToMultiByte_UTF8(src);
 		_lb = cocos2d::Label::createWithTTF(_font->cfg, txt);
-		CC_SAFE_RETAIN(_lb);
 	}
 	void getBounds(Rect& bounds) override
 	{
@@ -128,7 +127,6 @@ public:
 	}
 	virtual ~TexTextLayout()
 	{
-		CC_SAFE_RELEASE(_lb);
 	}
 };
 
@@ -336,11 +334,13 @@ bool Latex::_init(const std::string& str,
 {
 	if(!Node::init())
 		return false;
-	root = cocos2d::Node::create();
+	auto rootOwner = cocos2d::Node::create();
+	root = rootOwner.get();
 	if (!root)
 		return false;
 	addChild(root);
-	drawNode = cocos2d::DrawNode::create();
+	auto drawNodeOwner = cocos2d::DrawNode::create();
+	drawNode = drawNodeOwner.get();
 	if (!drawNode)
 		return false;
 	root->addChild(drawNode);
@@ -398,16 +398,14 @@ bool Latex::_init(const std::string& str,
 	return true;
 }
 
-Latex* Latex::create(const std::string& str, int width, float textSize, float lineSpace, const cocos2d::Color4B& color)
+cc::IntrusivePtr<Latex> Latex::create(const std::string& str, int width, float textSize, float lineSpace, const cocos2d::Color4B& color)
 {
 	static struct _LatexInit _;
-	auto ret = new (std::nothrow) Latex();
+	cc::IntrusivePtr<Latex> ret{new (std::nothrow) Latex()};
 	if (ret&&ret->_init(str, width, textSize, lineSpace, color))
 	{
-		ret->autorelease();
 		return ret;
 	}
-	delete ret;
 	return nullptr;
 }
 

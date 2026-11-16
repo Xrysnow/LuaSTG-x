@@ -7,7 +7,7 @@ namespace lstg {
 	class ResRenderTarget :
 		public Resource
 	{
-		cocos2d::RefPtr<cocos2d::RenderTexture> target;
+		cc::IntrusivePtr<cocos2d::RenderTexture> target;
 		cocos2d::Color4B clearColor;
 		bool autoResize;
 		bool pushed = false;
@@ -20,7 +20,7 @@ namespace lstg {
 
 		cocos2d::RenderTexture* getTarget();
 		cocos2d::Texture2D* getTexture();
-		cocos2d::Texture2D* copyTexture(bool flip = false);
+		cc::IntrusivePtr<cocos2d::Texture2D> copyTexture(bool flip = false);
 		bool checkTarget();
 		bool push();
 		bool pop();
@@ -32,6 +32,6 @@ namespace lstg {
 		ResRenderTarget(const std::string& name, cocos2d::RenderTexture* tex, bool autoResize = true);
 		~ResRenderTarget() override;
 
-		static ResRenderTarget* create(const std::string& name);
+		static cc::IntrusivePtr<ResRenderTarget> create(const std::string& name);
 	};
 }

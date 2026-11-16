@@ -7,7 +7,7 @@ using namespace cocos2d;
 void lstg::installAudioFileOpener()
 {
 	ResourceMgr::getInstance();
-	AudioStream::setFileOpener([](const std::string& path) -> AudioStream*
+	AudioStream::setFileOpener([](const std::string& path) -> cc::IntrusivePtr<AudioStream>
 	{
 		auto stream = LRES.openReadStream(path);
 		if (!stream)
@@ -15,12 +15,7 @@ void lstg::installAudioFileOpener()
 		auto result = AudioStreamAdapter::create(std::move(stream.value));
 		if (!result)
 			return nullptr;
-		// The core callback returns an autoreleased pointer. Give that pool its
-		// own reference before the local owning result releases its reference.
-		auto raw = result.value.get();
-		raw->retain();
-		raw->autorelease();
-		return raw;
+		return std::move(result.value).asRef();
 	});
 }
 

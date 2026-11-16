@@ -142,13 +142,13 @@ namespace lstg {
 		};
 	protected:
 		ParticleInfo particleInfo;
-		cocos2d::RefPtr<cocos2d::Sprite> bindSprite;
+		cc::IntrusivePtr<cocos2d::Sprite> bindSprite;
 		RenderMode* renderMode;
 		std::unordered_set<ParticlePool*> poolInstances;
 	public:
 		RenderMode* getRenderMode() const { return renderMode; }
 		ParticlePool* newPool();
-		cocos2d::ParticleSystemQuad* newCocosParticle();
+		cc::IntrusivePtr<cocos2d::ParticleSystemQuad> newCocosParticle();
 
 		cocos2d::Sprite* getBindSprite() const { return bindSprite; }
 		const ParticleInfo& getParticleInfo() const { return particleInfo; }
@@ -160,7 +160,7 @@ namespace lstg {
 			RenderMode* rm, double a, double b, XColliderType colliType = XColliderType::Circle);
 		~ResParticle() override;
 
-		static ResParticle* create(const std::string& name, const std::string& path, ResSprite* sprite,
+		static cc::IntrusivePtr<ResParticle> create(const std::string& name, const std::string& path, ResSprite* sprite,
 			double a, double b, XColliderType colliType);
 	};
 }

@@ -8,12 +8,12 @@ namespace lstg
 		RenderMode();
 		~RenderMode();
 	public:
-		static RenderMode* create(const std::string& name,
+		static cc::IntrusivePtr<RenderMode> create(const std::string& name,
 			cocos2d::backend::BlendOperation blendOp,
 			cocos2d::backend::BlendFactor blendFactorSrc,
 			cocos2d::backend::BlendFactor blendFactorDst,
 			cocos2d::backend::Program* program);
-		static RenderMode* create(const std::string& name,
+		static cc::IntrusivePtr<RenderMode> create(const std::string& name,
 			cocos2d::backend::Program* program);
 
 		std::string getName() const { return _name; }
@@ -39,7 +39,7 @@ namespace lstg
 
 		void setUniformBuffer(const std::string& buffer);
 		std::string getUniformBuffer() const;
-		RenderMode* clone(const std::string& newName);
+		cc::IntrusivePtr<RenderMode> clone(const std::string& newName);
 
 	protected:
 		bool init(const std::string& name,

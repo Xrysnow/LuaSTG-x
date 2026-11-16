@@ -32,7 +32,7 @@ namespace lstg {
 
 		std::unordered_map<std::string, std::string> getInfo() const override;
 		size_t getMemorySize() override;
-		cocos2d::Animation* newCocosAnimation();
+		cc::IntrusivePtr<cocos2d::Animation> newCocosAnimation();
 
 		ResAnimation(const char* name, ResTexture* tex,
 			float x, float y, float w, float h,
@@ -41,7 +41,7 @@ namespace lstg {
 			const std::string& path = "");
 		~ResAnimation() override;
 
-		static ResAnimation* create(const std::string& name, ResTexture* texture,
+		static cc::IntrusivePtr<ResAnimation> create(const std::string& name, ResTexture* texture,
 			float x, float y, float w, float h,
 			int nCol, int nRow, int interval, double a, double b,
 			XColliderType colliType);

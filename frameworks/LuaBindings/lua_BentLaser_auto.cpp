@@ -36,15 +36,15 @@ int lua_lstg_GameObjectBentLaser_clear(lua_State* lua_S)
 int lua_lstg_GameObjectBentLaser_collisionCheck(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.GameObjectBentLaser", "lstg.GameObjectBentLaser:collisionCheck");
-	LUA_TRY_INVOKE_R(2, static_cast<bool(lstg::GameObjectBentLaser::*)(float, float)>(&lstg::GameObjectBentLaser::collisionCheck));
+	LUA_TRY_INVOKE_R(2, (static_cast<bool(lstg::GameObjectBentLaser::*)(float, float)>(&lstg::GameObjectBentLaser::collisionCheck)));
 	LUA_TRY_INVOKE_R(1, static_cast<bool(lstg::GameObjectBentLaser::*)(lstg::GameObject*)>(&lstg::GameObjectBentLaser::collisionCheck));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_lstg_GameObjectBentLaser_collisionCheckExtendWidth(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.GameObjectBentLaser", "lstg.GameObjectBentLaser:collisionCheckExtendWidth");
-	LUA_TRY_INVOKE_R(3, static_cast<bool(lstg::GameObjectBentLaser::*)(float, float, float)>(&lstg::GameObjectBentLaser::collisionCheckExtendWidth));
-	LUA_TRY_INVOKE_R(2, static_cast<bool(lstg::GameObjectBentLaser::*)(lstg::GameObject*, float)>(&lstg::GameObjectBentLaser::collisionCheckExtendWidth));
+	LUA_TRY_INVOKE_R(3, (static_cast<bool(lstg::GameObjectBentLaser::*)(float, float, float)>(&lstg::GameObjectBentLaser::collisionCheckExtendWidth)));
+	LUA_TRY_INVOKE_R(2, (static_cast<bool(lstg::GameObjectBentLaser::*)(lstg::GameObject*, float)>(&lstg::GameObjectBentLaser::collisionCheckExtendWidth)));
 	LUA_INVOKE_FOOTER("2,3");
 }
 int lua_lstg_GameObjectBentLaser_getColorMixMode(lua_State* lua_S)
@@ -142,23 +142,23 @@ int lua_lstg_GameObjectBentLaser_popTail(lua_State* lua_S)
 int lua_lstg_GameObjectBentLaser_pushHead(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.GameObjectBentLaser", "lstg.GameObjectBentLaser:pushHead");
-	LUA_TRY_INVOKE(4, static_cast<void(lstg::GameObjectBentLaser::*)(float, float, float, const cocos2d::Color4B&)>(&lstg::GameObjectBentLaser::pushHead));
-	LUA_TRY_INVOKE(3, static_cast<void(lstg::GameObjectBentLaser::*)(float, float, float)>(&lstg::GameObjectBentLaser::pushHead));
-	LUA_TRY_INVOKE(2, static_cast<void(lstg::GameObjectBentLaser::*)(float, float)>(&lstg::GameObjectBentLaser::pushHead));
+	LUA_TRY_INVOKE(4, (static_cast<void(lstg::GameObjectBentLaser::*)(float, float, float, const cocos2d::Color4B&)>(&lstg::GameObjectBentLaser::pushHead)));
+	LUA_TRY_INVOKE(3, (static_cast<void(lstg::GameObjectBentLaser::*)(float, float, float)>(&lstg::GameObjectBentLaser::pushHead)));
+	LUA_TRY_INVOKE(2, (static_cast<void(lstg::GameObjectBentLaser::*)(float, float)>(&lstg::GameObjectBentLaser::pushHead)));
 	LUA_INVOKE_FOOTER("2,3,4");
 }
 int lua_lstg_GameObjectBentLaser_pushTail(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.GameObjectBentLaser", "lstg.GameObjectBentLaser:pushTail");
-	LUA_TRY_INVOKE(4, static_cast<void(lstg::GameObjectBentLaser::*)(float, float, float, const cocos2d::Color4B&)>(&lstg::GameObjectBentLaser::pushTail));
-	LUA_TRY_INVOKE(3, static_cast<void(lstg::GameObjectBentLaser::*)(float, float, float)>(&lstg::GameObjectBentLaser::pushTail));
-	LUA_TRY_INVOKE(2, static_cast<void(lstg::GameObjectBentLaser::*)(float, float)>(&lstg::GameObjectBentLaser::pushTail));
+	LUA_TRY_INVOKE(4, (static_cast<void(lstg::GameObjectBentLaser::*)(float, float, float, const cocos2d::Color4B&)>(&lstg::GameObjectBentLaser::pushTail)));
+	LUA_TRY_INVOKE(3, (static_cast<void(lstg::GameObjectBentLaser::*)(float, float, float)>(&lstg::GameObjectBentLaser::pushTail)));
+	LUA_TRY_INVOKE(2, (static_cast<void(lstg::GameObjectBentLaser::*)(float, float)>(&lstg::GameObjectBentLaser::pushTail)));
 	LUA_INVOKE_FOOTER("2,3,4");
 }
 int lua_lstg_GameObjectBentLaser_render(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.GameObjectBentLaser", "lstg.GameObjectBentLaser:render");
-	LUA_TRY_INVOKE(7, static_cast<void(lstg::GameObjectBentLaser::*)(lstg::ResTexture*, lstg::RenderMode*, const cocos2d::Color4B&, float, float, float, float)>(&lstg::GameObjectBentLaser::render));
+	LUA_TRY_INVOKE(7, (static_cast<void(lstg::GameObjectBentLaser::*)(lstg::ResTexture*, lstg::RenderMode*, const cocos2d::Color4B&, float, float, float, float)>(&lstg::GameObjectBentLaser::render)));
 	LUA_TRY_INVOKE(1, static_cast<void(lstg::GameObjectBentLaser::*)(lstg::ResSprite*)>(&lstg::GameObjectBentLaser::render));
 	LUA_INVOKE_FOOTER("1,7");
 }
@@ -183,8 +183,8 @@ int lua_lstg_GameObjectBentLaser_setAllWidth(lua_State* lua_S)
 int lua_lstg_GameObjectBentLaser_setColorMode(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.GameObjectBentLaser", "lstg.GameObjectBentLaser:setColorMode");
-	LUA_TRY_INVOKE(2, static_cast<void(lstg::GameObjectBentLaser::*)(lstg::GameObjectBentLaser::ColorMode, lstg::GameObjectBentLaser::ColorMixMode)>(&lstg::GameObjectBentLaser::setColorMode));
-	LUA_TRY_INVOKE(1, [](lstg::GameObjectBentLaser* obj, lstg::GameObjectBentLaser::ColorMode arg0){{return obj->setColorMode(std::move(arg0));}});
+	LUA_TRY_INVOKE(2, &lstg::GameObjectBentLaser::setColorMode);
+	LUA_TRY_INVOKE(1, ([](lstg::GameObjectBentLaser* obj,lstg::GameObjectBentLaser::ColorMode arg0){{return obj->setColorMode(std::move(arg0));}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_lstg_GameObjectBentLaser_setDefaultColor(lua_State* lua_S)
@@ -238,7 +238,7 @@ int lua_lstg_GameObjectBentLaser_setRenderScale(lua_State* lua_S)
 int lua_lstg_GameObjectBentLaser_strictCollisionCheck(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.GameObjectBentLaser", "lstg.GameObjectBentLaser:strictCollisionCheck");
-	LUA_TRY_INVOKE_R(2, static_cast<bool(lstg::GameObjectBentLaser::*)(float, float)>(&lstg::GameObjectBentLaser::strictCollisionCheck));
+	LUA_TRY_INVOKE_R(2, (static_cast<bool(lstg::GameObjectBentLaser::*)(float, float)>(&lstg::GameObjectBentLaser::strictCollisionCheck)));
 	LUA_TRY_INVOKE_R(1, static_cast<bool(lstg::GameObjectBentLaser::*)(lstg::GameObject*)>(&lstg::GameObjectBentLaser::strictCollisionCheck));
 	LUA_INVOKE_FOOTER("1,2");
 }

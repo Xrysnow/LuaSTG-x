@@ -102,11 +102,11 @@ size_t ResAnimation::getMemorySize()
 	return total;
 }
 
-Animation* ResAnimation::newCocosAnimation()
+cc::IntrusivePtr<Animation> ResAnimation::newCocosAnimation()
 {
 	Vector<SpriteFrame*> frames;
 	for (auto& img : images)
-		frames.pushBack(img->getSpriteFrame());
+		frames.pushBack(img->getSpriteFrame().get());
 	return Animation::createWithSpriteFrames(frames);
 }
 
@@ -143,11 +143,12 @@ ResAnimation::~ResAnimation()
 	images.clear();
 }
 
-ResAnimation* ResAnimation::create(const std::string& name, ResTexture* texture,
+cc::IntrusivePtr<ResAnimation> ResAnimation::create(const std::string& name, ResTexture* texture,
 	float x, float y, float w, float h,
 	int nCol, int nRow, int interval, double a, double b, XColliderType colliType)
 {
-	return new (nothrow) ResAnimation(name.c_str(), texture,
-		x, y, w, h, nCol, nRow, interval, a, b, colliType);
+	cc::IntrusivePtr<ResAnimation> owner{new (nothrow) ResAnimation(name.c_str(), texture,
+		x, y, w, h, nCol, nRow, interval, a, b, colliType)};
+	return Resource::finishConstruction(std::move(owner));
 }
 

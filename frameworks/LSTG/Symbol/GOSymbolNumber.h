@@ -9,8 +9,8 @@ namespace lstg
 		{
 			float _value = 0.f;
 		public:
-			static Number* createWithValue(float v);
-			static Number* createWithObjProperty(const std::string& property);
+			static cc::IntrusivePtr<Number> createWithValue(float v);
+			static cc::IntrusivePtr<Number> createWithObjProperty(const std::string& property);
 
 		protected:
 			Number() { _type = Type::Number; }
@@ -34,7 +34,7 @@ namespace lstg
 			std::function<float()> _eval;
 			GameObjectProperty _p = GameObjectProperty::_KEY_NOT_FOUND;
 		public:
-			static NumberFromGameObject* create(GameObjectProperty p);
+			static cc::IntrusivePtr<NumberFromGameObject> create(GameObjectProperty p);
 			float getNumber() override;
 			void pushLua(lua_State* L, uint32_t idxOut) override;
 		private:
@@ -45,7 +45,7 @@ namespace lstg
 		{
 			std::string _field;
 		public:
-			static NumberFromGameObjectLua* create(const std::string& field);
+			static cc::IntrusivePtr<NumberFromGameObjectLua> create(const std::string& field);
 			float getNumber() override;
 			void pushLua(lua_State* L, uint32_t idxOut) override;
 		private:

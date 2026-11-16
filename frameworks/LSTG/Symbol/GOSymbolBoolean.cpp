@@ -4,20 +4,20 @@
 using namespace lstg;
 using namespace lstg::symbol;
 
-#define CREATE_CHECK(p, _cond) if (_cond){(p)->autorelease();return (p);} CC_SAFE_DELETE(p); return nullptr;
+#define CREATE_CHECK(p, _cond) if (_cond) return p; return nullptr;
 
 
 //
 
-Boolean* Boolean::createWithValue(bool v)
+cc::IntrusivePtr<Boolean> Boolean::createWithValue(bool v)
 {
-	auto ret = new(std::nothrow) Boolean();
+	cc::IntrusivePtr<Boolean> ret{new(std::nothrow) Boolean()};
 	CREATE_CHECK(ret, ret&&ret->initWithValue(v));
 }
 
-Boolean* Boolean::createWithObjProperty(const std::string& property)
+cc::IntrusivePtr<Boolean> Boolean::createWithObjProperty(const std::string& property)
 {
-	Boolean* ret = BooleanFromGameObject::create(GameObjectPropertyHash(property));
+	cc::IntrusivePtr<Boolean> ret = BooleanFromGameObject::create(GameObjectPropertyHash(property));
 	if (!ret)
 		ret = BooleanFromGameObjectLua::create(property);
 	return ret;
@@ -35,9 +35,9 @@ void Boolean::pushLua(lua_State* L, uint32_t /*idxOut*/)
 	lua_pushboolean(L, _value);
 }
 
-BooleanFromGameObject* BooleanFromGameObject::create(GameObjectProperty p)
+cc::IntrusivePtr<BooleanFromGameObject> BooleanFromGameObject::create(GameObjectProperty p)
 {
-	auto ret = new (std::nothrow) BooleanFromGameObject();
+	cc::IntrusivePtr<BooleanFromGameObject> ret{new (std::nothrow) BooleanFromGameObject()};
 	CREATE_CHECK(ret, ret&&ret->init(p));
 }
 
@@ -61,9 +61,9 @@ bool BooleanFromGameObject::init(GameObjectProperty p)
 	return _eval != nullptr;
 }
 
-BooleanFromGameObjectLua* BooleanFromGameObjectLua::create(const std::string& field)
+cc::IntrusivePtr<BooleanFromGameObjectLua> BooleanFromGameObjectLua::create(const std::string& field)
 {
-	auto ret = new (std::nothrow) BooleanFromGameObjectLua();
+	cc::IntrusivePtr<BooleanFromGameObjectLua> ret{new (std::nothrow) BooleanFromGameObjectLua()};
 	CREATE_CHECK(ret, ret&&ret->init(field));
 }
 

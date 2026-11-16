@@ -40,8 +40,8 @@ int lua_lstg_Latex_getWidth(lua_State* lua_S)
 int lua_lstg_Latex_create(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("lstg.Latex", "lstg.Latex:create");
-	LUA_TRY_INVOKE_R(5, static_cast<lstg::Latex*(*)(const std::string&, int, float, float, const cocos2d::Color4B&)>(&lstg::Latex::create));
-	LUA_TRY_INVOKE_R(4, [](const std::string& arg0,int arg1,float arg2,float arg3){{return lstg::Latex::create(arg0,std::move(arg1),std::move(arg2),std::move(arg3));}});
+	LUA_TRY_INVOKE_R(5, &lstg::Latex::create);
+	LUA_TRY_INVOKE_R(4, ([](const std::string& arg0,int arg1,float arg2,float arg3){{return lstg::Latex::create(arg0,std::move(arg1),std::move(arg2),std::move(arg3));}}));
 	LUA_SINVOKE_FOOTER("4,5");
 }
 int lua_lstg_Latex_setDebug(lua_State* lua_S)

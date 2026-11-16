@@ -22,13 +22,13 @@ namespace lstg
 		// Workers retain only State, never this Ref or a Buffer/autorelease object.
 		struct State;
 		std::shared_ptr<State> state;
-		std::unordered_map<std::string, std::pair<FileBytes, cocos2d::RefPtr<Buffer>>> bufferViews;
+		std::unordered_map<std::string, std::pair<FileBytes, cc::IntrusivePtr<Buffer>>> bufferViews;
 		friend class ResourceMgr;
 
 		bool init(const std::string& path_, const std::string& passwd);
 
 	public:
-		static ResourcePack* create(const std::string& fullPath, const std::string& password);
+		static cc::IntrusivePtr<ResourcePack> create(const std::string& fullPath, const std::string& password);
 
 		std::string getPath() const;
 		size_t getFileCount() const;
@@ -79,7 +79,7 @@ namespace lstg
 		mutable std::mutex mut;
 		ResourceFileCache localFiles;
 		// Buffer views are legacy main-thread API objects, separate from worker data.
-		std::unordered_map<std::string, std::pair<FileBytes, cocos2d::RefPtr<Buffer>>> localBuffers;
+		std::unordered_map<std::string, std::pair<FileBytes, cc::IntrusivePtr<Buffer>>> localBuffers;
 		std::vector<std::shared_ptr<ResourcePack::State>> getPackStates() const;
 		FileBytes getLocalFileData(const std::string& fpath);
 		std::vector<std::string> listPackFiles(const std::string& directory) const;

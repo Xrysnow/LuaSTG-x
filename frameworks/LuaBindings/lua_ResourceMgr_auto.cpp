@@ -10,7 +10,7 @@ int lua_lstg_ResourcePack_cacheAllFiles(lua_State* lua_S)
 int lua_lstg_ResourcePack_cacheAllFilesAsync(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ResourcePack", "lstg.ResourcePack:cacheAllFilesAsync");
-	LUA_TRY_INVOKE(1, static_cast<void(lstg::ResourcePack::*)(const std::function<void ()>&)>(&lstg::ResourcePack::cacheAllFilesAsync));
+	LUA_TRY_INVOKE(1, &lstg::ResourcePack::cacheAllFilesAsync);
 	LUA_TRY_INVOKE(0, [](lstg::ResourcePack* obj){{return obj->cacheAllFilesAsync();}});
 	LUA_INVOKE_FOOTER("0,1");
 }
@@ -23,8 +23,8 @@ int lua_lstg_ResourcePack_cacheFile(lua_State* lua_S)
 int lua_lstg_ResourcePack_cacheFileAsync(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ResourcePack", "lstg.ResourcePack:cacheFileAsync");
-	LUA_TRY_INVOKE(2, static_cast<void(lstg::ResourcePack::*)(const std::string&, const std::function<void ()>&)>(&lstg::ResourcePack::cacheFileAsync));
-	LUA_TRY_INVOKE(1, [](lstg::ResourcePack* obj, const std::string& arg0){{return obj->cacheFileAsync(arg0);}});
+	LUA_TRY_INVOKE(2, &lstg::ResourcePack::cacheFileAsync);
+	LUA_TRY_INVOKE(1, ([](lstg::ResourcePack* obj,const std::string& arg0){{return obj->cacheFileAsync(arg0);}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_lstg_ResourcePack_clearFileCache(lua_State* lua_S)
@@ -175,8 +175,8 @@ int lua_lstg_ResourceMgr_cacheLocalFile(lua_State* lua_S)
 int lua_lstg_ResourceMgr_cacheLocalFileAsync(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ResourceMgr", "lstg.ResourceMgr:cacheLocalFileAsync");
-	LUA_TRY_INVOKE(2, static_cast<void(lstg::ResourceMgr::*)(const std::string&, const std::function<void ()>&)>(&lstg::ResourceMgr::cacheLocalFileAsync));
-	LUA_TRY_INVOKE(1, [](lstg::ResourceMgr* obj, const std::string& arg0){{return obj->cacheLocalFileAsync(arg0);}});
+	LUA_TRY_INVOKE(2, &lstg::ResourceMgr::cacheLocalFileAsync);
+	LUA_TRY_INVOKE(1, ([](lstg::ResourceMgr* obj,const std::string& arg0){{return obj->cacheLocalFileAsync(arg0);}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_lstg_ResourceMgr_clear(lua_State* lua_S)

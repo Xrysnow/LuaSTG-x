@@ -27,7 +27,7 @@ namespace lstg {
 		cocos2d::Color4B outlineColor = cocos2d::Color4B(0, 0, 0, 0xFF);
 		cocos2d::Color4B glowColor = cocos2d::Color4B::WHITE;
 
-		cocos2d::RefPtr<XLabel> label;
+		cc::IntrusivePtr<XLabel> label;
 		cocos2d::TTFConfig config;
 
 		cocos2d::TextHAlignment h_alignment = cocos2d::TextHAlignment::LEFT;
@@ -112,15 +112,15 @@ namespace lstg {
 		std::unordered_map<std::string, std::string> getInfo() const override;
 		size_t getMemorySize() override;
 
-		cocos2d::Label* createLabel();
+		cc::IntrusivePtr<cocos2d::Label> createLabel();
 		void syncLabelSetting(cocos2d::Label* target);
 
 		ResFont(const std::string& name, XLabel* label, LabelType type);
 		~ResFont() override;
 
-		static ResFont* createHGE(const std::string& name, const std::string& path);
-		static ResFont* createBMF(const std::string& name, const std::string& path);
-		static ResFont* createTTF(const std::string& name, const std::string& path, float fontSize);
+		static cc::IntrusivePtr<ResFont> createHGE(const std::string& name, const std::string& path);
+		static cc::IntrusivePtr<ResFont> createBMF(const std::string& name, const std::string& path);
+		static cc::IntrusivePtr<ResFont> createTTF(const std::string& name, const std::string& path, float fontSize);
 
 		static void ReadHGEDefine(const std::string& data, std::unordered_map<char, GlyphInfo>& out, std::string& tex);
 		static std::string HGE2BMF(const std::string& data, std::string& outTexName);

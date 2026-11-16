@@ -255,19 +255,16 @@ ResSound::~ResSound()
 {
 }
 
-ResSound* ResSound::create(const std::string& name, const std::string& path)
+cc::IntrusivePtr<ResSound> ResSound::create(const std::string& name, const std::string& path)
 {
 	auto input = LRES.openReadStream(path);
 	if (!input)
 		return nullptr;
-	auto ret = new (nothrow) ResSound(name, path);
+	cc::IntrusivePtr<ResSound> ret{new (nothrow) ResSound(name, path)};
 	if (ret && ret->init(std::move(input.value)))
 	{
-		// autoreleased in Resource ctor
-		//ret->autorelease();
-		return ret;
+		return Resource::finishConstruction(std::move(ret));
 	}
-	CC_SAFE_DELETE(ret);
 	return nullptr;
 }
 
@@ -292,18 +289,15 @@ ResMusic::~ResMusic()
 {
 }
 
-ResMusic* ResMusic::create(const std::string& name, const std::string& path, double loopStart, double loopEnd)
+cc::IntrusivePtr<ResMusic> ResMusic::create(const std::string& name, const std::string& path, double loopStart, double loopEnd)
 {
 	auto input = LRES.openReadStream(path);
 	if (!input)
 		return nullptr;
-	auto ret = new (nothrow) ResMusic(name, path);
+	cc::IntrusivePtr<ResMusic> ret{new (nothrow) ResMusic(name, path)};
 	if (ret && ret->initWithStream(std::move(input.value), loopStart, loopEnd))
 	{
-		// autoreleased in Resource ctor
-		//ret->autorelease();
-		return ret;
+		return Resource::finishConstruction(std::move(ret));
 	}
-	CC_SAFE_DELETE(ret);
 	return nullptr;
 }

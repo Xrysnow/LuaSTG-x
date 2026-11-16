@@ -11,7 +11,7 @@ namespace lstg
 	public:
 		ComponentDataParticle();
 		~ComponentDataParticle();
-		static ComponentDataParticle* create(ResParticle* res);
+		static cc::IntrusivePtr<ComponentDataParticle> create(ResParticle* res);
 		ResParticle::ParticlePool* pool;
 	};
 }

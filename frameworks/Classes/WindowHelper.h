@@ -175,9 +175,9 @@ namespace lstg
 		using GammaRamp = std::array<std::vector<unsigned short>, 3>;
 		using VideoMode = std::array<int, 6>;
 
-		static std::vector<MonitorHelper*> getMonitors();
-		static MonitorHelper* getPrimaryMonitor();
-		static MonitorHelper* getCurrentMonitor();
+		static std::vector<cc::IntrusivePtr<MonitorHelper>> getMonitors();
+		static cc::IntrusivePtr<MonitorHelper> getPrimaryMonitor();
+		static cc::IntrusivePtr<MonitorHelper> getCurrentMonitor();
 
 		virtual bool isValid() = 0;
 
@@ -215,7 +215,7 @@ namespace lstg
 		~MonitorHelperDesktop() override = default;
 		GLFWmonitor* handle = nullptr;
 
-		static MonitorHelperDesktop* getOrCreate(GLFWmonitor* handle);
+		static cc::IntrusivePtr<MonitorHelperDesktop> getOrCreate(GLFWmonitor* handle);
 		friend class MonitorHelper;
 	};
 #endif // CC_PLATFORM_PC

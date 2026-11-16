@@ -9,7 +9,7 @@ namespace lstg
 		virtual bool init();
 	public:
 		virtual ~ComponentData(){}
-		ComponentData* clone() { return nullptr; }
+		cc::IntrusivePtr<ComponentData> clone() { return nullptr; }
 	};
 }
 

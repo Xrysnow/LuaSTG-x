@@ -8,17 +8,16 @@ bool ComponentDataAni::init(ResAnimation* res)
 	return true;
 }
 
-ComponentDataAni* ComponentDataAni::create(ResAnimation* res)
+cc::IntrusivePtr<ComponentDataAni> ComponentDataAni::create(ResAnimation* res)
 {
-	ComponentDataAni *pRet = new(std::nothrow) ComponentDataAni();
+	cc::IntrusivePtr<ComponentDataAni> pRet{new(std::nothrow) ComponentDataAni()};
 	if (pRet && pRet->init(res))
 	{
-		pRet->autorelease(); return pRet;
+		return pRet;
 	}
 	else
 	{
-		delete pRet;
-		pRet = nullptr;
+
 		return nullptr;
 	}
 }

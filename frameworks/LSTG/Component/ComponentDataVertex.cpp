@@ -15,18 +15,17 @@ lstg::ComponentDataVertex::~ComponentDataVertex()
 	CC_SAFE_DELETE_ARRAY(tri.indices);
 }
 
-lstg::ComponentDataVertex* lstg::ComponentDataVertex::create(ResTexture* res)
+cc::IntrusivePtr<lstg::ComponentDataVertex> lstg::ComponentDataVertex::create(ResTexture* res)
 {
-	auto pRet = new(std::nothrow) ComponentDataVertex();
+	cc::IntrusivePtr<ComponentDataVertex> pRet{new(std::nothrow) ComponentDataVertex()};
 	if (pRet && pRet->init(res))
 	{
-		pRet->autorelease();
+
 		return pRet;
 	}
 	else
 	{
-		delete pRet;
-		pRet = nullptr;
+
 		return nullptr;
 	}
 }

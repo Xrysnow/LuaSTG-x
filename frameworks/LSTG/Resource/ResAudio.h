@@ -12,7 +12,7 @@ namespace lstg
 		// note: decoderBufferSize should >= bufferCopySize
 		static constexpr size_t bufferCopySize = 4096;
 		static constexpr size_t decoderBufferSize = 4096;
-		cocos2d::RefPtr<cocos2d::AudioSource> source;
+		cc::IntrusivePtr<cocos2d::AudioSource> source;
 		cocos2d::io::StreamPtr stream;
 		std::string path;
 		std::array<uint8_t, bufferCopySize> bufferCopy;
@@ -62,7 +62,7 @@ namespace lstg
 		ResSound(const std::string& name, const std::string& path);
 		~ResSound() override;
 	public:
-		static ResSound* create(const std::string& name, const std::string& path);
+		static cc::IntrusivePtr<ResSound> create(const std::string& name, const std::string& path);
 	};
 	// background music
 	class ResMusic :
@@ -72,7 +72,7 @@ namespace lstg
 		ResMusic(const std::string& name, const std::string& path);
 		~ResMusic() override;
 	public:
-		static ResMusic* create(const std::string& name, const std::string& path,
+		static cc::IntrusivePtr<ResMusic> create(const std::string& name, const std::string& path,
 			double loopStart, double loopEnd);
 	};
 }

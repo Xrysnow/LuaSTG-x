@@ -104,7 +104,7 @@ size_t ResFX::getMemorySize()
 	return total;
 }
 
-ResFX* ResFX::create(const std::string& name,
+cc::IntrusivePtr<ResFX> ResFX::create(const std::string& name,
                      const std::string& vsPath, const std::string& fsPath)
 {
 	const auto vs = LRES.getStringFromFile(vsPath);
@@ -120,7 +120,7 @@ ResFX* ResFX::create(const std::string& name,
 	return ret;
 }
 
-ResFX* ResFX::createWithString(const std::string& name,
+cc::IntrusivePtr<ResFX> ResFX::createWithString(const std::string& name,
 	const std::string& vShader, const std::string& fShader)
 {
 	const auto program =
@@ -130,12 +130,13 @@ ResFX* ResFX::createWithString(const std::string& name,
 	return createWithProgram(name, program);
 }
 
-ResFX* ResFX::createWithProgram(const std::string& name, backend::Program* program)
+cc::IntrusivePtr<ResFX> ResFX::createWithProgram(const std::string& name, backend::Program* program)
 {
 	if (!program)
 		return nullptr;
 	const auto m = RenderMode::create(name, program);
 	if (!m)
 		return nullptr;
-	return new (nothrow) ResFX(name, m);
+	cc::IntrusivePtr<ResFX> owner{new (nothrow) ResFX(name, m)};
+	return Resource::finishConstruction(std::move(owner));
 }

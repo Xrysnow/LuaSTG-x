@@ -532,7 +532,7 @@ int lua_fairygui_UIConfig_windowModalWaiting_setter(lua_State* lua_S)
 int lua_fairygui_UIConfig_getRealFontName(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("fgui.UIConfig", "fgui.UIConfig:getRealFontName");
-	LUA_TRY_INVOKE_R(2, static_cast<const std::basic_string<char>&(*)(const std::string&, bool*)>(&fairygui::UIConfig::getRealFontName));
+	LUA_TRY_INVOKE_R(2, &fairygui::UIConfig::getRealFontName);
 	LUA_TRY_INVOKE_R(1, [](const std::string& arg0){{return fairygui::UIConfig::getRealFontName(arg0);}});
 	LUA_SINVOKE_FOOTER("1,2");
 }
@@ -982,7 +982,6 @@ int luaReg_fgui_fguiUIEventType(lua_State* lua_S)
 int lua_fairygui_EventTag_new(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("fgui.EventTag", "fgui.EventTag:new");
-	LUA_TRY_CTOR_OVERLOAD(1, [](fairygui::EventTag && arg0){{return new fairygui::EventTag(arg0);}});
 	LUA_TRY_CTOR_OVERLOAD(1, [](const fairygui::EventTag& arg0){{return new fairygui::EventTag(arg0);}});
 	LUA_TRY_CTOR_OVERLOAD(1, [](int arg0){{return new fairygui::EventTag(std::move(arg0));}});
 	LUA_TRY_CTOR_OVERLOAD(1, [](void* arg0){{return new fairygui::EventTag(arg0);}});
@@ -1022,14 +1021,14 @@ int luaReg_fgui_fguiEventTag(lua_State* lua_S)
 int lua_fairygui_UIEventDispatcher_addEventListener(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.UIEventDispatcher", "fgui.UIEventDispatcher:addEventListener");
-	LUA_TRY_INVOKE(3, static_cast<void(fairygui::UIEventDispatcher::*)(int, const fairygui::EventCallback&, const fairygui::EventTag&)>(&fairygui::UIEventDispatcher::addEventListener));
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::UIEventDispatcher::*)(int, const fairygui::EventCallback&)>(&fairygui::UIEventDispatcher::addEventListener));
+	LUA_TRY_INVOKE(3, (static_cast<void(fairygui::UIEventDispatcher::*)(int, const fairygui::EventCallback&, const fairygui::EventTag&)>(&fairygui::UIEventDispatcher::addEventListener)));
+	LUA_TRY_INVOKE(2, (static_cast<void(fairygui::UIEventDispatcher::*)(int, const fairygui::EventCallback&)>(&fairygui::UIEventDispatcher::addEventListener)));
 	LUA_INVOKE_FOOTER("2,3");
 }
 int lua_fairygui_UIEventDispatcher_hasEventListener(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.UIEventDispatcher", "fgui.UIEventDispatcher:hasEventListener");
-	LUA_TRY_INVOKE_R(2, static_cast<bool(fairygui::UIEventDispatcher::*)(int, const fairygui::EventTag&)const>(&fairygui::UIEventDispatcher::hasEventListener));
+	LUA_TRY_INVOKE_R(2, (static_cast<bool(fairygui::UIEventDispatcher::*)(int, const fairygui::EventTag&)const>(&fairygui::UIEventDispatcher::hasEventListener)));
 	LUA_TRY_INVOKE_R(1, static_cast<bool(fairygui::UIEventDispatcher::*)(int)const>(&fairygui::UIEventDispatcher::hasEventListener));
 	LUA_INVOKE_FOOTER("1,2");
 }
@@ -1042,7 +1041,7 @@ int lua_fairygui_UIEventDispatcher_isDispatchingEvent(lua_State* lua_S)
 int lua_fairygui_UIEventDispatcher_removeEventListener(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.UIEventDispatcher", "fgui.UIEventDispatcher:removeEventListener");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::UIEventDispatcher::*)(int, const fairygui::EventTag&)>(&fairygui::UIEventDispatcher::removeEventListener));
+	LUA_TRY_INVOKE(2, (static_cast<void(fairygui::UIEventDispatcher::*)(int, const fairygui::EventTag&)>(&fairygui::UIEventDispatcher::removeEventListener)));
 	LUA_TRY_INVOKE(1, static_cast<void(fairygui::UIEventDispatcher::*)(int)>(&fairygui::UIEventDispatcher::removeEventListener));
 	LUA_INVOKE_FOOTER("1,2");
 }
@@ -1056,7 +1055,7 @@ int luaReg_fgui_fguiUIEventDispatcher(lua_State* lua_S)
 {
 	LUA_ENTRY("fgui");
 	LUA_CLS_DEF_BASE(fairygui::UIEventDispatcher, "UIEventDispatcher", "fgui.UIEventDispatcher",
-		cocos2d::Ref, "cc.Ref",
+		cocos2d::Ref, "fgui.cocos2d.Ref",
 		nullptr, nullptr);
 	LUA_METHOD("addEventListener", lua_fairygui_UIEventDispatcher_addEventListener);
 	LUA_METHOD("hasEventListener", lua_fairygui_UIEventDispatcher_hasEventListener);
@@ -1202,22 +1201,22 @@ int lua_fairygui_GController_setParent(lua_State* lua_S)
 int lua_fairygui_GController_setSelectedIndex(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GController", "fgui.GController:setSelectedIndex");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::GController::*)(int, bool)>(&fairygui::GController::setSelectedIndex));
-	LUA_TRY_INVOKE(1, [](fairygui::GController* obj, int arg0){{return obj->setSelectedIndex(std::move(arg0));}});
+	LUA_TRY_INVOKE(2, &fairygui::GController::setSelectedIndex);
+	LUA_TRY_INVOKE(1, ([](fairygui::GController* obj,int arg0){{return obj->setSelectedIndex(std::move(arg0));}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_fairygui_GController_setSelectedPage(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GController", "fgui.GController:setSelectedPage");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::GController::*)(const std::string&, bool)>(&fairygui::GController::setSelectedPage));
-	LUA_TRY_INVOKE(1, [](fairygui::GController* obj, const std::string& arg0){{return obj->setSelectedPage(arg0);}});
+	LUA_TRY_INVOKE(2, &fairygui::GController::setSelectedPage);
+	LUA_TRY_INVOKE(1, ([](fairygui::GController* obj,const std::string& arg0){{return obj->setSelectedPage(arg0);}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_fairygui_GController_setSelectedPageId(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GController", "fgui.GController:setSelectedPageId");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::GController::*)(const std::string&, bool)>(&fairygui::GController::setSelectedPageId));
-	LUA_TRY_INVOKE(1, [](fairygui::GController* obj, const std::string& arg0){{return obj->setSelectedPageId(arg0);}});
+	LUA_TRY_INVOKE(2, &fairygui::GController::setSelectedPageId);
+	LUA_TRY_INVOKE(1, ([](fairygui::GController* obj,const std::string& arg0){{return obj->setSelectedPageId(arg0);}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_fairygui_GController_setup(lua_State* lua_S)
@@ -1366,8 +1365,8 @@ int lua_fairygui_Relations_handling_setter(lua_State* lua_S)
 int lua_fairygui_Relations_add(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.Relations", "fgui.Relations:add");
-	LUA_TRY_INVOKE(3, static_cast<void(fairygui::Relations::*)(fairygui::GObject*, fairygui::RelationType, bool)>(&fairygui::Relations::add));
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::Relations::*)(fairygui::GObject*, fairygui::RelationType)>(&fairygui::Relations::add));
+	LUA_TRY_INVOKE(3, (static_cast<void(fairygui::Relations::*)(fairygui::GObject*, fairygui::RelationType, bool)>(&fairygui::Relations::add)));
+	LUA_TRY_INVOKE(2, (static_cast<void(fairygui::Relations::*)(fairygui::GObject*, fairygui::RelationType)>(&fairygui::Relations::add)));
 	LUA_INVOKE_FOOTER("2,3");
 }
 int lua_fairygui_Relations_clearAll(lua_State* lua_S)
@@ -1586,7 +1585,7 @@ int lua_fairygui_GObject_sourceSize_setter(lua_State* lua_S)
 int lua_fairygui_GObject_addClickListener(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GObject", "fgui.GObject:addClickListener");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::GObject::*)(const fairygui::EventCallback&, const fairygui::EventTag&)>(&fairygui::GObject::addClickListener));
+	LUA_TRY_INVOKE(2, (static_cast<void(fairygui::GObject::*)(const fairygui::EventCallback&, const fairygui::EventTag&)>(&fairygui::GObject::addClickListener)));
 	LUA_TRY_INVOKE(1, static_cast<void(fairygui::GObject::*)(const fairygui::EventCallback&)>(&fairygui::GObject::addClickListener));
 	LUA_INVOKE_FOOTER("1,2");
 }
@@ -1599,14 +1598,14 @@ int lua_fairygui_GObject_addDisplayLock(lua_State* lua_S)
 int lua_fairygui_GObject_addRelation(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GObject", "fgui.GObject:addRelation");
-	LUA_TRY_INVOKE(3, static_cast<void(fairygui::GObject::*)(fairygui::GObject*, fairygui::RelationType, bool)>(&fairygui::GObject::addRelation));
-	LUA_TRY_INVOKE(2, [](fairygui::GObject* obj, fairygui::GObject* arg0,fairygui::RelationType arg1){{return obj->addRelation(std::move(arg0),std::move(arg1));}});
+	LUA_TRY_INVOKE(3, &fairygui::GObject::addRelation);
+	LUA_TRY_INVOKE(2, ([](fairygui::GObject* obj,fairygui::GObject* arg0,fairygui::RelationType arg1){{return obj->addRelation(arg0,std::move(arg1));}}));
 	LUA_INVOKE_FOOTER("2,3");
 }
 int lua_fairygui_GObject_center(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GObject", "fgui.GObject:center");
-	LUA_TRY_INVOKE(1, static_cast<void(fairygui::GObject::*)(bool)>(&fairygui::GObject::center));
+	LUA_TRY_INVOKE(1, &fairygui::GObject::center);
 	LUA_TRY_INVOKE(0, [](fairygui::GObject* obj){{return obj->center();}});
 	LUA_INVOKE_FOOTER("0,1");
 }
@@ -1951,8 +1950,8 @@ int lua_fairygui_GObject_setIcon(lua_State* lua_S)
 int lua_fairygui_GObject_setPivot(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GObject", "fgui.GObject:setPivot");
-	LUA_TRY_INVOKE(3, static_cast<void(fairygui::GObject::*)(float, float, bool)>(&fairygui::GObject::setPivot));
-	LUA_TRY_INVOKE(2, [](fairygui::GObject* obj, float arg0,float arg1){{return obj->setPivot(std::move(arg0),std::move(arg1));}});
+	LUA_TRY_INVOKE(3, &fairygui::GObject::setPivot);
+	LUA_TRY_INVOKE(2, ([](fairygui::GObject* obj,float arg0,float arg1){{return obj->setPivot(std::move(arg0),std::move(arg1));}}));
 	LUA_INVOKE_FOOTER("2,3");
 }
 int lua_fairygui_GObject_setPixelSnapping(lua_State* lua_S)
@@ -2000,8 +1999,8 @@ int lua_fairygui_GObject_setScaleY(lua_State* lua_S)
 int lua_fairygui_GObject_setSize(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GObject", "fgui.GObject:setSize");
-	LUA_TRY_INVOKE(3, static_cast<void(fairygui::GObject::*)(float, float, bool)>(&fairygui::GObject::setSize));
-	LUA_TRY_INVOKE(2, [](fairygui::GObject* obj, float arg0,float arg1){{return obj->setSize(std::move(arg0),std::move(arg1));}});
+	LUA_TRY_INVOKE(3, &fairygui::GObject::setSize);
+	LUA_TRY_INVOKE(2, ([](fairygui::GObject* obj,float arg0,float arg1){{return obj->setSize(std::move(arg0),std::move(arg1));}}));
 	LUA_INVOKE_FOOTER("2,3");
 }
 int lua_fairygui_GObject_setSkewX(lua_State* lua_S)
@@ -2079,7 +2078,7 @@ int lua_fairygui_GObject_setYMin(lua_State* lua_S)
 int lua_fairygui_GObject_startDrag(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GObject", "fgui.GObject:startDrag");
-	LUA_TRY_INVOKE(1, static_cast<void(fairygui::GObject::*)(int)>(&fairygui::GObject::startDrag));
+	LUA_TRY_INVOKE(1, &fairygui::GObject::startDrag);
 	LUA_TRY_INVOKE(0, [](fairygui::GObject* obj){{return obj->startDrag();}});
 	LUA_INVOKE_FOOTER("0,1");
 }
@@ -2553,7 +2552,7 @@ int lua_fairygui_UIPackage_addPackage(lua_State* lua_S)
 int lua_fairygui_UIPackage_createObject(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("fgui.UIPackage", "fgui.UIPackage:createObject");
-	LUA_TRY_INVOKE_R(2, static_cast<fairygui::GObject*(*)(const std::string&, const std::string&)>(&fairygui::UIPackage::createObject));
+	LUA_TRY_INVOKE_R(2, (static_cast<cc::IntrusivePtr<fairygui::GObject>(*)(const std::string&, const std::string&)>(&fairygui::UIPackage::createObject)));
 	LUA_SINVOKE_FOOTER("2");
 }
 int lua_fairygui_UIPackage_createObjectFromURL(lua_State* lua_S)
@@ -2823,11 +2822,11 @@ int lua_fairygui_GMovieClip_setFrame(lua_State* lua_S)
 int lua_fairygui_GMovieClip_setPlaySettings(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GMovieClip", "fgui.GMovieClip:setPlaySettings");
-	LUA_TRY_INVOKE(5, static_cast<void(fairygui::GMovieClip::*)(int, int, int, int, std::function<void ()>)>(&fairygui::GMovieClip::setPlaySettings));
-	LUA_TRY_INVOKE(4, [](fairygui::GMovieClip* obj, int arg0,int arg1,int arg2,int arg3){{return obj->setPlaySettings(std::move(arg0),std::move(arg1),std::move(arg2),std::move(arg3));}});
-	LUA_TRY_INVOKE(3, [](fairygui::GMovieClip* obj, int arg0,int arg1,int arg2){{return obj->setPlaySettings(std::move(arg0),std::move(arg1),std::move(arg2));}});
-	LUA_TRY_INVOKE(2, [](fairygui::GMovieClip* obj, int arg0,int arg1){{return obj->setPlaySettings(std::move(arg0),std::move(arg1));}});
-	LUA_TRY_INVOKE(1, [](fairygui::GMovieClip* obj, int arg0){{return obj->setPlaySettings(std::move(arg0));}});
+	LUA_TRY_INVOKE(5, &fairygui::GMovieClip::setPlaySettings);
+	LUA_TRY_INVOKE(4, ([](fairygui::GMovieClip* obj,int arg0,int arg1,int arg2,int arg3){{return obj->setPlaySettings(std::move(arg0),std::move(arg1),std::move(arg2),std::move(arg3));}}));
+	LUA_TRY_INVOKE(3, ([](fairygui::GMovieClip* obj,int arg0,int arg1,int arg2){{return obj->setPlaySettings(std::move(arg0),std::move(arg1),std::move(arg2));}}));
+	LUA_TRY_INVOKE(2, ([](fairygui::GMovieClip* obj,int arg0,int arg1){{return obj->setPlaySettings(std::move(arg0),std::move(arg1));}}));
+	LUA_TRY_INVOKE(1, ([](fairygui::GMovieClip* obj,int arg0){{return obj->setPlaySettings(std::move(arg0));}}));
 	LUA_TRY_INVOKE(0, [](fairygui::GMovieClip* obj){{return obj->setPlaySettings();}});
 	LUA_INVOKE_FOOTER("0,1,2,3,4,5");
 }
@@ -4060,7 +4059,7 @@ int lua_fairygui_GGroup_setAutoSizeDisabled(lua_State* lua_S)
 int lua_fairygui_GGroup_setBoundsChangedFlag(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GGroup", "fgui.GGroup:setBoundsChangedFlag");
-	LUA_TRY_INVOKE(1, static_cast<void(fairygui::GGroup::*)(bool)>(&fairygui::GGroup::setBoundsChangedFlag));
+	LUA_TRY_INVOKE(1, &fairygui::GGroup::setBoundsChangedFlag);
 	LUA_TRY_INVOKE(0, [](fairygui::GGroup* obj){{return obj->setBoundsChangedFlag();}});
 	LUA_INVOKE_FOOTER("0,1");
 }
@@ -4318,57 +4317,57 @@ int lua_fairygui_ScrollPane_lockHeader(lua_State* lua_S)
 int lua_fairygui_ScrollPane_scrollBottom(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.ScrollPane", "fgui.ScrollPane:scrollBottom");
-	LUA_TRY_INVOKE(1, static_cast<void(fairygui::ScrollPane::*)(bool)>(&fairygui::ScrollPane::scrollBottom));
+	LUA_TRY_INVOKE(1, &fairygui::ScrollPane::scrollBottom);
 	LUA_TRY_INVOKE(0, [](fairygui::ScrollPane* obj){{return obj->scrollBottom();}});
 	LUA_INVOKE_FOOTER("0,1");
 }
 int lua_fairygui_ScrollPane_scrollDown(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.ScrollPane", "fgui.ScrollPane:scrollDown");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::ScrollPane::*)(float, bool)>(&fairygui::ScrollPane::scrollDown));
-	LUA_TRY_INVOKE(1, [](fairygui::ScrollPane* obj, float arg0){{return obj->scrollDown(std::move(arg0));}});
+	LUA_TRY_INVOKE(2, &fairygui::ScrollPane::scrollDown);
+	LUA_TRY_INVOKE(1, ([](fairygui::ScrollPane* obj,float arg0){{return obj->scrollDown(std::move(arg0));}}));
 	LUA_TRY_INVOKE(0, [](fairygui::ScrollPane* obj){{return obj->scrollDown();}});
 	LUA_INVOKE_FOOTER("0,1,2");
 }
 int lua_fairygui_ScrollPane_scrollLeft(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.ScrollPane", "fgui.ScrollPane:scrollLeft");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::ScrollPane::*)(float, bool)>(&fairygui::ScrollPane::scrollLeft));
-	LUA_TRY_INVOKE(1, [](fairygui::ScrollPane* obj, float arg0){{return obj->scrollLeft(std::move(arg0));}});
+	LUA_TRY_INVOKE(2, &fairygui::ScrollPane::scrollLeft);
+	LUA_TRY_INVOKE(1, ([](fairygui::ScrollPane* obj,float arg0){{return obj->scrollLeft(std::move(arg0));}}));
 	LUA_TRY_INVOKE(0, [](fairygui::ScrollPane* obj){{return obj->scrollLeft();}});
 	LUA_INVOKE_FOOTER("0,1,2");
 }
 int lua_fairygui_ScrollPane_scrollRight(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.ScrollPane", "fgui.ScrollPane:scrollRight");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::ScrollPane::*)(float, bool)>(&fairygui::ScrollPane::scrollRight));
-	LUA_TRY_INVOKE(1, [](fairygui::ScrollPane* obj, float arg0){{return obj->scrollRight(std::move(arg0));}});
+	LUA_TRY_INVOKE(2, &fairygui::ScrollPane::scrollRight);
+	LUA_TRY_INVOKE(1, ([](fairygui::ScrollPane* obj,float arg0){{return obj->scrollRight(std::move(arg0));}}));
 	LUA_TRY_INVOKE(0, [](fairygui::ScrollPane* obj){{return obj->scrollRight();}});
 	LUA_INVOKE_FOOTER("0,1,2");
 }
 int lua_fairygui_ScrollPane_scrollToView(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.ScrollPane", "fgui.ScrollPane:scrollToView");
-	LUA_TRY_INVOKE_OVERLOAD(3, static_cast<void(fairygui::ScrollPane::*)(const cocos2d::Rect&, bool, bool)>(&fairygui::ScrollPane::scrollToView));
-	LUA_TRY_INVOKE_OVERLOAD(3, [](fairygui::ScrollPane* obj, fairygui::GObject* arg0,bool arg1,bool arg2){{return obj->scrollToView(std::move(arg0),std::move(arg1),std::move(arg2));}});
-	LUA_TRY_INVOKE_OVERLOAD(2, [](fairygui::ScrollPane* obj, const cocos2d::Rect& arg0,bool arg1){{return obj->scrollToView(std::move(arg0),std::move(arg1));}});
-	LUA_TRY_INVOKE_OVERLOAD(2, [](fairygui::ScrollPane* obj, fairygui::GObject* arg0,bool arg1){{return obj->scrollToView(std::move(arg0),std::move(arg1));}});
-	LUA_TRY_INVOKE_OVERLOAD(1, [](fairygui::ScrollPane* obj, const cocos2d::Rect& arg0){{return obj->scrollToView(arg0);}});
-	LUA_TRY_INVOKE_OVERLOAD(1, [](fairygui::ScrollPane* obj, fairygui::GObject* arg0){{return obj->scrollToView(arg0);}});
+	LUA_TRY_INVOKE_OVERLOAD(3, (static_cast<void(fairygui::ScrollPane::*)(const cocos2d::Rect&, bool, bool)>(&fairygui::ScrollPane::scrollToView)));
+	LUA_TRY_INVOKE_OVERLOAD(3, (static_cast<void(fairygui::ScrollPane::*)(fairygui::GObject*, bool, bool)>(&fairygui::ScrollPane::scrollToView)));
+	LUA_TRY_INVOKE_OVERLOAD(2, ([](fairygui::ScrollPane* obj,const cocos2d::Rect& arg0,bool arg1){{return obj->scrollToView(arg0,std::move(arg1));}}));
+	LUA_TRY_INVOKE_OVERLOAD(2, ([](fairygui::ScrollPane* obj,fairygui::GObject* arg0,bool arg1){{return obj->scrollToView(arg0,std::move(arg1));}}));
+	LUA_TRY_INVOKE_OVERLOAD(1, ([](fairygui::ScrollPane* obj,const cocos2d::Rect& arg0){{return obj->scrollToView(arg0);}}));
+	LUA_TRY_INVOKE_OVERLOAD(1, ([](fairygui::ScrollPane* obj,fairygui::GObject* arg0){{return obj->scrollToView(arg0);}}));
 	LUA_INVOKE_FOOTER("1,2,3");
 }
 int lua_fairygui_ScrollPane_scrollTop(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.ScrollPane", "fgui.ScrollPane:scrollTop");
-	LUA_TRY_INVOKE(1, static_cast<void(fairygui::ScrollPane::*)(bool)>(&fairygui::ScrollPane::scrollTop));
+	LUA_TRY_INVOKE(1, &fairygui::ScrollPane::scrollTop);
 	LUA_TRY_INVOKE(0, [](fairygui::ScrollPane* obj){{return obj->scrollTop();}});
 	LUA_INVOKE_FOOTER("0,1");
 }
 int lua_fairygui_ScrollPane_scrollUp(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.ScrollPane", "fgui.ScrollPane:scrollUp");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::ScrollPane::*)(float, bool)>(&fairygui::ScrollPane::scrollUp));
-	LUA_TRY_INVOKE(1, [](fairygui::ScrollPane* obj, float arg0){{return obj->scrollUp(std::move(arg0));}});
+	LUA_TRY_INVOKE(2, &fairygui::ScrollPane::scrollUp);
+	LUA_TRY_INVOKE(1, ([](fairygui::ScrollPane* obj,float arg0){{return obj->scrollUp(std::move(arg0));}}));
 	LUA_TRY_INVOKE(0, [](fairygui::ScrollPane* obj){{return obj->scrollUp();}});
 	LUA_INVOKE_FOOTER("0,1,2");
 }
@@ -4411,43 +4410,43 @@ int lua_fairygui_ScrollPane_setPageMode(lua_State* lua_S)
 int lua_fairygui_ScrollPane_setPageX(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.ScrollPane", "fgui.ScrollPane:setPageX");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::ScrollPane::*)(int, bool)>(&fairygui::ScrollPane::setPageX));
-	LUA_TRY_INVOKE(1, [](fairygui::ScrollPane* obj, int arg0){{return obj->setPageX(std::move(arg0));}});
+	LUA_TRY_INVOKE(2, &fairygui::ScrollPane::setPageX);
+	LUA_TRY_INVOKE(1, ([](fairygui::ScrollPane* obj,int arg0){{return obj->setPageX(std::move(arg0));}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_fairygui_ScrollPane_setPageY(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.ScrollPane", "fgui.ScrollPane:setPageY");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::ScrollPane::*)(int, bool)>(&fairygui::ScrollPane::setPageY));
-	LUA_TRY_INVOKE(1, [](fairygui::ScrollPane* obj, int arg0){{return obj->setPageY(std::move(arg0));}});
+	LUA_TRY_INVOKE(2, &fairygui::ScrollPane::setPageY);
+	LUA_TRY_INVOKE(1, ([](fairygui::ScrollPane* obj,int arg0){{return obj->setPageY(std::move(arg0));}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_fairygui_ScrollPane_setPercX(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.ScrollPane", "fgui.ScrollPane:setPercX");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::ScrollPane::*)(float, bool)>(&fairygui::ScrollPane::setPercX));
-	LUA_TRY_INVOKE(1, [](fairygui::ScrollPane* obj, float arg0){{return obj->setPercX(std::move(arg0));}});
+	LUA_TRY_INVOKE(2, &fairygui::ScrollPane::setPercX);
+	LUA_TRY_INVOKE(1, ([](fairygui::ScrollPane* obj,float arg0){{return obj->setPercX(std::move(arg0));}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_fairygui_ScrollPane_setPercY(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.ScrollPane", "fgui.ScrollPane:setPercY");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::ScrollPane::*)(float, bool)>(&fairygui::ScrollPane::setPercY));
-	LUA_TRY_INVOKE(1, [](fairygui::ScrollPane* obj, float arg0){{return obj->setPercY(std::move(arg0));}});
+	LUA_TRY_INVOKE(2, &fairygui::ScrollPane::setPercY);
+	LUA_TRY_INVOKE(1, ([](fairygui::ScrollPane* obj,float arg0){{return obj->setPercY(std::move(arg0));}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_fairygui_ScrollPane_setPosX(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.ScrollPane", "fgui.ScrollPane:setPosX");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::ScrollPane::*)(float, bool)>(&fairygui::ScrollPane::setPosX));
-	LUA_TRY_INVOKE(1, [](fairygui::ScrollPane* obj, float arg0){{return obj->setPosX(std::move(arg0));}});
+	LUA_TRY_INVOKE(2, &fairygui::ScrollPane::setPosX);
+	LUA_TRY_INVOKE(1, ([](fairygui::ScrollPane* obj,float arg0){{return obj->setPosX(std::move(arg0));}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_fairygui_ScrollPane_setPosY(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.ScrollPane", "fgui.ScrollPane:setPosY");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::ScrollPane::*)(float, bool)>(&fairygui::ScrollPane::setPosY));
-	LUA_TRY_INVOKE(1, [](fairygui::ScrollPane* obj, float arg0){{return obj->setPosY(std::move(arg0));}});
+	LUA_TRY_INVOKE(2, &fairygui::ScrollPane::setPosY);
+	LUA_TRY_INVOKE(1, ([](fairygui::ScrollPane* obj,float arg0){{return obj->setPosY(std::move(arg0));}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_fairygui_ScrollPane_setScrollStep(lua_State* lua_S)
@@ -4609,20 +4608,20 @@ int lua_fairygui_Transition_onOwnerRemovedFromStage(lua_State* lua_S)
 int lua_fairygui_Transition_play(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.Transition", "fgui.Transition:play");
-	LUA_TRY_INVOKE(5, static_cast<void(fairygui::Transition::*)(int, float, float, float, fairygui::Transition::PlayCompleteCallback)>(&fairygui::Transition::play));
-	LUA_TRY_INVOKE(4, [](fairygui::Transition* obj, int arg0,float arg1,float arg2,float arg3){{return obj->play(std::move(arg0),std::move(arg1),std::move(arg2),std::move(arg3));}});
-	LUA_TRY_INVOKE(3, [](fairygui::Transition* obj, int arg0,float arg1,fairygui::Transition::PlayCompleteCallback arg2){{return obj->play(std::move(arg0),std::move(arg1),std::move(arg2));}});
-	LUA_TRY_INVOKE(2, [](fairygui::Transition* obj, int arg0,float arg1){{return obj->play(std::move(arg0),std::move(arg1));}});
-	LUA_TRY_INVOKE(1, [](fairygui::Transition* obj, fairygui::Transition::PlayCompleteCallback arg0){{return obj->play(std::move(arg0));}});
+	LUA_TRY_INVOKE(5, (static_cast<void(fairygui::Transition::*)(int, float, float, float, fairygui::Transition::PlayCompleteCallback)>(&fairygui::Transition::play)));
+	LUA_TRY_INVOKE(4, ([](fairygui::Transition* obj,int arg0,float arg1,float arg2,float arg3){{return obj->play(std::move(arg0),std::move(arg1),std::move(arg2),std::move(arg3));}}));
+	LUA_TRY_INVOKE(3, (static_cast<void(fairygui::Transition::*)(int, float, fairygui::Transition::PlayCompleteCallback)>(&fairygui::Transition::play)));
+	LUA_TRY_INVOKE(2, ([](fairygui::Transition* obj,int arg0,float arg1){{return obj->play(std::move(arg0),std::move(arg1));}}));
+	LUA_TRY_INVOKE(1, static_cast<void(fairygui::Transition::*)(fairygui::Transition::PlayCompleteCallback)>(&fairygui::Transition::play));
 	LUA_TRY_INVOKE(0, [](fairygui::Transition* obj){{return obj->play();}});
 	LUA_INVOKE_FOOTER("0,1,2,3,4,5");
 }
 int lua_fairygui_Transition_playReverse(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.Transition", "fgui.Transition:playReverse");
-	LUA_TRY_INVOKE(3, static_cast<void(fairygui::Transition::*)(int, float, fairygui::Transition::PlayCompleteCallback)>(&fairygui::Transition::playReverse));
-	LUA_TRY_INVOKE(2, [](fairygui::Transition* obj, int arg0,float arg1){{return obj->playReverse(std::move(arg0),std::move(arg1));}});
-	LUA_TRY_INVOKE(1, [](fairygui::Transition* obj, fairygui::Transition::PlayCompleteCallback arg0){{return obj->playReverse(std::move(arg0));}});
+	LUA_TRY_INVOKE(3, (static_cast<void(fairygui::Transition::*)(int, float, fairygui::Transition::PlayCompleteCallback)>(&fairygui::Transition::playReverse)));
+	LUA_TRY_INVOKE(2, ([](fairygui::Transition* obj,int arg0,float arg1){{return obj->playReverse(std::move(arg0),std::move(arg1));}}));
+	LUA_TRY_INVOKE(1, static_cast<void(fairygui::Transition::*)(fairygui::Transition::PlayCompleteCallback)>(&fairygui::Transition::playReverse));
 	LUA_TRY_INVOKE(0, [](fairygui::Transition* obj){{return obj->playReverse();}});
 	LUA_INVOKE_FOOTER("0,1,2,3");
 }
@@ -4677,7 +4676,7 @@ int lua_fairygui_Transition_setup(lua_State* lua_S)
 int lua_fairygui_Transition_stop(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.Transition", "fgui.Transition:stop");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::Transition::*)(bool, bool)>(&fairygui::Transition::stop));
+	LUA_TRY_INVOKE(2, (static_cast<void(fairygui::Transition::*)(bool, bool)>(&fairygui::Transition::stop)));
 	LUA_TRY_INVOKE(0, static_cast<void(fairygui::Transition::*)()>(&fairygui::Transition::stop));
 	LUA_INVOKE_FOOTER("0,2");
 }
@@ -5047,9 +5046,8 @@ int lua_fairygui_GComponent_childStateChanged(lua_State* lua_S)
 int lua_fairygui_GComponent_constructFromResource(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GComponent", "fgui.GComponent:constructFromResource");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::GComponent::*)(std::vector<fairygui::GObject *>*, int)>(&fairygui::GComponent::constructFromResource));
 	LUA_TRY_INVOKE(0, static_cast<void(fairygui::GComponent::*)()>(&fairygui::GComponent::constructFromResource));
-	LUA_INVOKE_FOOTER("0,2");
+	LUA_INVOKE_FOOTER("0");
 }
 int lua_fairygui_GComponent_ensureBoundsCorrect(lua_State* lua_S)
 {
@@ -5228,7 +5226,7 @@ int lua_fairygui_GComponent_removeChildAt(lua_State* lua_S)
 int lua_fairygui_GComponent_removeChildren(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GComponent", "fgui.GComponent:removeChildren");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::GComponent::*)(int, int)>(&fairygui::GComponent::removeChildren));
+	LUA_TRY_INVOKE(2, (static_cast<void(fairygui::GComponent::*)(int, int)>(&fairygui::GComponent::removeChildren)));
 	LUA_TRY_INVOKE(0, static_cast<void(fairygui::GComponent::*)()>(&fairygui::GComponent::removeChildren));
 	LUA_INVOKE_FOOTER("0,2");
 }
@@ -5283,8 +5281,8 @@ int lua_fairygui_GComponent_setMargin(lua_State* lua_S)
 int lua_fairygui_GComponent_setMask(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GComponent", "fgui.GComponent:setMask");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::GComponent::*)(cocos2d::Node*, bool)>(&fairygui::GComponent::setMask));
-	LUA_TRY_INVOKE(1, [](fairygui::GComponent* obj, cocos2d::Node* arg0){{return obj->setMask(arg0);}});
+	LUA_TRY_INVOKE(2, &fairygui::GComponent::setMask);
+	LUA_TRY_INVOKE(1, ([](fairygui::GComponent* obj,cocos2d::Node* arg0){{return obj->setMask(arg0);}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_fairygui_GComponent_setOpaque(lua_State* lua_S)
@@ -5746,8 +5744,8 @@ int lua_fairygui_GList_getDefaultItem(lua_State* lua_S)
 int lua_fairygui_GList_getFromPool(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GList", "fgui.GList:getFromPool");
-	LUA_TRY_INVOKE_R(1, static_cast<fairygui::GObject*(fairygui::GList::*)(const std::string&)>(&fairygui::GList::getFromPool));
-	LUA_TRY_INVOKE_R(0, static_cast<fairygui::GObject*(fairygui::GList::*)()>(&fairygui::GList::getFromPool));
+	LUA_TRY_INVOKE_R(1, static_cast<cc::IntrusivePtr<fairygui::GObject>(fairygui::GList::*)(const std::string&)>(&fairygui::GList::getFromPool));
+	LUA_TRY_INVOKE_R(0, static_cast<cc::IntrusivePtr<fairygui::GObject>(fairygui::GList::*)()>(&fairygui::GList::getFromPool));
 	LUA_INVOKE_FOOTER("0,1");
 }
 int lua_fairygui_GList_getItemPool(lua_State* lua_S)
@@ -5843,7 +5841,7 @@ int lua_fairygui_GList_removeChildToPoolAt(lua_State* lua_S)
 int lua_fairygui_GList_removeChildrenToPool(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GList", "fgui.GList:removeChildrenToPool");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::GList::*)(int, int)>(&fairygui::GList::removeChildrenToPool));
+	LUA_TRY_INVOKE(2, (static_cast<void(fairygui::GList::*)(int, int)>(&fairygui::GList::removeChildrenToPool)));
 	LUA_TRY_INVOKE(0, static_cast<void(fairygui::GList::*)()>(&fairygui::GList::removeChildrenToPool));
 	LUA_INVOKE_FOOTER("0,2");
 }
@@ -5856,7 +5854,7 @@ int lua_fairygui_GList_removeSelection(lua_State* lua_S)
 int lua_fairygui_GList_resizeToFit(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GList", "fgui.GList:resizeToFit");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::GList::*)(int, int)>(&fairygui::GList::resizeToFit));
+	LUA_TRY_INVOKE(2, (static_cast<void(fairygui::GList::*)(int, int)>(&fairygui::GList::resizeToFit)));
 	LUA_TRY_INVOKE(1, static_cast<void(fairygui::GList::*)(int)>(&fairygui::GList::resizeToFit));
 	LUA_INVOKE_FOOTER("1,2");
 }
@@ -5869,9 +5867,9 @@ int lua_fairygui_GList_returnToPool(lua_State* lua_S)
 int lua_fairygui_GList_scrollToView(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GList", "fgui.GList:scrollToView");
-	LUA_TRY_INVOKE(3, static_cast<void(fairygui::GList::*)(int, bool, bool)>(&fairygui::GList::scrollToView));
-	LUA_TRY_INVOKE(2, [](fairygui::GList* obj, int arg0,bool arg1){{return obj->scrollToView(std::move(arg0),std::move(arg1));}});
-	LUA_TRY_INVOKE(1, [](fairygui::GList* obj, int arg0){{return obj->scrollToView(std::move(arg0));}});
+	LUA_TRY_INVOKE(3, &fairygui::GList::scrollToView);
+	LUA_TRY_INVOKE(2, ([](fairygui::GList* obj,int arg0,bool arg1){{return obj->scrollToView(std::move(arg0),std::move(arg1));}}));
+	LUA_TRY_INVOKE(1, ([](fairygui::GList* obj,int arg0){{return obj->scrollToView(std::move(arg0));}}));
 	LUA_INVOKE_FOOTER("1,2,3");
 }
 int lua_fairygui_GList_selectAll(lua_State* lua_S)
@@ -6586,7 +6584,7 @@ int lua_fairygui_GTreeNode_removeChildAt(lua_State* lua_S)
 int lua_fairygui_GTreeNode_removeChildren(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GTreeNode", "fgui.GTreeNode:removeChildren");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::GTreeNode::*)(int, int)>(&fairygui::GTreeNode::removeChildren));
+	LUA_TRY_INVOKE(2, (static_cast<void(fairygui::GTreeNode::*)(int, int)>(&fairygui::GTreeNode::removeChildren)));
 	LUA_TRY_INVOKE(0, static_cast<void(fairygui::GTreeNode::*)()>(&fairygui::GTreeNode::removeChildren));
 	LUA_INVOKE_FOOTER("0,2");
 }
@@ -6641,7 +6639,7 @@ int lua_fairygui_GTreeNode_swapChildrenAt(lua_State* lua_S)
 int lua_fairygui_GTreeNode_create(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("fgui.GTreeNode", "fgui.GTreeNode:create");
-	LUA_TRY_INVOKE_R(2, static_cast<fairygui::GTreeNode*(*)(bool, const std::string&)>(&fairygui::GTreeNode::create));
+	LUA_TRY_INVOKE_R(2, &fairygui::GTreeNode::create);
 	LUA_TRY_INVOKE_R(1, [](bool arg0){{return fairygui::GTreeNode::create(std::move(arg0));}});
 	LUA_TRY_INVOKE_R(0, [](){{return fairygui::GTreeNode::create();}});
 	LUA_SINVOKE_FOOTER("0,1,2");
@@ -6750,8 +6748,8 @@ int lua_fairygui_GTree_getSelectedNode(lua_State* lua_S)
 int lua_fairygui_GTree_selectNode(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GTree", "fgui.GTree:selectNode");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::GTree::*)(fairygui::GTreeNode*, bool)>(&fairygui::GTree::selectNode));
-	LUA_TRY_INVOKE(1, [](fairygui::GTree* obj, fairygui::GTreeNode* arg0){{return obj->selectNode(arg0);}});
+	LUA_TRY_INVOKE(2, &fairygui::GTree::selectNode);
+	LUA_TRY_INVOKE(1, ([](fairygui::GTree* obj,fairygui::GTreeNode* arg0){{return obj->selectNode(arg0);}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_fairygui_GTree_setClickToExpand(lua_State* lua_S)
@@ -7078,8 +7076,8 @@ int lua_fairygui_InputProcessor_setCaptureCallback(lua_State* lua_S)
 int lua_fairygui_InputProcessor_simulateClick(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.InputProcessor", "fgui.InputProcessor:simulateClick");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::InputProcessor::*)(fairygui::GObject*, int)>(&fairygui::InputProcessor::simulateClick));
-	LUA_TRY_INVOKE(1, [](fairygui::InputProcessor* obj, fairygui::GObject* arg0){{return obj->simulateClick(arg0);}});
+	LUA_TRY_INVOKE(2, &fairygui::InputProcessor::simulateClick);
+	LUA_TRY_INVOKE(1, ([](fairygui::InputProcessor* obj,fairygui::GObject* arg0){{return obj->simulateClick(arg0);}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_fairygui_InputProcessor_touchDown(lua_State* lua_S)
@@ -7263,8 +7261,8 @@ int lua_fairygui_GRoot_isSoundEnabled(lua_State* lua_S)
 int lua_fairygui_GRoot_playSound(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GRoot", "fgui.GRoot:playSound");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::GRoot::*)(const std::string&, float)>(&fairygui::GRoot::playSound));
-	LUA_TRY_INVOKE(1, [](fairygui::GRoot* obj, const std::string& arg0){{return obj->playSound(arg0);}});
+	LUA_TRY_INVOKE(2, &fairygui::GRoot::playSound);
+	LUA_TRY_INVOKE(1, ([](fairygui::GRoot* obj,const std::string& arg0){{return obj->playSound(arg0);}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_fairygui_GRoot_rootToWorld(lua_State* lua_S)
@@ -7294,7 +7292,7 @@ int lua_fairygui_GRoot_showModalWait(lua_State* lua_S)
 int lua_fairygui_GRoot_showPopup(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GRoot", "fgui.GRoot:showPopup");
-	LUA_TRY_INVOKE(3, static_cast<void(fairygui::GRoot::*)(fairygui::GObject*, fairygui::GObject*, fairygui::PopupDirection)>(&fairygui::GRoot::showPopup));
+	LUA_TRY_INVOKE(3, (static_cast<void(fairygui::GRoot::*)(fairygui::GObject*, fairygui::GObject*, fairygui::PopupDirection)>(&fairygui::GRoot::showPopup)));
 	LUA_TRY_INVOKE(1, static_cast<void(fairygui::GRoot::*)(fairygui::GObject*)>(&fairygui::GRoot::showPopup));
 	LUA_INVOKE_FOOTER("1,3");
 }
@@ -7319,7 +7317,7 @@ int lua_fairygui_GRoot_showWindow(lua_State* lua_S)
 int lua_fairygui_GRoot_togglePopup(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GRoot", "fgui.GRoot:togglePopup");
-	LUA_TRY_INVOKE(3, static_cast<void(fairygui::GRoot::*)(fairygui::GObject*, fairygui::GObject*, fairygui::PopupDirection)>(&fairygui::GRoot::togglePopup));
+	LUA_TRY_INVOKE(3, (static_cast<void(fairygui::GRoot::*)(fairygui::GObject*, fairygui::GObject*, fairygui::PopupDirection)>(&fairygui::GRoot::togglePopup)));
 	LUA_TRY_INVOKE(1, static_cast<void(fairygui::GRoot::*)(fairygui::GObject*)>(&fairygui::GRoot::togglePopup));
 	LUA_INVOKE_FOOTER("1,3");
 }
@@ -7332,7 +7330,7 @@ int lua_fairygui_GRoot_worldToRoot(lua_State* lua_S)
 int lua_fairygui_GRoot_create(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("fgui.GRoot", "fgui.GRoot:create");
-	LUA_TRY_INVOKE_R(2, static_cast<fairygui::GRoot*(*)(cocos2d::Scene*, int)>(&fairygui::GRoot::create));
+	LUA_TRY_INVOKE_R(2, &fairygui::GRoot::create);
 	LUA_TRY_INVOKE_R(1, [](cocos2d::Scene* arg0){{return fairygui::GRoot::create(arg0);}});
 	LUA_SINVOKE_FOOTER("1,2");
 }
@@ -7479,15 +7477,15 @@ int lua_fairygui_PopupMenu_setItemVisible(lua_State* lua_S)
 int lua_fairygui_PopupMenu_show(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.PopupMenu", "fgui.PopupMenu:show");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::PopupMenu::*)(fairygui::GObject*, fairygui::PopupDirection)>(&fairygui::PopupMenu::show));
+	LUA_TRY_INVOKE(2, (static_cast<void(fairygui::PopupMenu::*)(fairygui::GObject*, fairygui::PopupDirection)>(&fairygui::PopupMenu::show)));
 	LUA_TRY_INVOKE(0, static_cast<void(fairygui::PopupMenu::*)()>(&fairygui::PopupMenu::show));
 	LUA_INVOKE_FOOTER("0,2");
 }
 int lua_fairygui_PopupMenu_create(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("fgui.PopupMenu", "fgui.PopupMenu:create");
-	LUA_TRY_INVOKE_R(1, static_cast<fairygui::PopupMenu*(*)(const std::string&)>(&fairygui::PopupMenu::create));
-	LUA_TRY_INVOKE_R(0, static_cast<fairygui::PopupMenu*(*)()>(&fairygui::PopupMenu::create));
+	LUA_TRY_INVOKE_R(1, static_cast<cc::IntrusivePtr<fairygui::PopupMenu>(*)(const std::string&)>(&fairygui::PopupMenu::create));
+	LUA_TRY_INVOKE_R(0, static_cast<cc::IntrusivePtr<fairygui::PopupMenu>(*)()>(&fairygui::PopupMenu::create));
 	LUA_SINVOKE_FOOTER("0,1");
 }
 int luaReg_fgui_fguiPopupMenu(lua_State* lua_S)
@@ -7520,8 +7518,8 @@ int luaReg_fgui_fguiPopupMenu(lua_State* lua_S)
 int lua_fairygui_UIObjectFactory_newObject(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("fgui.UIObjectFactory", "fgui.UIObjectFactory:newObject");
-	LUA_TRY_INVOKE_R_OVERLOAD(1, static_cast<fairygui::GObject*(*)(fairygui::ObjectType)>(&fairygui::UIObjectFactory::newObject));
-	LUA_TRY_INVOKE_R_OVERLOAD(1, static_cast<fairygui::GObject*(*)(fairygui::PackageItem*)>(&fairygui::UIObjectFactory::newObject));
+	LUA_TRY_INVOKE_R_OVERLOAD(1, static_cast<cc::IntrusivePtr<fairygui::GObject>(*)(fairygui::ObjectType)>(&fairygui::UIObjectFactory::newObject));
+	LUA_TRY_INVOKE_R_OVERLOAD(1, static_cast<cc::IntrusivePtr<fairygui::GObject>(*)(fairygui::PackageItem*)>(&fairygui::UIObjectFactory::newObject));
 	LUA_SINVOKE_FOOTER("1");
 }
 int lua_fairygui_UIObjectFactory_setLoaderExtension(lua_State* lua_S)
@@ -7569,9 +7567,9 @@ int lua_fairygui_DragDropManager_isDragging(lua_State* lua_S)
 int lua_fairygui_DragDropManager_startDrag(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.DragDropManager", "fgui.DragDropManager:startDrag");
-	LUA_TRY_INVOKE(3, static_cast<void(fairygui::DragDropManager::*)(const std::string&, const cocos2d::Value&, int)>(&fairygui::DragDropManager::startDrag));
-	LUA_TRY_INVOKE(2, [](fairygui::DragDropManager* obj, const std::string& arg0,const cocos2d::Value& arg1){{return obj->startDrag(arg0,arg1);}});
-	LUA_TRY_INVOKE(1, [](fairygui::DragDropManager* obj, const std::string& arg0){{return obj->startDrag(arg0);}});
+	LUA_TRY_INVOKE(3, &fairygui::DragDropManager::startDrag);
+	LUA_TRY_INVOKE(2, ([](fairygui::DragDropManager* obj,const std::string& arg0,const cocos2d::Value& arg1){{return obj->startDrag(arg0,arg1);}}));
+	LUA_TRY_INVOKE(1, ([](fairygui::DragDropManager* obj,const std::string& arg0){{return obj->startDrag(arg0);}}));
 	LUA_INVOKE_FOOTER("1,2,3");
 }
 int lua_fairygui_DragDropManager_getInstance(lua_State* lua_S)
@@ -7722,7 +7720,7 @@ int lua_fairygui_GTweener_isCompleted(lua_State* lua_S)
 int lua_fairygui_GTweener_kill(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GTweener", "fgui.GTweener:kill");
-	LUA_TRY_INVOKE(1, static_cast<void(fairygui::GTweener::*)(bool)>(&fairygui::GTweener::kill));
+	LUA_TRY_INVOKE(1, &fairygui::GTweener::kill);
 	LUA_TRY_INVOKE(0, [](fairygui::GTweener* obj){{return obj->kill();}});
 	LUA_INVOKE_FOOTER("0,1");
 }
@@ -7807,8 +7805,8 @@ int lua_fairygui_GTweener_setPaused(lua_State* lua_S)
 int lua_fairygui_GTweener_setRepeat(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GTweener", "fgui.GTweener:setRepeat");
-	LUA_TRY_INVOKE_R(2, static_cast<fairygui::GTweener*(fairygui::GTweener::*)(int, bool)>(&fairygui::GTweener::setRepeat));
-	LUA_TRY_INVOKE_R(1, [](fairygui::GTweener* obj, int arg0){{return obj->setRepeat(std::move(arg0));}});
+	LUA_TRY_INVOKE_R(2, &fairygui::GTweener::setRepeat);
+	LUA_TRY_INVOKE_R(1, ([](fairygui::GTweener* obj,int arg0){{return obj->setRepeat(std::move(arg0));}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_fairygui_GTweener_setSnapping(lua_State* lua_S)
@@ -7820,7 +7818,7 @@ int lua_fairygui_GTweener_setSnapping(lua_State* lua_S)
 int lua_fairygui_GTweener_setTarget(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GTweener", "fgui.GTweener:setTarget");
-	LUA_TRY_INVOKE_R(2, static_cast<fairygui::GTweener*(fairygui::GTweener::*)(cocos2d::Ref*, fairygui::TweenPropType)>(&fairygui::GTweener::setTarget));
+	LUA_TRY_INVOKE_R(2, (static_cast<fairygui::GTweener*(fairygui::GTweener::*)(cocos2d::Ref*, fairygui::TweenPropType)>(&fairygui::GTweener::setTarget)));
 	LUA_TRY_INVOKE_R(1, static_cast<fairygui::GTweener*(fairygui::GTweener::*)(cocos2d::Ref*)>(&fairygui::GTweener::setTarget));
 	LUA_INVOKE_FOOTER("1,2");
 }
@@ -7899,22 +7897,22 @@ int lua_fairygui_GTween_delayedCall(lua_State* lua_S)
 int lua_fairygui_GTween_getTween(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("fgui.GTween", "fgui.GTween:getTween");
-	LUA_TRY_INVOKE_R(2, static_cast<fairygui::GTweener*(*)(cocos2d::Ref*, fairygui::TweenPropType)>(&fairygui::GTween::getTween));
+	LUA_TRY_INVOKE_R(2, (static_cast<fairygui::GTweener*(*)(cocos2d::Ref*, fairygui::TweenPropType)>(&fairygui::GTween::getTween)));
 	LUA_TRY_INVOKE_R(1, static_cast<fairygui::GTweener*(*)(cocos2d::Ref*)>(&fairygui::GTween::getTween));
 	LUA_SINVOKE_FOOTER("1,2");
 }
 int lua_fairygui_GTween_isTweening(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("fgui.GTween", "fgui.GTween:isTweening");
-	LUA_TRY_INVOKE_R(2, static_cast<bool(*)(cocos2d::Ref*, fairygui::TweenPropType)>(&fairygui::GTween::isTweening));
+	LUA_TRY_INVOKE_R(2, (static_cast<bool(*)(cocos2d::Ref*, fairygui::TweenPropType)>(&fairygui::GTween::isTweening)));
 	LUA_TRY_INVOKE_R(1, static_cast<bool(*)(cocos2d::Ref*)>(&fairygui::GTween::isTweening));
 	LUA_SINVOKE_FOOTER("1,2");
 }
 int lua_fairygui_GTween_kill(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("fgui.GTween", "fgui.GTween:kill");
-	LUA_TRY_INVOKE(3, static_cast<void(*)(cocos2d::Ref*, fairygui::TweenPropType, bool)>(&fairygui::GTween::kill));
-	LUA_TRY_INVOKE(2, static_cast<void(*)(cocos2d::Ref*, bool)>(&fairygui::GTween::kill));
+	LUA_TRY_INVOKE(3, (static_cast<void(*)(cocos2d::Ref*, fairygui::TweenPropType, bool)>(&fairygui::GTween::kill)));
+	LUA_TRY_INVOKE(2, (static_cast<void(*)(cocos2d::Ref*, bool)>(&fairygui::GTween::kill)));
 	LUA_TRY_INVOKE(1, static_cast<void(*)(cocos2d::Ref*)>(&fairygui::GTween::kill));
 	LUA_SINVOKE_FOOTER("1,2,3");
 }
@@ -7927,11 +7925,11 @@ int lua_fairygui_GTween_shake(lua_State* lua_S)
 int lua_fairygui_GTween_to(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("fgui.GTween", "fgui.GTween:to");
-	LUA_TRY_INVOKE_R_OVERLOAD(3, static_cast<fairygui::GTweener*(*)(const cocos2d::Color4B&, const cocos2d::Color4B&, float)>(&fairygui::GTween::to));
-	LUA_TRY_INVOKE_R_OVERLOAD(3, static_cast<fairygui::GTweener*(*)(const cocos2d::Vec4&, const cocos2d::Vec4&, float)>(&fairygui::GTween::to));
-	LUA_TRY_INVOKE_R_OVERLOAD(3, static_cast<fairygui::GTweener*(*)(const cocos2d::Vec3&, const cocos2d::Vec3&, float)>(&fairygui::GTween::to));
-	LUA_TRY_INVOKE_R_OVERLOAD(3, static_cast<fairygui::GTweener*(*)(const cocos2d::Vec2&, const cocos2d::Vec2&, float)>(&fairygui::GTween::to));
-	LUA_TRY_INVOKE_R_OVERLOAD(3, static_cast<fairygui::GTweener*(*)(float, float, float)>(&fairygui::GTween::to));
+	LUA_TRY_INVOKE_R_OVERLOAD(3, (static_cast<fairygui::GTweener*(*)(const cocos2d::Color4B&, const cocos2d::Color4B&, float)>(&fairygui::GTween::to)));
+	LUA_TRY_INVOKE_R_OVERLOAD(3, (static_cast<fairygui::GTweener*(*)(const cocos2d::Vec4&, const cocos2d::Vec4&, float)>(&fairygui::GTween::to)));
+	LUA_TRY_INVOKE_R_OVERLOAD(3, (static_cast<fairygui::GTweener*(*)(const cocos2d::Vec3&, const cocos2d::Vec3&, float)>(&fairygui::GTween::to)));
+	LUA_TRY_INVOKE_R_OVERLOAD(3, (static_cast<fairygui::GTweener*(*)(const cocos2d::Vec2&, const cocos2d::Vec2&, float)>(&fairygui::GTween::to)));
+	LUA_TRY_INVOKE_R_OVERLOAD(3, (static_cast<fairygui::GTweener*(*)(float, float, float)>(&fairygui::GTween::to)));
 	LUA_SINVOKE_FOOTER("3");
 }
 int lua_fairygui_GTween_toDouble(lua_State* lua_S)
@@ -8187,8 +8185,8 @@ int lua_fairygui_GPath_create(lua_State* lua_S)
 int lua_fairygui_GPath_getAllPoints(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GPath", "fgui.GPath:getAllPoints");
-	LUA_TRY_INVOKE(2, static_cast<void(fairygui::GPath::*)(std::vector<cocos2d::Vec3>&, float)>(&fairygui::GPath::getAllPoints));
-	LUA_TRY_INVOKE(1, [](fairygui::GPath* obj, std::vector<cocos2d::Vec3>& arg0){{return obj->getAllPoints(arg0);}});
+	LUA_TRY_INVOKE(2, &fairygui::GPath::getAllPoints);
+	LUA_TRY_INVOKE(1, ([](fairygui::GPath* obj,std::vector<cocos2d::Vec3>& arg0){{return obj->getAllPoints(arg0);}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_fairygui_GPath_getLength(lua_State* lua_S)
@@ -8202,13 +8200,6 @@ int lua_fairygui_GPath_getPointAt(lua_State* lua_S)
 	LUA_INVOKE_HEADER("fgui.GPath", "fgui.GPath:getPointAt");
 	LUA_TRY_INVOKE_R(1, &fairygui::GPath::getPointAt);
 	LUA_INVOKE_FOOTER("1");
-}
-int lua_fairygui_GPath_getPointsInSegment(lua_State* lua_S)
-{
-	LUA_INVOKE_HEADER("fgui.GPath", "fgui.GPath:getPointsInSegment");
-	LUA_TRY_INVOKE(6, static_cast<void(fairygui::GPath::*)(int, float, float, std::vector<cocos2d::Vec3>&, std::vector<float>*, float)>(&fairygui::GPath::getPointsInSegment));
-	LUA_TRY_INVOKE(5, [](fairygui::GPath* obj, int arg0,float arg1,float arg2,std::vector<cocos2d::Vec3>& arg3,std::vector<float>* arg4){{return obj->getPointsInSegment(arg0,arg1,arg2,arg3,arg4);}});
-	LUA_INVOKE_FOOTER("5,6");
 }
 int lua_fairygui_GPath_getSegmentCount(lua_State* lua_S)
 {
@@ -8232,7 +8223,6 @@ int luaReg_fgui_fguiGPath(lua_State* lua_S)
 	LUA_METHOD("getAllPoints", lua_fairygui_GPath_getAllPoints);
 	LUA_METHOD("getLength", lua_fairygui_GPath_getLength);
 	LUA_METHOD("getPointAt", lua_fairygui_GPath_getPointAt);
-	LUA_METHOD("getPointsInSegment", lua_fairygui_GPath_getPointsInSegment);
 	LUA_METHOD("getSegmentCount", lua_fairygui_GPath_getSegmentCount);
 	LUA_METHOD("getSegmentLength", lua_fairygui_GPath_getSegmentLength);
 	LUA_CLS_END();
@@ -8466,15 +8456,15 @@ int lua_fairygui_HtmlElement_getArray(lua_State* lua_S)
 int lua_fairygui_HtmlElement_getInt(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.HtmlElement", "fgui.HtmlElement:getInt");
-	LUA_TRY_INVOKE_R(2, static_cast<int(fairygui::HtmlElement::*)(const std::string&, int)>(&fairygui::HtmlElement::getInt));
-	LUA_TRY_INVOKE_R(1, [](fairygui::HtmlElement* obj, const std::string& arg0){{return obj->getInt(arg0);}});
+	LUA_TRY_INVOKE_R(2, &fairygui::HtmlElement::getInt);
+	LUA_TRY_INVOKE_R(1, ([](fairygui::HtmlElement* obj,const std::string& arg0){{return obj->getInt(arg0);}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_fairygui_HtmlElement_getString(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.HtmlElement", "fgui.HtmlElement:getString");
-	LUA_TRY_INVOKE_R(2, static_cast<std::basic_string<char>(fairygui::HtmlElement::*)(const std::string&, const std::string&)>(&fairygui::HtmlElement::getString));
-	LUA_TRY_INVOKE_R(1, [](fairygui::HtmlElement* obj, const std::string& arg0){{return obj->getString(arg0);}});
+	LUA_TRY_INVOKE_R(2, &fairygui::HtmlElement::getString);
+	LUA_TRY_INVOKE_R(1, ([](fairygui::HtmlElement* obj,const std::string& arg0){{return obj->getString(arg0);}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int luaReg_fgui_fguiHtmlElement(lua_State* lua_S)

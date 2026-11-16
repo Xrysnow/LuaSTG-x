@@ -28,28 +28,28 @@ void ComponentManager::setBindNode(Node* node)
 ComponentDataBlend* ComponentManager::getOrCreateBlend()
 {
 	if (!blend)
-		setDataBlend(ComponentDataBlend::create());
+		setDataBlend(ComponentDataBlend::create().get());
 	return blend;
 }
 
 ComponentDataColli* ComponentManager::getOrCreateColli()
 {
 	if (!colli)
-		setDataColli(ComponentDataColli::create());
+		setDataColli(ComponentDataColli::create().get());
 	return colli;
 }
 
 ComponentDataTrasform2D* ComponentManager::getOrCreateTrasform2D()
 {
 	if (!tr)
-		setDataTrasform(ComponentDataTrasform2D::create());
+		setDataTrasform(ComponentDataTrasform2D::create().get());
 	return tr;
 }
 
 ComponentDataLight* ComponentManager::getOrCreateLight()
 {
 	if (!light)
-		setDataLight(ComponentDataLight::create());
+		setDataLight(ComponentDataLight::create().get());
 	return light;
 }
 

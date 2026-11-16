@@ -32,7 +32,7 @@ namespace
 
 	// Legacy main-thread API only. Worker caches never own Refs.
 	Buffer* bufferView(const string& path, const FileBytes& data,
-		unordered_map<string, pair<FileBytes, RefPtr<Buffer>>>& views)
+		unordered_map<string, pair<FileBytes, cc::IntrusivePtr<Buffer>>>& views)
 	{
 		if (!data)
 			return nullptr;
@@ -46,7 +46,7 @@ namespace
 		ret->setWritable(false);
 		ret->setResizable(false);
 		// Pair the source and its view atomically; RAII also covers map allocation failure.
-		views.insert_or_assign(path, make_pair(data, RefPtr<Buffer>{ret}));
+		views.insert_or_assign(path, make_pair(data, cc::IntrusivePtr<Buffer>{ret}));
 		return ret;
 	}
 }
@@ -143,21 +143,19 @@ bool ResourcePack::init(const string& path, const string& passwd)
 	return state->init(path, passwd);
 }
 
-ResourcePack* ResourcePack::create(const string& fullPath, const string& password)
+cc::IntrusivePtr<ResourcePack> ResourcePack::create(const string& fullPath, const string& password)
 {
-	ResourcePack* ret = nullptr;
+	cc::IntrusivePtr<ResourcePack> ret;
 	try
 	{
-		ret = new (nothrow) ResourcePack();
+		ret = cc::IntrusivePtr<ResourcePack>{new (nothrow) ResourcePack()};
 		if (ret && ret->init(fullPath, password))
 		{
-			ret->autorelease();
 			return ret;
 		}
 	}
 	catch (const bad_alloc&) {}
 	catch (const length_error&) {}
-	CC_SAFE_DELETE(ret);
 	return nullptr;
 }
 

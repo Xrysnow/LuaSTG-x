@@ -332,17 +332,17 @@ ResParticle::ParticlePool::~ParticlePool()
 
 ResParticle::ParticlePool* ResParticle::newPool()
 {
-	auto pool = new (std::nothrow) ParticlePool(this);
+	cc::IntrusivePtr<ParticlePool> pool{new (std::nothrow) ParticlePool(this)};
 	if (pool)
 	{		
 		pool->setRenderMode(renderMode);
 		//pool->setSeed(uint32_t(time(nullptr)));
-		poolInstances.insert(pool);
+		poolInstances.insert(pool.get());
 	}
-	return pool;
+	return pool.detach();
 }
 
-ParticleSystemQuad* ResParticle::newCocosParticle()
+cc::IntrusivePtr<cocos2d::ParticleSystemQuad> ResParticle::newCocosParticle()
 {
 	auto ret = ParticleSystemQuad::create();
 	if (!ret)
@@ -469,12 +469,12 @@ ResParticle::~ResParticle()
 {
 }
 
-ResParticle* ResParticle::create(const std::string& name, const std::string& path, ResSprite* sprite,
+cc::IntrusivePtr<ResParticle> ResParticle::create(const std::string& name, const std::string& path, ResSprite* sprite,
 	double a, double b, XColliderType colliType)
 {
 	if (!sprite)
 		return nullptr;
-	const auto clone = Sprite::createWithSpriteFrame(sprite->getSprite()->getSpriteFrame());
+	const auto clone = Sprite::createWithSpriteFrame(sprite->getSprite()->getSpriteFrame().get());
 	if (!clone)
 		return nullptr;
 	const auto data = LRES.getFileData(path);
@@ -505,11 +505,11 @@ ResParticle* ResParticle::create(const std::string& name, const std::string& pat
 		}
 		if (!blend)
 			return nullptr;
-		auto ret = new (nothrow) ResParticle(name, tInfo, clone,
-			blend, a, b, colliType);
+		cc::IntrusivePtr<ResParticle> ret{new (nothrow) ResParticle(name, tInfo, clone,
+			blend, a, b, colliType)};
 		if (ret)
 			ret->resPath = path;
-		return ret;
+		return Resource::finishConstruction(std::move(ret));
 	}
 	catch (const bad_alloc&)
 	{

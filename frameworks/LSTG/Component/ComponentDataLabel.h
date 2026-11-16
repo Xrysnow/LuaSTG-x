@@ -10,7 +10,7 @@ namespace lstg
 		bool init(ResFont* res);
 	public:
 		~ComponentDataLabel();
-		static ComponentDataLabel* create(ResFont* res);
-		cocos2d::Label* label;
+		static cc::IntrusivePtr<ComponentDataLabel> create(ResFont* res);
+		cocos2d::Label* label = nullptr;
 	};
 }

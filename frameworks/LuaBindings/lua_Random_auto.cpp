@@ -20,7 +20,7 @@ int luaReg_Random_lstgRandomGeneratorType(lua_State* lua_S)
 int lua_lstg_Random_new(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("lstg.Random", "lstg.Random:new");
-	LUA_TRY_CTOR(2, [](uint32_t arg0,lstg::Random::GeneratorType arg1){{return new lstg::Random(std::move(arg0),std::move(arg1));}});
+	LUA_TRY_CTOR(2, ([](uint32_t arg0,lstg::Random::GeneratorType arg1){{return new lstg::Random(std::move(arg0),std::move(arg1));}}));
 	LUA_TRY_CTOR(1, [](uint32_t arg0){{return new lstg::Random(std::move(arg0));}});
 	LUA_TRY_CTOR(0, [](){{return new lstg::Random();}});
 	LUA_SINVOKE_FOOTER("0,1,2");

@@ -42,14 +42,14 @@ Texture2D* ResRenderTarget::getTexture()
 	return nullptr;
 }
 
-Texture2D* ResRenderTarget::copyTexture(bool flip)
+cc::IntrusivePtr<Texture2D> ResRenderTarget::copyTexture(bool flip)
 {
 	if (!checkTarget())
 		return nullptr;
-	auto tex = new Texture2D();
-	tex->autorelease();
-	Image* img = nullptr;
-	target->newImage([&](Image* i) { img = i; }, flip);
+	cc::IntrusivePtr<Texture2D> tex{new Texture2D()};
+
+	cc::IntrusivePtr<Image> img;
+	target->newImage([&](cc::IntrusivePtr<Image> i) { img = std::move(i); }, flip);
 	if (img)
 	{
 		tex->initWithImage(img, backend::PixelFormat::RGBA8888);
@@ -162,7 +162,8 @@ ResRenderTarget::~ResRenderTarget()
 {
 }
 
-ResRenderTarget* ResRenderTarget::create(const std::string& name)
+cc::IntrusivePtr<ResRenderTarget> ResRenderTarget::create(const std::string& name)
 {
-	return new (nothrow) ResRenderTarget(name, nullptr, true);
+	cc::IntrusivePtr<ResRenderTarget> owner{new (nothrow) ResRenderTarget(name, nullptr, true)};
+	return Resource::finishConstruction(std::move(owner));
 }

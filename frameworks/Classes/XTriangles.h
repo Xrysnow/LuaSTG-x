@@ -12,14 +12,14 @@ namespace lstg
 		~Triangles();
 		CC_DISALLOW_COPY_AND_ASSIGN(Triangles);
 
-		static Triangles* create(size_t nVertex, size_t nIndex);
-		static Triangles* createQuad(const cocos2d::Vec2& scale,
+		static cc::IntrusivePtr<Triangles> create(size_t nVertex, size_t nIndex);
+		static cc::IntrusivePtr<Triangles> createQuad(const cocos2d::Vec2& scale,
 			const cocos2d::Rect& texRect = defaultRect);
-		static Triangles* createGrid(size_t nCol, size_t nRow, const cocos2d::Vec2& scale,
+		static cc::IntrusivePtr<Triangles> createGrid(size_t nCol, size_t nRow, const cocos2d::Vec2& scale,
 			const cocos2d::Rect& texRect = defaultRect);
-		static Triangles* createSector(size_t nCol, size_t nRow, float rOuter, float rInner, float angle,
+		static cc::IntrusivePtr<Triangles> createSector(size_t nCol, size_t nRow, float rOuter, float rInner, float angle,
 			const cocos2d::Rect& texRect = defaultRect);
-		static Triangles* createCircle(size_t nCol, size_t nRow, float r,
+		static cc::IntrusivePtr<Triangles> createCircle(size_t nCol, size_t nRow, float r,
 			const cocos2d::Rect& texRect = defaultRect);
 	private:
 
@@ -45,6 +45,6 @@ namespace lstg
 
 		void setIndex(size_t index, unsigned short value);
 
-		Triangles* clone();
+		cc::IntrusivePtr<Triangles> clone();
 	};
 }

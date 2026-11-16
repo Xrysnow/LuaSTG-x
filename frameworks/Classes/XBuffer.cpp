@@ -11,32 +11,29 @@ Buffer::~Buffer()
 {
 }
 
-Buffer* Buffer::create(size_t size)
+cc::IntrusivePtr<Buffer> Buffer::create(size_t size)
 {
-	auto ret = new (std::nothrow) Buffer();
+	cc::IntrusivePtr<Buffer> ret{new (std::nothrow) Buffer()};
 	if (ret&&ret->init(size))
 	{
-		ret->autorelease();
 		return ret;
 	}
-	CC_SAFE_DELETE(ret);
 	return nullptr;
 }
 
-Buffer* Buffer::createFromString(const std::string& s)
+cc::IntrusivePtr<Buffer> Buffer::createFromString(const std::string& s)
 {
-	auto ret = new (std::nothrow) Buffer();
+	cc::IntrusivePtr<Buffer> ret{new (std::nothrow) Buffer()};
 	if (ret&&ret->init(0))
 	{
-		ret->autorelease();
+
 		ret->buffer.assign(s.begin(), s.end());
 		return ret;
 	}
-	CC_SAFE_DELETE(ret);
 	return nullptr;
 }
 
-Buffer* Buffer::clone() const
+cc::IntrusivePtr<Buffer> Buffer::clone() const
 {
 	auto ret = create();
 	if (!ret)
@@ -328,12 +325,12 @@ void BufferStreamBuf::init(Buffer* buffer)
 
 BufferStreamBuf::BufferStreamBuf()
 {
-	init(Buffer::create());
+	init(Buffer::create().get());
 }
 
 BufferStreamBuf::BufferStreamBuf(size_t reserve)
 {
-	init(Buffer::create());
+	init(Buffer::create().get());
 	if (buf)
 		buf->reserve(reserve);
 }

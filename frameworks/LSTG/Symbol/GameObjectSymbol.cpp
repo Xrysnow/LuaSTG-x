@@ -15,7 +15,7 @@ using namespace cocos2d;
 
 static std::vector<GameObject*> currentObjs;
 
-#define CREATE_CHECK(p, _cond) if (_cond){(p)->autorelease();return (p);} CC_SAFE_DELETE(p); return nullptr;
+#define CREATE_CHECK(p, _cond) if (_cond) return p; return nullptr;
 #define PROP(O, P) O->cm->pool->P[O->id]
 
 struct PropertyNumberGetter
@@ -519,21 +519,21 @@ bool Operator::init(const std::string& name)
 	{
 	case Type::Boolean:
 		for (auto i = 0; i < num_out; ++i)
-			outputs.pushBack(Boolean::createWithValue(false));
+			outputs.pushBack(Boolean::createWithValue(false).get());
 		break;
 	//case Type::Number: break;
 	//case Type::String: break;
 	//case Type::OprandTypeNum: break;
 	default:
 		for (auto i = 0; i < num_out; ++i)
-		outputs.pushBack(Number::createWithValue(0.f));
+		outputs.pushBack(Number::createWithValue(0.f).get());
 	}
 	return static_cast<bool>(_func);
 }
 
-Operator* Operator::create(const std::string& name)
+cc::IntrusivePtr<Operator> Operator::create(const std::string& name)
 {
-	auto ret = new (std::nothrow) Operator();
+	cc::IntrusivePtr<Operator> ret{new (std::nothrow) Operator()};
 	CREATE_CHECK(ret, ret&&ret->init(name));
 }
 
@@ -704,15 +704,15 @@ void Operator::registBase()
 	});
 }
 
-Assigment* Assigment::create(ComputeNode* var)
+cc::IntrusivePtr<Assigment> Assigment::create(ComputeNode* var)
 {
-	auto ret = new(std::nothrow) Assigment();
+	cc::IntrusivePtr<Assigment> ret{new(std::nothrow) Assigment()};
 	CREATE_CHECK(ret, ret&&ret->initWithRValue(var));
 }
 
-Assigment* Assigment::createWithObjProperty(const std::string& property, ComputeNode* var)
+cc::IntrusivePtr<Assigment> Assigment::createWithObjProperty(const std::string& property, ComputeNode* var)
 {
-	auto ret = new(std::nothrow) Assigment();
+	cc::IntrusivePtr<Assigment> ret{new(std::nothrow) Assigment()};
 	CREATE_CHECK(ret, ret&&ret->initWithObjProperty(property, var));
 }
 
@@ -756,13 +756,11 @@ bool Assigment::initWithRValue(ComputeNode* var)
 	require_luaobj = var->requireLuaObj();
 	switch (rvalue->getType()) {
 	case Type::Number:
-		output = Number::createWithValue(0.f);
-		output->retain();
+		output = Number::createWithValue(0.f).detach();
 		eval = [this]() {output->_setNumber(rvalue->getNumber()); };
 		return true;
 	case Type::Boolean:
-		output = Boolean::createWithValue(false);
-		output->retain();
+		output = Boolean::createWithValue(false).detach();
 		eval = [this]() {output->_setBoolean(rvalue->getBoolean()); };
 		return true;
 	//case Type::String: break;
@@ -827,16 +825,15 @@ Assigment::~Assigment()
 
 cocos2d::Vector<Block*> Block::created;
 
-Block* Block::create()
+cc::IntrusivePtr<Block> Block::create()
 {
-	auto ret = new(std::nothrow) Block();
+	cc::IntrusivePtr<Block> ret{new(std::nothrow) Block()};
 	if (ret)
 	{
-		ret->autorelease();
-		created.pushBack(ret);
+
+		created.pushBack(ret.get());
 		return ret;
 	}
-	CC_SAFE_DELETE(ret);
 	return nullptr;;
 }
 

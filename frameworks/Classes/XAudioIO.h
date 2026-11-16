@@ -11,7 +11,7 @@ namespace cocos2d
 namespace lstg
 {
 	using AudioInputResult = cocos2d::io::Result<cocos2d::ThreadSafeRefPtr<cocos2d::AudioStreamAdapter>>;
-	using AudioDecodeResult = cocos2d::io::Result<cocos2d::RefPtr<cocos2d::AudioDecoder>>;
+	using AudioDecodeResult = cocos2d::io::Result<cc::IntrusivePtr<cocos2d::AudioDecoder>>;
 
 	// Host setup/complete shutdown only, without concurrent stream creation.
 	// Engine restarts and game resets retain this resource-system configuration.
@@ -24,8 +24,7 @@ namespace lstg
 	// Copies raw PCM bytes; it does not encode a WAV/OGG/FLAC/MP3 container.
 	AudioInputResult createAudioInputFromSoundData(const cocos2d::AudioSoundData* soundData);
 
-	// Returned decoders have an independent strong reference. Creating a core
-	// decoder still requires the caller's normal cocos autorelease pool.
+	// Returned decoders have an independent strong reference and require no pool.
 	AudioDecodeResult decodeAudioStringData(const std::string& bytes,
 		size_t bufferSize, cocos2d::AudioDecoder::DecoderType type);
 	AudioDecodeResult decodeAudioSoundData(const cocos2d::AudioSoundData* soundData,

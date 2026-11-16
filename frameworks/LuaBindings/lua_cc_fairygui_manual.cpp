@@ -171,6 +171,24 @@ static int lua_cc_fairygui_GPath_getPointsInSegment(lua_State* lua_S)
 	return 2;
 }
 
+// Preserve the existing raw container-pointer overload at the manual boundary.
+// It cannot be emitted by the generator's current container-pointer policy.
+static int lua_cc_fairygui_GComponent_constructFromResource(lua_State* lua_S)
+{
+	LUA_INVOKE_HEADER("fgui.GComponent", "fgui.GComponent:constructFromResource");
+	LUA_TRY_INVOKE(2, static_cast<void(fairygui::GComponent::*)(std::vector<fairygui::GObject*>*, int)>(&fairygui::GComponent::constructFromResource));
+	LUA_TRY_INVOKE(0, static_cast<void(fairygui::GComponent::*)()>(&fairygui::GComponent::constructFromResource));
+	LUA_INVOKE_FOOTER("0,2");
+}
+
+static void extendGComponent(lua_State* L)
+{
+	lua_getfield(L, LUA_REGISTRYINDEX, "fgui.GComponent");
+	if (lua_istable(L, -1))
+		tolua_function(L, "constructFromResource", lua_cc_fairygui_GComponent_constructFromResource);
+	lua_pop(L, 1);
+}
+
 static void extendGPath(lua_State* L)
 {
 	lua_getfield(L, LUA_REGISTRYINDEX, "fgui.GPath");
@@ -187,6 +205,7 @@ int register_all_cc_fairygui_manual(lua_State* L)
 	if (!L)
 		return 0;
 	extendGObject(L);
+	extendGComponent(L);
 	extendGPath(L);
 	return 0;
 }

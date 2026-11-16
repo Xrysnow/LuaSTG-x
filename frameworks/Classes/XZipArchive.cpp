@@ -82,9 +82,8 @@ bool ZipArchive::initWithBuffer(Buffer* input, bool checkConsistency)
 {
 	if (!input) return false;
 	// A retained Buffer can still reallocate. Own a snapshot of the borrowed source.
-	buffer = input->clone();
+	buffer = input->clone().detach();
 	if (!buffer) return false;
-	buffer->retain();
 	auto source = zip_source_buffer_create(buffer->data(), buffer->size(), 0, nullptr);
 	if (!source) return false;
 	archive = libzippp::ZipArchive::fromSource(source, libzippp::ZipArchive::ReadOnly, checkConsistency);
@@ -92,27 +91,23 @@ bool ZipArchive::initWithBuffer(Buffer* input, bool checkConsistency)
 	return archive != nullptr;
 }
 
-ZipArchive* ZipArchive::create(const std::string& path, const std::string& password, Encryption encryptionMethod)
+cc::IntrusivePtr<ZipArchive> ZipArchive::create(const std::string& path, const std::string& password, Encryption encryptionMethod)
 {
-	auto result = new (std::nothrow) ZipArchive();
+	cc::IntrusivePtr<ZipArchive> result{new (std::nothrow) ZipArchive()};
 	if (result && result->init(path, password, encryptionMethod))
 	{
-		result->autorelease();
 		return result;
 	}
-	delete result;
 	return nullptr;
 }
 
-ZipArchive* ZipArchive::createFromBuffer(Buffer* input, bool checkConsistency)
+cc::IntrusivePtr<ZipArchive> ZipArchive::createFromBuffer(Buffer* input, bool checkConsistency)
 {
-	auto result = new (std::nothrow) ZipArchive();
+	cc::IntrusivePtr<ZipArchive> result{new (std::nothrow) ZipArchive()};
 	if (result && result->initWithBuffer(input, checkConsistency))
 	{
-		result->autorelease();
 		return result;
 	}
-	delete result;
 	return nullptr;
 }
 
@@ -249,7 +244,7 @@ uint32_t ZipArchive::getCompressionLevel() const
 	return archive->getCompressionLevel();
 }
 
-Buffer* ZipArchive::readEntry(const std::string& name, State state)
+cc::IntrusivePtr<Buffer> ZipArchive::readEntry(const std::string& name, State state)
 {
 	if (!isOpen()) { recordResult(NOT_OPEN); return nullptr; }
 	const auto entry = getEntry(name, state);
