@@ -3,9 +3,7 @@
 
 using namespace lstg;
 
-Buffer::Buffer()
-{
-}
+Buffer::Buffer() = default;
 
 Buffer::~Buffer()
 {
@@ -13,7 +11,7 @@ Buffer::~Buffer()
 
 cc::IntrusivePtr<Buffer> Buffer::create(size_t size)
 {
-	cc::IntrusivePtr<Buffer> ret{new (std::nothrow) Buffer()};
+	cc::IntrusivePtr ret{new (std::nothrow) Buffer()};
 	if (ret&&ret->init(size))
 	{
 		return ret;
@@ -23,7 +21,7 @@ cc::IntrusivePtr<Buffer> Buffer::create(size_t size)
 
 cc::IntrusivePtr<Buffer> Buffer::createFromString(const std::string& s)
 {
-	cc::IntrusivePtr<Buffer> ret{new (std::nothrow) Buffer()};
+	cc::IntrusivePtr ret{new (std::nothrow) Buffer()};
 	if (ret&&ret->init(0))
 	{
 

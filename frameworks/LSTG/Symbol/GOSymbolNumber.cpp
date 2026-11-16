@@ -8,7 +8,7 @@ using namespace lstg::symbol;
 
 cc::IntrusivePtr<Number> Number::createWithValue(float v)
 {
-	cc::IntrusivePtr<Number> ret{new(std::nothrow) Number()};
+	cc::IntrusivePtr ret{new(std::nothrow) Number()};
 	CREATE_CHECK(ret, ret&&ret->initWithValue(v));
 }
 
@@ -35,7 +35,7 @@ void Number::pushLua(lua_State* L, uint32_t /*idxOut*/)
 
 cc::IntrusivePtr<NumberFromGameObject> NumberFromGameObject::create(GameObjectProperty p)
 {
-	cc::IntrusivePtr<NumberFromGameObject> ret{new (std::nothrow) NumberFromGameObject()};
+	cc::IntrusivePtr ret{new (std::nothrow) NumberFromGameObject()};
 	CREATE_CHECK(ret, ret&&ret->init(p));
 }
 
@@ -61,7 +61,7 @@ bool NumberFromGameObject::init(GameObjectProperty p)
 
 cc::IntrusivePtr<NumberFromGameObjectLua> NumberFromGameObjectLua::create(const std::string& field)
 {
-	cc::IntrusivePtr<NumberFromGameObjectLua> ret{new (std::nothrow) NumberFromGameObjectLua()};
+	cc::IntrusivePtr ret{new (std::nothrow) NumberFromGameObjectLua()};
 	CREATE_CHECK(ret, ret&&ret->init(field));
 }
 

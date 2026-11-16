@@ -1,6 +1,7 @@
 ﻿#include "XRefAdapter.h"
 #include "CCLuaEngine.h"
 #include "LuaBasicConversions.h"
+#include <stdexcept>
 
 using namespace lstg;
 using namespace cocos2d;
@@ -53,7 +54,7 @@ const char* RefAdapter::getLuaTypeName(const char* typeName)
 
 cc::IntrusivePtr<RefAdapter> RefAdapter::_create(void* obj, const std::string& className, const std::function<void(void*)>& dtor)
 {
-	cc::IntrusivePtr<RefAdapter> ret{new (std::nothrow) RefAdapter()};
+	cc::IntrusivePtr ret{new (std::nothrow) RefAdapter()};
 	if (ret)
 	{
 		ret->_ptr = obj;
@@ -72,13 +73,13 @@ void RefAdapter::pushLua(lua_State* L)
 		lua_pushnil(L);
 		return;
 	}
-	if (_isRef)
+	if (_ref)
 	{
-		// use c style cast, T may not polymorphic
-		auto dynObject = (cocos2d::Ref*)(_ptr);
-		const int ID = (int)(dynObject->_ID);
-		int* luaID = &(dynObject->_luaID);
-		toluafix_pushusertype_ccobject(L, ID, luaID, (void*)_ptr, _className.c_str());
+		if (!isRefScriptContext(L))
+			throw std::logic_error("Ref conversion requires the active Lua context and its host thread");
+		const int ID = (int)(_ref->getScriptObjectID());
+		int* luaID = &(_ref->getScriptIdentity().luaID);
+		toluafix_pushusertype_ccobject(L, ID, luaID, _ref, _className.c_str());
 		return;
 	}
 
@@ -114,7 +115,7 @@ void RefAdapter::pushLua(lua_State* L)
 
 RefAdapter::~RefAdapter()
 {
-	if (_ptr&&!_isRef)
+	if (_ptr&&!_ref)
 	{
 		const auto L = LuaEngine::getInstance()->getLuaStack()->getLuaState();
 		lua_pushlightuserdata(L, this);

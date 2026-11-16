@@ -40,9 +40,7 @@ static void SetDefaultVertexLayout(Program* program, VertexLayout* v)
 	v->setStride(sizeof(V3F_C4B_T2F));
 }
 
-RenderMode::RenderMode()
-{
-}
+RenderMode::RenderMode() = default;
 
 RenderMode::~RenderMode()
 {
@@ -55,15 +53,14 @@ RenderMode::~RenderMode()
 RenderMode* RenderMode::getDefault()
 {
 	if (!RenderModeDefault)
-		RenderModeDefault = cc::IntrusivePtr<RenderMode>{new RenderMode()}.detach();
+		RenderModeDefault = cc::IntrusivePtr{new RenderMode()}.detach();
 	CC_ASSERT(RenderModeDefault);
 	return RenderModeDefault;
 }
 
 void RenderMode::destructDefault()
 {
-	delete RenderModeDefault;
-	RenderModeDefault = nullptr;
+	CC_SAFE_RELEASE_NULL(RenderModeDefault);
 }
 
 cc::IntrusivePtr<RenderMode> RenderMode::create(const std::string& name,
@@ -72,7 +69,7 @@ cc::IntrusivePtr<RenderMode> RenderMode::create(const std::string& name,
 	backend::BlendFactor blendFactorDst,
 	Program* program)
 {
-	cc::IntrusivePtr<RenderMode> ret{new (std::nothrow) RenderMode()};
+	cc::IntrusivePtr ret{new (std::nothrow) RenderMode()};
 	if (ret&&ret->init(name, blendOp, blendFactorSrc, blendFactorDst, program))
 	{
 
@@ -118,7 +115,7 @@ void RenderMode::setProgram(Program* program)
 	}
 
 	CC_SAFE_RELEASE(defaultState);
-	defaultState = cc::IntrusivePtr<backend::ProgramState>{new backend::ProgramState(_program)}.detach();
+	defaultState = cc::IntrusivePtr{new backend::ProgramState(_program)}.detach();
 	defaultState->getFragmentUniformBuffer(&fragUniformBuffer, fragUniformBufferSize);
 	defaultState->getVertexUniformBuffer(&vertUniformBuffer, vertUniformBufferSize);
 
@@ -149,7 +146,7 @@ ProgramState* RenderMode::getDefaultProgramState() const
 
 ProgramState* RenderMode::newProgramState()
 {
-	cc::IntrusivePtr<ProgramState> ret{new ProgramState(_program)};
+	cc::IntrusivePtr ret{new ProgramState(_program)};
 	syncUniform(ret.get());
 	return ret.detach();
 }

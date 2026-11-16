@@ -12,9 +12,7 @@ using namespace lstg;
 
 #define USE_FASTCHECK 1
 
-GameObjectBentLaser::GameObjectBentLaser()
-{
-}
+GameObjectBentLaser::GameObjectBentLaser() = default;
 
 GameObjectBentLaser::~GameObjectBentLaser()
 {
@@ -22,7 +20,7 @@ GameObjectBentLaser::~GameObjectBentLaser()
 
 cc::IntrusivePtr<GameObjectBentLaser> GameObjectBentLaser::create()
 {
-	cc::IntrusivePtr<GameObjectBentLaser> ret{new (std::nothrow) GameObjectBentLaser()};
+	cc::IntrusivePtr ret{new (std::nothrow) GameObjectBentLaser()};
 	if (ret)
 	{
 		ret->reset();

@@ -137,6 +137,6 @@ cc::IntrusivePtr<ResFX> ResFX::createWithProgram(const std::string& name, backen
 	const auto m = RenderMode::create(name, program);
 	if (!m)
 		return nullptr;
-	cc::IntrusivePtr<ResFX> owner{new (nothrow) ResFX(name, m)};
+	cc::IntrusivePtr owner{new (nothrow) ResFX(name, m)};
 	return Resource::finishConstruction(std::move(owner));
 }

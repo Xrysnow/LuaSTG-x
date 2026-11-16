@@ -147,7 +147,7 @@ cc::IntrusivePtr<ResAnimation> ResAnimation::create(const std::string& name, Res
 	float x, float y, float w, float h,
 	int nCol, int nRow, int interval, double a, double b, XColliderType colliType)
 {
-	cc::IntrusivePtr<ResAnimation> owner{new (nothrow) ResAnimation(name.c_str(), texture,
+	cc::IntrusivePtr owner{new (nothrow) ResAnimation(name.c_str(), texture,
 		x, y, w, h, nCol, nRow, interval, a, b, colliType)};
 	return Resource::finishConstruction(std::move(owner));
 }

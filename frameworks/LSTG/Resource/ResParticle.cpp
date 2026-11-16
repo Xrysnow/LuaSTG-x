@@ -332,7 +332,7 @@ ResParticle::ParticlePool::~ParticlePool()
 
 ResParticle::ParticlePool* ResParticle::newPool()
 {
-	cc::IntrusivePtr<ParticlePool> pool{new (std::nothrow) ParticlePool(this)};
+	cc::IntrusivePtr pool{new (std::nothrow) ParticlePool(this)};
 	if (pool)
 	{		
 		pool->setRenderMode(renderMode);
@@ -505,7 +505,7 @@ cc::IntrusivePtr<ResParticle> ResParticle::create(const std::string& name, const
 		}
 		if (!blend)
 			return nullptr;
-		cc::IntrusivePtr<ResParticle> ret{new (nothrow) ResParticle(name, tInfo, clone,
+		cc::IntrusivePtr ret{new (nothrow) ResParticle(name, tInfo, clone,
 			blend, a, b, colliType)};
 		if (ret)
 			ret->resPath = path;

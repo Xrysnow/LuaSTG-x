@@ -5,6 +5,9 @@ namespace lstg
 {
 	class ComponentData : public cocos2d::Ref
 	{
+	public:
+	    ComponentData() = default;
+
 	protected:
 		virtual bool init();
 	public:

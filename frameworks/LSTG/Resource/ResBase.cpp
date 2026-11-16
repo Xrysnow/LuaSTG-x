@@ -43,7 +43,7 @@ size_t Resource::getMemorySize()
 
 void Resource::pushLua(lua_State* L)
 {
-	toluafix_pushusertype_ccobject(L, (int)_ID, &_luaID, (void*)this, toluatype(resType));
+	toluafix_pushusertype_ccobject(L, (int)getScriptObjectID(), &getScriptIdentity().luaID, (void*)this, toluatype(resType));
 }
 
 Resource* Resource::fromLua(lua_State* L, int idx, ResourceType type)

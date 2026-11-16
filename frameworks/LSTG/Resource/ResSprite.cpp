@@ -39,7 +39,7 @@ cc::IntrusivePtr<ResSprite> ResSprite::clone(const std::string& newName)
 		XERROR("failed when creating Sprite.");
 		return nullptr;
 	}
-	cc::IntrusivePtr<ResSprite> res{new (nothrow) ResSprite(newName, sp, colliderType, halfSizeX, halfSizeY, resPath)};
+	cc::IntrusivePtr res{new (nothrow) ResSprite(newName, sp, colliderType, halfSizeX, halfSizeY, resPath)};
 	if(!res)
 	{
 		XERROR("failed when creating ResSprite.");
@@ -92,7 +92,7 @@ cc::IntrusivePtr<ResSprite> ResSprite::create(const std::string& name, ResTextur
 		texture->getTexture(), Rect(x, y, w, h));
 	if (!sp)
 		return nullptr;
-	cc::IntrusivePtr<ResSprite> ret{new (nothrow) ResSprite(name, sp, colliType, a, b)};
+	cc::IntrusivePtr ret{new (nothrow) ResSprite(name, sp, colliType, a, b)};
 	if (ret)
 		ret->resPath = texture->getPath();
 	return Resource::finishConstruction(std::move(ret));
@@ -103,6 +103,6 @@ cc::IntrusivePtr<ResSprite> ResSprite::createWithSprite(const std::string& name,
 {
 	if (!sprite)
 		return nullptr;
-	cc::IntrusivePtr<ResSprite> owner{new (nothrow) ResSprite(name, sprite, colliType, a, b)};
+	cc::IntrusivePtr owner{new (nothrow) ResSprite(name, sprite, colliType, a, b)};
 	return Resource::finishConstruction(std::move(owner));
 }

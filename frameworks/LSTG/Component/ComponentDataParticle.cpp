@@ -22,7 +22,7 @@ lstg::ComponentDataParticle::~ComponentDataParticle()
 
 cc::IntrusivePtr<lstg::ComponentDataParticle> lstg::ComponentDataParticle::create(ResParticle* res)
 {
-	cc::IntrusivePtr<ComponentDataParticle> pRet{new(std::nothrow) ComponentDataParticle()};
+	cc::IntrusivePtr pRet{new(std::nothrow) ComponentDataParticle()};
 	if (pRet && pRet->init(res))
 	{
 

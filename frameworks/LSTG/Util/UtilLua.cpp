@@ -610,20 +610,7 @@ bool lstg::lua::luaval_to_async_callback(lua_State* L, int lo, std::function<voi
 
 void lstg::lua::ref_type_to_luaval(lua_State* L, Ref* ref, const char* typeID)
 {
-	if (ref)
-	{
-		const auto typeName = typeID ? typeID : typeid(*ref).name();
-		const auto iter = g_luaType.find(reinterpret_cast<uintptr_t>(typeName));
-		auto type = "cc.Ref";
-		if (g_luaType.end() != iter)
-			type = iter->second;
-		toluafix_pushusertype_ccobject(
-			L, (int)ref->_ID, &ref->_luaID, (void*)ref, type);
-	}
-	else
-	{
-		lua_pushnil(L);
-	}
+	::lua::ref_type_to_luaval(L, ref, typeID);
 }
 
 const void* lstg::lua::luaval_to_const_data(lua_State* L, int lo, int lo_size, size_t* outSize)

@@ -88,7 +88,7 @@ bool XRenderer::init()
 	p->clearRectQuad.tr.vertices.set(1, 1, 1024.f);
 	Mat4::createOrthographicOffCenter(0, 1, 0, 1, -1024.f, 1024.f, &p->clearRectProj);
 
-	cc::IntrusivePtr<RenderMode> rm{new RenderMode()};
+	cc::IntrusivePtr rm{new RenderMode()};
 	rm->init(":RendererClearRect:", backend::BlendOperation::ADD,
 		backend::BlendFactor::ONE, backend::BlendFactor::ZERO,
 		p->clearRect->getProgramState()->getProgram());
@@ -119,7 +119,7 @@ bool XRenderer::end()
 	//CC_SAFE_DELETE(getInstance()->movingNode);
 	getInstance()->drawNode.reset();
 	getInstance()->movingCamera.reset();
-	CC_SAFE_DELETE(getInstance()->clearRectRenderMode);
+	CC_SAFE_RELEASE_NULL(getInstance()->clearRectRenderMode);
 	CC_SAFE_RELEASE_NULL(getInstance()->tempRenderTexture);
 	getInstance()->clearRect.reset();
 	getInstance()->frameBuffer.reset();

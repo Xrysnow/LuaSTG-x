@@ -5,7 +5,7 @@ using namespace cocos2d;
 
 cc::IntrusivePtr<XLabel> XLabel::createWithBMFont(const string& bmfontFilePath, const string& text, const Vec2& imageOffset)
 {
-	cc::IntrusivePtr<XLabel> ret{new (nothrow) XLabel()};
+	cc::IntrusivePtr ret{new (nothrow) XLabel()};
 	if (ret && ret->setBMFontFilePath(bmfontFilePath, Rect(imageOffset.x, imageOffset.y, 0, 0), false))
 	{
 		ret->setString(text);
@@ -16,7 +16,7 @@ cc::IntrusivePtr<XLabel> XLabel::createWithBMFont(const string& bmfontFilePath, 
 
 cc::IntrusivePtr<XLabel> XLabel::createWithTTF(const TTFConfig& ttfConfig, const string& text, TextHAlignment hAlignment, int maxLineWidth)
 {
-	cc::IntrusivePtr<XLabel> ret{new (nothrow) XLabel(hAlignment)};
+	cc::IntrusivePtr ret{new (nothrow) XLabel(hAlignment)};
 	if (ret && ret->initWithTTF(ttfConfig, text, hAlignment, maxLineWidth))
 	{
 		return ret;
@@ -26,7 +26,7 @@ cc::IntrusivePtr<XLabel> XLabel::createWithTTF(const TTFConfig& ttfConfig, const
 
 cc::IntrusivePtr<XLabel> XLabel::createWithSystemFont(const string& text, const string& font, float fontSize, const Size& dimensions, TextHAlignment hAlignment, TextVAlignment vAlignment)
 {
-	cc::IntrusivePtr<XLabel> ret{new (nothrow) XLabel(hAlignment, vAlignment)};
+	cc::IntrusivePtr ret{new (nothrow) XLabel(hAlignment, vAlignment)};
 	if (ret)
 	{
 		ret->setSystemFontName(font);

@@ -172,6 +172,8 @@ namespace lstg
 	class MonitorHelper : public cocos2d::Ref
 	{
 	public:
+	    MonitorHelper() = default;
+
 		using GammaRamp = std::array<std::vector<unsigned short>, 3>;
 		using VideoMode = std::array<int, 6>;
 

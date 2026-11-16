@@ -17,7 +17,7 @@ lstg::ComponentDataVertex::~ComponentDataVertex()
 
 cc::IntrusivePtr<lstg::ComponentDataVertex> lstg::ComponentDataVertex::create(ResTexture* res)
 {
-	cc::IntrusivePtr<ComponentDataVertex> pRet{new(std::nothrow) ComponentDataVertex()};
+	cc::IntrusivePtr pRet{new(std::nothrow) ComponentDataVertex()};
 	if (pRet && pRet->init(res))
 	{
 

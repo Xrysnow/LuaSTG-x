@@ -533,7 +533,7 @@ bool Operator::init(const std::string& name)
 
 cc::IntrusivePtr<Operator> Operator::create(const std::string& name)
 {
-	cc::IntrusivePtr<Operator> ret{new (std::nothrow) Operator()};
+	cc::IntrusivePtr ret{new (std::nothrow) Operator()};
 	CREATE_CHECK(ret, ret&&ret->init(name));
 }
 
@@ -706,13 +706,13 @@ void Operator::registBase()
 
 cc::IntrusivePtr<Assigment> Assigment::create(ComputeNode* var)
 {
-	cc::IntrusivePtr<Assigment> ret{new(std::nothrow) Assigment()};
+	cc::IntrusivePtr ret{new(std::nothrow) Assigment()};
 	CREATE_CHECK(ret, ret&&ret->initWithRValue(var));
 }
 
 cc::IntrusivePtr<Assigment> Assigment::createWithObjProperty(const std::string& property, ComputeNode* var)
 {
-	cc::IntrusivePtr<Assigment> ret{new(std::nothrow) Assigment()};
+	cc::IntrusivePtr ret{new(std::nothrow) Assigment()};
 	CREATE_CHECK(ret, ret&&ret->initWithObjProperty(property, var));
 }
 
@@ -827,7 +827,7 @@ cocos2d::Vector<Block*> Block::created;
 
 cc::IntrusivePtr<Block> Block::create()
 {
-	cc::IntrusivePtr<Block> ret{new(std::nothrow) Block()};
+	cc::IntrusivePtr ret{new(std::nothrow) Block()};
 	if (ret)
 	{
 

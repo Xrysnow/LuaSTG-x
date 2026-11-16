@@ -67,13 +67,13 @@ cc::IntrusivePtr<ResTexture> ResTexture::create(const std::string& name, const s
 		const auto data = LRES.getFileData(path);
 		if (!data)
 			return nullptr;
-		cc::IntrusivePtr<Image> image{new Image()};
-		cc::IntrusivePtr<Texture2D> tex{new Texture2D()};
+		cc::IntrusivePtr image{new Image()};
+		cc::IntrusivePtr tex{new Texture2D()};
 		if (image->initWithImageData(data->data(), data->size()))
 		{
 			if (tex->initWithImage(image.get()))
 			{
-				cc::IntrusivePtr<ResTexture> ret{new (nothrow) ResTexture(name, tex.get())};
+				cc::IntrusivePtr ret{new (nothrow) ResTexture(name, tex.get())};
 				if (ret)
 					ret->resPath = path;
 				return Resource::finishConstruction(std::move(ret));
@@ -90,6 +90,6 @@ cc::IntrusivePtr<ResTexture> ResTexture::createWithTexture(const std::string& na
 {
 	if (!texture)
 		return nullptr;
-	cc::IntrusivePtr<ResTexture> owner{new (nothrow) ResTexture(name, texture)};
+	cc::IntrusivePtr owner{new (nothrow) ResTexture(name, texture)};
 	return Resource::finishConstruction(std::move(owner));
 }

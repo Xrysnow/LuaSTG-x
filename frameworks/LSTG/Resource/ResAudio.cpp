@@ -260,7 +260,7 @@ cc::IntrusivePtr<ResSound> ResSound::create(const std::string& name, const std::
 	auto input = LRES.openReadStream(path);
 	if (!input)
 		return nullptr;
-	cc::IntrusivePtr<ResSound> ret{new (nothrow) ResSound(name, path)};
+	cc::IntrusivePtr ret{new (nothrow) ResSound(name, path)};
 	if (ret && ret->init(std::move(input.value)))
 	{
 		return Resource::finishConstruction(std::move(ret));
@@ -294,7 +294,7 @@ cc::IntrusivePtr<ResMusic> ResMusic::create(const std::string& name, const std::
 	auto input = LRES.openReadStream(path);
 	if (!input)
 		return nullptr;
-	cc::IntrusivePtr<ResMusic> ret{new (nothrow) ResMusic(name, path)};
+	cc::IntrusivePtr ret{new (nothrow) ResMusic(name, path)};
 	if (ret && ret->initWithStream(std::move(input.value), loopStart, loopEnd))
 	{
 		return Resource::finishConstruction(std::move(ret));

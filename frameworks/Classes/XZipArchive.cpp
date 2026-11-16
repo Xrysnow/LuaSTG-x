@@ -93,7 +93,7 @@ bool ZipArchive::initWithBuffer(Buffer* input, bool checkConsistency)
 
 cc::IntrusivePtr<ZipArchive> ZipArchive::create(const std::string& path, const std::string& password, Encryption encryptionMethod)
 {
-	cc::IntrusivePtr<ZipArchive> result{new (std::nothrow) ZipArchive()};
+	cc::IntrusivePtr result{new (std::nothrow) ZipArchive()};
 	if (result && result->init(path, password, encryptionMethod))
 	{
 		return result;
@@ -103,7 +103,7 @@ cc::IntrusivePtr<ZipArchive> ZipArchive::create(const std::string& path, const s
 
 cc::IntrusivePtr<ZipArchive> ZipArchive::createFromBuffer(Buffer* input, bool checkConsistency)
 {
-	cc::IntrusivePtr<ZipArchive> result{new (std::nothrow) ZipArchive()};
+	cc::IntrusivePtr result{new (std::nothrow) ZipArchive()};
 	if (result && result->initWithBuffer(input, checkConsistency))
 	{
 		return result;

@@ -148,7 +148,7 @@ cc::IntrusivePtr<ResourcePack> ResourcePack::create(const string& fullPath, cons
 	cc::IntrusivePtr<ResourcePack> ret;
 	try
 	{
-		ret = cc::IntrusivePtr<ResourcePack>{new (nothrow) ResourcePack()};
+		ret = cc::IntrusivePtr{new (nothrow) ResourcePack()};
 		if (ret && ret->init(fullPath, password))
 		{
 			return ret;

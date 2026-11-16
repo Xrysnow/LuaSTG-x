@@ -18,7 +18,7 @@ ComponentDataLabel::~ComponentDataLabel()
 
 cc::IntrusivePtr<lstg::ComponentDataLabel> lstg::ComponentDataLabel::create(ResFont* res)
 {
-	cc::IntrusivePtr<ComponentDataLabel> pRet{new(std::nothrow) ComponentDataLabel()};
+	cc::IntrusivePtr pRet{new(std::nothrow) ComponentDataLabel()};
 	if (pRet && pRet->init(res))
 	{
 

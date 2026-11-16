@@ -30,6 +30,8 @@ namespace lstg
 		class ComputeNode : public cocos2d::Ref
 		{
 		public:
+		    ComputeNode() = default;
+
 			enum class Type
 			{
 				Number,
@@ -195,6 +197,10 @@ namespace lstg
 
 		class Block : public cocos2d::Ref
 		{
+		public:
+		    Block() = default;
+		private:
+
 			cocos2d::Vector<Statement*> statements;
 			bool require_luaobj = false;
 			bool is_atomic = true;

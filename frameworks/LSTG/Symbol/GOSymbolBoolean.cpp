@@ -11,7 +11,7 @@ using namespace lstg::symbol;
 
 cc::IntrusivePtr<Boolean> Boolean::createWithValue(bool v)
 {
-	cc::IntrusivePtr<Boolean> ret{new(std::nothrow) Boolean()};
+	cc::IntrusivePtr ret{new(std::nothrow) Boolean()};
 	CREATE_CHECK(ret, ret&&ret->initWithValue(v));
 }
 
@@ -37,7 +37,7 @@ void Boolean::pushLua(lua_State* L, uint32_t /*idxOut*/)
 
 cc::IntrusivePtr<BooleanFromGameObject> BooleanFromGameObject::create(GameObjectProperty p)
 {
-	cc::IntrusivePtr<BooleanFromGameObject> ret{new (std::nothrow) BooleanFromGameObject()};
+	cc::IntrusivePtr ret{new (std::nothrow) BooleanFromGameObject()};
 	CREATE_CHECK(ret, ret&&ret->init(p));
 }
 
@@ -63,7 +63,7 @@ bool BooleanFromGameObject::init(GameObjectProperty p)
 
 cc::IntrusivePtr<BooleanFromGameObjectLua> BooleanFromGameObjectLua::create(const std::string& field)
 {
-	cc::IntrusivePtr<BooleanFromGameObjectLua> ret{new (std::nothrow) BooleanFromGameObjectLua()};
+	cc::IntrusivePtr ret{new (std::nothrow) BooleanFromGameObjectLua()};
 	CREATE_CHECK(ret, ret&&ret->init(field));
 }
 

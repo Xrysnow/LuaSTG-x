@@ -10,7 +10,7 @@ bool ComponentDataAni::init(ResAnimation* res)
 
 cc::IntrusivePtr<ComponentDataAni> ComponentDataAni::create(ResAnimation* res)
 {
-	cc::IntrusivePtr<ComponentDataAni> pRet{new(std::nothrow) ComponentDataAni()};
+	cc::IntrusivePtr pRet{new(std::nothrow) ComponentDataAni()};
 	if (pRet && pRet->init(res))
 	{
 		return pRet;

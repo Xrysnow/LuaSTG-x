@@ -160,8 +160,8 @@ static int tolua_cocos2dx_EventListenerController_clone(lua_State* tolua_S)
         cloneEventListenerControllerHandler(self, tolua_ret, ScriptHandlerMgr::HandlerType::EVENT_CONTROLLER_KEYREPEAT);
         cloneEventListenerControllerHandler(self, tolua_ret, ScriptHandlerMgr::HandlerType::EVENT_CONTROLLER_AXIS);
 
-        int ID = (tolua_ret) ? (int)tolua_ret->_ID : -1;
-        int* luaID = (tolua_ret) ? &tolua_ret->_luaID : NULL;
+        int ID = (tolua_ret) ? (int)tolua_ret->getScriptObjectID() : -1;
+        int* luaID = (tolua_ret) ? &tolua_ret->getScriptIdentity().luaID : NULL;
         toluafix_pushusertype_ccobject(tolua_S, ID, luaID, (void*)cocos2d::transferToAutoreleasePool(std::move(tolua_ret)),"cc.EventListenerController");
         return 1;
     }
@@ -198,8 +198,8 @@ static int tolua_cocos2dx_EventListenerController_registerScriptHandler(lua_Stat
                         callbackStack->executeCallback([=]() mutable -> int {
                             auto* tolua_S = callbackStack->getLuaState();
                             tolua_pushusertype(tolua_S, (void*)controller, "cc.Controller");
-                            int ID = (event) ? (int)event->_ID : -1;
-                            int* luaID = (event) ? &event->_luaID : NULL;
+                            int ID = (event) ? (int)event->getScriptObjectID() : -1;
+                            int* luaID = (event) ? &event->getScriptIdentity().luaID : NULL;
                             toluafix_pushusertype_ccobject(tolua_S, ID, luaID, (void*)event,"cc.event");
                             LuaEngine::getInstance()->getLuaStack()->executeFunctionByHandler(handler, 2);
 
@@ -217,8 +217,8 @@ static int tolua_cocos2dx_EventListenerController_registerScriptHandler(lua_Stat
                         callbackStack->executeCallback([=]() mutable -> int {
                             auto* tolua_S = callbackStack->getLuaState();
                             tolua_pushusertype(tolua_S, (void*)controller, "cc.Controller");
-                            int ID = (event) ? (int)event->_ID : -1;
-                            int* luaID = (event) ? &event->_luaID : NULL;
+                            int ID = (event) ? (int)event->getScriptObjectID() : -1;
+                            int* luaID = (event) ? &event->getScriptIdentity().luaID : NULL;
                             toluafix_pushusertype_ccobject(tolua_S, ID, luaID, (void*)event,"cc.event");
                             LuaEngine::getInstance()->getLuaStack()->executeFunctionByHandler(handler, 2);
 
@@ -238,8 +238,8 @@ static int tolua_cocos2dx_EventListenerController_registerScriptHandler(lua_Stat
                             auto* tolua_S = callbackStack->getLuaState();
                             tolua_pushusertype(tolua_S, (void*)controller, "cc.Controller");
                             tolua_pushnumber(tolua_S, (lua_Number) keyCode);
-                            int ID = (event) ? (int)event->_ID : -1;
-                            int* luaID = (event) ? &event->_luaID : NULL;
+                            int ID = (event) ? (int)event->getScriptObjectID() : -1;
+                            int* luaID = (event) ? &event->getScriptIdentity().luaID : NULL;
                             toluafix_pushusertype_ccobject(tolua_S, ID, luaID, (void*)event,"cc.event");
                             LuaEngine::getInstance()->getLuaStack()->executeFunctionByHandler(handler, 3);
 
@@ -258,8 +258,8 @@ static int tolua_cocos2dx_EventListenerController_registerScriptHandler(lua_Stat
                             auto* tolua_S = callbackStack->getLuaState();
                             tolua_pushusertype(tolua_S, (void*)controller, "cc.Controller");
                             tolua_pushnumber(tolua_S, (lua_Number) keyCode);
-                            int ID = (event) ? (int)event->_ID : -1;
-                            int* luaID = (event) ? &event->_luaID : NULL;
+                            int ID = (event) ? (int)event->getScriptObjectID() : -1;
+                            int* luaID = (event) ? &event->getScriptIdentity().luaID : NULL;
                             toluafix_pushusertype_ccobject(tolua_S, ID, luaID, (void*)event,"cc.event");
                             LuaEngine::getInstance()->getLuaStack()->executeFunctionByHandler(handler, 3);
 
@@ -278,8 +278,8 @@ static int tolua_cocos2dx_EventListenerController_registerScriptHandler(lua_Stat
                             auto* tolua_S = callbackStack->getLuaState();
                             tolua_pushusertype(tolua_S, (void*)controller, "cc.Controller");
                             tolua_pushnumber(tolua_S, (lua_Number) keyCode);
-                            int ID = (event) ? (int)event->_ID : -1;
-                            int* luaID = (event) ? &event->_luaID : NULL;
+                            int ID = (event) ? (int)event->getScriptObjectID() : -1;
+                            int* luaID = (event) ? &event->getScriptIdentity().luaID : NULL;
                             toluafix_pushusertype_ccobject(tolua_S, ID, luaID, (void*)event,"cc.event");
                             LuaEngine::getInstance()->getLuaStack()->executeFunctionByHandler(handler, 3);
 
@@ -298,8 +298,8 @@ static int tolua_cocos2dx_EventListenerController_registerScriptHandler(lua_Stat
                             auto* tolua_S = callbackStack->getLuaState();
                             tolua_pushusertype(tolua_S, (void*)controller, "cc.Controller");
                             tolua_pushnumber(tolua_S, (lua_Number) keyCode);
-                            int ID = (event) ? (int)event->_ID : -1;
-                            int* luaID = (event) ? &event->_luaID : NULL;
+                            int ID = (event) ? (int)event->getScriptObjectID() : -1;
+                            int* luaID = (event) ? &event->getScriptIdentity().luaID : NULL;
                             toluafix_pushusertype_ccobject(tolua_S, ID, luaID, (void*)event,"cc.event");
                             LuaEngine::getInstance()->getLuaStack()->executeFunctionByHandler(handler, 3);
 
@@ -440,7 +440,7 @@ template<typename Value>
 static cc::IntrusivePtr<cocos2d::EventController> createControllerEvent(
     cocos2d::EventController::ControllerEventType type, cocos2d::Controller* controller, Value value)
 {
-    auto* event = cocos2d::transferToAutoreleasePool(cc::IntrusivePtr<cocos2d::EventController>{new cocos2d::EventController(type, controller, value)});
+    auto* event = cocos2d::transferToAutoreleasePool(cc::IntrusivePtr{new cocos2d::EventController(type, controller, value)});
     return event;
 }
 

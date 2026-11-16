@@ -287,7 +287,7 @@ cc::IntrusivePtr<ResFont> ResFont::createHGE(const std::string& name, const std:
 		if (!lb)
 			return nullptr;
 		// construct
-		cc::IntrusivePtr<ResFont> res{new (nothrow) ResFont(name, lb, LabelType::BMFONT)};
+		cc::IntrusivePtr res{new (nothrow) ResFont(name, lb, LabelType::BMFONT)};
 		if (!res)
 			return nullptr;
 		res->getTTFConfig().fontFilePath = font_path;
@@ -306,7 +306,7 @@ cc::IntrusivePtr<ResFont> ResFont::createBMF(const std::string& name, const std:
 		const auto lb = XLabel::createWithBMFont(font_path, "");
 		if (!lb)
 			return nullptr;
-		cc::IntrusivePtr<ResFont> res{new ResFont(name, lb, LabelType::BMFONT)};
+		cc::IntrusivePtr res{new ResFont(name, lb, LabelType::BMFONT)};
 		if (!res)
 			return nullptr;
 		res->getTTFConfig().fontFilePath = font_path;
@@ -334,7 +334,7 @@ cc::IntrusivePtr<ResFont> ResFont::createTTF(const std::string& name, const std:
 			if (!lb)
 				return nullptr;
 		}
-		cc::IntrusivePtr<ResFont> owner{new (nothrow) ResFont(name, lb, type)};
+		cc::IntrusivePtr owner{new (nothrow) ResFont(name, lb, type)};
 		return Resource::finishConstruction(std::move(owner));
 	}
 	catch (...) {}

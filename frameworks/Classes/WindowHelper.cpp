@@ -317,7 +317,7 @@ void WindowHelperDesktop::setCustomCursor(const std::string& filename, const Vec
 		glfwDestroyCursor(cur_cunstom);
 		cur_cunstom = nullptr;
 	}
-	cc::IntrusivePtr<Image> ccImage{new (std::nothrow) Image()};
+	cc::IntrusivePtr ccImage{new (std::nothrow) Image()};
 	if (ccImage && ccImage->initWithImageFile(filename)) {
 		GLFWimage image;
 		image.width = ccImage->getWidth();
@@ -583,7 +583,7 @@ cc::IntrusivePtr<MonitorHelperDesktop> MonitorHelperDesktop::getOrCreate(GLFWmon
 	const auto it = instances.find(handle);
 	if (it != instances.end())
 		return (MonitorHelperDesktop*)it->second;
-	cc::IntrusivePtr<MonitorHelperDesktop> instance{new MonitorHelperDesktop(handle)};
+	cc::IntrusivePtr instance{new MonitorHelperDesktop(handle)};
 	return instance;
 }
 

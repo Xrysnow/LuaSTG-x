@@ -6,9 +6,7 @@
 
 using namespace lstg;
 
-GifRecoder::GifRecoder()
-{
-}
+GifRecoder::GifRecoder() = default;
 
 GifRecoder::~GifRecoder()
 {
@@ -17,7 +15,7 @@ GifRecoder::~GifRecoder()
 cc::IntrusivePtr<GifRecoder> GifRecoder::create(const cocos2d::Rect& rect, bool transparent, int32_t defaultInterval,
 	int32_t quantizerType, int32_t ditherType)
 {
-	cc::IntrusivePtr<GifRecoder> ret{new (std::nothrow) GifRecoder()};
+	cc::IntrusivePtr ret{new (std::nothrow) GifRecoder()};
 	if (ret)
 	{
 		ret->area = rect;

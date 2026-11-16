@@ -1,7 +1,7 @@
 ﻿#include "XTriangles.h"
 #include <cstring>
 
-#define CREATE(_init) cc::IntrusivePtr<Triangles> ret{new (std::nothrow) Triangles()}; \
+#define CREATE(_init) cc::IntrusivePtr ret{new (std::nothrow) Triangles()}; \
 if (ret&&ret->_init) return ret; \
 return nullptr;
 

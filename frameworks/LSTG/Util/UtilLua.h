@@ -82,7 +82,7 @@ namespace lstg
 
 		template <class T>
 		void ref_vector_to_luaval(lua_State* L, const std::vector<T*>& inValue) {
-			static_assert(std::is_base_of<cocos2d::Ref, T>::value, "");
+			static_assert(std::is_convertible_v<T*,const cc::RefCounted*>, "A public unambiguous RefCounted base is required");
 			if (!L) return;
 			lua_newtable(L);
 			int idx = 1;

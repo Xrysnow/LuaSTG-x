@@ -401,7 +401,7 @@ bool Latex::_init(const std::string& str,
 cc::IntrusivePtr<Latex> Latex::create(const std::string& str, int width, float textSize, float lineSpace, const cocos2d::Color4B& color)
 {
 	static struct _LatexInit _;
-	cc::IntrusivePtr<Latex> ret{new (std::nothrow) Latex()};
+	cc::IntrusivePtr ret{new (std::nothrow) Latex()};
 	if (ret&&ret->_init(str, width, textSize, lineSpace, color))
 	{
 		return ret;

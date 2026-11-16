@@ -28,7 +28,7 @@ bool ComponentDataLight::init()
 
 cc::IntrusivePtr<ComponentDataLight> ComponentDataLight::create()
 {
-	cc::IntrusivePtr<ComponentDataLight> pRet{new(std::nothrow) ComponentDataLight()};
+	cc::IntrusivePtr pRet{new(std::nothrow) ComponentDataLight()};
 	if (pRet && pRet->init())
 	{
 

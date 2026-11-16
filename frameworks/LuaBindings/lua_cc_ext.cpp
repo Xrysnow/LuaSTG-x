@@ -13,10 +13,10 @@ template <class RasterSize>
 cc::IntrusivePtr<cocos2d::Sprite> createSVGSprite(const std::string& path, const RasterSize& size)
 {
     using namespace cocos2d;
-    cc::IntrusivePtr<Image> image{new Image()};
+    auto image = cc::IntrusivePtr{new Image()};
     if (!lstg::initImageWithSVG(image.get(), path, size))
         return nullptr;
-    cc::IntrusivePtr<Texture2D> texture{new Texture2D()};
+    auto texture = cc::IntrusivePtr{new Texture2D()};
     if (!texture->initWithImage(image.get()))
         return nullptr;
     return Sprite::createWithTexture(texture.get());

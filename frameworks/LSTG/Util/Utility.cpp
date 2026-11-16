@@ -667,7 +667,7 @@ Image* lstg::getTextureImage(Texture2D* texture,
 		format = texture->getBackendTexture()->getTextureFormat();
 	if(format != backend::PixelFormat::RGBA8888)
 		return nullptr;
-	cc::IntrusivePtr<Image> image{new Image()};
+	cc::IntrusivePtr image{new Image()};
 	const auto bytePerPixel = texture->getBitsPerPixelForFormat() / 8;
 	auto callback = [image, texture, bytePerPixel](const unsigned char* data, std::size_t w, std::size_t h) {
 		image->initWithRawData(data, w * h * bytePerPixel,

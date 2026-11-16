@@ -222,7 +222,7 @@ void ComponentManager::pushLua(lua_State* L, Resource* res)
 				if (par&&par->pool)
 				{
 					const auto p = par->pool;
-					toluafix_pushusertype_ccobject(L, (int)p->_ID, &p->_luaID,
+					toluafix_pushusertype_ccobject(L, (int)p->getScriptObjectID(), &p->getScriptIdentity().luaID,
 						(void*)p, "lstg.ResParticle::ParticlePool");
 					return;
 				}
@@ -231,7 +231,7 @@ void ComponentManager::pushLua(lua_State* L, Resource* res)
 				if (label&&label->label)
 				{
 					const auto p = label->label;
-					toluafix_pushusertype_ccobject(L, (int)p->_ID, &p->_luaID,
+					toluafix_pushusertype_ccobject(L, (int)p->getScriptObjectID(), &p->getScriptIdentity().luaID,
 						(void*)p, "cc.Label");
 					return;
 				}
