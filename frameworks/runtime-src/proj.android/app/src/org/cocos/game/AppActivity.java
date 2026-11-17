@@ -26,7 +26,6 @@
  ****************************************************************************/
 package org.cocos.game;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import org.cocos.lib.GameControllerActivity;
@@ -81,12 +80,6 @@ public class AppActivity extends GameControllerActivity {
     protected void onSaveInstanceState(Bundle state) {
         StorageBridge.saveState(state);
         super.onSaveInstanceState(state);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (!StorageBridge.onActivityResult(requestCode, resultCode, data))
-            super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
