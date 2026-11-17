@@ -106,7 +106,7 @@ cc::IntrusivePtr<Animation> ResAnimation::newCocosAnimation()
 {
 	Vector<SpriteFrame*> frames;
 	for (auto& img : images)
-		frames.pushBack(img->getSpriteFrame().get());
+		frames.pushBack(img->getSpriteFrame());
 	return Animation::createWithSpriteFrames(frames);
 }
 

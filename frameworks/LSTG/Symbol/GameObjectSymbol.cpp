@@ -519,14 +519,14 @@ bool Operator::init(const std::string& name)
 	{
 	case Type::Boolean:
 		for (auto i = 0; i < num_out; ++i)
-			outputs.pushBack(Boolean::createWithValue(false).get());
+			outputs.pushBack(Boolean::createWithValue(false));
 		break;
 	//case Type::Number: break;
 	//case Type::String: break;
 	//case Type::OprandTypeNum: break;
 	default:
 		for (auto i = 0; i < num_out; ++i)
-		outputs.pushBack(Number::createWithValue(0.f).get());
+		outputs.pushBack(Number::createWithValue(0.f));
 	}
 	return static_cast<bool>(_func);
 }
@@ -831,7 +831,7 @@ cc::IntrusivePtr<Block> Block::create()
 	if (ret)
 	{
 
-		created.pushBack(ret.get());
+		created.pushBack(ret);
 		return ret;
 	}
 	return nullptr;;
