@@ -84,6 +84,14 @@ function M.getExternalDataPath()
     return jCall(storageHelper, 'getExternalDataPath', {}, '()Ljava/lang/String;')
 end
 
+---@param path string
+---@return string|nil Canonical path within an app-specific files directory.
+function M.canonicalAppOwnedDocumentSource(path)
+    local canonical = jCall(storageHelper, 'canonicalAppOwnedDocumentSource', { path },
+        '(Ljava/lang/String;)Ljava/lang/String;')
+    return canonical ~= '' and canonical or nil
+end
+
 ---@param permission string Android permission name
 ---@return boolean Current granted state; does not submit a permission request.
 function M.hasPermission(permission)
@@ -131,6 +139,9 @@ end
 function M.cancelRequest(requestId)
     assert(type(requestId) == 'number' and requestId % 1 == 0 and requestId > 0,
             'a positive request ID is required')
+    if requestId >= 2147483648 then
+        return require('platform.FileDialog').cancel(requestId)
+    end
     return jCall(storageHelper, 'cancelRequest', { requestId }, '(I)Z') or false
 end
 
