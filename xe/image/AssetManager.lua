@@ -15,13 +15,13 @@ function M:ctor()
     base.ctor(self, 'Asset Manager')
     self._imgs = {}
     self:addChild(wi.Button('add image', function()
-        local paths = require('icp.util').selectImages()
-        if not paths then
-            return
-        end
-        for _, path in ipairs(paths) do
-            self:addImage(path)
-        end
+        local director = cc.Director:getInstance()
+        local scene = director:getRunningScene()
+        require('xe.image.util').selectImages(function(paths)
+            if director:getRunningScene() ~= scene or not self:isRunning() or not self:isVisible()
+                or self:isOpen() == false then return end
+            for _, path in ipairs(paths) do self:addImage(path) end
+        end)
     end))
     self:addChild(im.sameLine)
     self:addChild(wi.Button('remove', function()

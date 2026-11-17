@@ -8,6 +8,7 @@ local _templates = { 'Empty', 'Single Stage', 'Single Spell Card', 'TouHou' }
 
 function M:ctor()
     base.ctor(self)
+    self:enableNodeEvents()
 
     local frame = wi._begin_end_wrapper(function()
         local sz = im.vec2(-1, -im.getFrameHeightWithSpacing())
@@ -98,22 +99,32 @@ function M:_ok()
 
     require('xe.Project')._loadFromFile(path)
     --
-    self:setVisible(false)
+    self:_cancel()
 end
 
 function M:_cancel()
+    self:onExit()
     self:setVisible(false)
 end
 
+function M:onExit()
+    self._folderToken = nil
+    local request = self._folderRequest
+    self._folderRequest = nil
+    if request then request:cancel() end
+end
+
 function M:_pickFolder()
-    local path = require('platform.FileDialog').pickFolder()
-    if not path then
-        return
+    if self._folderRequest then self._folderRequest:cancel() end
+    local token = {}
+    self._folderToken = token
+    local function current()
+        return self._folderToken == token and self:isRunning() and self:isVisible()
     end
-    if path:sub(-1) ~= '/' then
-        path = path .. '/'
-    end
-    self._path = path
+    self._folderRequest = require('platform.FileDialog').folderPath(nil, function(path)
+        self._folderRequest = nil
+        self._path = path:sub(-1) == '/' and path or path .. '/'
+    end, current)
 end
 
 local forbid = [[%*%/%\%|%:%"%<%>%?]]

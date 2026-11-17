@@ -6,6 +6,7 @@ local err = require('xe.logger').getLogger('New Project', 'error')
 
 local curProjFile
 local curProjDir
+local generation = 0
 local auto_save_counter = 1
 
 local function get_tree()
@@ -14,6 +15,10 @@ end
 
 function M.getFile()
     return curProjFile
+end
+
+function M.getGeneration()
+    return generation
 end
 
 function M.getDir()
@@ -30,10 +35,11 @@ function M.saveEditorSetting()
 end
 
 function M._setCurFile(s)
+    generation = generation + 1
+    curProjDir = nil
     curProjFile = s
     if s == nil then
         SetTitle("LuaSTG-x Editor")
-        curProjDir = nil
         logger.clear()
         require('xe.main').getToolPanel():disableAll()
         local toolbar = require('xe.main').getToolBar()
@@ -198,18 +204,10 @@ function M.close(onFinish)
 end
 
 function M._open(onFinish)
-    local path = require('platform.FileDialog').open('lstgxproj,luastg')
-    if not path then
-        return
-    end
-    if not M._loadFromFile(path) then
-        return
-    end
-    cc.FileUtils:getInstance():addSearchPath(M.getDir())
-    if onFinish then
-        onFinish()
-    end
-    return true
+    local original = generation
+    return require('platform.DocumentWorkspace').openProject(nil, function(path)
+        if M._loadFromFile(path) and onFinish then onFinish() end
+    end, function() return generation == original end)
 end
 
 function M.open(onFinish)
@@ -359,29 +357,24 @@ function M.exportNode()
         -- can't export
         return
     end
-    local path = require('platform.FileDialog').save('lstgxnode')
-    if not path then
-        return
-    end
-    local fu = cc.FileUtils:getInstance()
-    fu:writeStringToFile(str, path)
+    return require('platform.FileDialog').exportPrepared('node.lstgxnode', 'application/octet-stream', function(path)
+        return cc.FileUtils:getInstance():writeStringToFile(str, path)
+    end)
 end
 
 function M.importNode()
     if not curProjFile then
         return
     end
-    local path = require('platform.FileDialog').open('lstgxnode')
-    if not path then
-        return
-    end
-    local fu = cc.FileUtils:getInstance()
-    local str = fu:getStringFromFile(path)
-    if str == '' then
-        err('empty file')
-        return
-    end
-    get_tree():importToCurrent(str)
+    local original = generation
+    local tree = get_tree()
+    local node = tree:getCurrent()
+    return require('platform.FileDialog').openPath('lstgxnode', M.getDir(), function(path)
+        if generation ~= original or not tree:isRunning() or tree:getCurrent() ~= node then return end
+        local str = cc.FileUtils:getInstance():getStringFromFile(path)
+        if str == '' then err('empty file'); return end
+        tree:importToCurrent(str)
+    end)
 end
 
 return M

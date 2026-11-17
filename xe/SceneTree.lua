@@ -384,34 +384,31 @@ function M:editCurrentAttr(idx)
             wildCard = ""
         end
         local curProjDir = require('xe.Project').getDir()
-        local path = require('platform.FileDialog').open(wildCard, curProjDir)
-        if not path or path == '' then
-            log('File path not set.', 'error', node:getType())
-            -- just leave node unset here
-            return
-        end
-        local fullpath = path
-        local name = string.filename(path)
-        local panel = get_prop()
-        if type == 'bossdefine' then
-            panel:setValue(5, fullpath)
-        elseif type == 'patch' then
-            panel:setValue(1, fullpath)
-        else
-            panel:setValue(1, fullpath)
-            panel:setValue(2, name)
-            if type == 'loadparticle' then
-                local f, msg = io.open_u8(fullpath, 'rb')
-                if f == nil then
-                    log(msg, "Error")
-                else
-                    local s = f:read(1)
-                    f:close()
-                    panel:setValue(3, 'parimg' .. (string.byte(s, 1) + 1))
+        require('platform.FileDialog').openPath(wildCard, curProjDir, function(path)
+            if not self:isRunning() or self:getCurrent() ~= node or self.cur_attr_idx ~= idx then return end
+            local fullpath = path
+            local name = string.filename(path)
+            local panel = get_prop()
+            if type == 'bossdefine' then
+                panel:setValue(5, fullpath)
+            elseif type == 'patch' then
+                panel:setValue(1, fullpath)
+            else
+                panel:setValue(1, fullpath)
+                panel:setValue(2, name)
+                if type == 'loadparticle' then
+                    local f, msg = io.open_u8(fullpath, 'rb')
+                    if f == nil then
+                        log(msg, "Error")
+                    else
+                        local s = f:read(1)
+                        f:close()
+                        if s then panel:setValue(3, 'parimg' .. (s:byte(1) + 1)) end
+                    end
                 end
             end
-        end
-        self:submitAttrToCurrent()
+            self:submitAttrToCurrent()
+        end)
     end
 end
 

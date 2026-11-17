@@ -338,18 +338,8 @@ function M:_renderToolAddRect()
 end
 
 function M:_save()
-    ---@type cc.Sprite
-    local sp = self._img.sprite
     local name = string.filename(self._img.name, false)
-    local folder = lstg.FileDialog:pickFolder('')
-    for i, v in ipairs(self._rects) do
-        local x, y, w, h = v.x, v.y, v.width, v.height
-        local img = sp:getTexture():newImage(x, y, w, h)
-        local path = ('%s/%s_%d.png'):format(folder, name, i - 1)
-        local ret = img:saveToFile(path, false)
-        print(('save to %s, %s'):format(path, ret and 'success' or 'faild'))
-        img:release()
-    end
+    return require('xe.image.util').saveRegions(self, self._img, self._rects, name)
 end
 
 return M

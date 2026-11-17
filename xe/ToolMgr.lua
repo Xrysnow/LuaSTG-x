@@ -52,19 +52,11 @@ function M.merge()
         return
     end
     local path = require('xe.Project').getDir()
-    local fileName, err = require('platform.FileDialog').open('lstgxproj,luastg', path)
-    if fileName and fileName ~= '' then
-        local msg = proj._loadFromFile(fileName, true)
-        if msg == nil then
-            -- record history
-            his.clear()
-        else
-            logger.log(msg, "Error")
-            return msg
-        end
-    else
-        logger.log(err, "Info")
-    end
+    local original = proj.getGeneration()
+    require('platform.DocumentWorkspace').openProject(path, function(fileName)
+        local ok = proj._loadFromFile(fileName, true)
+        if ok then his.clear() end
+    end, function() return original == proj.getGeneration() end)
 end
 
 --

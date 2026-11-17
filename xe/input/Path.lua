@@ -50,57 +50,59 @@ function M:ctor(node, idx, wildCard, isFolder)
 end
 
 function M:_open(wildCard, isFolder)
-    local nt = self._node:getType()
-
-    local dir = require('xe.Project').getDir()
-    local path = ''
-    if isFolder then
-        path = require('platform.FileDialog').pickFolder(dir)
-    else
-        path = require('platform.FileDialog').open(wildCard, dir)
+    local project = require('xe.Project')
+    local dir = project.getDir()
+    if not dir then return end
+    local generation = project.getGeneration()
+    local node = self._node
+    local nt = node:getType()
+    local tree = require('xe.main').getTree()
+    local function current()
+        return project.getGeneration() == generation and self:isRunning() and tree:getCurrent() == node
     end
-    if not path or path == '' then
-        log('file path not set', 'warn', nt)
-        return
-    end
-
-    if dir:sub(-1) ~= '/' then
-        dir = dir .. '/'
-    end
-    local fu = cc.FileUtils:getInstance()
-    if not path:starts_with(dir) then
-        -- need copy
-        local target = dir .. path:filename(true)
-        if fu:isFileExist(target) then
-            log(('file %s already exists'):format(path:filename(true)), 'warn')
+    local dialogs = require('platform.FileDialog')
+    local function selected(path)
+        if not current() then return end
+        local root = dir:sub(-1) == '/' and dir or dir .. '/'
+        if path:starts_with(root) then
+            self:_applyPath(path:sub(#root + 1), nt, path)
+        elseif isFolder then
+            self:_applyPath(path, nt, path)
         else
-            if jit.os == 'Windows' then
-                os.execute(('copy /Y "%s" "%s"'):format(
-                        fu:getSuitableFOpen(path):gsub('/', '\\'),
-                        fu:getSuitableFOpen(dir)))
-            else
-                os.execute(('cp "%s" "%s"'):format(path, target))
+            local name = path:filename(true)
+            local target = root .. name
+            if cc.FileUtils:getInstance():isFileExist(target) then
+                log(('file %s already exists'):format(name), 'warn')
+                self:_applyPath(name, nt, target)
+                return
             end
+            local src = cc.FileDialog.fromLocalPath(path)
+            local request, err = cc.FileDialog.importFile(src, {destination = target}, function(result)
+                if not current() then return end
+                if result.status == 'ok' then
+                    self:_applyPath(name, nt, target)
+                elseif result.error then log(result.error.message, 'error') end
+            end)
+            if not request then log(err.message, 'error') end
         end
-        path = target
     end
-    if path:starts_with(dir) then
-        path = path:sub(#dir + 1)
-    end
+    if isFolder then dialogs.folderPath(dir, selected, current) else dialogs.openPath(wildCard, dir, selected) end
+end
 
+function M:_applyPath(path, nt, absolutePath)
     self._value = path
     if _res[nt] then
         -- set res name to file name
         local prop = require('xe.main').getProperty()
         prop:setValue(2, string.filename(path))
         if nt == 'loadparticle' then
-            local f, msg = io.open_u8(path, 'rb')
+            local f, msg = io.open_u8(absolutePath, 'rb')
             if f == nil then
                 log(msg, "error", nt)
             else
                 local s = f:read(1)
                 f:close()
-                prop:setValue(3, 'parimg' .. (s:byte(1) + 1))
+                if s then prop:setValue(3, 'parimg' .. (s:byte(1) + 1)) end
             end
         end
     end

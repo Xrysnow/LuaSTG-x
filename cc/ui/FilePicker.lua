@@ -17,38 +17,29 @@ function M:ctor(filter, default_path, is_save, input_size, btn_size)
     self._eb = input
 
     local fd = require('platform.FileDialog')
-    local func = is_save and fd.save or fd.open
     self:enableNodeEvents()
     local weak = setmetatable({ self }, { __mode = 'v' })
     local btn = require('cc.ui.button').Button1(btn_size, function()
-        if lstg.GetPlatform() == 'android' then
-            if self._request then return end
-            local function completed(result)
-                local owner = weak[1]
-                if not owner or not owner._request or owner._request ~= result.requestId then return end
-                owner._request = nil
-                if result.status == 'success' and not is_save then
-                    owner._eb:setString(0, result.path)
-                elseif result.status ~= 'cancelled' then
-                    print(('document %s: %s'):format(result.status, result.message or ''))
-                end
-            end
-            local id, err
-            if is_save then
-                -- A mobile export copies the existing source shown in the field.
-                local source = self._eb:getString(0)
-                id, err = fd.exportAsync(source, source:match('[^/\\]+$') or '', nil, completed)
-            else
-                id, err = fd.importAsync('*/*', completed)
-            end
-            self._request = id
-            if not id then print(err) end
-        else
-            local path = func(filter, default_path)
-            if path then
-                self._eb:setString(0, path)
-            end
+        if self._request then return end
+        local function completed(result)
+            local owner = weak[1]
+            if not owner or owner._request ~= result.requestId then return end
+            owner._request = nil
+            if result.status == 'success' then
+                if is_save then
+                    local name = result.displayName
+                    print(name and name ~= '' and 'Exported ' .. name or 'Export complete')
+                else owner._eb:setString(0, result.path) end
+            elseif result.status ~= 'cancelled' then print(result.message) end
         end
+        local id, err
+        if is_save then
+            id, err = fd.exportPath(self._eb:getString(0), nil, nil, completed)
+        else
+            id, err = fd.openPaths(filter, default_path, false, completed)
+        end
+        self._request = id
+        if not id then print(err) end
     end, 'Browse')
     btn:addTo(self):alignRight(margin):alignVCenter()
     self._btn = btn
