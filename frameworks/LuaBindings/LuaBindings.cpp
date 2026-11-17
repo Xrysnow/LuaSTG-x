@@ -43,9 +43,7 @@ LUA_REGISTER_MODULE(x_ZipArchive, luaReg_ZipArchive);
 		"cc_fairygui_manual", register_all_cc_fairygui_manual, 1);
 #endif
 
-// cocos-x no longer registers its mobile controller module during bootstrap.
-// Android uses the same project-owned legacy bindings already built below.
-#if (CC_TARGET_PLATFORM != CC_PLATFORM_IOS)
+// Register the controller types before native discovery can invoke Lua callbacks.
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 #include "lua_cc_controller_auto.hpp"
 LUA_REGISTER_MODULE(cc_controller, register_all_cocos2dx_controller);
@@ -56,7 +54,6 @@ LUA_REGISTER_MODULE(cc_controller, register_all_cocos2dx_controller_legacy);
 #include "lua_cc_controller_manual.hpp"
 static CC_UNUSED auto& controllerManualModule = LuaModuleRegistry::addModule(
 	"cc_controller_manual", register_all_cocos2dx_controller_manual, 1);
-#endif
 
 #include "lua_audio_auto.hpp"
 LUA_REGISTER_MODULE(cc_audio, register_all_cc_audio);
