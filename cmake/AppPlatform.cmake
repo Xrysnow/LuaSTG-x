@@ -23,15 +23,19 @@ if(APPLE)
         if(NOT MACOSX_BUNDLE_GUI_IDENTIFIER)
             set(MACOSX_BUNDLE_GUI_IDENTIFIER "com.xrysnow.lstgx")
         endif()
+        # Xcode uses the caller's signing settings for the app and embedded frameworks.
         set_target_properties(${APP_NAME} PROPERTIES
             MACOSX_BUNDLE_INFO_PLIST "${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/Info.plist"
             MACOSX_BUNDLE_GUI_IDENTIFIER "${MACOSX_BUNDLE_GUI_IDENTIFIER}"
             XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${MACOSX_BUNDLE_GUI_IDENTIFIER}"
+            BUILD_WITH_INSTALL_RPATH TRUE
+            INSTALL_RPATH "@executable_path/Frameworks"
+            INSTALL_RPATH_USE_LINK_PATH FALSE
         )
+        if(NOT DEFINED CMAKE_XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY)
+            set_target_properties(${APP_NAME} PROPERTIES XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2")
+        endif()
         set_xcode_property(${APP_NAME} ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon")
-        # Keep the user's CMAKE_XCODE_ATTRIBUTE_* signing settings. Xcode's
-        # defaults also allow unsigned compile/link checks without a team.
-        target_link_options(${APP_NAME} PRIVATE -Wl,-rpath,@executable_path/Frameworks)
     endif()
     if(MACOSX OR IOS)
         get_target_property(LSTGX_OPENAL_FRAMEWORK OpenAL FRAMEWORK)
