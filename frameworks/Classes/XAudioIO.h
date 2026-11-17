@@ -3,7 +3,7 @@
 #include "audio/AudioDecoder.h"
 #include <string>
 
-namespace cocos2d
+namespace cc
 {
 	class AudioSoundData;
 }
