@@ -12,7 +12,9 @@ endif()
 set(CMAKE_MODULE_PATH ${COCOS2DX_ROOT_PATH}/cmake/Modules/)
 
 include(CocosBuildSet)
+set(BUILD_LUA_LIBS ON CACHE BOOL "Build Lua libraries (required by LuaSTG-x)" FORCE)
 set(BUILD_LUA_LIBS ON)
+message(STATUS "LuaSTG-x: BUILD_LUA_LIBS=ON (required by the application)")
 # Rebuild the auto-link list for this configure; disabled extensions must not persist.
 unset(CC_EXTENSION_LIBS)
 set(CC_EXTENSION_LIBS "" CACHE INTERNAL "extensions for auto link to target application" FORCE)
