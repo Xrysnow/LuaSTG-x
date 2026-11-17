@@ -3,7 +3,7 @@
 #include "Util/Utility.h"
 #include "XFileUtils.h"
 #include "LogSystem.h"
-#include "platform/CCFileStream.h"
+#include "platform/FileStream.h"
 #include "io/MemoryStream.h"
 #include <atomic>
 

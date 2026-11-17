@@ -1,5 +1,5 @@
 ﻿#include "XLatex.h"
-#include "2d/CCFontFreeType.h"
+#include "2d/FontFreeType.h"
 #include "Util/Utility.h"
 #ifdef TRANSPARENT
 #undef TRANSPARENT

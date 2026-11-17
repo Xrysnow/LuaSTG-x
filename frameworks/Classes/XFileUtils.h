@@ -3,7 +3,7 @@
 #include "Global.h"
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-#include "platform/android/CCFileUtils-android.h"
+#include "platform/android/FileUtils-android.h"
 using _FileUtilsBase = cocos2d::FileUtilsAndroid;
 
 #elif (CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
@@ -11,16 +11,16 @@ using _FileUtilsBase = cocos2d::FileUtilsAndroid;
 #ifdef CC_FILEUTILS_APPLE_ENABLE_OBJC
 #undef CC_FILEUTILS_APPLE_ENABLE_OBJC
 #endif
-#include "platform/apple/CCFileUtils-apple.h"
+#include "platform/apple/FileUtils-apple.h"
 #define CC_FILEUTILS_APPLE_ENABLE_OBJC
 using _FileUtilsBase = cocos2d::FileUtilsApple;
 
 #elif (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
-#include "platform/win32/CCFileUtils-win32.h"
+#include "platform/win32/FileUtils-win32.h"
 using _FileUtilsBase = cocos2d::FileUtilsWin32;
 
 #elif (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
-#include "platform/linux/CCFileUtils-linux.h"
+#include "platform/linux/FileUtils-linux.h"
 using _FileUtilsBase = cocos2d::FileUtilsLinux;
 #endif
 

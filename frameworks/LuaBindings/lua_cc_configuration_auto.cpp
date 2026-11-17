@@ -1,6 +1,6 @@
 #include "lua_cc_configuration_auto.hpp"
 #include "lua_conversion/lua_conversion.hpp"
-#include "base/CCConfiguration.h"
+#include "base/Configuration.h"
 
 int lua_cocos2d_Configuration_checkForGLExtension(lua_State* lua_S)
 {

@@ -1,6 +1,6 @@
 #pragma once
 #include "lua_conversion/lua_conversion.hpp"
-#include "base/CCGameController.h"
+#include "base/GameController.h"
 
 namespace lua
 {

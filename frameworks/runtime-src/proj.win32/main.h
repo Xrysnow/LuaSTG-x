@@ -31,5 +31,5 @@
 #include <tchar.h>
 
 // C RunTime Header Files
-#include "platform/CCStdC.h"
+#include "platform/StdC.h"
 

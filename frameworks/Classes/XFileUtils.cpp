@@ -1,5 +1,5 @@
 ﻿#include "XFileUtils.h"
-#include "platform/CCFileUtils.h"
+#include "platform/FileUtils.h"
 #include "../LSTG/AppFrame.h"
 #include "Util/Utility.h"
 #include "ResourceMgr.h"

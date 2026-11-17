@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "renderer/CCTrianglesCommand.h"
+#include "renderer/TrianglesCommand.h"
 #include "../LSTG/RenderMode.h"
 
 namespace lstg

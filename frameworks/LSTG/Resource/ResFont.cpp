@@ -7,7 +7,7 @@
 #include "Renderer.h"
 #include "ResourceMgr.h"
 #include "LabelPool.h"
-#include "2d/CCFontFreeType.h"
+#include "2d/FontFreeType.h"
 
 using namespace std;
 using namespace cocos2d;

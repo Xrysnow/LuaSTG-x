@@ -1,5 +1,5 @@
 ﻿#include "XLuaModuleRegistry.h"
-#include "scripting/lua-bindings/manual/CCLuaEngine.h"
+#include "scripting/lua-bindings/manual/LuaEngine.h"
 
 LuaModuleRegistry* LuaModuleRegistry::get()
 {

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "scripting/lua-bindings/manual/CCLuaEngine.h"
+#include "scripting/lua-bindings/manual/LuaEngine.h"
 
 class LuaModuleRegistry
 {

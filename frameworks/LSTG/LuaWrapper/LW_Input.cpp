@@ -1,6 +1,6 @@
 ﻿#include "LW_Input.h"
 #include "AppFrame.h"
-#include "scripting/lua-bindings/manual/CCLuaEngine.h"
+#include "scripting/lua-bindings/manual/LuaEngine.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
 #include "InputManager.h"
 #include "Util/UtilLua.h"

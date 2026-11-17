@@ -5,9 +5,9 @@
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
 //#include "scripting/lua-bindings/manual/cocos2d/LuaScriptHandlerMgr.h"
-#include "scripting/lua-bindings/manual/CCLuaValue.h"
-#include "scripting/lua-bindings/manual/CCLuaEngine.h"
-#include "base/CCGameController.h"
+#include "scripting/lua-bindings/manual/LuaValue.h"
+#include "scripting/lua-bindings/manual/LuaEngine.h"
+#include "base/GameController.h"
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 #include "lua_conversion/lua_conversion.hpp"
 #endif

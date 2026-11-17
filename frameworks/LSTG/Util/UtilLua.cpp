@@ -1,5 +1,5 @@
 ﻿#include "UtilLua.h"
-#include "scripting/lua-bindings/manual/CCLuaEngine.h"
+#include "scripting/lua-bindings/manual/LuaEngine.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
 #include "Utility.h"
 #include "AppFrame.h"

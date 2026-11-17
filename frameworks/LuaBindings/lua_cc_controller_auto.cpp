@@ -1,6 +1,6 @@
 #include "lua_cc_controller_auto.hpp"
 #include "lua_cc_controller_adapters.hpp"
-#include "base/CCGameController.h"
+#include "base/GameController.h"
 
 int lua_cocos2d_Controller_getDeviceId(lua_State* lua_S)
 {

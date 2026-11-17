@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "base/CCRef.h"
+#include "base/Ref.h"
 #include "XBuffer.h"
 #include <zip.h>
 #include "libzippp.h"

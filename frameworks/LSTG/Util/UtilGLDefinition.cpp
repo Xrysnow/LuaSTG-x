@@ -1,5 +1,5 @@
 ﻿#include "UtilGLDefinition.h"
-#include "platform/CCGL.h"
+#include "platform/GL.h"
 
 std::unordered_map<std::string, uint32_t> lstg::util::GLMacro = {
 /* ----------------------------- GL_VERSION_1_1 ---------------------------- */

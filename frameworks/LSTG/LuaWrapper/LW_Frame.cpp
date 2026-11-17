@@ -5,7 +5,7 @@
 #include "Util/Utility.h"
 #include "Util/UtilLua.h"
 #include "tolua_fix.h"
-#include "CCLuaEngine.h"
+#include "LuaEngine.h"
 #include "scripting/lua-bindings/manual/lua_conversion/lua_conversion_tolua.hpp"
 #include "../Classes/XLuaModuleRegistry.h"
 

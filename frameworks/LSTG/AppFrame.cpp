@@ -19,7 +19,7 @@
 #include "Util/Utility.h"
 #include "Util/UtilLua.h"
 #include "LogSystem.h"
-#include "scripting/lua-bindings/manual/CCLuaEngine.h"
+#include "scripting/lua-bindings/manual/LuaEngine.h"
 #include "scripting/lua-bindings/manual/lua_module_register.h"
 #include <memory>
 #include <iostream>

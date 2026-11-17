@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Global.h"
-#include "scripting/lua-bindings/manual/CCLuaStack.h"
-#include "scripting/lua-bindings/manual/CCLuaEngine.h"
+#include "scripting/lua-bindings/manual/LuaStack.h"
+#include "scripting/lua-bindings/manual/LuaEngine.h"
 #include "RenderMode.h"
 #include "Object/GameObjectBentLaser.h"
 #include "../Math/XCollision.h"

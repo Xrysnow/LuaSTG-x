@@ -1,7 +1,7 @@
 ﻿#include "LW_Graph.h"
 #include "AppFrame.h"
 #include "LuaWrapper.h"
-#include "scripting/lua-bindings/manual/CCLuaEngine.h"
+#include "scripting/lua-bindings/manual/LuaEngine.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
 #include "scripting/lua-bindings/manual/lua_conversion/lua_conversion.hpp"
 #include "Renderer.h"

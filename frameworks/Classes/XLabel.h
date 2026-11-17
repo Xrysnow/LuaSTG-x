@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "2d/CCLabel.h"
+#include "2d/Label.h"
 
 class XLabel : public cocos2d::Label
 {

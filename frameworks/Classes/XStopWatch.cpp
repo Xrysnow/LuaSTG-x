@@ -1,5 +1,5 @@
 ﻿#include "XStopWatch.h"
-#include "platform/CCPlatformDefine.h"
+#include "platform/PlatformDefine.h"
 
 using namespace lstg;
 
