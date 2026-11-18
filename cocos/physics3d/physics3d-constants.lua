@@ -13,5 +13,6 @@ cc.Physics3DComponent.PhysicsSyncFlag =
 cc.Physics3DObject.PhysicsObjType =
 {
     UNKNOWN = 0,
-	RIGID_BODY = 1,
+    RIGID_BODY = 1,
+    COLLIDER = 2,
 }

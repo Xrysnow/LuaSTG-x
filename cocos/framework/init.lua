@@ -31,7 +31,6 @@ printInfo("#")
 
 device     = require("cocos.framework.device")
 display    = require("cocos.framework.display")
---audio      = require("cocos.framework.audio")
 transition = require("cocos.framework.transition")
 
 require("cocos.framework.extends.NodeEx")
@@ -40,14 +39,14 @@ require("cocos.framework.extends.LayerEx")
 require("cocos.framework.extends.MenuEx")
 
 if ccui then
-require("cocos.framework.extends.UIWidget")
-require("cocos.framework.extends.UICheckBox")
-require("cocos.framework.extends.UIEditBox")
-require("cocos.framework.extends.UIListView")
-require("cocos.framework.extends.UIPageView")
-require("cocos.framework.extends.UIScrollView")
-require("cocos.framework.extends.UISlider")
-require("cocos.framework.extends.UITextField")
+    require("cocos.framework.extends.UIWidget")
+    require("cocos.framework.extends.UICheckBox")
+    require("cocos.framework.extends.UIEditBox")
+    require("cocos.framework.extends.UIListView")
+    require("cocos.framework.extends.UIPageView")
+    require("cocos.framework.extends.UIScrollView")
+    require("cocos.framework.extends.UISlider")
+    require("cocos.framework.extends.UITextField")
 end
 
 require("cocos.framework.package_support")

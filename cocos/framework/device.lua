@@ -39,7 +39,7 @@ elseif target == cc.PLATFORM_LINUX then
     device.platform = "linux"
     device.isDesktop = true
     device.isMobile = false
-elseif target == cc.PLATFORM_MAC then
+elseif target == cc.PLATFORM_MACOS then
     device.platform = "mac"
     device.isDesktop = true
     device.isMobile = false
@@ -47,23 +47,6 @@ elseif target == cc.PLATFORM_ANDROID then
     device.platform = "android"
 elseif target == cc.PLATFORM_IOS then
     device.platform = "ios"
-    local director = cc.Director:getInstance()
-    local view = director:getOpenGLView()
-    local framesize = view:getFrameSize()
-    local w, h = framesize.x, framesize.y
-    if w == 640 and h == 960 then
-        device.model = "iphone 4"
-    elseif w == 640 and h == 1136 then
-        device.model = "iphone 5"
-    elseif w == 750 and h == 1334 then
-        device.model = "iphone 6"
-    elseif w == 1242 and h == 2208 then
-        device.model = "iphone 6 plus"
-    elseif w == 768 and h == 1024 then
-        device.model = "ipad"
-    elseif w == 1536 and h == 2048 then
-        device.model = "ipad retina"
-    end
 end
 
 local language_ = app:getCurrentLanguage()
@@ -109,13 +92,4 @@ if device.platform == "windows" then
     device.directorySeparator = "\\"
     device.pathSeparator = ";"
 end
---[[
-printInfo("# device.platform              = " .. device.platform)
-printInfo("# device.model                 = " .. device.model)
-printInfo("# device.language              = " .. device.language)
-printInfo("# device.writablePath          = " .. device.writablePath)
-printInfo("# device.directorySeparator    = " .. device.directorySeparator)
-printInfo("# device.pathSeparator         = " .. device.pathSeparator)
-printInfo("#")
---]]
 return device

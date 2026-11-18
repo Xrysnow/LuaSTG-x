@@ -136,11 +136,8 @@ end
 
 function Event:hasEventListener(eventName)
     eventName = string.upper(tostring(eventName))
-    local t = self.listeners_[eventName]
-    for _, __ in pairs(t) do
-        return true
-    end
-    return false
+    local listeners = self.listeners_[eventName]
+    return listeners ~= nil and next(listeners) ~= nil
 end
 
 function Event:dumpAllEventListeners()

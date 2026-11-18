@@ -1,6 +1,7 @@
 --[[
 
 Copyright (c) 2014-2017 Chukong Technologies Inc.
+Copyright (c) 2022 Bytedance Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,6 +23,9 @@ THE SOFTWARE.
 
 ]]
 
+table.unpack = table.unpack or unpack
+math.pow = math.pow or function(x, y) return x ^ y end
+
 -- Legacy method aliases within the directly registered cc table.
 cc.Director.setDisplayStats = cc.Director.setStatsDisplay
 cc.Sprite3D = cc.MeshRenderer
@@ -29,6 +33,9 @@ cc.Sprite3D = cc.MeshRenderer
 require "cocos.cocos2d.Cocos2d"
 require "cocos.cocos2d.Cocos2dConstants"
 require "cocos.cocos2d.functions"
+if cc.FileDialog then
+    require "cocos.cocos2d.FileDialog"
+end
 
 __G__TRACKBACK__ = function(msg)
     msg = debug.traceback(msg, 3)
@@ -36,8 +43,6 @@ __G__TRACKBACK__ = function(msg)
     return msg
 end
 
--- audio
---require "cocos.cocosdenshion.AudioEngine"
 -- ui
 if nil ~= ccui then
     require "cocos.ui.GuiConstants"
@@ -45,6 +50,10 @@ end
 
 -- extensions
 require "cocos.extension.ExtensionConstants"
+if cc.Controller then
+    require "cocos.controller.ControllerConstants"
+end
+require "cocos.3d.3dConstants"
 -- network
 require "cocos.network.NetworkConstants"
 -- Spine
@@ -52,27 +61,9 @@ if nil ~= sp then
     require "cocos.spine.SpineConstants"
 end
 
--- Lua extensions
-require "cocos.cocos2d.bitExtend"
-
 -- physics3d
 require "cocos.physics3d.physics3d-constants"
 
 if CC_USE_FRAMEWORK then
     require "cocos.framework.init"
-end
-
-local deprecated_global = {
-    'CCPoint',
-    'CCRect',
-    'CCSize',
-    'CCArray',
-    'CCString',
-    'kmGLPushMatrix',
-    'kmGLTranslatef',
-    'kmGLPopMatrix',
-    'kmGLLoadMatrix',
-}
-for i, v in ipairs(deprecated_global) do
-    _G[v] = nil
 end

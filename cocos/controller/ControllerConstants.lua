@@ -3,6 +3,7 @@ cc = cc or {}
 
 cc.ControllerKey =
 {
+    KEY_NONE = 0,
     JOYSTICK_LEFT_X = 1000,
     JOYSTICK_LEFT_Y = 1001,
     JOYSTICK_RIGHT_X = 1002,

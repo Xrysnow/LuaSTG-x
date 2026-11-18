@@ -257,20 +257,6 @@ function class(classname, ...)
         setmetatableindex(instance, cls)
         instance.class = cls
         instance['.classname'] = classname
-        -- for super is native class
-        --[[
-            if not instance.super then
-                instance.super = {}
-                setmetatable(instance.super, {
-                    __index = function(_, k)
-                        local log = cls[k]
-                        cls[k] = nil
-                        local ret = instance[k]
-                        cls[k] = log
-                        return ret
-                    end
-                })
-            end]]
 
         instance:ctor(...)
         return instance
@@ -296,13 +282,13 @@ function getclassname(obj)
     else
         mt = getmetatable(obj)
     end
-    if not mt then
+    if type(mt) ~= "table" then
         return ret
     end
     ret = ret or rawget(mt, '.classname')
     ret = ret or rawget(mt, '__cname')
     local index = rawget(mt, '__index')
-    if index then
+    if type(index) == "table" then
         ret = ret or rawget(index, '.classname')
         ret = ret or rawget(index, '__cname')
     end
@@ -319,7 +305,7 @@ iskindof_ = function(cls, name)
     if rawget(cls, "__cname") == name then
         return true
     end
-    local __supers = rawget(__index, "__supers")
+    local __supers = rawget(cls, "__supers") or (type(__index) == "table" and rawget(__index, "__supers"))
     if not __supers then
         return false
     end
@@ -346,7 +332,7 @@ function iskindof(obj, classname)
     else
         mt = getmetatable(obj)
     end
-    if mt then
+    if type(mt) == "table" then
         return iskindof_(mt, classname)
     end
     return false
@@ -388,28 +374,19 @@ function handler(obj, method)
     end
 end
 
---function math.newrandomseed()
---    local ok, socket = pcall(function()
---        return require("socket")
---    end)
---    if ok then
---        math.randomseed(socket.gettime() * 1000)
---    else
---        math.randomseed(os.time())
---    end
---    math.random()
---    math.random()
---    math.random()
---    math.random()
---end
+import = import or import_
+math.angle2radian = math.rad
+math.radian2angle = math.deg
 
---function math.round(value)
---    value = checknumber(value)
---    return math.floor(value + 0.5)
---end
+math.round = math.round or function(value)
+    return math.floor(checknumber(value) + 0.5)
+end
 
---math.angle2radian = math.rad
---math.radian2angle = math.deg
+function math.newrandomseed()
+    local ok, socket = pcall(require, "socket")
+    math.randomseed(ok and socket.gettime() * 1000 or os.time())
+    for _ = 1, 4 do math.random() end
+end
 
 function io.exists(path)
     local file = io.open(path, "r")
@@ -434,11 +411,9 @@ function io.writefile(path, content, mode)
     mode = mode or "w+b"
     local file = io.open(path, mode)
     if file then
-        if file:write(content) == nil then
-            return false
-        end
-        io.close(file)
-        return true
+        local written = file:write(content)
+        local closed = file:close()
+        return written ~= nil and closed ~= nil
     else
         return false
     end
@@ -449,11 +424,11 @@ function io.pathinfo(path)
     local extpos = pos + 1
     while pos > 0 do
         local b = string.byte(path, pos)
-        if b == 46 then
+        if b == 46 and extpos > #path then
             -- 46 = char "."
             extpos = pos
-        elseif b == 47 then
-            -- 47 = char "/"
+        elseif b == 47 or b == 92 then
+            -- Directory separator.
             break
         end
         pos = pos - 1
@@ -607,17 +582,12 @@ string._htmlspecialchars_set["<"] = "&lt;"
 string._htmlspecialchars_set[">"] = "&gt;"
 
 function string.htmlspecialchars(input)
-    for k, v in pairs(string._htmlspecialchars_set) do
-        input = string.gsub(input, k, v)
-    end
-    return input
+    return (string.gsub(input, "[&\"'<>]", string._htmlspecialchars_set))
 end
 
 function string.restorehtmlspecialchars(input)
-    for k, v in pairs(string._htmlspecialchars_set) do
-        input = string.gsub(input, v, k)
-    end
-    return input
+    local entities = { amp = "&", quot = '"', ["#039"] = "'", lt = "<", gt = ">" }
+    return (string.gsub(input, "&([#%w]+);", entities))
 end
 
 function string.nl2br(input)

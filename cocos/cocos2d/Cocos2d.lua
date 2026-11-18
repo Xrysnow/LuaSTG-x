@@ -1,4 +1,5 @@
 cc = cc or {}
+local atan2 = math.atan2 or math.atan
 
 function cc.clampf(value, min_inclusive, max_inclusive)
     -- body
@@ -26,6 +27,7 @@ function cc.p(_x, _y)
         return { x = _x, y = _y }
     end
 end
+cc.vec2 = cc.p
 
 function cc.pAdd(pt1, pt2)
     return { x = pt1.x + pt2.x, y = pt1.y + pt2.y }
@@ -69,13 +71,13 @@ function cc.pDot(self, other)
 end
 
 function cc.pToAngleSelf(self)
-    return math.atan2(self.y, self.x)
+    return atan2(self.y, self.x)
 end
 
 function cc.pGetAngle(self, other)
     local a2 = cc.pNormalize(self)
     local b2 = cc.pNormalize(other)
-    local angle = math.atan2(cc.pCross(a2, b2), cc.pDot(a2, b2))
+    local angle = atan2(cc.pCross(a2, b2), cc.pDot(a2, b2))
     if math.abs(angle) < 1.192092896e-7 then
         return 0.0
     end
@@ -100,19 +102,12 @@ function cc.pIsLineIntersect(A, B, C, D, s, t)
     local ACy = A.y - C.y
 
     local denom = DCy * BAx - DCx * BAy
-    s = DCx * ACy - DCy * ACx
-    t = BAx * ACy - BAy * ACx
-
-    if (denom == 0) then
-        if (s == 0 or t == 0) then
-            return true, s, t
-        end
-
+    if denom == 0 then
         return false, s, t
     end
 
-    s = s / denom
-    t = t / denom
+    s = (DCx * ACy - DCy * ACx) / denom
+    t = (BAx * ACy - BAy * ACx) / denom
 
     return true, s, t
 end
@@ -150,7 +145,7 @@ function cc.pGetClampPoint(pt1, pt2, pt3)
 end
 
 function cc.pFromSize(sz)
-    return { x = sz.width, y = sz.height }
+    return { x = sz.width or sz.x, y = sz.height or sz.y }
 end
 
 function cc.pLerp(pt1, pt2, alpha)
@@ -189,9 +184,19 @@ function cc.pGetIntersectPoint(pt1, pt2, pt3, pt4)
         return cc.p(0, 0)
     end
 end
+-- Sizes use named dimensions in LuaSTG and can also be passed around as Vec2.
+local sizeAliases = { x = "width", y = "height" }
+local sizeMeta = {
+    __index = function(size, key) return rawget(size, sizeAliases[key]) end,
+    __newindex = function(size, key, value) rawset(size, sizeAliases[key] or key, value) end,
+}
+
 ---@return size_table
 function cc.size(_width, _height)
-    return { width = _width, height = _height }
+    if type(_width) == "table" then
+        _width, _height = _width.width or _width.x, _width.height or _width.y
+    end
+    return setmetatable({ width = _width, height = _height }, sizeMeta)
 end
 
 ---@return rect_table
@@ -200,13 +205,8 @@ function cc.rect(_x, _y, _width, _height)
 end
 
 function cc.rectEqualToRect(rect1, rect2)
-    if ((rect1.x >= rect2.x) or (rect1.y >= rect2.y) or
-            (rect1.x + rect1.width <= rect2.x + rect2.width) or
-            (rect1.y + rect1.height <= rect2.y + rect2.height)) then
-        return false
-    end
-
-    return true
+    return rect1.x == rect2.x and rect1.y == rect2.y
+        and rect1.width == rect2.width and rect1.height == rect2.height
 end
 
 function cc.rectGetMaxX(rect)
@@ -268,8 +268,8 @@ function cc.rectIntersection(rect1, rect2)
             math.max(rect1.y, rect2.y),
             0, 0)
 
-    intersection.width = math.min(rect1.x + rect1.width, rect2.x + rect2.width) - intersection.x
-    intersection.height = math.min(rect1.y + rect1.height, rect2.y + rect2.height) - intersection.y
+    intersection.width = math.max(0, math.min(rect1.x + rect1.width, rect2.x + rect2.width) - intersection.x)
+    intersection.height = math.max(0, math.min(rect1.y + rect1.height, rect2.y + rect2.height) - intersection.y)
     return intersection
 end
 

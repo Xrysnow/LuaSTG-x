@@ -51,13 +51,14 @@ ccui.RadioButtonGroupEventType=
     select_changed = 0
 }
 
-ccui.TextFiledEventType =
+ccui.TextFieldEventType =
 {
     attach_with_ime = 0,
     detach_with_ime = 1,
     insert_text = 2,
     delete_backward = 3,
 }
+ccui.TextFiledEventType = ccui.TextFieldEventType
 
 ccui.LayoutBackGroundColorType =
 {

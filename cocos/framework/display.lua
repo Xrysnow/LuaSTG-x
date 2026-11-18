@@ -26,7 +26,6 @@ local display = {}
 
 local director = cc.Director:getInstance()
 local view = director:getOpenGLView()
-local title = 'LuaSTG-x'
 
 if not view then
     local width = 960
@@ -39,11 +38,10 @@ if not view then
             height = CC_DESIGN_RESOLUTION.height
         end
     end
-    view = cc.GLViewImpl:createWithRect(title, cc.rect(0, 0, width, height))
+    view = cc.GLViewImpl:createWithRect(CC_WINDOW_TITLE or "cocos-x", cc.rect(0, 0, width, height))
     director:setOpenGLView(view)
 end
 
-local framesize = view:getFrameSize()
 local textureCache = director:getTextureCache()
 local spriteFrameCache = cc.SpriteFrameCache:getInstance()
 local animationCache = cc.AnimationCache:getInstance()
@@ -54,12 +52,12 @@ local function checkResolution(r)
     r.height = checknumber(r.height)
     r.autoscale = string.upper(r.autoscale)
     assert(r.width > 0 and r.height > 0,
-           string.format("display - invalid design resolution size %d, %d", r.width, r.height))
+        string.format("display - invalid design resolution size %d, %d", r.width, r.height))
 end
 
 local function setDesignResolution(r, framesize)
     if r.autoscale == "FILL_ALL" then
-        view:setDesignResolutionSize(framesize.x, framesize.y, cc.ResolutionPolicy.FILL_ALL)
+        view:setDesignResolutionSize(framesize.x, framesize.y, cc.ResolutionPolicy.EXACT_FIT)
     else
         local scaleX, scaleY = framesize.x / r.width, framesize.y / r.height
         local width, height = framesize.x, framesize.y
@@ -89,28 +87,29 @@ local function setConstants()
 
     local viewsize = director:getWinSize()
     display.contentScaleFactor = director:getContentScaleFactor()
-    display.size = { width = viewsize.x, height = viewsize.y }
-    display.width = display.size.width
-    display.height = display.size.height
-    display.cx = display.width / 2
-    display.cy = display.height / 2
-    display.c_left = -display.width / 2
-    display.c_right = display.width / 2
-    display.c_top = display.height / 2
-    display.c_bottom = -display.height / 2
-    display.left = 0
-    display.right = display.width
-    display.top = display.height
-    display.bottom = 0
-    display.center = cc.p(display.cx, display.cy)
-    display.left_top = cc.p(display.left, display.top)
-    display.left_bottom = cc.p(display.left, display.bottom)
-    display.left_center = cc.p(display.left, display.cy)
-    display.right_top = cc.p(display.right, display.top)
-    display.right_bottom = cc.p(display.right, display.bottom)
-    display.right_center = cc.p(display.right, display.cy)
-    display.top_center = cc.p(display.cx, display.top)
-    display.top_bottom = cc.p(display.cx, display.bottom)
+    display.size               = {width = viewsize.x, height = viewsize.y}
+    display.width              = display.size.width
+    display.height             = display.size.height
+    display.cx                 = display.width / 2
+    display.cy                 = display.height / 2
+    display.c_left             = -display.width / 2
+    display.c_right            = display.width / 2
+    display.c_top              = display.height / 2
+    display.c_bottom           = -display.height / 2
+    display.left               = 0
+    display.right              = display.width
+    display.top                = display.height
+    display.bottom             = 0
+    display.center             = cc.p(display.cx, display.cy)
+    display.left_top           = cc.p(display.left, display.top)
+    display.left_bottom        = cc.p(display.left, display.bottom)
+    display.left_center        = cc.p(display.left, display.cy)
+    display.right_top          = cc.p(display.right, display.top)
+    display.right_bottom       = cc.p(display.right, display.bottom)
+    display.right_center       = cc.p(display.right, display.cy)
+    display.top_center         = cc.p(display.cx, display.top)
+    display.bottom_center      = cc.p(display.cx, display.bottom)
+    display.top_bottom         = display.bottom_center
 
     printInfo(string.format("# display.sizeInPixels         = {width = %0.2f, height = %0.2f}", display.sizeInPixels.width, display.sizeInPixels.height))
     printInfo(string.format("# display.size                 = {width = %0.2f, height = %0.2f}", display.size.width, display.size.height))
@@ -145,6 +144,7 @@ function display.setAutoScale(configs)
     end
 
     checkResolution(configs)
+    local framesize = view:getFrameSize()
     if type(configs.callback) == "function" then
         local c = configs.callback(framesize)
         for k, v in pairs(c or {}) do
@@ -162,29 +162,31 @@ end
 
 if type(CC_DESIGN_RESOLUTION) == "table" then
     display.setAutoScale(CC_DESIGN_RESOLUTION)
+else
+    setConstants()
 end
 
 display.COLOR_WHITE = cc.c3b(255, 255, 255)
 display.COLOR_BLACK = cc.c3b(0, 0, 0)
-display.COLOR_RED = cc.c3b(255, 0, 0)
+display.COLOR_RED   = cc.c3b(255, 0, 0)
 display.COLOR_GREEN = cc.c3b(0, 255, 0)
-display.COLOR_BLUE = cc.c3b(0, 0, 255)
+display.COLOR_BLUE  = cc.c3b(0, 0, 255)
 
-display.AUTO_SIZE = 0
-display.FIXED_SIZE = 1
-display.LEFT_TO_RIGHT = 0
-display.RIGHT_TO_LEFT = 1
-display.TOP_TO_BOTTOM = 2
-display.BOTTOM_TO_TOP = 3
+display.AUTO_SIZE      = 0
+display.FIXED_SIZE     = 1
+display.LEFT_TO_RIGHT  = 0
+display.RIGHT_TO_LEFT  = 1
+display.TOP_TO_BOTTOM  = 2
+display.BOTTOM_TO_TOP  = 3
 
-display.CENTER = cc.p(0.5, 0.5)
-display.LEFT_TOP = cc.p(0, 1)
-display.LEFT_BOTTOM = cc.p(0, 0)
-display.LEFT_CENTER = cc.p(0, 0.5)
-display.RIGHT_TOP = cc.p(1, 1)
-display.RIGHT_BOTTOM = cc.p(1, 0)
-display.RIGHT_CENTER = cc.p(1, 0.5)
-display.CENTER_TOP = cc.p(0.5, 1)
+display.CENTER        = cc.p(0.5, 0.5)
+display.LEFT_TOP      = cc.p(0, 1)
+display.LEFT_BOTTOM   = cc.p(0, 0)
+display.LEFT_CENTER   = cc.p(0, 0.5)
+display.RIGHT_TOP     = cc.p(1, 1)
+display.RIGHT_BOTTOM  = cc.p(1, 0)
+display.RIGHT_CENTER  = cc.p(1, 0.5)
+display.CENTER_TOP    = cc.p(0.5, 1)
 display.CENTER_BOTTOM = cc.p(0.5, 0)
 
 display.SCENE_TRANSITIONS = {
@@ -461,7 +463,7 @@ local function newAnimation(frames, time)
     assert(count > 0, "display.newAnimation() - invalid frames")
     time = time or 1.0 / count
     return cc.Animation:createWithSpriteFrames(frames, time),
-    cc.Sprite:createWithSpriteFrame(frames[1])
+           cc.Sprite:createWithSpriteFrame(frames[1])
 end
 
 function display.newAnimation(...)
