@@ -2,8 +2,7 @@
 --lstg.DoFile('jit_test.lua')
 local fu = cc.FileUtils:getInstance()
 fu:setPopupNotify(true)
--- note: GLView is opened in display.lua
--- it's necessary for FrameInit
+-- Create the configured view before the framework and FrameInit use it.
 require('config')
 require('cocos.init')
 setmetatable(_G, nil)

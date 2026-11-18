@@ -36,6 +36,7 @@ local M = {
     posteffect     = true,
     res_ratio      = { 16, 9 },
     -- desktop
+    window_title   = 'LuaSTG-x',
     windowsize_w   = 1708,
     windowsize_h   = 960,
     -- mobile

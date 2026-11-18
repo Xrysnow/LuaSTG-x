@@ -169,7 +169,7 @@ end
 local glv = cc.Director:getInstance():getOpenGLView()
 
 SetSplash(true)
-SetTitle('LuaSTG-x')
+SetTitle(require('config').getWindowTitle(setting))
 if plus.os == 'android' then
     assert(SetDesignResolution(setting.resx, setting.resy))
 else

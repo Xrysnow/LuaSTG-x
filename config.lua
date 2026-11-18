@@ -1,7 +1,7 @@
 -- 0 - disable debug info, 1 - less debug info, 2 - verbose debug info
 DEBUG = 0
 
--- use framework, will disable all deprecated API, false - use legacy API
+-- Load the cocos framework helpers.
 CC_USE_FRAMEWORK = true
 
 -- show FPS on screen
@@ -23,8 +23,8 @@ CC_DESIGN_RESOLUTION = {
 --
 local M = {}
 
-require('cocos.cocos2d.json')
-local json = cjson or json
+local json = require('cocos.cocos2d.json')
+local defaults = require('default_setting')
 
 local settingPath = 'setting'
 if lstg.GetPlatform() == 'android' then
@@ -33,20 +33,25 @@ if lstg.GetPlatform() == 'android' then
     settingPath = path:gsub('/+$', '') .. '/setting'
 end
 local f = cc.FileUtils:getInstance():getStringFromFile(settingPath)
-local ok, ret
+local settings = {}
 if #f > 0 then
-    ok, ret = pcall(json.decode, f)
-end
-if not ok or not ret then
-    ok, ret = pcall(require, 'default_setting')
-    if not ok or not ret then
-        lstg.SystemLog(tostring(ret))
+    local ok, decoded = pcall(json.decode, f)
+    if ok and type(decoded) == 'table' then
+        settings = decoded
     end
 end
 
 --- setting used for initialization
 ---@type lstg.setting
-M.setting = ret
+M.setting = setmetatable(settings, { __index = defaults })
+
+-- Hosts can set CC_WINDOW_TITLE before startup. The launcher also calls this
+-- after loading settings from the platform's writable directory.
+function M.getWindowTitle(setting)
+    if type(CC_WINDOW_TITLE) == 'string' then return CC_WINDOW_TITLE end
+    if type(setting.window_title) == 'string' then return setting.window_title end
+    return defaults.window_title
+end
 
 local desktop = { windows = true, mac = true, linux = true }
 local isDesktop = desktop[lstg.GetPlatform()]
@@ -61,41 +66,24 @@ end
 
 local director = cc.Director:getInstance()
 local view = director:getOpenGLView()
-local title = 'LuaSTG-x'
 
 local function rect(_x, _y, _width, _height)
     return { x = _x, y = _y, width = _width, height = _height }
 end
 if not view then
     local setting = M.setting
-    local width = 960
-    local height = 640
-    if CC_DESIGN_RESOLUTION then
-        if CC_DESIGN_RESOLUTION.width then
-            width = CC_DESIGN_RESOLUTION.width
-        end
-        if CC_DESIGN_RESOLUTION.height then
-            height = CC_DESIGN_RESOLUTION.height
-        end
+    local title = M.getWindowTitle(setting)
+    if not setting.windowed then
+        view = cc.GLViewImpl:createWithFullScreen(title)
     end
-    if setting then
-        local w = setting.windowsize_w or width
-        local h = setting.windowsize_h or height
-        if setting.windowed then
-            if setting.resizable and isDesktop then
-                view = cc.GLViewImpl:createWithRect(title, rect(0, 0, w, h), 1, true)
-            else
-                view = cc.GLViewImpl:createWithRect(title, rect(0, 0, w, h))
-            end
+    -- Locked/disconnected displays may not expose a fullscreen mode.
+    if not view then
+        local frame = rect(0, 0, setting.windowsize_w, setting.windowsize_h)
+        if isDesktop and setting.resizable then
+            view = cc.GLViewImpl:createWithRect(title, frame, 1, true)
         else
-            view = cc.GLViewImpl:createWithFullScreen(title)
-            if not view then
-                -- Locked/disconnected displays may not expose a fullscreen mode.
-                view = cc.GLViewImpl:createWithRect(title, rect(0, 0, w, h), 1, true)
-            end
+            view = cc.GLViewImpl:createWithRect(title, frame)
         end
-    else
-        view = cc.GLViewImpl:createWithRect(title, rect(0, 0, width, height))
     end
     director:setOpenGLView(view)
     if lstg.GetPlatform() == 'linux' then
