@@ -38,16 +38,22 @@ local function createKeys(parent)
     local bt8 = cc.SetNode(TouchKey:create(tex, k8, true), parent, pZ, tk_sc)
 
     local color = cc.c3b(255, 255, 0)
-    local color_outline = cc.c3b(0, 0, 0)
+    local color_outline = cc.c4b(0, 0, 0, 255)
 
-    local lb5 = cc.Label:createWithTTF("ESC", font, fontsize)
-    local lb6 = cc.Label:createWithTTF("SHIFT", font, fontsize * 0.8)
-    local lb7 = cc.Label:createWithTTF("X", font, fontsize)
-    local lb8 = cc.Label:createWithTTF("Z", font, fontsize)
-    cc.SetNode(lb5, parent, pESCAPE, nil, color):enableOutline(color_outline, 1)
-    cc.SetNode(lb6, parent, pSHIFT, nil, color):enableOutline(color_outline, 1)
-    cc.SetNode(lb7, parent, pX, nil, color):enableOutline(color_outline, 1)
-    cc.SetNode(lb8, parent, pZ, nil, color):enableOutline(color_outline, 1)
+    local function addLabel(text, position, size)
+        local label
+        if lstg.GetPlatform() == 'ios' then
+            -- UIKit draws the glyph and its outline together using the bundled font.
+            label = cc.Label:createWithSystemFont(text, font, size)
+        else
+            label = cc.Label:createWithTTF(text, font, size)
+        end
+        cc.SetNode(label, parent, position, nil, color):enableOutline(color_outline, 1)
+    end
+    addLabel("ESC", pESCAPE, fontsize)
+    addLabel("SHIFT", pSHIFT, fontsize * 0.8)
+    addLabel("X", pX, fontsize)
+    addLabel("Z", pZ, fontsize)
 
     local stick = require('platform.controller_stick')
     local keys = { setting.keys.up, setting.keys.right, setting.keys.down, setting.keys.left }
