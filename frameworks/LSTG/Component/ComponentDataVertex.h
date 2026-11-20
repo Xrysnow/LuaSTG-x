@@ -10,7 +10,7 @@ namespace lstg
 		ComponentDataVertex();
 	public:
 		~ComponentDataVertex();
-		cocos2d::TrianglesCommand::Triangles tri;
+		cc::TrianglesCommand::Triangles tri;
 		static cc::IntrusivePtr<ComponentDataVertex> create(ResTexture* res);
 	protected:
 		bool init(ResTexture* res);

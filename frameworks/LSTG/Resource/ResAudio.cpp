@@ -103,7 +103,7 @@ size_t ResAudio::getMemorySize()
 	size_t total = sizeof(ResAudio) + resName.size() + resPath.size() + path.size();
 	total += fftWorkset.size() + fftOutComplex.size() * sizeof(float);
 	if (source && source->getReferenceCount() == 1)
-		total += sizeof(cocos2d::AudioSource) + sizeof(cocos2d::AudioDecoder) + cocos2d::AudioDecoder::DEFAULT_BUFFER_SIZE;
+		total += sizeof(cc::AudioSource) + sizeof(cc::AudioDecoder) + cc::AudioDecoder::DEFAULT_BUFFER_SIZE;
 	return total;
 }
 
@@ -207,23 +207,23 @@ bool ResAudio::doFFT()
 	return true;
 }
 
-bool ResAudio::init(cocos2d::io::StreamPtr stream_)
+bool ResAudio::init(cc::io::StreamPtr stream_)
 {
 	if (!stream_)
 		return false;
 	stream = std::move(stream_);
-	if (!cocos2d::AudioEngine::isValid())
+	if (!cc::AudioEngine::isValid())
 		return true;
-	auto s = cocos2d::AudioStreamAdapter::create(stream);
+	auto s = cc::AudioStreamAdapter::create(stream);
 	if (!s)
 		return false;
-	auto d = cocos2d::AudioDecoder::createFromStream(s.value.get(), decoderBufferSize, cocos2d::AudioDecoder::getDecoderTypeFromPath(path));
+	auto d = cc::AudioDecoder::createFromStream(s.value.get(), decoderBufferSize, cc::AudioDecoder::getDecoderTypeFromPath(path));
 	if (!d)
 	{
 		XINFO("failed to create Decoder");
 		return false;
 	}
-	source = cocos2d::AudioSource::createFromDecoder(d);
+	source = cc::AudioSource::createFromDecoder(d);
 	if (!source)
 	{
 		XINFO("failed to create Source");
@@ -268,7 +268,7 @@ cc::IntrusivePtr<ResSound> ResSound::create(const std::string& name, const std::
 	return nullptr;
 }
 
-bool ResMusic::initWithStream(cocos2d::io::StreamPtr input, double loopA, double loopB)
+bool ResMusic::initWithStream(cc::io::StreamPtr input, double loopA, double loopB)
 {
 	if (!init(std::move(input)))
 		return false;

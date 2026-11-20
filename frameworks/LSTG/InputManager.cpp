@@ -18,7 +18,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 
 using namespace std;
 using namespace lstg;
-using namespace cocos2d;
+using namespace cc;
 using TMouseButton = underlying_type<EventMouse::MouseButton>::type;
 
 namespace

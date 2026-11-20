@@ -13,8 +13,8 @@ namespace lstg
 		void end();
 
 		// controller, keyCode, value, isPressed, isAnalog
-		using KeyCallBack = std::function<void(cocos2d::Controller*, int, float, bool, bool)>;
-		using ConnectCallBack = std::function<void(cocos2d::Controller*)>;
+		using KeyCallBack = std::function<void(cc::Controller*, int, float, bool, bool)>;
+		using ConnectCallBack = std::function<void(cc::Controller*)>;
 	private:
 
 		KeyCallBack _onKeyDown;
@@ -31,11 +31,11 @@ namespace lstg
 		void setOnDisconnect(const ConnectCallBack& f);
 	protected:
 
-		void onKeyDown(cocos2d::Controller* controller, int keyCode, cocos2d::Event* event);
-		void onKeyUp(cocos2d::Controller* controller, int keyCode, cocos2d::Event* event);
-		void onAxisEvent(cocos2d::Controller* controller, int keyCode, cocos2d::Event* event);
-		void onConnectController(cocos2d::Controller* controller, cocos2d::Event* event);
-		void onDisconnectedController(cocos2d::Controller* controller, cocos2d::Event* event);
+		void onKeyDown(cc::Controller* controller, int keyCode, cc::Event* event);
+		void onKeyUp(cc::Controller* controller, int keyCode, cc::Event* event);
+		void onAxisEvent(cc::Controller* controller, int keyCode, cc::Event* event);
+		void onConnectController(cc::Controller* controller, cc::Event* event);
+		void onDisconnectedController(cc::Controller* controller, cc::Event* event);
 	public:
 		CC_DISALLOW_COPY_AND_ASSIGN(ControllerHelper);
 	};

@@ -65,7 +65,7 @@ LUA_REGISTER_FUNC_DEF(lstg, SampleBezierA1)
 	const auto r = float(luaL_optnumber(L, 4, 0.4));
 	lua_settop(L, 0);
 
-	vector<cocos2d::Vec2> out_pos;
+	vector<cc::Vec2> out_pos;
 	vector<float> out_rot;
 	lstg::SampleBezierA1(i, l, r, in_pos, out_pos, out_rot);
 	vector<float> out_x; out_x.reserve(out_pos.size());

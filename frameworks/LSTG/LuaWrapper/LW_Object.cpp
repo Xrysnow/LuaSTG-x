@@ -254,7 +254,7 @@ LUA_REGISTER_FUNC_DEF(lstg, SetImgState)
 
 	const auto m = TranslateRenderMode(L, 2);
 	// A R G B -> R G B A
-	const auto c = cocos2d::Color4B(
+	const auto c = cc::Color4B(
 		luaL_checkinteger(L, 4),
 		luaL_checkinteger(L, 5),
 		luaL_checkinteger(L, 6),

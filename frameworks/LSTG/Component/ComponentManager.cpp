@@ -6,7 +6,7 @@
 #include "Util/Utility.h"
 #include "Util/UtilLua.h"
 using namespace lstg;
-using namespace cocos2d;
+using namespace cc;
 using xmath::collision::ColliderType;
 
 #define PROP(_P) pool->_P[obj->id]

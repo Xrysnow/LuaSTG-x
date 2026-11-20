@@ -229,7 +229,7 @@ int luaReg_Buffer_lstgBuffer(lua_State* lua_S)
 {
 	LUA_ENTRY("lstg");
 	LUA_CLS_DEF_BASE(lstg::Buffer, "Buffer", "lstg.Buffer",
-		cocos2d::Ref, "cc.Ref",
+		cc::Ref, "cc.Ref",
 		nullptr, nullptr);
 	LUA_METHOD("assign", lua_lstg_Buffer_assign);
 	LUA_METHOD("assign_value", lua_lstg_Buffer_assign_value);

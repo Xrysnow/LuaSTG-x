@@ -137,7 +137,7 @@ bool lua::luaval_to_RenderMode(lua_State* L, int lo, lstg::RenderMode** outValue
 	return lstg::lua::luaval_to_RenderMode(L, lo, outValue, fName);
 }
 
-bool lua::luaval_to_Color4B(lua_State* L, int lo, cocos2d::Color4B* outValue, const char* fName)
+bool lua::luaval_to_Color4B(lua_State* L, int lo, cc::Color4B* outValue, const char* fName)
 {
 	return lstg::lua::_luaval_to_color4b(L, lo, outValue, fName);
 }

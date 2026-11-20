@@ -6,7 +6,7 @@
 
 using namespace std;
 using namespace lstg;
-using namespace cocos2d;
+using namespace cc;
 
 bool ResRenderTarget::isNeedBlendFix() const
 {

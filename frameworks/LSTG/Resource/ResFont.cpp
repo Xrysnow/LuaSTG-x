@@ -10,7 +10,7 @@
 #include "2d/FontFreeType.h"
 
 using namespace std;
-using namespace cocos2d;
+using namespace cc;
 using namespace lstg;
 
 void ResFont::setRenderMode(RenderMode* m)

@@ -12,7 +12,7 @@ GifRecoder::~GifRecoder()
 {
 }
 
-cc::IntrusivePtr<GifRecoder> GifRecoder::create(const cocos2d::Rect& rect, bool transparent, int32_t defaultInterval,
+cc::IntrusivePtr<GifRecoder> GifRecoder::create(const cc::Rect& rect, bool transparent, int32_t defaultInterval,
 	int32_t quantizerType, int32_t ditherType)
 {
 	cc::IntrusivePtr ret{new (std::nothrow) GifRecoder()};
@@ -50,15 +50,15 @@ bool GifRecoder::save(const std::string& path)
 	//	imgs.pushBack(cap->newImage(false));
 	for (auto i = 0u; i < captures.size(); ++i)
 	{
-		cc::IntrusivePtr<cocos2d::Image> img;
-		captures.at(i)->newImage([&](cc::IntrusivePtr<cocos2d::Image> im) { img = std::move(im); }, false);
+		cc::IntrusivePtr<cc::Image> img;
+		captures.at(i)->newImage([&](cc::IntrusivePtr<cc::Image> im) { img = std::move(im); }, false);
 		if (!img) return false;
 		std::vector<uint32_t> buf;
 		buf.assign(img->getData(), img->getData() + img->getDataLen());
 		burstLinker.connect(buf, intervals.at(i), (blk::QuantizerType)quantizer, (blk::DitherType)dither, 1, 0, 0);
 	}
 	burstLinker.release();
-	return cocos2d::FileUtils::getInstance()->writeStringToFile(out.str(), path);
+	return cc::FileUtils::getInstance()->writeStringToFile(out.str(), path);
 }
 
 void GifRecoder::clear()

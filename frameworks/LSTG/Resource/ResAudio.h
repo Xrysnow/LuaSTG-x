@@ -12,8 +12,8 @@ namespace lstg
 		// note: decoderBufferSize should >= bufferCopySize
 		static constexpr size_t bufferCopySize = 4096;
 		static constexpr size_t decoderBufferSize = 4096;
-		cc::IntrusivePtr<cocos2d::AudioSource> source;
-		cocos2d::io::StreamPtr stream;
+		cc::IntrusivePtr<cc::AudioSource> source;
+		cc::io::StreamPtr stream;
 		std::string path;
 		std::array<uint8_t, bufferCopySize> bufferCopy;
 		std::array<float, bufferCopySize / 8> wavValue;
@@ -35,8 +35,8 @@ namespace lstg
 
 		bool isStopped();
 
-		cocos2d::AudioSource* getSource() const { return source; }
-		const cocos2d::io::StreamPtr& getStream() const { return stream; }
+		cc::AudioSource* getSource() const { return source; }
+		const cc::io::StreamPtr& getStream() const { return stream; }
 		const std::string& getPath() const override { return path; }
 
 		size_t getFFTSize() const;
@@ -50,7 +50,7 @@ namespace lstg
 		bool checkFFT();
 		bool doFFT();
 
-		bool init(cocos2d::io::StreamPtr stream_);
+		bool init(cc::io::StreamPtr stream_);
 		ResAudio(const std::string& name, ResourceType type, const std::string& _path);
 	public:
 		~ResAudio() override;
@@ -68,7 +68,7 @@ namespace lstg
 	class ResMusic :
 		public ResAudio
 	{
-		bool initWithStream(cocos2d::io::StreamPtr stream_, double loopA, double loopB);
+		bool initWithStream(cc::io::StreamPtr stream_, double loopA, double loopB);
 		ResMusic(const std::string& name, const std::string& path);
 		~ResMusic() override;
 	public:

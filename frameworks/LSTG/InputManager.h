@@ -28,7 +28,7 @@ namespace lstg
 		int getLastKey() const;
 
 		// get mouse position (to the left bottom)
-		cocos2d::Vec2 getMousePosition() const { return mousePosition; }
+		cc::Vec2 getMousePosition() const { return mousePosition; }
 
 		// if mouse button is pressed
 		bool getMouseState(int button);
@@ -45,7 +45,7 @@ namespace lstg
 		int32_t lastKey = 0;
 		bool textFocused = false;
 		bool capturedKeys[256]{};
-		cocos2d::Vec2 mousePosition;
+		cc::Vec2 mousePosition;
 		bool mouseState[3];
 		bool inputStateMap[256];
 

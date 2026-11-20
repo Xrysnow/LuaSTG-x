@@ -8,7 +8,7 @@
 #include <cstring>
 
 using namespace std;
-using namespace cocos2d;
+using namespace cc;
 using namespace lstg;
 
 std::vector<unsigned short> ResParticle::ParticlePool::quadIndices;
@@ -105,7 +105,7 @@ void ResParticle::ParticlePool::setActive(bool b)
 		status = Status::Sleep;
 }
 
-void ResParticle::ParticlePool::setCenter(const cocos2d::Vec2& pos)
+void ResParticle::ParticlePool::setCenter(const cc::Vec2& pos)
 {
 	if (status == Status::Alive)
 		prevCenter = center;
@@ -340,7 +340,7 @@ ResParticle::ParticlePool* ResParticle::newPool()
 	return pool.detach();
 }
 
-cc::IntrusivePtr<cocos2d::ParticleSystemQuad> ResParticle::newCocosParticle()
+cc::IntrusivePtr<cc::ParticleSystemQuad> ResParticle::newCocosParticle()
 {
 	auto ret = ParticleSystemQuad::create();
 	if (!ret)

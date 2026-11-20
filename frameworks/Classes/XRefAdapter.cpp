@@ -4,7 +4,7 @@
 #include <stdexcept>
 
 using namespace lstg;
-using namespace cocos2d;
+using namespace cc;
 
 static auto ADAPTER_FIELD = ".adapter";
 

@@ -26,7 +26,7 @@
 #endif
 
 using namespace std;
-using namespace cocos2d;
+using namespace cc;
 using namespace lstg;
 using namespace xmath;
 using namespace intersect;

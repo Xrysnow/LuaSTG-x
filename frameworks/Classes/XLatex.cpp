@@ -10,7 +10,7 @@ using namespace lstg;
 using namespace std;
 using namespace tex;
 
-bool cmpTTFConfig(const cocos2d::TTFConfig& c1, const cocos2d::TTFConfig& c2)
+bool cmpTTFConfig(const cc::TTFConfig& c1, const cc::TTFConfig& c2)
 {
 	return c1.fontFilePath == c2.fontFilePath &&
 		c1.fontSize == c2.fontSize &&
@@ -27,7 +27,7 @@ class TexFont : public tex::Font
 	TexFont(){}
 public:
 	virtual ~TexFont() {}
-	cocos2d::TTFConfig cfg;
+	cc::TTFConfig cfg;
 	int _style = 0;
 	TexFont(const string& name, int style, float size)
 	{
@@ -81,8 +81,8 @@ public:
 		}
 		_style = style;
 	}
-	cc::IntrusivePtr<cocos2d::Label> createLabel(const std::string& str) const {
-		return cocos2d::Label::createWithTTF(cfg, str);
+	cc::IntrusivePtr<cc::Label> createLabel(const std::string& str) const {
+		return cc::Label::createWithTTF(cfg, str);
 	}
 };
 
@@ -102,13 +102,13 @@ class TexTextLayout : public tex::TextLayout
 {
 	sptr<TexFont> _font;
 	wstring _txt;
-	cc::IntrusivePtr<cocos2d::Label> _lb;
+	cc::IntrusivePtr<cc::Label> _lb;
 public:
 	TexTextLayout(const wstring& src, const sptr<TexFont>& font)
 	: _font(font), _txt(src)
 	{
 		const auto txt = util::WideCharToMultiByte_UTF8(src);
-		_lb = cocos2d::Label::createWithTTF(_font->cfg, txt);
+		_lb = cc::Label::createWithTTF(_font->cfg, txt);
 	}
 	void getBounds(Rect& bounds) override
 	{
@@ -117,7 +117,7 @@ public:
 		bounds.y = 0;
 		bounds.w = sz.width;
 		bounds.h = sz.height;
-		cocos2d::log("%s (%.1f, %.1f)", __FUNCTION__, sz.width, sz.height);
+		cc::log("%s (%.1f, %.1f)", __FUNCTION__, sz.width, sz.height);
 	}
 	void draw(Graphics2D& g2, float x, float y) override {
 		const auto prev = g2.getFont();
@@ -142,7 +142,7 @@ class TexGraphics2D : public tex::Graphics2D
 public:
 	using DrawTextCb = std::function<void(const string&, float, float, TexGraphics2D*)>;
 private:
-	cocos2d::DrawNode* _drawNode = nullptr;
+	cc::DrawNode* _drawNode = nullptr;
 	//cocos2d::Node* _node = nullptr;
 	DrawTextCb _onDrawText;
 	color _color = 0;
@@ -151,15 +151,15 @@ private:
 	float _sx = 1.f;
 	float _sy = 1.f;
 public:
-	cocos2d::Vec2 curPos;
-	cocos2d::Vec2 curScale = cocos2d::Vec2::ONE;
+	cc::Vec2 curPos;
+	cc::Vec2 curScale = cc::Vec2::ONE;
 	float curRot = 0.f;
-	cocos2d::Color4F col;
-	cocos2d::Mat4 tr;
+	cc::Color4F col;
+	cc::Mat4 tr;
 
 	TexGraphics2D(
-		cocos2d::DrawNode* drawNode,
-		cocos2d::Node* node,
+		cc::DrawNode* drawNode,
+		cc::Node* node,
 		const DrawTextCb& onDrawText)
 	{
 		_drawNode = drawNode;
@@ -214,7 +214,7 @@ public:
 		//cocos2d::log("[%s] (%.2f)", __FUNCTION__,
 		//	angle);
 		curRot += angle;
-		curPos.rotate(cocos2d::Vec2::ZERO, angle);
+		curPos.rotate(cc::Vec2::ZERO, angle);
 		tr.rotateZ(angle);
 	}
 
@@ -232,16 +232,16 @@ public:
 		curPos.setZero();
 		curScale.set(1.f, 1.f);
 		curRot = 0.f;
-		tr = cocos2d::Mat4::IDENTITY;
+		tr = cc::Mat4::IDENTITY;
 		_sx = _sy = 1.f;
 	}
 
 	float sx() const override { return _sx;}
 	float sy() const override { return _sy; }
 
-	cocos2d::Vec2 transformPoint(float x, float y, bool round = false)
+	cc::Vec2 transformPoint(float x, float y, bool round = false)
 	{
-		cocos2d::Vec3 p{ x,y,0 };
+		cc::Vec3 p{ x,y,0 };
 		tr.transformVector(&p);
 		if (round)
 			return { std::round(p.x),std::round(-p.y) };
@@ -279,7 +279,7 @@ public:
 		angle = angle / 180 * M_PI;
 		rot = rot / 180 * M_PI;
 		const float coef = angle / segments;
-		auto vertices = new (std::nothrow) cocos2d::Vec2[segments + 2];
+		auto vertices = new (std::nothrow) cc::Vec2[segments + 2];
 		if (!vertices)
 			return;
 		for (unsigned int i = 0; i <= segments; i++) {
@@ -330,16 +330,16 @@ struct _LatexInit {
 };
 
 bool Latex::_init(const std::string& str,
-	int width_, float textSize_, float lineSpace, const cocos2d::Color4B& color)
+	int width_, float textSize_, float lineSpace, const cc::Color4B& color)
 {
 	if(!Node::init())
 		return false;
-	auto rootOwner = cocos2d::Node::create();
+	auto rootOwner = cc::Node::create();
 	root = rootOwner.get();
 	if (!root)
 		return false;
 	addChild(root);
-	auto drawNodeOwner = cocos2d::DrawNode::create();
+	auto drawNodeOwner = cc::DrawNode::create();
 	drawNode = drawNodeOwner.get();
 	if (!drawNode)
 		return false;
@@ -349,17 +349,17 @@ bool Latex::_init(const std::string& str,
 	{
 		auto f = (TexFont*)g2->getFont();
 		auto cfg = f->cfg;
-		cocos2d::Vec3 scale, trans;
-		cocos2d::Quaternion q;
+		cc::Vec3 scale, trans;
+		cc::Quaternion q;
 		g2->tr.decompose(&scale, &q, &trans);
 		cfg.fontSize *= std::max(scale.x, scale.y);
-		auto lb = cocos2d::Label::createWithTTF(cfg, s);
-		auto ttf = dynamic_cast<const cocos2d::FontFreeType*>(lb->getFontAtlas()->getFont());
+		auto lb = cc::Label::createWithTTF(cfg, s);
+		auto ttf = dynamic_cast<const cc::FontFreeType*>(lb->getFontAtlas()->getFont());
 		int ascent = ttf ? ttf->getFontAscender() : cfg.fontSize;
-		lb->setAlignment(cocos2d::TextHAlignment::LEFT, cocos2d::TextVAlignment::TOP);
-		lb->setAnchorPoint(cocos2d::Vec2::ANCHOR_TOP_LEFT);
+		lb->setAlignment(cc::TextHAlignment::LEFT, cc::TextVAlignment::TOP);
+		lb->setAnchorPoint(cc::Vec2::ANCHOR_TOP_LEFT);
 		lb->setIgnoreAnchorPointForPosition(false);
-		lb->setTextColor(cocos2d::Color4B{ g2->col });
+		lb->setTextColor(cc::Color4B{ g2->col });
 		root->addChild(lb);
 		lb->setPosition({ std::round(trans.x),std::round(-trans.y) + ascent });
 		lb->setScaleX(scale.x / cfg.fontSize);
@@ -398,7 +398,7 @@ bool Latex::_init(const std::string& str,
 	return true;
 }
 
-cc::IntrusivePtr<Latex> Latex::create(const std::string& str, int width, float textSize, float lineSpace, const cocos2d::Color4B& color)
+cc::IntrusivePtr<Latex> Latex::create(const std::string& str, int width, float textSize, float lineSpace, const cc::Color4B& color)
 {
 	static struct _LatexInit _;
 	cc::IntrusivePtr ret{new (std::nothrow) Latex()};

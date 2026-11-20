@@ -9,7 +9,7 @@ bool lstg::ComponentDataTrasform2D::init()
 void lstg::ComponentDataTrasform2D::reset()
 {
 	is3D = false;
-	rotAxis = cocos2d::Vec3(0, 0, 1);
+	rotAxis = cc::Vec3(0, 0, 1);
 	vz = dz = lastz = 0;
 	zscale = 1;
 }

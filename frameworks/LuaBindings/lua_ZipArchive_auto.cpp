@@ -302,7 +302,7 @@ int luaReg_ZipArchive_lstgZipArchive(lua_State* lua_S)
 {
 	LUA_ENTRY("lstg");
 	LUA_CLS_DEF_BASE(lstg::ZipArchive, "ZipArchive", "lstg.ZipArchive",
-		cocos2d::Ref, "cc.Ref",
+		cc::Ref, "cc.Ref",
 		nullptr, nullptr);
 	LUA_METHOD("addData", lua_lstg_ZipArchive_addData);
 	LUA_METHOD("addEntry", lua_lstg_ZipArchive_addEntry);

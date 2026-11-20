@@ -4,7 +4,7 @@
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 #include "platform/android/FileUtils-android.h"
-using _FileUtilsBase = cocos2d::FileUtilsAndroid;
+using _FileUtilsBase = cc::FileUtilsAndroid;
 
 #elif (CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
 
@@ -13,15 +13,15 @@ using _FileUtilsBase = cocos2d::FileUtilsAndroid;
 #endif
 #include "platform/apple/FileUtils-apple.h"
 #define CC_FILEUTILS_APPLE_ENABLE_OBJC
-using _FileUtilsBase = cocos2d::FileUtilsApple;
+using _FileUtilsBase = cc::FileUtilsApple;
 
 #elif (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 #include "platform/win32/FileUtils-win32.h"
-using _FileUtilsBase = cocos2d::FileUtilsWin32;
+using _FileUtilsBase = cc::FileUtilsWin32;
 
 #elif (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
 #include "platform/linux/FileUtils-linux.h"
-using _FileUtilsBase = cocos2d::FileUtilsLinux;
+using _FileUtilsBase = cc::FileUtilsLinux;
 #endif
 
 //TODO: getPathXX
@@ -33,7 +33,7 @@ public:
 	bool init() override;
 
 	std::string getStringFromFile(std::string_view filename) const override;
-	cocos2d::Data getDataFromFile(std::string_view filename) const override;
+	cc::Data getDataFromFile(std::string_view filename) const override;
 
 	std::string fullPathForFilename(std::string_view filename) const override;
 	bool isAbsolutePath(std::string_view strPath) const override;

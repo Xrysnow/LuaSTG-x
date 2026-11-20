@@ -10,9 +10,9 @@
 namespace
 {
 template <class RasterSize>
-cc::IntrusivePtr<cocos2d::Sprite> createSVGSprite(const std::string& path, const RasterSize& size)
+cc::IntrusivePtr<cc::Sprite> createSVGSprite(const std::string& path, const RasterSize& size)
 {
-    using namespace cocos2d;
+    using namespace cc;
     auto image = cc::IntrusivePtr{new Image()};
     if (!lstg::initImageWithSVG(image.get(), path, size))
         return nullptr;
@@ -28,7 +28,7 @@ cc::IntrusivePtr<cocos2d::Sprite> createSVGSprite(const std::string& path, const
 int lua_cc_ext_Image_initWithImageData(lua_State* lua_S)
 {
     LUA_INVOKE_HEADER("cc.Image", "cc.Image:initWithImageData");
-    LUA_TRY_INVOKE_R(1, [](cocos2d::Image* image, lstg::Buffer* data) {
+    LUA_TRY_INVOKE_R(1, [](cc::Image* image, lstg::Buffer* data) {
         return data && image->initWithImageData(data->data(), data->size());
     });
     LUA_INVOKE_FOOTER("1");
@@ -37,11 +37,11 @@ int lua_cc_ext_Image_initWithImageData(lua_State* lua_S)
 int lua_cc_ext_Image_initWithRawData(lua_State* lua_S)
 {
     LUA_INVOKE_HEADER("cc.Image", "cc.Image:initWithRawData");
-    LUA_TRY_INVOKE_R(4, [](cocos2d::Image* image, lstg::Buffer* data,
+    LUA_TRY_INVOKE_R(4, [](cc::Image* image, lstg::Buffer* data,
         int width, int height, int bitsPerComponent) {
         return data && image->initWithRawData(data->data(), data->size(), width, height, bitsPerComponent);
     });
-    LUA_TRY_INVOKE_R(5, [](cocos2d::Image* image, lstg::Buffer* data,
+    LUA_TRY_INVOKE_R(5, [](cc::Image* image, lstg::Buffer* data,
         int width, int height, int bitsPerComponent, bool premultiplied) {
         return data && image->initWithRawData(data->data(), data->size(), width, height, bitsPerComponent, premultiplied);
     });
@@ -51,19 +51,19 @@ int lua_cc_ext_Image_initWithRawData(lua_State* lua_S)
 int lua_cc_ext_Image_initWithSVGFile(lua_State* lua_S)
 {
     LUA_INVOKE_HEADER("cc.Image", "cc.Image:initWithSVGFile");
-    LUA_TRY_INVOKE_R(1, [](cocos2d::Image* image, const std::string& path) {
-        return lstg::initImageWithSVG(image, path, cocos2d::Size());
+    LUA_TRY_INVOKE_R(1, [](cc::Image* image, const std::string& path) {
+        return lstg::initImageWithSVG(image, path, cc::Size());
     });
-    LUA_TRY_INVOKE_R_OVERLOAD(2, [](cocos2d::Image* image, const std::string& path, float scale) {
+    LUA_TRY_INVOKE_R_OVERLOAD(2, [](cc::Image* image, const std::string& path, float scale) {
         return lstg::initImageWithSVG(image, path, scale);
     });
-    LUA_TRY_INVOKE_R_OVERLOAD(2, [](cocos2d::Image* image, const std::string& path, const cocos2d::Size& size) {
+    LUA_TRY_INVOKE_R_OVERLOAD(2, [](cc::Image* image, const std::string& path, const cc::Size& size) {
         return lstg::initImageWithSVG(image, path, size);
     });
-    LUA_TRY_INVOKE_R(3, [](cocos2d::Image* image, const std::string& path, float scale, const std::string& units) {
+    LUA_TRY_INVOKE_R(3, [](cc::Image* image, const std::string& path, float scale, const std::string& units) {
         return lstg::initImageWithSVG(image, path, scale, units);
     });
-    LUA_TRY_INVOKE_R(4, [](cocos2d::Image* image, const std::string& path, float scale, const std::string& units, float dpi) {
+    LUA_TRY_INVOKE_R(4, [](cc::Image* image, const std::string& path, float scale, const std::string& units, float dpi) {
         return lstg::initImageWithSVG(image, path, scale, units, dpi);
     });
     LUA_INVOKE_FOOTER("1,2,3,4");
@@ -72,16 +72,16 @@ int lua_cc_ext_Image_initWithSVGFile(lua_State* lua_S)
 int lua_cc_ext_Texture2D_newImage(lua_State* lua_S)
 {
     LUA_INVOKE_HEADER("cc.Texture2D", "cc.Texture2D:newImage");
-    LUA_TRY_INVOKE_R(0, [](cocos2d::Texture2D* texture) {
+    LUA_TRY_INVOKE_R(0, [](cc::Texture2D* texture) {
         return lstg::getTextureImage(texture);
     });
-    LUA_TRY_INVOKE_R(1, [](cocos2d::Texture2D* texture, bool flip) {
+    LUA_TRY_INVOKE_R(1, [](cc::Texture2D* texture, bool flip) {
         return lstg::getTextureImage(texture, flip);
     });
-    LUA_TRY_INVOKE_R(4, [](cocos2d::Texture2D* texture, size_t x, size_t y, size_t width, size_t height) {
+    LUA_TRY_INVOKE_R(4, [](cc::Texture2D* texture, size_t x, size_t y, size_t width, size_t height) {
         return lstg::getTextureImage(texture, x, y, width, height);
     });
-    LUA_TRY_INVOKE_R(5, [](cocos2d::Texture2D* texture, size_t x, size_t y, size_t width, size_t height, bool flip) {
+    LUA_TRY_INVOKE_R(5, [](cc::Texture2D* texture, size_t x, size_t y, size_t width, size_t height, bool flip) {
         return lstg::getTextureImage(texture, x, y, width, height, flip);
     });
     LUA_INVOKE_FOOTER("0,1,4,5");
@@ -90,10 +90,10 @@ int lua_cc_ext_Texture2D_newImage(lua_State* lua_S)
 int lua_cc_ext_Sprite_newImage(lua_State* lua_S)
 {
     LUA_INVOKE_HEADER("cc.Sprite", "cc.Sprite:newImage");
-    LUA_TRY_INVOKE_R(0, [](cocos2d::Sprite* sprite) {
+    LUA_TRY_INVOKE_R(0, [](cc::Sprite* sprite) {
         return lstg::getSpriteImage(sprite);
     });
-    LUA_TRY_INVOKE_R(1, [](cocos2d::Sprite* sprite, bool flip) {
+    LUA_TRY_INVOKE_R(1, [](cc::Sprite* sprite, bool flip) {
         return lstg::getSpriteImage(sprite, flip);
     });
     LUA_INVOKE_FOOTER("0,1");
@@ -106,12 +106,12 @@ int lua_cc_ext_Sprite_createWithSVGFile(lua_State* lua_S)
         lua_pop(lua_S, 1);
     LUA_SINVOKE_HEADER("cc.Sprite", "cc.Sprite:createWithSVGFile");
     LUA_TRY_INVOKE_R(1, [](const std::string& path) {
-        return createSVGSprite(path, cocos2d::Size());
+        return createSVGSprite(path, cc::Size());
     });
     LUA_TRY_INVOKE_R_OVERLOAD(2, [](const std::string& path, float scale) {
         return createSVGSprite(path, scale);
     });
-    LUA_TRY_INVOKE_R_OVERLOAD(2, [](const std::string& path, const cocos2d::Size& size) {
+    LUA_TRY_INVOKE_R_OVERLOAD(2, [](const std::string& path, const cc::Size& size) {
         return createSVGSprite(path, size);
     });
     LUA_SINVOKE_FOOTER("1,2");

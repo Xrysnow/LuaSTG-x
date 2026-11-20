@@ -15,7 +15,7 @@ namespace lstg
 
 		float z = 0.f;
 		bool is3D = false;
-		cocos2d::Vec3 rotAxis;
+		cc::Vec3 rotAxis;
 		float vz = 0.f;
 		float az = 0.f;
 		float lastz = 0.f;

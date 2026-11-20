@@ -5,24 +5,24 @@ namespace lstg {
 	class ResAnimation :
 		public ResourceQuad
 	{
-		cocos2d::Vector<cocos2d::Sprite*> images;
-		std::vector<cocos2d::V3F_C4B_T2F_Quad> verts;
+		cc::Vector<cc::Sprite*> images;
+		std::vector<cc::V3F_C4B_T2F_Quad> verts;
 		float interval = 1.f;
 		float w, h;
 		int m, n;
 
 	public:
-		void setVertex(const cocos2d::V3F_C4B_T2F_Quad& v) override {}
-		cocos2d::V3F_C4B_T2F_Quad& getVertex() override { return verts[0]; }
+		void setVertex(const cc::V3F_C4B_T2F_Quad& v) override {}
+		cc::V3F_C4B_T2F_Quad& getVertex() override { return verts[0]; }
 
-		void setColor(const cocos2d::Color4B& color) override;
-		void setColor(const cocos2d::Color4B& color, int i) override;
+		void setColor(const cc::Color4B& color) override;
+		void setColor(const cc::Color4B& color, int i) override;
 		void setAlpha(uint8_t alpha) override;
 
-		void setVertex(const cocos2d::V3F_C4B_T2F_Quad& v, size_t i);
-		cocos2d::V3F_C4B_T2F_Quad& getVertex(size_t i);
+		void setVertex(const cc::V3F_C4B_T2F_Quad& v, size_t i);
+		cc::V3F_C4B_T2F_Quad& getVertex(size_t i);
 		size_t getCount() const { return images.size(); }
-		cocos2d::Sprite* getSprite(uint32_t index);
+		cc::Sprite* getSprite(uint32_t index);
 
 		void setInterval(float v);
 		float getInterval() const { return interval; }
@@ -32,7 +32,7 @@ namespace lstg {
 
 		std::unordered_map<std::string, std::string> getInfo() const override;
 		size_t getMemorySize() override;
-		cc::IntrusivePtr<cocos2d::Animation> newCocosAnimation();
+		cc::IntrusivePtr<cc::Animation> newCocosAnimation();
 
 		ResAnimation(const char* name, ResTexture* tex,
 			float x, float y, float w, float h,

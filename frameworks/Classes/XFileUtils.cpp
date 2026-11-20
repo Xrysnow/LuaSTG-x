@@ -8,7 +8,7 @@
 #define DECLARE_GUARD std::lock_guard<std::recursive_mutex> mutexGuard(_mutex)
 
 using namespace std;
-using namespace cocos2d;
+using namespace cc;
 
 unordered_map<string, string> fileStringToReplace;
 // D:\aaa\bbb\ccc\ddd\abc.txt --> D:/aaa/bbb/ccc/ddd/abc.txt

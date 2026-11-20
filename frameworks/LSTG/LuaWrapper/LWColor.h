@@ -7,6 +7,6 @@ namespace lstg
 	class ColorWrapper
 	{
 	public:
-		static cocos2d::Color4B* CreateAndPush(lua_State* L);
+		static cc::Color4B* CreateAndPush(lua_State* L);
 	};
 }

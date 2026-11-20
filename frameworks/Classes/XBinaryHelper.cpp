@@ -4,7 +4,7 @@
 
 using namespace std;
 using namespace lstg;
-using namespace cocos2d::io;
+using namespace cc::io;
 
 namespace
 {

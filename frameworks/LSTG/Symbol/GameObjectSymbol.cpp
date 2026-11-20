@@ -11,7 +11,7 @@
 
 using namespace lstg;
 using namespace lstg::symbol;
-using namespace cocos2d;
+using namespace cc;
 
 static std::vector<GameObject*> currentObjs;
 
@@ -818,7 +818,7 @@ bool Assigment::initWithObjProperty(const std::string& objProperty, cc::Intrusiv
 
 Assigment::~Assigment() = default;
 
-cocos2d::Vector<Block*> Block::created;
+cc::Vector<Block*> Block::created;
 
 cc::IntrusivePtr<Block> Block::create()
 {

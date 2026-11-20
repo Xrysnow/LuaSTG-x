@@ -48,7 +48,7 @@ int luaReg_Resource_lstgResource(lua_State* lua_S)
 {
 	LUA_ENTRY("lstg");
 	LUA_CLS_DEF_BASE(lstg::Resource, "Resource", "lstg.Resource",
-		cocos2d::Ref, "cc.Ref",
+		cc::Ref, "cc.Ref",
 		nullptr, nullptr);
 	LUA_METHOD("getInfo", lua_lstg_Resource_getInfo);
 	LUA_METHOD("getMemorySize", lua_lstg_Resource_getMemorySize);
@@ -120,8 +120,8 @@ int lua_lstg_ResourceQuad_setAlpha(lua_State* lua_S)
 int lua_lstg_ResourceQuad_setColor(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ResourceQuad", "lstg.ResourceQuad:setColor");
-	LUA_TRY_INVOKE(2, (static_cast<void(lstg::ResourceQuad::*)(const cocos2d::Color4B&, int)>(&lstg::ResourceQuad::setColor)));
-	LUA_TRY_INVOKE(1, static_cast<void(lstg::ResourceQuad::*)(const cocos2d::Color4B&)>(&lstg::ResourceQuad::setColor));
+	LUA_TRY_INVOKE(2, (static_cast<void(lstg::ResourceQuad::*)(const cc::Color4B&, int)>(&lstg::ResourceQuad::setColor)));
+	LUA_TRY_INVOKE(1, static_cast<void(lstg::ResourceQuad::*)(const cc::Color4B&)>(&lstg::ResourceQuad::setColor));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_lstg_ResourceQuad_setRenderMode(lua_State* lua_S)
@@ -174,8 +174,8 @@ int lua_lstg_ResTexture_isTextureFlipped(lua_State* lua_S)
 int lua_lstg_ResTexture_render(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ResTexture", "lstg.ResTexture:render");
-	LUA_TRY_INVOKE_R(2, (static_cast<bool(lstg::ResTexture::*)(lstg::RenderMode*, const cocos2d::V3F_C4B_T2F_Quad&)>(&lstg::ResTexture::render)));
-	LUA_TRY_INVOKE_R(1, static_cast<bool(lstg::ResTexture::*)(const cocos2d::V3F_C4B_T2F_Quad&)>(&lstg::ResTexture::render));
+	LUA_TRY_INVOKE_R(2, (static_cast<bool(lstg::ResTexture::*)(lstg::RenderMode*, const cc::V3F_C4B_T2F_Quad&)>(&lstg::ResTexture::render)));
+	LUA_TRY_INVOKE_R(1, static_cast<bool(lstg::ResTexture::*)(const cc::V3F_C4B_T2F_Quad&)>(&lstg::ResTexture::render));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_lstg_ResTexture_setTriangles(lua_State* lua_S)
@@ -234,8 +234,8 @@ int lua_lstg_ResAnimation_getSprite(lua_State* lua_S)
 int lua_lstg_ResAnimation_getVertex(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ResAnimation", "lstg.ResAnimation:getVertex");
-	LUA_TRY_INVOKE_R(1, static_cast<cocos2d::V3F_C4B_T2F_Quad&(lstg::ResAnimation::*)(size_t)>(&lstg::ResAnimation::getVertex));
-	LUA_TRY_INVOKE_R(0, static_cast<cocos2d::V3F_C4B_T2F_Quad&(lstg::ResAnimation::*)()>(&lstg::ResAnimation::getVertex));
+	LUA_TRY_INVOKE_R(1, static_cast<cc::V3F_C4B_T2F_Quad&(lstg::ResAnimation::*)(size_t)>(&lstg::ResAnimation::getVertex));
+	LUA_TRY_INVOKE_R(0, static_cast<cc::V3F_C4B_T2F_Quad&(lstg::ResAnimation::*)()>(&lstg::ResAnimation::getVertex));
 	LUA_INVOKE_FOOTER("0,1");
 }
 int lua_lstg_ResAnimation_newCocosAnimation(lua_State* lua_S)
@@ -262,8 +262,8 @@ int lua_lstg_ResAnimation_setInterval(lua_State* lua_S)
 int lua_lstg_ResAnimation_setVertex(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ResAnimation", "lstg.ResAnimation:setVertex");
-	LUA_TRY_INVOKE(2, (static_cast<void(lstg::ResAnimation::*)(const cocos2d::V3F_C4B_T2F_Quad&, size_t)>(&lstg::ResAnimation::setVertex)));
-	LUA_TRY_INVOKE(1, static_cast<void(lstg::ResAnimation::*)(const cocos2d::V3F_C4B_T2F_Quad&)>(&lstg::ResAnimation::setVertex));
+	LUA_TRY_INVOKE(2, (static_cast<void(lstg::ResAnimation::*)(const cc::V3F_C4B_T2F_Quad&, size_t)>(&lstg::ResAnimation::setVertex)));
+	LUA_TRY_INVOKE(1, static_cast<void(lstg::ResAnimation::*)(const cc::V3F_C4B_T2F_Quad&)>(&lstg::ResAnimation::setVertex));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_lstg_ResAnimation_create(lua_State* lua_S)
@@ -760,7 +760,7 @@ int luaReg_Resource_lstgResParticleParticlePool(lua_State* lua_S)
 	LUA_ENTRY("lstg");
 	LUA_ENTRY("ResParticle");
 	LUA_CLS_DEF_BASE(lstg::ResParticle::ParticlePool, "ParticlePool", "lstg.ResParticle.ParticlePool",
-		cocos2d::Ref, "cc.Ref",
+		cc::Ref, "cc.Ref",
 		nullptr, nullptr);
 	LUA_METHOD("getAliveCount", lua_lstg_ResParticle_ParticlePool_getAliveCount);
 	LUA_METHOD("getAlphaVar", lua_lstg_ResParticle_ParticlePool_getAlphaVar);
@@ -950,15 +950,15 @@ int lua_lstg_ResFont_enableOutline(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ResFont", "lstg.ResFont:enableOutline");
 	LUA_TRY_INVOKE(2, &lstg::ResFont::enableOutline);
-	LUA_TRY_INVOKE(1, ([](lstg::ResFont* obj,const cocos2d::Color4B& arg0){{return obj->enableOutline(arg0);}}));
+	LUA_TRY_INVOKE(1, ([](lstg::ResFont* obj,const cc::Color4B& arg0){{return obj->enableOutline(arg0);}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_lstg_ResFont_enableShadow(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ResFont", "lstg.ResFont:enableShadow");
 	LUA_TRY_INVOKE(3, &lstg::ResFont::enableShadow);
-	LUA_TRY_INVOKE(2, ([](lstg::ResFont* obj,const cocos2d::Color4B& arg0,const cocos2d::Size& arg1){{return obj->enableShadow(arg0,arg1);}}));
-	LUA_TRY_INVOKE(1, ([](lstg::ResFont* obj,const cocos2d::Color4B& arg0){{return obj->enableShadow(arg0);}}));
+	LUA_TRY_INVOKE(2, ([](lstg::ResFont* obj,const cc::Color4B& arg0,const cc::Size& arg1){{return obj->enableShadow(arg0,arg1);}}));
+	LUA_TRY_INVOKE(1, ([](lstg::ResFont* obj,const cc::Color4B& arg0){{return obj->enableShadow(arg0);}}));
 	LUA_TRY_INVOKE(0, [](lstg::ResFont* obj){{return obj->enableShadow();}});
 	LUA_INVOKE_FOOTER("0,1,2,3");
 }
@@ -1390,7 +1390,7 @@ int lua_lstg_ResFX_setTexture(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ResFX", "lstg.ResFX:setTexture");
 	LUA_TRY_INVOKE(3, &lstg::ResFX::setTexture);
-	LUA_TRY_INVOKE(2, ([](lstg::ResFX* obj,const std::string& arg0,cocos2d::Texture2D* arg1){{return obj->setTexture(arg0,arg1);}}));
+	LUA_TRY_INVOKE(2, ([](lstg::ResFX* obj,const std::string& arg0,cc::Texture2D* arg1){{return obj->setTexture(arg0,arg1);}}));
 	LUA_INVOKE_FOOTER("2,3");
 }
 int lua_lstg_ResFX_setVec2(lua_State* lua_S)

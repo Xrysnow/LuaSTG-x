@@ -43,8 +43,8 @@ namespace lstg
 		virtual void setTitle(const std::string& s) {}
 		virtual std::string getTitle() { return {}; }
 
-		virtual void setPosition(const cocos2d::Vec2& p) {}
-		virtual cocos2d::Vec2 getPosition() { return {}; }
+		virtual void setPosition(const cc::Vec2& p) {}
+		virtual cc::Vec2 getPosition() { return {}; }
 
 		virtual void setVisible(bool b) {}
 		virtual bool isVisible() { return false; }
@@ -52,26 +52,26 @@ namespace lstg
 		virtual void setCursorVisible(bool b) {}
 		virtual bool isCursorVisible() { return false; }
 
-		virtual void setSize(const cocos2d::Size& size) {}
-		virtual cocos2d::Size getSize() { return {}; }
+		virtual void setSize(const cc::Size& size) {}
+		virtual cc::Size getSize() { return {}; }
 
 		virtual void setFullscreen(bool exclusive = false) {}
 		virtual bool isFullscreen() { return false; }
 
 		virtual void moveToCenter() {}
 
-		virtual void setCustomCursor(const std::string& filename, const cocos2d::Vec2& hotspot) {}
+		virtual void setCustomCursor(const std::string& filename, const cc::Vec2& hotspot) {}
 		virtual void setDefaultCursor() {}
 		virtual void setStandardCursor(CursorType type) {}
 
 		virtual float getDpiScale() { return 1.0f; }
 
-		virtual cocos2d::Vec2 getDisplayResolution() {
-			return cocos2d::Vec2{};
+		virtual cc::Vec2 getDisplayResolution() {
+			return cc::Vec2{};
 		}
 
-		virtual std::vector<cocos2d::Vec2> enumDisplayResolution() {
-			return std::vector<cocos2d::Vec2>{};
+		virtual std::vector<cc::Vec2> enumDisplayResolution() {
+			return std::vector<cc::Vec2>{};
 		}
 
 		// Case-sensitive method names; unknown operations return false.
@@ -89,7 +89,7 @@ namespace lstg
 	class WindowHelperDesktop : public WindowHelper
 	{
 	public:
-		explicit WindowHelperDesktop(cocos2d::GLViewImpl* view);
+		explicit WindowHelperDesktop(cc::GLViewImpl* view);
 		struct VideoMode
 		{
 			int width = 0;
@@ -107,8 +107,8 @@ namespace lstg
 		void setTitle(const std::string& s) override;
 		std::string getTitle() override;
 
-		void setPosition(const cocos2d::Vec2& p) override;
-		cocos2d::Vec2 getPosition() override;
+		void setPosition(const cc::Vec2& p) override;
+		cc::Vec2 getPosition() override;
 
 		void setVisible(bool b) override;
 		bool isVisible() override;
@@ -116,8 +116,8 @@ namespace lstg
 		void setCursorVisible(bool b) override;
 		bool isCursorVisible() override;
 
-		void setSize(const cocos2d::Size& size) override;
-		cocos2d::Size getSize() override;
+		void setSize(const cc::Size& size) override;
+		cc::Size getSize() override;
 
 		void setFullscreen(bool exclusive = false) override;
 		bool isFullscreen() override;
@@ -138,21 +138,21 @@ namespace lstg
 		void hint(int hint, int value) override;
 		void resetHint() override;
 
-		void setCustomCursor(const std::string& filename, const cocos2d::Vec2& hotspot) override;
+		void setCustomCursor(const std::string& filename, const cc::Vec2& hotspot) override;
 		void setDefaultCursor() override;
 		void setStandardCursor(CursorType type) override;
 
 		float getDpiScale() override;
 
-		cocos2d::Vec2 getDisplayResolution() override;
-		std::vector<cocos2d::Vec2> enumDisplayResolution() override;
+		cc::Vec2 getDisplayResolution() override;
+		std::vector<cc::Vec2> enumDisplayResolution() override;
 
 		bool supportsOperation(const std::string& operation) override;
 	protected:
 		// it's better to get window dynamicly
 		GLFWwindow* getWindow();
 
-		cocos2d::GLViewImpl* view;
+		cc::GLViewImpl* view;
 		CursorType curType = ARROW;
 		GLFWcursor* cur_cunstom = nullptr;
 		GLFWcursor* cur_arrow = nullptr;
@@ -164,7 +164,7 @@ namespace lstg
 	};
 #endif // CC_PLATFORM_PC
 
-	class MonitorHelper : public cocos2d::Ref
+	class MonitorHelper : public cc::Ref
 	{
 	public:
 	    MonitorHelper() = default;
@@ -178,10 +178,10 @@ namespace lstg
 
 		virtual bool isValid() = 0;
 
-		virtual cocos2d::Vec2 getPosition() = 0;
-		virtual cocos2d::Rect getWorkarea() = 0;
-		virtual cocos2d::Vec2 getPhysicalSize() = 0;
-		virtual cocos2d::Vec2 getContentScale() = 0;
+		virtual cc::Vec2 getPosition() = 0;
+		virtual cc::Rect getWorkarea() = 0;
+		virtual cc::Vec2 getPhysicalSize() = 0;
+		virtual cc::Vec2 getContentScale() = 0;
 		virtual std::string getName() = 0;
 		virtual std::vector<VideoMode> getVideoModes() = 0;
 		virtual VideoMode getCurrentVideoMode() = 0;
@@ -190,17 +190,17 @@ namespace lstg
 		virtual void setGammaRamp(const GammaRamp& ramp) = 0;
 	protected:
 		~MonitorHelper() override = default;
-		static cocos2d::Map<void*, MonitorHelper*> instances;
+		static cc::Map<void*, MonitorHelper*> instances;
 	};
 #ifdef CC_PLATFORM_PC
 	class MonitorHelperDesktop : public MonitorHelper
 	{
 	public:
 		bool isValid() override;
-		cocos2d::Vec2 getPosition() override;
-		cocos2d::Rect getWorkarea() override;
-		cocos2d::Vec2 getPhysicalSize() override;
-		cocos2d::Vec2 getContentScale() override;
+		cc::Vec2 getPosition() override;
+		cc::Rect getWorkarea() override;
+		cc::Vec2 getPhysicalSize() override;
+		cc::Vec2 getContentScale() override;
 		std::string getName() override;
 		std::vector<VideoMode> getVideoModes() override;
 		VideoMode getCurrentVideoMode() override;

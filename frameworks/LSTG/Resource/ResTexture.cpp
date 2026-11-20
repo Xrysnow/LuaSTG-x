@@ -4,7 +4,7 @@
 #include "AppFrame.h"
 
 using namespace std;
-using namespace cocos2d;
+using namespace cc;
 using namespace lstg;
 
 bool ResTexture::isTextureFlipped()

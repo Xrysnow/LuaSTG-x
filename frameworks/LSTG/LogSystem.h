@@ -24,7 +24,7 @@ namespace lstg
 		Error
 	};
 
-	class LogSystem : public cocos2d::Ref
+	class LogSystem : public cc::Ref
 	{
 	public:
 

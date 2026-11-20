@@ -9,8 +9,8 @@ using namespace lstg;
 #define MT_OPT
 #endif // CC_PLATFORM_PC
 
-void getTransform(const cocos2d::Vec2& anchorPointInPoints,
-	float x, float y, float rot, float hscale, float vscale, float z, cocos2d::Mat4* _transform)
+void getTransform(const cc::Vec2& anchorPointInPoints,
+	float x, float y, float rot, float hscale, float vscale, float z, cc::Mat4* _transform)
 {
 	float zz2_;
 	float wz2;
@@ -62,7 +62,7 @@ GameObjectPool::GameObjectPool(size_t capacity)
 		obj[i] = _obj + i;
 		_obj[i].luaID = i;
 	}
-	anchor = new cocos2d::Vec2[_capacity];
+	anchor = new cc::Vec2[_capacity];
 	hscale = new float[_capacity];
 	vscale = new float[_capacity];
 	x = new float[_capacity];
@@ -126,7 +126,7 @@ GameObject* GameObjectPool::alloc()
 {
 	if (_size == _capacity)
 		return nullptr;
-	anchor[_size] = cocos2d::Vec2::ANCHOR_MIDDLE;
+	anchor[_size] = cc::Vec2::ANCHOR_MIDDLE;
 	hscale[_size] = 1.f;
 	vscale[_size] = 1.f;
 	x[_size] = 0.f;
@@ -226,18 +226,18 @@ void GameObjectPool::update(size_t begin, size_t end)
 			rot[i] = atan2(dy[i], dx[i]);
 }
 
-cocos2d::Vec2 GameObjectPool::getPosition(size_t id) const
+cc::Vec2 GameObjectPool::getPosition(size_t id) const
 {
 	return { x[id],y[id] };
 }
 
-void GameObjectPool::getTransformMat(size_t id, cocos2d::Mat4* mat)
+void GameObjectPool::getTransformMat(size_t id, cc::Mat4* mat)
 {
 	getTransform(anchor[id], x[id], y[id], -rot[id] * LRAD2DEGREE,
 		hscale[id], vscale[id], 0.f, mat);
 }
 
-void GameObjectPool::getTransformMat(size_t id, float factor, float z, cocos2d::Mat4* mat)
+void GameObjectPool::getTransformMat(size_t id, float factor, float z, cc::Mat4* mat)
 {
 	getTransform(anchor[id], x[id], y[id], -rot[id] * LRAD2DEGREE,
 		hscale[id] * factor, vscale[id] * factor, z, mat);
@@ -324,8 +324,8 @@ void GameObjectPool::test(int N, int M)
 	auto t4 = sw.get();
 	sw.reset();
 
-	cocos2d::log("-----\n  THP: %d, M: %d", LTHP.size(), M);
-	cocos2d::log("  %f, %f | %f, %f", t1, t2, t3, t4);
+	cc::log("-----\n  THP: %d, M: %d", LTHP.size(), M);
+	cc::log("  %f, %f | %f, %f", t1, t2, t3, t4);
 
 	delete[] cmp;
 	delete[] ret;

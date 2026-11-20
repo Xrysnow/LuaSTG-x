@@ -11,6 +11,6 @@ namespace lstg
 	public:
 		~ComponentDataLabel();
 		static cc::IntrusivePtr<ComponentDataLabel> create(ResFont* res);
-		cocos2d::Label* label = nullptr;
+		cc::Label* label = nullptr;
 	};
 }

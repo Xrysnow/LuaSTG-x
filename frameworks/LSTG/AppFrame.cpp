@@ -55,7 +55,7 @@ extern "C"
 
 using namespace std;
 using namespace lstg;
-using namespace cocos2d;
+using namespace cc;
 
 AppFrame* AppFrame::sharedInstance = nullptr;
 std::vector<std::string> AppFrame::cmdLineArgs;

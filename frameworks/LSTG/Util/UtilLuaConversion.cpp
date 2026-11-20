@@ -28,40 +28,40 @@ void test(lua_State* L)
 	TEST(const char*);
 	TEST(std::string);
 
-	TEST(cocos2d::Vec2);
-	TEST(cocos2d::Vec3);
-	TEST(cocos2d::Vec4);
-	TEST(cocos2d::Size);
-	TEST(cocos2d::Rect);
-	TEST(cocos2d::Color3B);
-	TEST(cocos2d::Color4B);
-	TEST(cocos2d::Color4F);
-	TEST(cocos2d::Mat4);
-	TEST(cocos2d::AffineTransform);
-	TEST(cocos2d::FontDefinition);
-	TEST(cocos2d::BlendFunc);
-	TEST(cocos2d::TTFConfig);
-	TEST(cocos2d::Value);
-	TEST(cocos2d::MeshVertexAttrib);
-	TEST(cocos2d::Quaternion);
-	TEST(cocos2d::Texture2D::TexParams);
+	TEST(cc::Vec2);
+	TEST(cc::Vec3);
+	TEST(cc::Vec4);
+	TEST(cc::Size);
+	TEST(cc::Rect);
+	TEST(cc::Color3B);
+	TEST(cc::Color4B);
+	TEST(cc::Color4F);
+	TEST(cc::Mat4);
+	TEST(cc::AffineTransform);
+	TEST(cc::FontDefinition);
+	TEST(cc::BlendFunc);
+	TEST(cc::TTFConfig);
+	TEST(cc::Value);
+	TEST(cc::MeshVertexAttrib);
+	TEST(cc::Quaternion);
+	TEST(cc::Texture2D::TexParams);
 
-	TEST(cocos2d::V3F_C4B_T2F_Quad);
+	TEST(cc::V3F_C4B_T2F_Quad);
 	TEST(lstg::RenderMode*);
 	TEST(XColliderType);
 
-	TEST(cocos2d::Vector<cocos2d::Node*>);
-	TEST(std::vector<cocos2d::Vec2>);
-	TEST(std::set<cocos2d::Node*>);
+	TEST(cc::Vector<cc::Node*>);
+	TEST(std::vector<cc::Vec2>);
+	TEST(std::set<cc::Node*>);
 	TEST(std::bitset<8>);
 	{ using type = std::array<std::string, 2>; TEST(type); }
-	{ using type = cocos2d::Map<std::string, cocos2d::Node*>; TEST(type); }
-	{ using type = std::map<cocos2d::Label::LabelType, cocos2d::Color4B>; TEST(type); }
-	{ using type = std::unordered_map<cocos2d::Node*, cocos2d::Color4B>; TEST(type); }
-	{ using type = std::pair<cocos2d::Node*, cocos2d::Color4B>; TEST(type); }
+	{ using type = cc::Map<std::string, cc::Node*>; TEST(type); }
+	{ using type = std::map<cc::Label::LabelType, cc::Color4B>; TEST(type); }
+	{ using type = std::unordered_map<cc::Node*, cc::Color4B>; TEST(type); }
+	{ using type = std::pair<cc::Node*, cc::Color4B>; TEST(type); }
 	{ using type = std::tuple<>; TEST(type); }
-	{ using type = std::tuple<cocos2d::Node*>; TEST(type); }
-	{ using type = std::tuple<cocos2d::Node*, cocos2d::Color4B>; TEST(type); }
+	{ using type = std::tuple<cc::Node*>; TEST(type); }
+	{ using type = std::tuple<cc::Node*, cc::Color4B>; TEST(type); }
 	{ using type = std::function<void()>; { type v; to_native<type>::F(L, 1, &v); }; }
 	{ using type = std::function<std::string()>; { type v; to_native<type>::F(L, 1, &v); }; }
 	{ using type = std::function<void(const std::string&)>; type v; to_native<type>::F(L, 1, &v); }

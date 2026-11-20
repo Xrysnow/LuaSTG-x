@@ -6,12 +6,12 @@
 namespace
 {
 
-cc::IntrusivePtr<cocos2d::AudioStream> luaAudioInput(lstg::AudioInputResult result)
+cc::IntrusivePtr<cc::AudioStream> luaAudioInput(lstg::AudioInputResult result)
 {
     return result ? std::move(result.value).asRef() : nullptr;
 }
 
-cc::IntrusivePtr<cocos2d::AudioDecoder> luaAudioDecoder(lstg::AudioDecodeResult result)
+cc::IntrusivePtr<cc::AudioDecoder> luaAudioDecoder(lstg::AudioDecodeResult result)
 {
     return result ? std::move(result.value) : nullptr;
 }
@@ -28,7 +28,7 @@ int lua_audio_Stream_createFromStringData(lua_State* lua_S)
 int lua_audio_Stream_createFromSoundData(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("cc.AudioStream", "cc.AudioStream:createFromSoundData");
-	LUA_TRY_INVOKE_R(1, [](cocos2d::AudioSoundData* data) {
+	LUA_TRY_INVOKE_R(1, [](cc::AudioSoundData* data) {
 		return luaAudioInput(lstg::createAudioInputFromSoundData(data));
 	});
 	LUA_SINVOKE_FOOTER("1");
@@ -37,7 +37,7 @@ int lua_audio_Stream_createFromSoundData(lua_State* lua_S)
 int lua_audio_Decoder_createFromStringData(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("cc.AudioDecoder", "cc.AudioDecoder:createFromStringData");
-	LUA_TRY_INVOKE_R(3, [](const std::string& bytes, size_t bufferSize, cocos2d::AudioDecoder::DecoderType type) {
+	LUA_TRY_INVOKE_R(3, [](const std::string& bytes, size_t bufferSize, cc::AudioDecoder::DecoderType type) {
 		return luaAudioDecoder(lstg::decodeAudioStringData(bytes, bufferSize, type));
 	});
 	LUA_SINVOKE_FOOTER("3");
@@ -46,7 +46,7 @@ int lua_audio_Decoder_createFromStringData(lua_State* lua_S)
 int lua_audio_Decoder_createFromSoundData(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("cc.AudioDecoder", "cc.AudioDecoder:createFromSoundData");
-	LUA_TRY_INVOKE_R(3, [](cocos2d::AudioSoundData* data, size_t bufferSize, cocos2d::AudioDecoder::DecoderType type) {
+	LUA_TRY_INVOKE_R(3, [](cc::AudioSoundData* data, size_t bufferSize, cc::AudioDecoder::DecoderType type) {
 		return luaAudioDecoder(lstg::decodeAudioSoundData(data, bufferSize, type));
 	});
 	LUA_SINVOKE_FOOTER("3");

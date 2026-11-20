@@ -4,7 +4,7 @@
 #include "Util/Utility.h"
 
 using namespace std;
-using namespace cocos2d;
+using namespace cc;
 using namespace lstg;
 
 std::unordered_set<Resource*> Resource::instances;

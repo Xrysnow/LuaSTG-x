@@ -28,44 +28,44 @@ private:
 
 	int optAALevel = 0;
 
-		cocos2d::Renderer* pRenderer = nullptr;
+		cc::Renderer* pRenderer = nullptr;
 	bool bRenderStarted = false;
 
 		// RenderMode
 		RenderMode* currentRenderMode = nullptr;
-		cocos2d::backend::ProgramState* currentProgramState = nullptr;
-		cocos2d::Texture2D* currentTexture = nullptr;
+		cc::backend::ProgramState* currentProgramState = nullptr;
+		cc::Texture2D* currentTexture = nullptr;
 
-		cocos2d::Mat4 storeProjection;
-		cocos2d::Mat4 currentProjection;
-		cocos2d::Viewport storeViewport;
-		cocos2d::Viewport currentVP;
+		cc::Mat4 storeProjection;
+		cc::Mat4 currentProjection;
+		cc::Viewport storeViewport;
+		cc::Viewport currentVP;
 
-		cc::IntrusivePtr<cocos2d::Camera> movingCamera;
+		cc::IntrusivePtr<cc::Camera> movingCamera;
 
-		cc::IntrusivePtr<cocos2d::DrawNode> drawNode;
-		cc::IntrusivePtr<cocos2d::Sprite> clearRect;
-		cocos2d::V3F_C4B_T2F_Quad clearRectQuad;
-		cocos2d::Mat4 clearRectProj;
+		cc::IntrusivePtr<cc::DrawNode> drawNode;
+		cc::IntrusivePtr<cc::Sprite> clearRect;
+		cc::V3F_C4B_T2F_Quad clearRectQuad;
+		cc::Mat4 clearRectProj;
 		RenderMode* clearRectRenderMode = nullptr;
 
 		bool bUseFrameBuffer = true;
-		cc::IntrusivePtr<cocos2d::RenderTexture> frameBuffer;
-		cocos2d::Mat4 _FBProjection;
-		cocos2d::Size _lastFBSize;
+		cc::IntrusivePtr<cc::RenderTexture> frameBuffer;
+		cc::Mat4 _FBProjection;
+		cc::Size _lastFBSize;
 		bool bOffscreen = false;
 
-		cocos2d::Size _lastFrameSize;
+		cc::Size _lastFrameSize;
 
 		// PostEffect/RenderTarget
 		std::vector<ResRenderTarget*> renderTargetStack;
 		std::unordered_set<ResRenderTarget*> renderTargetUsed;
-		cocos2d::RenderTexture* tempRenderTexture = nullptr;
+		cc::RenderTexture* tempRenderTexture = nullptr;
 
 		LabelPool labelPool;
 
 		std::vector<XTrianglesCommand*> triToDraw;
-		std::vector<cocos2d::V3F_C4B_T2F> _verts;
+		std::vector<cc::V3F_C4B_T2F> _verts;
 		std::vector<unsigned short> _indices;
 		std::vector<XTrianglesCommand*> _cmds;
 		struct BatchTaskInfo
@@ -87,13 +87,13 @@ private:
 
 		void setUseFrameBuffer(bool v)noexcept { bUseFrameBuffer = v; }
 		bool isUseFrameBuffer() const noexcept { return bUseFrameBuffer; }
-		cocos2d::RenderTexture* getFrameBuffer() const noexcept { return frameBuffer.get(); }
+		cc::RenderTexture* getFrameBuffer() const noexcept { return frameBuffer.get(); }
 		void setOffscreen(bool b) noexcept;
 		bool isOffscreen() const noexcept { return bOffscreen; }
 
 		void pushCallbackCommand(const std::function<void()>& f)noexcept;
 		void pushCallbackCommand(
-			cocos2d::RenderQueue::QUEUE_GROUP group,
+			cc::RenderQueue::QUEUE_GROUP group,
 			float globalZOrder,
 			const std::function<void()>& f)noexcept;
 
@@ -104,7 +104,7 @@ private:
 		bool endScene()noexcept;
 
 		// if not in PE, clear in VP. else, clear all
-		void renderClear(const cocos2d::Color4F& c)noexcept;
+		void renderClear(const cc::Color4F& c)noexcept;
 
 		//TODO: camera manager
 
@@ -118,7 +118,7 @@ private:
 		void setPerspective(float eyeX, float eyeY, float eyeZ, float atX, float atY, float atZ,
 			float upX, float upY, float upZ, float fovy, float aspect, float zn, float zf)noexcept;
 
-		void setProjection(const cocos2d::Mat4& proj);
+		void setProjection(const cc::Mat4& proj);
 
 		/******************************************************************************/
 
@@ -134,7 +134,7 @@ private:
 		 * \param z z value
 		 * \return true
 		 */
-		bool render(cocos2d::Sprite* p, const cocos2d::V3F_C4B_T2F_Quad* quad, float x, float y, float rot = 0,
+		bool render(cc::Sprite* p, const cc::V3F_C4B_T2F_Quad* quad, float x, float y, float rot = 0,
 			float hscale = 1, float vscale = 1, float z = 0.5)noexcept;
 
 		// render ResSprite
@@ -153,22 +153,22 @@ private:
 		bool render(ResParticle::ParticlePool* p, float hscale = 1, float vscale = 1)noexcept;
 
 		// render texture TODO: 顶点顺序不同
-		bool renderTexture(cocos2d::Texture2D* t, const cocos2d::V3F_C4B_T2F_Quad* quad)noexcept;
-		bool renderTexture(cocos2d::Texture2D* t, const cocos2d::TrianglesCommand::Triangles& triangles)noexcept;
-		bool renderTexture(ResTexture* p, const cocos2d::V3F_C4B_T2F_Quad* quad)noexcept;
+		bool renderTexture(cc::Texture2D* t, const cc::V3F_C4B_T2F_Quad* quad)noexcept;
+		bool renderTexture(cc::Texture2D* t, const cc::TrianglesCommand::Triangles& triangles)noexcept;
+		bool renderTexture(ResTexture* p, const cc::V3F_C4B_T2F_Quad* quad)noexcept;
 
 		// TODO: render video
 
 		// render text
 		bool renderText(ResFont* p, const std::string& str, float x, float y, float scale,
-			cocos2d::TextHAlignment halign, cocos2d::TextVAlignment valign)noexcept;
-		bool renderTextAutoAlign(ResFont* p, const std::string& str, const cocos2d::Rect& rect, float scale,
-			cocos2d::TextHAlignment halign, cocos2d::TextVAlignment valign, const cocos2d::Color4B& c)noexcept;
+			cc::TextHAlignment halign, cc::TextVAlignment valign)noexcept;
+		bool renderTextAutoAlign(ResFont* p, const std::string& str, const cc::Rect& rect, float scale,
+			cc::TextHAlignment halign, cc::TextVAlignment valign, const cc::Color4B& c)noexcept;
 		bool renderText(ResFont* p, const std::string& str, float x, float y, float width, float height, float scaleX, float scaleY)noexcept;
 
 		/******************************************************************************/
 
-		bool checkRenderTargetInUse(cocos2d::RenderTexture* rt)noexcept;
+		bool checkRenderTargetInUse(cc::RenderTexture* rt)noexcept;
 
 		bool pushRenderTarget(ResRenderTarget* p)noexcept;
 
@@ -179,9 +179,9 @@ private:
 		/******************************************************************************/
 
 		void setProgramStateDirty();
-		void setCommand(cocos2d::RenderCommand* cmd, cocos2d::Texture2D* t);
-		void setXTCommand(XTrianglesCommand* cmd, cocos2d::Texture2D* t);
-		void addCommand(cocos2d::RenderCommand* cmd);
+		void setCommand(cc::RenderCommand* cmd, cc::Texture2D* t);
+		void setXTCommand(XTrianglesCommand* cmd, cc::Texture2D* t);
+		void addCommand(cc::RenderCommand* cmd);
 		void addXTCommand(XTrianglesCommand* cmd);
 		void flushTriangles();
 
@@ -195,12 +195,12 @@ private:
 		void renderFrameBuffer(float scale, bool copy = false);
 
 	public:
-		cc::IntrusivePtr<cocos2d::RenderTexture> copyFrameBuffer(bool transparent = false);
+		cc::IntrusivePtr<cc::RenderTexture> copyFrameBuffer(bool transparent = false);
 
-		cocos2d::Renderer* getRenderer() const noexcept { return pRenderer; }
-		cocos2d::DrawNode* getDrawNode() const noexcept { return drawNode.get(); }
-		const cocos2d::Mat4& getCurrentProjection() const noexcept { return currentProjection; }
-		cocos2d::Viewport getCurrentViewport() const noexcept { return currentVP; }
+		cc::Renderer* getRenderer() const noexcept { return pRenderer; }
+		cc::DrawNode* getDrawNode() const noexcept { return drawNode.get(); }
+		const cc::Mat4& getCurrentProjection() const noexcept { return currentProjection; }
+		cc::Viewport getCurrentViewport() const noexcept { return currentVP; }
 
 		LabelPool& getLabelPool() noexcept { return labelPool; }
 	};

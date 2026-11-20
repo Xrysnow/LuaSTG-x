@@ -1,7 +1,7 @@
 ﻿#include "LabelPool.h"
 
 using namespace std;
-using namespace cocos2d;
+using namespace cc;
 using namespace lstg;
 
 LabelPool::LabelPool()

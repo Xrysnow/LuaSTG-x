@@ -28,6 +28,6 @@ namespace lstg
 	private:
 		static const uint32_t MAX_CLASS_COUNT = 4096;
 		static std::array<GameClass, MAX_CLASS_COUNT> classes;
-		static cocos2d::Map<uint32_t, symbol::Block*> classFrameBlocks;
+		static cc::Map<uint32_t, symbol::Block*> classFrameBlocks;
 	};
 }

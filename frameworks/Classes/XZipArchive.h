@@ -7,7 +7,7 @@
 
 namespace lstg
 {
-	class ZipArchive : public cocos2d::Ref
+	class ZipArchive : public cc::Ref
 	{
 	public:
 		/**

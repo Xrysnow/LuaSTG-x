@@ -15,7 +15,7 @@
 
 using namespace std;
 using namespace lstg;
-using namespace cocos2d;
+using namespace cc;
 
 static unsigned short QuadIndices9[9 * 6] = { 0 };
 static unsigned short QuadIndices512[LGOBJ_MAXLASERNODE * 6] = { 0 };
@@ -753,7 +753,7 @@ void XRenderer::setProgramStateDirty()
 
 /******************************************************************************/
 
-void XRenderer::setCommand(cocos2d::RenderCommand* cmd, cocos2d::Texture2D* t)
+void XRenderer::setCommand(cc::RenderCommand* cmd, cc::Texture2D* t)
 {
 	CC_ASSERT(cmd && t);
 	if (!currentProgramState || currentTexture != t)
@@ -1065,7 +1065,7 @@ void XRenderer::renderFrameBuffer(float scale, bool copy)
 	addCommand(cmd);
 }
 
-cc::IntrusivePtr<cocos2d::RenderTexture> XRenderer::copyFrameBuffer(bool transparent)
+cc::IntrusivePtr<cc::RenderTexture> XRenderer::copyFrameBuffer(bool transparent)
 {
 	if (!frameBuffer)
 		return nullptr;

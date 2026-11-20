@@ -15,7 +15,7 @@ namespace lstg
 	{
 	protected:
 		XTrianglesCommand xtcmd;
-		cc::IntrusivePtr<cocos2d::Node> _node;
+		cc::IntrusivePtr<cc::Node> _node;
 	public:
 		GameObjectPool* pool = nullptr;
 		GameObject* obj = nullptr;
@@ -33,13 +33,13 @@ void set##funName(cc::IntrusivePtr<varType> value) { varName = std::move(value);
 		PROPERTY_INTRUSIVE_PTR(ComponentDataTrasform2D, tr, DataTrasform);
 		PROPERTY_INTRUSIVE_PTR(ComponentDataLight, light, DataLight);
 
-		PROPERTY_INTRUSIVE_PTR(cocos2d::BaseLight, lightSource, LightSource);
-		PROPERTY_INTRUSIVE_PTR(cocos2d::backend::ProgramState, programStateCopy, ProgramStateCopy);
+		PROPERTY_INTRUSIVE_PTR(cc::BaseLight, lightSource, LightSource);
+		PROPERTY_INTRUSIVE_PTR(cc::backend::ProgramState, programStateCopy, ProgramStateCopy);
 #undef PROPERTY_INTRUSIVE_PTR
 
 	public:
-		cocos2d::Node* getBindNode() const { return _node.get(); }
-		void setBindNode(cocos2d::Node* node);
+		cc::Node* getBindNode() const { return _node.get(); }
+		void setBindNode(cc::Node* node);
 
 		//ComponentDataAni* getOrCreateAni(ResAnimation* res);
 		ComponentDataBlend* getOrCreateBlend();
@@ -52,9 +52,9 @@ void set##funName(cc::IntrusivePtr<varType> value) { varName = std::move(value);
 	protected:
 		bool transformDirty = true;
 		bool cmdDirty = true;
-		cocos2d::Texture2D* cmdTex = nullptr;
+		cc::Texture2D* cmdTex = nullptr;
 		RenderMode* cmdBlend = nullptr;
-		cocos2d::backend::ProgramState* cmdState = nullptr;
+		cc::backend::ProgramState* cmdState = nullptr;
 
 		void updateCommandAni(ResAnimation* res);
 		void updateCommandSprite(ResSprite* res);
@@ -101,7 +101,7 @@ void set##funName(cc::IntrusivePtr<varType> value) { varName = std::move(value);
 		void applyResSprite(ResSprite* res);
 		void applyResParticle(ResParticle* res);
 		void applyResFont(ResFont* res);
-		void applyLights(const std::vector<cocos2d::BaseLight*>& lights);
+		void applyLights(const std::vector<cc::BaseLight*>& lights);
 
 		//
 
@@ -111,7 +111,7 @@ void set##funName(cc::IntrusivePtr<varType> value) { varName = std::move(value);
 		void renderSprite(ResSprite* res);
 		void renderTexture(ResTexture* res);
 
-		void drawCollider(const cocos2d::Color4B& color);
+		void drawCollider(const cc::Color4B& color);
 
 		void setX(float value);
 		void setY(float value);

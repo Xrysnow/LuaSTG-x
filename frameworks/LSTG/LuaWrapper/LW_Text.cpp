@@ -8,7 +8,7 @@
 
 using namespace std;
 using namespace lstg;
-using namespace cocos2d;
+using namespace cc;
 
 inline int error_find(lua_State* L, int lo)
 {

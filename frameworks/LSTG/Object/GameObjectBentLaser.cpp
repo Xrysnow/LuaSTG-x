@@ -7,7 +7,7 @@
 #include "../Math/XIntersect.h"
 
 using namespace std;
-using namespace cocos2d;
+using namespace cc;
 using namespace lstg;
 
 #define USE_FASTCHECK 1

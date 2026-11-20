@@ -119,7 +119,7 @@ std::string detail::narrowen_winstring(const wchar_t* wstr) {
 #ifdef CC_VERSION
 	return ntcvt::from_chars(wstr, CP_UTF8);
 #else
-	return cocos2d::StringWideCharToUtf8({ wstr, std::wcslen(wstr) });
+	return cc::StringWideCharToUtf8({ wstr, std::wcslen(wstr) });
 #endif // CC_VERSION
 }
 std::string detail::narrowen_bstring(const wchar_t* bstr) {
@@ -128,7 +128,7 @@ std::string detail::narrowen_bstring(const wchar_t* bstr) {
 #ifdef CC_VERSION
 	return ntcvt::from_chars(bstr, CP_UTF8);
 #else
-	return cocos2d::StringWideCharToUtf8({ bstr, SysStringLen(const_cast<BSTR>(bstr)) });
+	return cc::StringWideCharToUtf8({ bstr, SysStringLen(const_cast<BSTR>(bstr)) });
 #endif // CC_VERSION
 }
 #else

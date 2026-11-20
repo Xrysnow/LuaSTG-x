@@ -10,7 +10,7 @@ namespace lstg
 	public:
 		CREATE_FUNC(ComponentDataBlend);
 		RenderMode* renderMode = nullptr;
-		cocos2d::Color4B blendColor = cocos2d::Color4B::WHITE;
+		cc::Color4B blendColor = cc::Color4B::WHITE;
 		bool useColor = false;
 	};
 }

@@ -121,7 +121,7 @@ void GameObject::CopyAttrFrom(GameObject* other)
 	cls = other->cls;
 }
 
-cocos2d::Vec2 GameObject::getPosition() const
+cc::Vec2 GameObject::getPosition() const
 {
 	return cm->pool->getPosition(id);
 }

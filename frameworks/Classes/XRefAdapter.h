@@ -3,7 +3,7 @@
 
 namespace lstg
 {
-	class RefAdapter : public cocos2d::Ref
+	class RefAdapter : public cc::Ref
 	{
 	public:
 	    RefAdapter() = default;
@@ -14,7 +14,7 @@ namespace lstg
 		std::string _typeName;
 		std::function<void(void*)> _dtor;
 		// it's not recommand to use this class for a Ref object
-		cocos2d::Ref* _ref = nullptr;
+		cc::Ref* _ref = nullptr;
 
 		static const char* getLuaTypeName(const char* typeName);
 		static cc::IntrusivePtr<RefAdapter> _create(void* obj, const std::string& className,
@@ -32,7 +32,7 @@ namespace lstg
 			if (name)
 				ret->_typeName = name;
 			if constexpr (std::is_convertible_v<T*,const cc::RefCounted*>)
-				ret->_ref = static_cast<cocos2d::Ref*>(obj);
+				ret->_ref = static_cast<cc::Ref*>(obj);
 			return ret;
 		}
 

@@ -12,7 +12,7 @@
 
 using namespace std;
 using namespace lstg;
-using namespace cocos2d;
+using namespace cc;
 using lstg::lua::luaval_to_c4b;
 
 LUA_REGISTER_FUNC_DEF(lstg, BeginScene)
@@ -134,7 +134,7 @@ LUA_REGISTER_FUNC_DEF(lstg, CreateShaderProgramFromString)
 LUA_REGISTER_FUNC_DEF(lstg, CopyFrameBuffer)
 {
 	auto p = LRR.copyFrameBuffer();
-	::lua::to_lua<cc::IntrusivePtr<cocos2d::RenderTexture>>::F(L, std::move(p));
+	::lua::to_lua<cc::IntrusivePtr<cc::RenderTexture>>::F(L, std::move(p));
 	return 1;
 }
 LUA_REGISTER_FUNC_DEF(lstg, SetOffscreen)
@@ -145,7 +145,7 @@ LUA_REGISTER_FUNC_DEF(lstg, SetOffscreen)
 LUA_REGISTER_FUNC_DEF(lstg, GetFrameBuffer)
 {
 	const auto p = LRR.getFrameBuffer();
-	object_to_luaval<cocos2d::RenderTexture>(L, "cc.RenderTexture", p);
+	object_to_luaval<cc::RenderTexture>(L, "cc.RenderTexture", p);
 	return 1;
 }
 

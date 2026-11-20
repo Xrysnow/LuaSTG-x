@@ -14,7 +14,7 @@ namespace lstg
 {
 	// main frame
 	class AppFrame :
-		public cocos2d::Application
+		public cc::Application
 	{
 		static AppFrame* sharedInstance;
 		static std::vector<std::string> cmdLineArgs;

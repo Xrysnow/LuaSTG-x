@@ -122,7 +122,7 @@ ResRenderTarget* lua::toResRenderTarget(lua_State* L, int lo)
 	return ret;
 }
 
-cocos2d::Texture2D* lua::toTexture2D(lua_State* L, int lo)
+cc::Texture2D* lua::toTexture2D(lua_State* L, int lo)
 {
 	auto t = toResTexture(L, lo);
 	if (t) return t->getTexture();

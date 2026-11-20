@@ -322,7 +322,7 @@ int luaReg_WindowHelper_lstgMonitorHelper(lua_State* lua_S)
 {
 	LUA_ENTRY("lstg");
 	LUA_CLS_DEF_BASE(lstg::MonitorHelper, "MonitorHelper", "lstg.MonitorHelper",
-		cocos2d::Ref, "cc.Ref",
+		cc::Ref, "cc.Ref",
 		nullptr, nullptr);
 	LUA_METHOD("getContentScale", lua_lstg_MonitorHelper_getContentScale);
 	LUA_METHOD("getCurrentVideoMode", lua_lstg_MonitorHelper_getCurrentVideoMode);

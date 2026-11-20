@@ -27,7 +27,7 @@ namespace lstg
 
 	namespace symbol
 	{
-		class ComputeNode : public cocos2d::Ref
+		class ComputeNode : public cc::Ref
 		{
 		public:
 		    ComputeNode() = default;
@@ -126,8 +126,8 @@ namespace lstg
 		protected:
 			std::string _name;
 			OperatorFunc _func;
-			cocos2d::Vector<ComputeNode*> inputs;
-			cocos2d::Vector<Operand*> outputs;
+			cc::Vector<ComputeNode*> inputs;
+			cc::Vector<Operand*> outputs;
 			bool executed = false;
 		protected:
 			static std::unordered_map<std::string, OperatorDef> registry;
@@ -195,19 +195,19 @@ namespace lstg
 			virtual ~Assigment();
 		};
 
-		class Block : public cocos2d::Ref
+		class Block : public cc::Ref
 		{
 		public:
 		    Block() = default;
 		private:
 
-			cocos2d::Vector<Statement*> statements;
+			cc::Vector<Statement*> statements;
 			bool require_luaobj = false;
 			bool is_atomic = true;
-			cocos2d::Vector<ComputeNode*> outputs;
+			cc::Vector<ComputeNode*> outputs;
 			uint32_t num_out = 0;
 
-			static cocos2d::Vector<Block*> created;
+			static cc::Vector<Block*> created;
 		public:
 			static cc::IntrusivePtr<Block> create();
 

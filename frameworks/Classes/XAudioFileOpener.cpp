@@ -2,7 +2,7 @@
 #include "../LSTG/ResourceMgr.h"
 
 using namespace lstg;
-using namespace cocos2d;
+using namespace cc;
 
 void lstg::installAudioFileOpener()
 {

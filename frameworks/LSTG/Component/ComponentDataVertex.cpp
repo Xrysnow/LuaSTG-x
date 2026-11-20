@@ -41,9 +41,9 @@ bool lstg::ComponentDataVertex::init(ResTexture* res)
 		return false;
 	CC_SAFE_DELETE_ARRAY(tri.verts);
 	CC_SAFE_DELETE_ARRAY(tri.indices);
-	tri.verts = new cocos2d::V3F_C4B_T2F[tri.vertCount];
+	tri.verts = new cc::V3F_C4B_T2F[tri.vertCount];
 	tri.indices = new unsigned short[tri.indexCount];
-	std::memcpy(tri.verts, xtri->getVertexData(), sizeof(cocos2d::V3F_C4B_T2F)*tri.vertCount);
+	std::memcpy(tri.verts, xtri->getVertexData(), sizeof(cc::V3F_C4B_T2F)*tri.vertCount);
 	std::memcpy(tri.indices, xtri->getIndexData(), sizeof(unsigned short)*tri.indexCount);
 	return true;
 }

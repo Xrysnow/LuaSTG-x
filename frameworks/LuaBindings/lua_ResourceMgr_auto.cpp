@@ -133,7 +133,7 @@ int luaReg_ResourceMgr_lstgResourcePack(lua_State* lua_S)
 {
 	LUA_ENTRY("lstg");
 	LUA_CLS_DEF_BASE(lstg::ResourcePack, "ResourcePack", "lstg.ResourcePack",
-		cocos2d::Ref, "cc.Ref",
+		cc::Ref, "cc.Ref",
 		nullptr, nullptr);
 	LUA_METHOD("cacheAllFiles", lua_lstg_ResourcePack_cacheAllFiles);
 	LUA_METHOD("cacheAllFilesAsync", lua_lstg_ResourcePack_cacheAllFilesAsync);

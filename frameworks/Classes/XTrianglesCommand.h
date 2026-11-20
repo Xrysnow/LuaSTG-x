@@ -6,17 +6,17 @@ namespace lstg
 {
 	class RenderMode;
 
-	class XTrianglesCommand : public cocos2d::TrianglesCommand
+	class XTrianglesCommand : public cc::TrianglesCommand
 	{
 	public:
 		XTrianglesCommand();
 
-		void init(float globalOrder, cocos2d::Texture2D* texture,
-			RenderMode* renderMode, cocos2d::backend::ProgramState* programState);
+		void init(float globalOrder, cc::Texture2D* texture,
+			RenderMode* renderMode, cc::backend::ProgramState* programState);
 		//TODO: setExternalMV
-		cocos2d::Mat4* getMV() { return &_mv; }
+		cc::Mat4* getMV() { return &_mv; }
 		Triangles* getTri() { return &_triangles; }
-		cocos2d::PipelineDescriptor* getDesc() { return &_pipelineDescriptor; }
+		cc::PipelineDescriptor* getDesc() { return &_pipelineDescriptor; }
 		RenderMode* getRenderMode() const { return _renderMode; }
 
 		void copyProperties(XTrianglesCommand* other) const;

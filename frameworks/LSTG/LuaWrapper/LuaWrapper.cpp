@@ -8,7 +8,7 @@
 
 using namespace std;
 using namespace lstg;
-using namespace cocos2d;
+using namespace cc;
 
 RenderMode* lstg::TranslateRenderMode(lua_State* L, int argnum)
 {

@@ -72,14 +72,14 @@ int lua_lstg_Triangles_createGrid(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("lstg.Triangles", "lstg.Triangles:createGrid");
 	LUA_TRY_INVOKE_R(4, &lstg::Triangles::createGrid);
-	LUA_TRY_INVOKE_R(3, ([](size_t arg0,size_t arg1,const cocos2d::Vec2& arg2){{return lstg::Triangles::createGrid(std::move(arg0),std::move(arg1),arg2);}}));
+	LUA_TRY_INVOKE_R(3, ([](size_t arg0,size_t arg1,const cc::Vec2& arg2){{return lstg::Triangles::createGrid(std::move(arg0),std::move(arg1),arg2);}}));
 	LUA_SINVOKE_FOOTER("3,4");
 }
 int lua_lstg_Triangles_createQuad(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("lstg.Triangles", "lstg.Triangles:createQuad");
 	LUA_TRY_INVOKE_R(2, &lstg::Triangles::createQuad);
-	LUA_TRY_INVOKE_R(1, [](const cocos2d::Vec2& arg0){{return lstg::Triangles::createQuad(arg0);}});
+	LUA_TRY_INVOKE_R(1, [](const cc::Vec2& arg0){{return lstg::Triangles::createQuad(arg0);}});
 	LUA_SINVOKE_FOOTER("1,2");
 }
 int lua_lstg_Triangles_createSector(lua_State* lua_S)
@@ -93,7 +93,7 @@ int luaReg_Triangles_lstgTriangles(lua_State* lua_S)
 {
 	LUA_ENTRY("lstg");
 	LUA_CLS_DEF_BASE(lstg::Triangles, "Triangles", "lstg.Triangles",
-		cocos2d::Ref, "cc.Ref",
+		cc::Ref, "cc.Ref",
 		nullptr, nullptr);
 	LUA_METHOD("clone", lua_lstg_Triangles_clone);
 	LUA_METHOD("getIndexCount", lua_lstg_Triangles_getIndexCount);

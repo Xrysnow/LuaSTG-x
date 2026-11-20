@@ -3,39 +3,39 @@
 
 namespace lstg
 {
-	class RenderMode : public cocos2d::Ref
+	class RenderMode : public cc::Ref
 	{
 		RenderMode();
 		~RenderMode();
 	public:
 		static cc::IntrusivePtr<RenderMode> create(const std::string& name,
-			cocos2d::backend::BlendOperation blendOp,
-			cocos2d::backend::BlendFactor blendFactorSrc,
-			cocos2d::backend::BlendFactor blendFactorDst,
-			cc::IntrusivePtr<cocos2d::backend::Program> program);
+			cc::backend::BlendOperation blendOp,
+			cc::backend::BlendFactor blendFactorSrc,
+			cc::backend::BlendFactor blendFactorDst,
+			cc::IntrusivePtr<cc::backend::Program> program);
 		static cc::IntrusivePtr<RenderMode> create(const std::string& name,
-			cc::IntrusivePtr<cocos2d::backend::Program> program);
+			cc::IntrusivePtr<cc::backend::Program> program);
 
 		std::string getName() const { return _name; }
 		size_t getID() const { return id; }
-		cocos2d::BlendFunc getBlendFunc() const;
-		cocos2d::backend::BlendDescriptor getBlendDescriptor() const { return desc; }
+		cc::BlendFunc getBlendFunc() const;
+		cc::backend::BlendDescriptor getBlendDescriptor() const { return desc; }
 		std::vector<std::string> getUniformNames() const { return uniformNames; }
 
-		void setProgram(cc::IntrusivePtr<cocos2d::backend::Program> program);
-		cocos2d::backend::Program* getProgram() const;
-		cocos2d::backend::ProgramState* getDefaultProgramState() const;
-		cocos2d::backend::ProgramState* newProgramState();
+		void setProgram(cc::IntrusivePtr<cc::backend::Program> program);
+		cc::backend::Program* getProgram() const;
+		cc::backend::ProgramState* getDefaultProgramState() const;
+		cc::backend::ProgramState* newProgramState();
 
 		// uniform setter
 
 		void setFloat(const std::string& uniform, float value);
-		void setVec2(const std::string& uniform, const cocos2d::Vec2& value);
-		void setVec3(const std::string& uniform, const cocos2d::Vec3& value);
-		void setVec4(const std::string& uniform, const cocos2d::Vec4& value);
-		void setMat4(const std::string& uniform, const cocos2d::Mat4& value);
-		void setColor(const std::string& uniform, const cocos2d::Color4B& value);
-		void setTexture(const std::string& uniform, cocos2d::Texture2D* value, uint32_t slot = 0);
+		void setVec2(const std::string& uniform, const cc::Vec2& value);
+		void setVec3(const std::string& uniform, const cc::Vec3& value);
+		void setVec4(const std::string& uniform, const cc::Vec4& value);
+		void setMat4(const std::string& uniform, const cc::Mat4& value);
+		void setColor(const std::string& uniform, const cc::Color4B& value);
+		void setTexture(const std::string& uniform, cc::Texture2D* value, uint32_t slot = 0);
 
 		void setUniformBuffer(const std::string& buffer);
 		std::string getUniformBuffer() const;
@@ -43,25 +43,25 @@ namespace lstg
 
 	protected:
 		bool init(const std::string& name,
-		    cocos2d::backend::BlendOperation equation,
-			cocos2d::backend::BlendFactor funcSrc,
-			cocos2d::backend::BlendFactor funcDst,
-			cc::IntrusivePtr<cocos2d::backend::Program> program);
-		cocos2d::backend::ProgramState* tempraryProgramState();
-		void syncUniform(cocos2d::backend::ProgramState* state);
+		    cc::backend::BlendOperation equation,
+			cc::backend::BlendFactor funcSrc,
+			cc::backend::BlendFactor funcDst,
+			cc::IntrusivePtr<cc::backend::Program> program);
+		cc::backend::ProgramState* tempraryProgramState();
+		void syncUniform(cc::backend::ProgramState* state);
 		void setUniform(const std::string& name, const void* data, size_t size);
 		static void setAllUniform(const std::string& name, const void* data, size_t size);
 
 		std::string _name;
 		size_t id = 0;
-		cocos2d::backend::BlendDescriptor desc;
-		cc::IntrusivePtr<cocos2d::backend::Program> _program;
-		cc::IntrusivePtr<cocos2d::backend::ProgramState> defaultState;
+		cc::backend::BlendDescriptor desc;
+		cc::IntrusivePtr<cc::backend::Program> _program;
+		cc::IntrusivePtr<cc::backend::ProgramState> defaultState;
 		char* fragUniformBuffer = nullptr;
 		char* vertUniformBuffer = nullptr;
 		size_t fragUniformBufferSize = 0;
 		size_t vertUniformBufferSize = 0;
-		std::unordered_map<std::string, cocos2d::backend::UniformLocation> locations;
+		std::unordered_map<std::string, cc::backend::UniformLocation> locations;
 		std::vector<std::string> uniformNames;
 		std::shared_ptr<void> pool = nullptr;
 
@@ -78,7 +78,7 @@ namespace lstg
 		static void destructDefault();
 
 		static std::vector<RenderMode*> modeVector;
-		static cocos2d::Map<std::string, RenderMode*> modeMap;
+		static cc::Map<std::string, RenderMode*> modeMap;
 
 		friend class XRenderer;
 		friend class XTrianglesCommand;

@@ -41,7 +41,7 @@ int luaReg_LogSystem_lstgLogSystem(lua_State* lua_S)
 {
 	LUA_ENTRY("lstg");
 	LUA_CLS_DEF_BASE(lstg::LogSystem, "LogSystem", "lstg.LogSystem",
-		cocos2d::Ref, "cc.Ref",
+		cc::Ref, "cc.Ref",
 		nullptr, nullptr);
 	LUA_METHOD("changePath", lua_lstg_LogSystem_changePath);
 	LUA_METHOD("getPath", lua_lstg_LogSystem_getPath);

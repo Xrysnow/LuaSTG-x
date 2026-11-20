@@ -37,7 +37,7 @@ LuaModuleRegistry& LuaModuleRegistry::registerModules(lua_State* L)
 		const auto new_top = lua_gettop(L);
 		if (top != new_top)
 		{
-			cocos2d::log("Lua stack changed %d when register %s",
+			cc::log("Lua stack changed %d when register %s",
 				new_top - top, it.first.c_str());
 			top = new_top;
 		}

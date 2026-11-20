@@ -4,7 +4,7 @@
 
 using namespace std;
 using namespace lstg;
-using namespace cocos2d;
+using namespace cc;
 
 MemPoolManager* MemPoolManager::getInstance()
 {
@@ -12,7 +12,7 @@ MemPoolManager* MemPoolManager::getInstance()
 	return &ins;
 }
 
-cocos2d::CallbackCommand* MemPoolManager::getCallbackCommand()
+cc::CallbackCommand* MemPoolManager::getCallbackCommand()
 {
 	//return ccmdPool.get();
 	return Director::getInstance()->getRenderer()->nextCallbackCommand();

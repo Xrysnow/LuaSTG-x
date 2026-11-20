@@ -3,11 +3,11 @@
 
 namespace lstg
 {
-	class GifRecoder : public cocos2d::Ref
+	class GifRecoder : public cc::Ref
 	{
-		cocos2d::Rect area;
+		cc::Rect area;
 		bool trans = true;
-		cocos2d::Vector<cocos2d::RenderTexture*> captures;
+		cc::Vector<cc::RenderTexture*> captures;
 		std::vector<int32_t> intervals;
 		int32_t defaultItv = 1000;
 		int32_t quantizer = 0;
@@ -17,7 +17,7 @@ namespace lstg
 		~GifRecoder() override;
 	public:
 		static cc::IntrusivePtr<GifRecoder> create(
-			const cocos2d::Rect& rect = cocos2d::Rect::ZERO,
+			const cc::Rect& rect = cc::Rect::ZERO,
 			bool transparent = true, int32_t defaultInterval = -1,
 			int32_t quantizerType = 0, int32_t ditherType = 0
 		);

@@ -165,7 +165,7 @@ namespace lstg
 
 		/* @deprecated (only for compatibility)
 		 * set RenderMode and color of the resource bind on object */
-		bool SetImgState(size_t id, RenderMode* m, const cocos2d::Color4B& c) noexcept;
+		bool SetImgState(size_t id, RenderMode* m, const cc::Color4B& c) noexcept;
 
 		// check if object is in given bound
 		bool BoxCheck(size_t id, double left, double right, double bottom, double top, bool& ret) noexcept;
@@ -201,11 +201,11 @@ namespace lstg
 		int GetParticlePool(lua_State* L) noexcept;
 	public:
 
-		void DrawGroupCollider(int groupId, const cocos2d::Color4B& fillColor,
-			const cocos2d::Vec2& offset);
-		void DrawGroupCollider(int groupId, const cocos2d::Color4B& fillColor)
+		void DrawGroupCollider(int groupId, const cc::Color4B& fillColor,
+			const cc::Vec2& offset);
+		void DrawGroupCollider(int groupId, const cc::Color4B& fillColor)
 		{
-			DrawGroupCollider(groupId, fillColor, cocos2d::Vec2::ZERO);
+			DrawGroupCollider(groupId, fillColor, cc::Vec2::ZERO);
 		}
 
 		GameObject* allocateObject();

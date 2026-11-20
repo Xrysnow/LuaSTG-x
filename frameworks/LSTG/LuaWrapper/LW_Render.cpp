@@ -25,7 +25,7 @@ LUA_REGISTER_FUNC_DEF(lstg, RenderTexture)
 	const auto h = tex->getPixelsHigh();
 	const auto w = tex->getPixelsWide();
 	auto v = LMP.getQuad();
-	auto vi = (cocos2d::V3F_C4B_T2F*)v;
+	auto vi = (cc::V3F_C4B_T2F*)v;
 	for (auto i = 0; i < 4; ++i)
 	{
 		lua_pushinteger(L, 1);
@@ -94,7 +94,7 @@ LUA_REGISTER_FUNC_DEF(lstg, RenderSector)
 
 		auto quads = LMP.getLaserQuads()->data();
 		fill_n(quads, vCount, p->getVertex());
-		auto vecs = new cocos2d::Vec3[(vCount + 1) * 2];
+		auto vecs = new cc::Vec3[(vCount + 1) * 2];
 		for (int i = 0; i < vCount + 1; ++i)
 		{
 			float th = start + (i + nj)*dth;
@@ -111,11 +111,11 @@ LUA_REGISTER_FUNC_DEF(lstg, RenderSector)
 			quads[i].tl.vertices.set(vecs[(i + 1) * 2]);
 			quads[i].bl.vertices.set(vecs[(i + 1) * 2 + 1]);
 		}
-		cocos2d::TrianglesCommand::Triangles tri{ nullptr,nullptr,0,0 };
+		cc::TrianglesCommand::Triangles tri{ nullptr,nullptr,0,0 };
 		tri.indexCount = vCount * 6;
 		tri.vertCount = vCount * 4;
 		tri.indices = XRenderer::quadIndices512;
-		tri.verts = (cocos2d::V3F_C4B_T2F*)quads;
+		tri.verts = (cc::V3F_C4B_T2F*)quads;
 		LRR.renderTexture(tex, tri);
 		delete[] vecs;
 	}
@@ -127,6 +127,6 @@ LUA_REGISTER_FUNC_DEF(lstg, DrawGroupCollider)
 	const auto color = luaval_to_c4b(L, 2);
 	const auto off_x = luaL_checknumber(L, 3);
 	const auto off_y = luaL_checknumber(L, 4);
-	LAPP.getGameObjectPool().DrawGroupCollider(group_id, color, cocos2d::Vec2(off_x, off_y));
+	LAPP.getGameObjectPool().DrawGroupCollider(group_id, color, cc::Vec2(off_x, off_y));
 	return 0;
 }

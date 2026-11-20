@@ -2,7 +2,7 @@
 #include "Renderer.h"
 
 using namespace std;
-using namespace cocos2d;
+using namespace cc;
 using namespace lstg;
 
 void ResAnimation::setColor(const Color4B& color)

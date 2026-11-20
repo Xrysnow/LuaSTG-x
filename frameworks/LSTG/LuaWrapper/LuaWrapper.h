@@ -7,5 +7,5 @@
 namespace lstg
 {
 	RenderMode* TranslateRenderMode(lua_State* L, int argnum);
-	void TranslateAlignMode(lua_State* L, int argnum, cocos2d::TextHAlignment& halign, cocos2d::TextVAlignment& valign);
+	void TranslateAlignMode(lua_State* L, int argnum, cc::TextHAlignment& halign, cc::TextVAlignment& valign);
 }

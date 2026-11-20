@@ -45,7 +45,7 @@ namespace lstg
 
 		void CopyAttrFrom(GameObject* other);
 
-		cocos2d::Vec2 getPosition() const;
+		cc::Vec2 getPosition() const;
 		float getRotation() const;
 	};
 }

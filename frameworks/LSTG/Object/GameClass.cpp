@@ -7,7 +7,7 @@
 using namespace lstg;
 
 std::array<GameClass, GameClass::MAX_CLASS_COUNT> GameClass::classes;
-cocos2d::Map<uint32_t, symbol::Block*> GameClass::classFrameBlocks;
+cc::Map<uint32_t, symbol::Block*> GameClass::classFrameBlocks;
 
 GameClass::GameClass()
 {

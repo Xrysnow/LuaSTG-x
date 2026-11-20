@@ -35,10 +35,10 @@ namespace lstg
 		int SetCaption(const wchar_t* Caption);
 		bool GetVisiable();
 		int SetVisiable(bool Visiable);
-		cocos2d::Rect GetRect();
-		int SetRect(const cocos2d::Rect& Range);
-		cocos2d::Rect GetClientRect();
-		int SetClientRect(const cocos2d::Rect& Range);
+		cc::Rect GetRect();
+		int SetRect(const cc::Rect& Range);
+		cc::Rect GetClientRect();
+		int SetClientRect(const cc::Rect& Range);
 		bool IsTopMost();
 		int SetTopMost(bool TopMost);
 		void HideMouse(bool bShow);
@@ -49,7 +49,7 @@ namespace lstg
 		static BOOL IsWindowsVersionOrGreaterWin32(WORD major, WORD minor, WORD sp);
 		static BOOL IsWindows10BuildOrGreaterWin32(WORD build);
 
-		WindowHelperWin32(cocos2d::GLViewImpl* view, HWND handle);
+		WindowHelperWin32(cc::GLViewImpl* view, HWND handle);
 		~WindowHelperWin32();
 	};
 }

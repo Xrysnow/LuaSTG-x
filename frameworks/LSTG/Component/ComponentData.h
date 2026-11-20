@@ -3,7 +3,7 @@
 
 namespace lstg
 {
-	class ComponentData : public cocos2d::Ref
+	class ComponentData : public cc::Ref
 	{
 	public:
 	    ComponentData() = default;

@@ -133,7 +133,7 @@ static int lua_cc_fairygui_GPath_getAllPoints(lua_State* lua_S)
 	for (int i = 0; i < path->getSegmentCount(); ++i)
 		if (!validGPathDensity(path, i, density))
 			return luaL_error(lua_S, "invalid sampling count in '%s'", LUA_FNAME);
-	std::vector<cocos2d::Vec3> points;
+	std::vector<cc::Vec3> points;
 	path->getAllPoints(points, density);
 	native_to_luaval(lua_S, points);
 	return 1;
@@ -163,7 +163,7 @@ static int lua_cc_fairygui_GPath_getPointsInSegment(lua_State* lua_S)
 	const int segment = static_cast<int>(index);
 	if (!validGPathDensity(path, segment, density))
 		return luaL_error(lua_S, "invalid sampling count in '%s'", LUA_FNAME);
-	std::vector<cocos2d::Vec3> points;
+	std::vector<cc::Vec3> points;
 	std::vector<float> ts;
 	path->getPointsInSegment(segment, t0, t1, points, &ts, density);
 	native_to_luaval(lua_S, points);

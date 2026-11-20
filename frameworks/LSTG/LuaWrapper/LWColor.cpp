@@ -7,7 +7,7 @@
 
 using namespace std;
 using namespace lstg;
-using cocos2d::Color4B;
+using cc::Color4B;
 
 constexpr int COLOR_IDX_METHOD = 1;
 constexpr int COLOR_IDX_GETTER = 2;

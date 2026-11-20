@@ -50,56 +50,56 @@ namespace lstg
 
 	std::string ReplacePathSep(std::string path, const std::string& ori = "\\", const std::string& dst = "/");
 
-	cocos2d::Vec2 AlignmentToAnchorPoint(cocos2d::TextHAlignment ha, cocos2d::TextVAlignment va);
+	cc::Vec2 AlignmentToAnchorPoint(cc::TextHAlignment ha, cc::TextVAlignment va);
 
 	void pathUniform(std::string& path, bool forward_slash = false, bool lower = true, bool utf8_convert = false);
 	void pathUniform(std::wstring& path, bool forward_slash = false, bool lower = true, bool utf8_convert = false);
 	//
-	std::string BlendFactor_tostring(cocos2d::backend::BlendFactor factor);
+	std::string BlendFactor_tostring(cc::backend::BlendFactor factor);
 
-	std::string tostring(const cocos2d::Vec2& v);
-	std::string tostring(const cocos2d::Vec3& v);
-	std::string tostring(const cocos2d::Vec4& v);
-	std::string tostring(const cocos2d::Rect& r);
-	std::string tostring(const cocos2d::Color3B& c);
-	std::string tostring(const cocos2d::Color4B& c);
-	std::string tostring(const cocos2d::Color4F& c);
-	std::string tostring(const cocos2d::BlendFunc& b);
-	std::string tostring(const cocos2d::V3F_C4B_T2F& v);
-	std::string tostring(const cocos2d::V3F_C4B_T2F_Quad& v);
-	std::string tostring(const cocos2d::Mat4& m);
-	std::string tostring(cocos2d::TextHAlignment ha);
-	std::string tostring(cocos2d::TextVAlignment va);
+	std::string tostring(const cc::Vec2& v);
+	std::string tostring(const cc::Vec3& v);
+	std::string tostring(const cc::Vec4& v);
+	std::string tostring(const cc::Rect& r);
+	std::string tostring(const cc::Color3B& c);
+	std::string tostring(const cc::Color4B& c);
+	std::string tostring(const cc::Color4F& c);
+	std::string tostring(const cc::BlendFunc& b);
+	std::string tostring(const cc::V3F_C4B_T2F& v);
+	std::string tostring(const cc::V3F_C4B_T2F_Quad& v);
+	std::string tostring(const cc::Mat4& m);
+	std::string tostring(cc::TextHAlignment ha);
+	std::string tostring(cc::TextVAlignment va);
 
-	void transformPoint(cocos2d::Vec3& point, const cocos2d::Vec2& anchorPIP,
+	void transformPoint(cc::Vec3& point, const cc::Vec2& anchorPIP,
 		float x, float y, float rot, float hscale, float vscale, float z);
-	void transformQuad(cocos2d::V3F_C4B_T2F_Quad& quad, const cocos2d::Vec2& anchorPIP,
+	void transformQuad(cc::V3F_C4B_T2F_Quad& quad, const cc::Vec2& anchorPIP,
 		float x, float y, float rot, float hscale, float vscale, float z);
-	void getNodeTransform(const cocos2d::Vec2& anchorPointInPoints,
-		float x, float y, float rot, float hscale, float vscale, float z, cocos2d::Mat4* out);
-	cocos2d::Mat4 getNodeTransform(const cocos2d::Vec2& anchorPointInPoints,
+	void getNodeTransform(const cc::Vec2& anchorPointInPoints,
+		float x, float y, float rot, float hscale, float vscale, float z, cc::Mat4* out);
+	cc::Mat4 getNodeTransform(const cc::Vec2& anchorPointInPoints,
 		float x, float y, float rot, float hscale, float vscale, float z);
 
-	void getQuaternion(const cocos2d::Vec3& axis, float angle, cocos2d::Quaternion* out);
+	void getQuaternion(const cc::Vec3& axis, float angle, cc::Quaternion* out);
 
-	void getRotationTransform(const cocos2d::Quaternion& q, cocos2d::Mat4* out);
-	void getRotationTransform(const cocos2d::Vec3& axis, float angle, cocos2d::Mat4* out);
+	void getRotationTransform(const cc::Quaternion& q, cc::Mat4* out);
+	void getRotationTransform(const cc::Vec3& axis, float angle, cc::Mat4* out);
 	
-	void getNodeTransform3D(const cocos2d::Vec2& anchorPointInPoints,
-		float x, float y, float z, const cocos2d::Quaternion& q,
-		float hscale, float vscale, float zscale, cocos2d::Mat4* out);
-	void getNodeTransform3D(const cocos2d::Vec2& anchorPointInPoints,
-		float x, float y, float z, const cocos2d::Vec3& axis, float angle,
-		float hscale, float vscale, float zscale, cocos2d::Mat4* out);
+	void getNodeTransform3D(const cc::Vec2& anchorPointInPoints,
+		float x, float y, float z, const cc::Quaternion& q,
+		float hscale, float vscale, float zscale, cc::Mat4* out);
+	void getNodeTransform3D(const cc::Vec2& anchorPointInPoints,
+		float x, float y, float z, const cc::Vec3& axis, float angle,
+		float hscale, float vscale, float zscale, cc::Mat4* out);
 
-	cocos2d::Image* getTextureImage(cocos2d::Texture2D* texture, bool flipImage = false);
-	cocos2d::Image* getTextureImage(cocos2d::Texture2D* texture,
+	cc::Image* getTextureImage(cc::Texture2D* texture, bool flipImage = false);
+	cc::Image* getTextureImage(cc::Texture2D* texture,
 		size_t x, size_t y, size_t width, size_t height, bool flipImage = false);
-	cocos2d::Image* getSpriteImage(cocos2d::Sprite* sprite, bool flipImage = false);
-	bool initImageWithSVG(cocos2d::Image* image, const std::string& path,
+	cc::Image* getSpriteImage(cc::Sprite* sprite, bool flipImage = false);
+	bool initImageWithSVG(cc::Image* image, const std::string& path,
 		float scale, const std::string& units = "px", float dpi = 96);
-	bool initImageWithSVG(cocos2d::Image* image, const std::string& path,
-		const cocos2d::Size& size);
+	bool initImageWithSVG(cc::Image* image, const std::string& path,
+		const cc::Size& size);
 
 	// (start, end, iThread)
 	void deployThreadTask(size_t taskSize, size_t nSlice, const std::function<void(int, int, int)>& task);
@@ -123,7 +123,7 @@ namespace lstg
 
 	namespace util
 	{
-		cocos2d::Viewport Viewport(float left, float right, float bottom, float top);
+		cc::Viewport Viewport(float left, float right, float bottom, float top);
 
 		std::vector<std::string> stringSplit(const std::string& str, const std::string& delimiter, bool trim);
 		std::string stringTrimLeft(const std::string &str);
@@ -132,12 +132,12 @@ namespace lstg
 		std::wstring MultiByteToWideChar_UTF8(const std::string& str);
 		std::string WideCharToMultiByte_UTF8(const std::wstring& str);
 
-		bool BlendOperationFromString(const std::string& str, cocos2d::backend::BlendOperation& val);
-		bool BlendFactorFromString(const std::string& str, cocos2d::backend::BlendFactor& val);
-		cc::IntrusivePtr<cocos2d::backend::Program> CreateProgramFromPath(const std::string& v, const std::string& f);
-		cc::IntrusivePtr<cocos2d::backend::Program> CreateProgramFromString(const std::string& v, const std::string& f);
-		cc::IntrusivePtr<cocos2d::backend::Program> CreateProgramFromData(cocos2d::Data* v, cocos2d::Data* f);
-		bool CheckBlendOperation(cocos2d::backend::BlendOperation equation);
-		bool CheckBlendFactor(cocos2d::backend::BlendFactor func);
+		bool BlendOperationFromString(const std::string& str, cc::backend::BlendOperation& val);
+		bool BlendFactorFromString(const std::string& str, cc::backend::BlendFactor& val);
+		cc::IntrusivePtr<cc::backend::Program> CreateProgramFromPath(const std::string& v, const std::string& f);
+		cc::IntrusivePtr<cc::backend::Program> CreateProgramFromString(const std::string& v, const std::string& f);
+		cc::IntrusivePtr<cc::backend::Program> CreateProgramFromData(cc::Data* v, cc::Data* f);
+		bool CheckBlendOperation(cc::backend::BlendOperation equation);
+		bool CheckBlendFactor(cc::backend::BlendFactor func);
 	}
 }

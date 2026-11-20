@@ -17,7 +17,7 @@ namespace lstg
 	 * After reading a file from ResourcePack, it will cache the data in memory.
 	 * You have to manually invoke `removeFileCache` or `clearFileCache` if you want to save memory.
 	 */
-	class ResourcePack : public cocos2d::Ref
+	class ResourcePack : public cc::Ref
 	{
 		// Workers retain only State, never this Ref or a Buffer/autorelease object.
 		struct State;
@@ -75,7 +75,7 @@ namespace lstg
 	 */
 	class ResourceMgr
 	{
-		cocos2d::Map<std::string, ResourcePack*> packs;
+		cc::Map<std::string, ResourcePack*> packs;
 		mutable std::mutex mut;
 		ResourceFileCache localFiles;
 		// Buffer views are legacy main-thread API objects, separate from worker data.
@@ -126,7 +126,7 @@ namespace lstg
 		FileBytes getFileData(const std::string& filePath);
 		// Each call opens an independent read-only cursor over a shared snapshot.
 		// The stream keeps its bytes alive across cache eviction and pack unloading.
-		cocos2d::io::Result<cocos2d::io::StreamPtr> openReadStream(const std::string& filePath);
+		cc::io::Result<cc::io::StreamPtr> openReadStream(const std::string& filePath);
 
 		std::string getStringFromFile(const std::string& filePath);
 

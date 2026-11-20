@@ -31,7 +31,7 @@ int luaReg_ObjSym_lstg_symComputeNode(lua_State* lua_S)
 {
 	LUA_ENTRY("lstg_sym");
 	LUA_CLS_DEF_BASE(lstg::symbol::ComputeNode, "ComputeNode", "lstg_sym.ComputeNode",
-		cocos2d::Ref, "cc.Ref",
+		cc::Ref, "cc.Ref",
 		nullptr, nullptr);
 	LUA_METHOD("getNumIn", lua_lstg_symbol_ComputeNode_getNumIn);
 	LUA_METHOD("getNumOut", lua_lstg_symbol_ComputeNode_getNumOut);
@@ -172,7 +172,7 @@ int luaReg_ObjSym_lstg_symBlock(lua_State* lua_S)
 {
 	LUA_ENTRY("lstg_sym");
 	LUA_CLS_DEF_BASE(lstg::symbol::Block, "Block", "lstg_sym.Block",
-		cocos2d::Ref, "cc.Ref",
+		cc::Ref, "cc.Ref",
 		nullptr, nullptr);
 	LUA_METHOD("addOutputNode", lua_lstg_symbol_Block_addOutputNode);
 	LUA_METHOD("clear", lua_lstg_symbol_Block_clear);

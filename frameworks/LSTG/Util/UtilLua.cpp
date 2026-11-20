@@ -13,7 +13,7 @@
 
 using namespace std;
 using namespace lstg;
-using namespace cocos2d;
+using namespace cc;
 
 using ::lua::luaval_field_to_native;
 using ::lua::native_to_luaval_field;

@@ -142,7 +142,7 @@ int lua_lstg_GameObjectBentLaser_popTail(lua_State* lua_S)
 int lua_lstg_GameObjectBentLaser_pushHead(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.GameObjectBentLaser", "lstg.GameObjectBentLaser:pushHead");
-	LUA_TRY_INVOKE(4, (static_cast<void(lstg::GameObjectBentLaser::*)(float, float, float, const cocos2d::Color4B&)>(&lstg::GameObjectBentLaser::pushHead)));
+	LUA_TRY_INVOKE(4, (static_cast<void(lstg::GameObjectBentLaser::*)(float, float, float, const cc::Color4B&)>(&lstg::GameObjectBentLaser::pushHead)));
 	LUA_TRY_INVOKE(3, (static_cast<void(lstg::GameObjectBentLaser::*)(float, float, float)>(&lstg::GameObjectBentLaser::pushHead)));
 	LUA_TRY_INVOKE(2, (static_cast<void(lstg::GameObjectBentLaser::*)(float, float)>(&lstg::GameObjectBentLaser::pushHead)));
 	LUA_INVOKE_FOOTER("2,3,4");
@@ -150,7 +150,7 @@ int lua_lstg_GameObjectBentLaser_pushHead(lua_State* lua_S)
 int lua_lstg_GameObjectBentLaser_pushTail(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.GameObjectBentLaser", "lstg.GameObjectBentLaser:pushTail");
-	LUA_TRY_INVOKE(4, (static_cast<void(lstg::GameObjectBentLaser::*)(float, float, float, const cocos2d::Color4B&)>(&lstg::GameObjectBentLaser::pushTail)));
+	LUA_TRY_INVOKE(4, (static_cast<void(lstg::GameObjectBentLaser::*)(float, float, float, const cc::Color4B&)>(&lstg::GameObjectBentLaser::pushTail)));
 	LUA_TRY_INVOKE(3, (static_cast<void(lstg::GameObjectBentLaser::*)(float, float, float)>(&lstg::GameObjectBentLaser::pushTail)));
 	LUA_TRY_INVOKE(2, (static_cast<void(lstg::GameObjectBentLaser::*)(float, float)>(&lstg::GameObjectBentLaser::pushTail)));
 	LUA_INVOKE_FOOTER("2,3,4");
@@ -158,7 +158,7 @@ int lua_lstg_GameObjectBentLaser_pushTail(lua_State* lua_S)
 int lua_lstg_GameObjectBentLaser_render(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.GameObjectBentLaser", "lstg.GameObjectBentLaser:render");
-	LUA_TRY_INVOKE(7, (static_cast<void(lstg::GameObjectBentLaser::*)(lstg::ResTexture*, lstg::RenderMode*, const cocos2d::Color4B&, float, float, float, float)>(&lstg::GameObjectBentLaser::render)));
+	LUA_TRY_INVOKE(7, (static_cast<void(lstg::GameObjectBentLaser::*)(lstg::ResTexture*, lstg::RenderMode*, const cc::Color4B&, float, float, float, float)>(&lstg::GameObjectBentLaser::render)));
 	LUA_TRY_INVOKE(1, static_cast<void(lstg::GameObjectBentLaser::*)(lstg::ResSprite*)>(&lstg::GameObjectBentLaser::render));
 	LUA_INVOKE_FOOTER("1,7");
 }
@@ -252,7 +252,7 @@ int luaReg_BentLaser_lstgGameObjectBentLaser(lua_State* lua_S)
 {
 	LUA_ENTRY("lstg");
 	LUA_CLS_DEF_BASE(lstg::GameObjectBentLaser, "GameObjectBentLaser", "lstg.GameObjectBentLaser",
-		cocos2d::Ref, "cc.Ref",
+		cc::Ref, "cc.Ref",
 		nullptr, nullptr);
 	LUA_METHOD("boundCheck", lua_lstg_GameObjectBentLaser_boundCheck);
 	LUA_METHOD("clear", lua_lstg_GameObjectBentLaser_clear);

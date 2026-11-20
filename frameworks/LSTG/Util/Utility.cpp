@@ -9,7 +9,7 @@
 
 using namespace std;
 using namespace lstg;
-using namespace cocos2d;
+using namespace cc;
 
 string lstg::StringFormat(const char* Format, ...)noexcept
 {
@@ -386,7 +386,7 @@ void lstg::transformPoint(Vec3& point, const Vec2& anchorPIP,
 	point.z += z;
 }
 
-void lstg::transformQuad(V3F_C4B_T2F_Quad& quad, const cocos2d::Vec2& anchorPIP, float x, float y, float rot,
+void lstg::transformQuad(V3F_C4B_T2F_Quad& quad, const cc::Vec2& anchorPIP, float x, float y, float rot,
 	float hscale, float vscale, float z)
 {
 	float zz2_;
@@ -674,7 +674,7 @@ Image* lstg::getTextureImage(Texture2D* texture,
 			w, h, bytePerPixel * 8, texture->hasPremultipliedAlpha());
 	};
 	//texture->getBackendTexture()->getBytes(x, y, width, height, flipImage, callback);
-	((cocos2d::backend::Texture2DGFX*)texture->getBackendTexture())->getBytes(
+	((cc::backend::Texture2DGFX*)texture->getBackendTexture())->getBytes(
 		x, y, width, height, flipImage, callback);
 	return image.detach();
 }
@@ -1048,7 +1048,7 @@ bool util::BlendFactorFromString(const std::string& str, backend::BlendFactor& v
 	return true;
 }
 
-cc::IntrusivePtr<cocos2d::backend::Program> util::CreateProgramFromPath(const std::string& v, const std::string& f)
+cc::IntrusivePtr<cc::backend::Program> util::CreateProgramFromPath(const std::string& v, const std::string& f)
 {	
 	auto fu = FileUtils::getInstance();
 	const auto v_content = fu->getStringFromFile(fu->fullPathForFilename(v));
@@ -1061,7 +1061,7 @@ cc::IntrusivePtr<cocos2d::backend::Program> util::CreateProgramFromPath(const st
 	return nullptr;
 }
 
-cc::IntrusivePtr<cocos2d::backend::Program> util::CreateProgramFromString(const std::string& v, const std::string& f)
+cc::IntrusivePtr<cc::backend::Program> util::CreateProgramFromString(const std::string& v, const std::string& f)
 {
 	cc::IntrusivePtr<backend::Program> ret{backend::Device::getInstance()->newProgram(v, f), cc::adopt_ref};
 	if (ret)
@@ -1071,7 +1071,7 @@ cc::IntrusivePtr<cocos2d::backend::Program> util::CreateProgramFromString(const 
 	return nullptr;
 }
 
-cc::IntrusivePtr<cocos2d::backend::Program> util::CreateProgramFromData(Data* v, Data* f)
+cc::IntrusivePtr<cc::backend::Program> util::CreateProgramFromData(Data* v, Data* f)
 {
 	if (!v || !f)
 	{

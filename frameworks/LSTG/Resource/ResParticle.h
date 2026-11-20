@@ -42,8 +42,8 @@ namespace lstg {
 		};
 		struct ParticleInstance
 		{
-			cocos2d::Vec2 vecLocation;
-			cocos2d::Vec2 vecVelocity;
+			cc::Vec2 vecLocation;
+			cc::Vec2 vecVelocity;
 			float gravity = 0;         // 重力
 			float radialAccel = 0;     // 线加速度
 			float tangentialAccel = 0; // 角加速度
@@ -57,7 +57,7 @@ namespace lstg {
 			float terminalLife = 0;    // 终止时间
 		};
 		// particle pool instance
-		class ParticlePool : public cocos2d::Ref
+		class ParticlePool : public cc::Ref
 		{
 			friend class ResParticle;
 		public:
@@ -70,19 +70,19 @@ namespace lstg {
 			cc::IntrusivePtr<ResParticle> host;
 			ParticleInfo particleInfo;
 			RandomWELL512 rng;
-			cocos2d::TrianglesCommand::Triangles triangles;
-			cocos2d::CustomCommand cmd;
+			cc::TrianglesCommand::Triangles triangles;
+			cc::CustomCommand cmd;
 
 			RenderMode* renderMode = RenderMode::getDefault();
 			Status status = Status::Alive;
-			cocos2d::Vec2 center;
-			cocos2d::Vec2 prevCenter;
+			cc::Vec2 center;
+			cc::Vec2 prevCenter;
 			float rotation = 0.f;
 			size_t numAlive = 0;
 			float life = 0.f;  // lived time
 			float emissionResidue = 0.f;
 			std::array<ParticleInstance, LPARTICLE_MAXCNT> particlePool;
-			std::array<cocos2d::V3F_C4B_T2F_Quad, LPARTICLE_MAXCNT> quads;
+			std::array<cc::V3F_C4B_T2F_Quad, LPARTICLE_MAXCNT> quads;
 
 			static std::vector<unsigned short> quadIndices;
 			static void initQuadIndices(size_t size);
@@ -114,10 +114,10 @@ namespace lstg {
 			PARTICLE_INFO_FUNC(float, ColorVar);
 			PARTICLE_INFO_FUNC(float, AlphaVar);
 #undef PARTICLE_INFO_FUNC
-			cocos2d::Color4B getColorStart();
-			void setColorStart(const cocos2d::Color4B& color);
-			cocos2d::Color4B getColorEnd();
-			void setColorEnd(const cocos2d::Color4B& color);
+			cc::Color4B getColorStart();
+			void setColorStart(const cc::Color4B& color);
+			cc::Color4B getColorEnd();
+			void setColorEnd(const cc::Color4B& color);
 
 			ResParticle* getResource() const { return host.get(); }
 			size_t getAliveCount() const { return numAlive; }
@@ -128,8 +128,8 @@ namespace lstg {
 			void setRenderMode(RenderMode* m);
 			bool isActive() const { return status == Status::Alive; }
 			void setActive(bool b);
-			void setCenter(const cocos2d::Vec2& pos);
-			cocos2d::Vec2 getCenter() const { return center; }
+			void setCenter(const cc::Vec2& pos);
+			cc::Vec2 getCenter() const { return center; }
 			void setRotation(float r) { rotation = r; }
 			float getRotation() const { return rotation; }
 
@@ -142,21 +142,21 @@ namespace lstg {
 		};
 	protected:
 		ParticleInfo particleInfo;
-		cc::IntrusivePtr<cocos2d::Sprite> bindSprite;
+		cc::IntrusivePtr<cc::Sprite> bindSprite;
 		RenderMode* renderMode;
 		std::unordered_set<ParticlePool*> poolInstances;
 	public:
 		RenderMode* getRenderMode() const { return renderMode; }
 		ParticlePool* newPool();
-		cc::IntrusivePtr<cocos2d::ParticleSystemQuad> newCocosParticle();
+		cc::IntrusivePtr<cc::ParticleSystemQuad> newCocosParticle();
 
-		cocos2d::Sprite* getBindSprite() const { return bindSprite; }
+		cc::Sprite* getBindSprite() const { return bindSprite; }
 		const ParticleInfo& getParticleInfo() const { return particleInfo; }
 
 		std::unordered_map<std::string, std::string> getInfo() const override;
 		size_t getMemorySize() override;
 
-		ResParticle(const std::string& name, const ParticleInfo& pinfo, cc::IntrusivePtr<cocos2d::Sprite> sprite,
+		ResParticle(const std::string& name, const ParticleInfo& pinfo, cc::IntrusivePtr<cc::Sprite> sprite,
 			RenderMode* rm, double a, double b, XColliderType colliType = XColliderType::Circle);
 		~ResParticle() override;
 

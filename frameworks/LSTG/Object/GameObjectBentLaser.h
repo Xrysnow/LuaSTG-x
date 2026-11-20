@@ -6,7 +6,7 @@
 
 namespace lstg
 {
-	class GameObjectBentLaser : public cocos2d::Ref
+	class GameObjectBentLaser : public cc::Ref
 	{
 	public:
 		enum class ColorMode
@@ -25,11 +25,11 @@ namespace lstg
 		};
 		struct LaserNode
 		{
-			cocos2d::Vec2 pos;
-			cocos2d::Vec2 d;
-			cocos2d::Vec2 dNormalized;
-			cocos2d::Vec2 expandVec;
-			cocos2d::Color4B color;
+			cc::Vec2 pos;
+			cc::Vec2 d;
+			cc::Vec2 dNormalized;
+			cc::Vec2 expandVec;
+			cc::Color4B color;
 			float dLength = 0.f;
 			float half_width = 0.f;
 			bool dirty = false;
@@ -40,7 +40,7 @@ namespace lstg
 		size_t nodeLimit = LGOBJ_MAXLASERNODE;
 		float lengthLimit = FLT_MAX;
 		float defaultWidth = 1.f;
-		cocos2d::Color4B defaultColor = cocos2d::Color4B::WHITE;
+		cc::Color4B defaultColor = cc::Color4B::WHITE;
 		float renderScale = 1.f;
 		ColorMode colorMode = ColorMode::Normal;
 		ColorMixMode colorMixMode = ColorMixMode::None;
@@ -59,8 +59,8 @@ namespace lstg
 
 		float getDefaultWidth() const { return defaultWidth; }
 		void setDefaultWidth(float width) { defaultWidth = std::abs(width); }
-		cocos2d::Color4B getDefaultColor()const { return defaultColor; }
-		void setDefaultColor(const cocos2d::Color4B& color) { defaultColor = color; }
+		cc::Color4B getDefaultColor()const { return defaultColor; }
+		void setDefaultColor(const cc::Color4B& color) { defaultColor = color; }
 		float getRenderScale()const { return renderScale; }
 		void setRenderScale(float scale) { renderScale = scale; }
 		ColorMode getColorMode()const { return colorMode; }
@@ -69,11 +69,11 @@ namespace lstg
 
 		void pushHead(float x, float y) { pushHead(x, y, defaultWidth); }
 		void pushHead(float x, float y, float width) { pushHead(x, y, width, defaultColor); }
-		void pushHead(float x, float y, float width, const cocos2d::Color4B& color);
+		void pushHead(float x, float y, float width, const cc::Color4B& color);
 
 		void pushTail(float x, float y) { pushTail(x, y, defaultWidth); }
 		void pushTail(float x, float y, float width) { pushTail(x, y, width, defaultColor); }
-		void pushTail(float x, float y, float width, const cocos2d::Color4B& color);
+		void pushTail(float x, float y, float width, const cc::Color4B& color);
 
 		void popHead();
 		void popHead(size_t n);
@@ -91,23 +91,23 @@ namespace lstg
 		bool boundCheck();
 
 		void render(ResSprite* sprite);
-		void render(ResTexture* texture, RenderMode* blend, const cocos2d::Color4B& color,
+		void render(ResTexture* texture, RenderMode* blend, const cc::Color4B& color,
 			float tex_left, float tex_top, float tex_width, float tex_height);
 
-		cocos2d::Vec2 getNodePosition(int32_t i);
+		cc::Vec2 getNodePosition(int32_t i);
 		float getNodeWidth(int32_t i);
-		cocos2d::Color4B getNodeColor(int32_t i);
+		cc::Color4B getNodeColor(int32_t i);
 		// get length of this node (to the next node)
 		float getNodeLength(int32_t i);
 
 		void setNodePosition(int32_t i, float x, float y);
 		void setNodeWidth(int32_t i, float width);
-		void setNodeColor(int32_t i, const cocos2d::Color4B& color);
+		void setNodeColor(int32_t i, const cc::Color4B& color);
 
 		/** set width of all nodes */
 		void setAllWidth(float width);
 		/** set color of all nodes */
-		void setAllColor(const cocos2d::Color4B& color);
+		void setAllColor(const cc::Color4B& color);
 
 		void clear();
 		void reset();
@@ -116,7 +116,7 @@ namespace lstg
 		LaserNode* getNodeByIndex(int32_t i);
 
 		void renderWithTexture2D(
-			cocos2d::Texture2D* tex, RenderMode* blend, const cocos2d::Color4B& color,
+			cc::Texture2D* tex, RenderMode* blend, const cc::Color4B& color,
 			float tex_left, float tex_top, float tex_width, float tex_height);
 
 		void updateNode(size_t i);

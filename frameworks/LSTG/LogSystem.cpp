@@ -33,7 +33,7 @@ LogSystem::LogSystem()
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 	changePath(fileName);
 #else
-	const auto writablePath = cocos2d::FileUtils::getInstance()->getWritablePath();
+	const auto writablePath = cc::FileUtils::getInstance()->getWritablePath();
 	if (!writablePath.empty())
 		changePath(writablePath + fileName);
 	else
@@ -47,7 +47,7 @@ LogSystem::LogSystem(const string& fileName)
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 	changePath(fileName);
 #else
-	const auto writablePath = cocos2d::FileUtils::getInstance()->getWritablePath();
+	const auto writablePath = cc::FileUtils::getInstance()->getWritablePath();
 	if (!writablePath.empty())
 		changePath(writablePath + fileName);
 	else
@@ -95,7 +95,7 @@ void LogSystem::Log(LogType type, const char* info, ...)
 	s.pop_back();
 	if ((int)type >= 3 - consoleLevel)
 	{
-		cocos2d::log("%s", s.c_str());
+		cc::log("%s", s.c_str());
 	}
 }
 
@@ -103,7 +103,7 @@ bool LogSystem::changePath(const std::string& path)
 {
 	lock_guard<mutex> lock(mut);
 	if (path.empty() || path.find('\0') != std::string::npos ||
-		!cocos2d::StringUtils::isLegalUTF8String(path.data(), path.size()))
+		!cc::StringUtils::isLegalUTF8String(path.data(), path.size()))
 		return false;
 	if (logFileName == path)
 		return logFile.is_open();

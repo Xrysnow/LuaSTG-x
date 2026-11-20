@@ -54,7 +54,7 @@ int luaReg_Latex_lstgLatex(lua_State* lua_S)
 {
 	LUA_ENTRY("lstg");
 	LUA_CLS_DEF_BASE(lstg::Latex, "Latex", "lstg.Latex",
-		cocos2d::Node, "cc.Node",
+		cc::Node, "cc.Node",
 		nullptr, nullptr);
 	LUA_METHOD("getBaseline", lua_lstg_Latex_getBaseline);
 	LUA_METHOD("getDepth", lua_lstg_Latex_getDepth);

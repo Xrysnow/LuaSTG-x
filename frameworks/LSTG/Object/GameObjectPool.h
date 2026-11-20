@@ -17,7 +17,7 @@ namespace lstg
 		GameObject* _obj;
 		GameObject** obj;
 	public:
-		cocos2d::Vec2* anchor;
+		cc::Vec2* anchor;
 		float* hscale;
 		float* vscale;
 		float* x;
@@ -47,9 +47,9 @@ namespace lstg
 		void update();
 		void update(size_t begin, size_t end);
 
-		cocos2d::Vec2 getPosition(size_t id) const;
-		void getTransformMat(size_t id, cocos2d::Mat4* mat);
-		void getTransformMat(size_t id, float factor, float z, cocos2d::Mat4* mat);
+		cc::Vec2 getPosition(size_t id) const;
+		void getTransformMat(size_t id, cc::Mat4* mat);
+		void getTransformMat(size_t id, float factor, float z, cc::Mat4* mat);
 
 		void boundCheck(float l, float r, float b, float t, bool* out);
 		void boundCheck(size_t begin, size_t end, float l, float r, float b, float t, bool* out) const;

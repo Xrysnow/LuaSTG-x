@@ -2,7 +2,7 @@
 #include "AppFrame.h"
 //using namespace std;
 using namespace lstg;
-using namespace cocos2d;
+using namespace cc;
 
 ControllerHelper::ControllerHelper()
 {

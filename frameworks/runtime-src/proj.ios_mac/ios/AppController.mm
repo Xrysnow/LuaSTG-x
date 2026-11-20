@@ -63,7 +63,7 @@ API_AVAILABLE(ios(13.0))
 - (BOOL)attachWindow:(UIWindow*)gameWindow {
     if (!_viewController) {
         lstg::AppFrame::getInstance()->initGLContextAttrs();
-        cocos2d::GLViewImpl::convertAttrs();
+        cc::GLViewImpl::convertAttrs();
         _viewController = [[RootViewController alloc] init];
     }
 
@@ -74,9 +74,9 @@ API_AVAILABLE(ios(13.0))
         return YES; // Reconnect the existing engine view after a scene disconnect.
     }
 
-    auto view = cocos2d::GLViewImpl::createWithEAGLView((__bridge void*)_viewController.view);
+    auto view = cc::GLViewImpl::createWithEAGLView((__bridge void*)_viewController.view);
     if (view) {
-        cocos2d::Director::getInstance()->setOpenGLView(view);
+        cc::Director::getInstance()->setOpenGLView(view);
         // iOS starts its display link and returns before the first frame.
         if (lstg::AppFrame::getInstance()->run() == 0) {
             _running = YES;
@@ -95,14 +95,14 @@ API_AVAILABLE(ios(13.0))
 - (void)enterBackground {
     if (_running && !_inBackground) {
         _inBackground = YES;
-        cocos2d::Application::getInstance()->applicationDidEnterBackground();
+        cc::Application::getInstance()->applicationDidEnterBackground();
     }
 }
 
 - (void)enterForeground {
     if (_running && _inBackground) {
         _inBackground = NO;
-        cocos2d::Application::getInstance()->applicationWillEnterForeground();
+        cc::Application::getInstance()->applicationWillEnterForeground();
     }
 }
 

@@ -1,7 +1,7 @@
 #include "Utility.h"
 
 using namespace lstg;
-using namespace cocos2d;
+using namespace cc;
 
 bool util::CheckBlendOperation(backend::BlendOperation equation)
 {

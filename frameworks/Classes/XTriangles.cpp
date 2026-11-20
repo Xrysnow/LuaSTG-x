@@ -6,7 +6,7 @@ if (ret&&ret->_init) return ret; \
 return nullptr;
 
 using namespace lstg;
-using namespace cocos2d;
+using namespace cc;
 
 const Rect Triangles::defaultRect = Rect(0, 0, 1, 1);
 
@@ -198,7 +198,7 @@ void Triangles::setVertexColor(size_t index, const Color4B& color)
 	tri.verts[index].colors = color;
 }
 
-void Triangles::setAllVertexColor(const cocos2d::Color4B& color)
+void Triangles::setAllVertexColor(const cc::Color4B& color)
 {
 	for (int i = 0; i < tri.vertCount; ++i)
 		tri.verts[i].colors = color;

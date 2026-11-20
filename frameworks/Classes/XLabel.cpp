@@ -1,7 +1,7 @@
 ﻿#include "XLabel.h"
 
 using namespace std;
-using namespace cocos2d;
+using namespace cc;
 
 cc::IntrusivePtr<XLabel> XLabel::createWithBMFont(const string& bmfontFilePath, const string& text, const Vec2& imageOffset)
 {

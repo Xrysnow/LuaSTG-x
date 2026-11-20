@@ -16,14 +16,14 @@ namespace lstg
 	public:
 		static MemPoolManager* getInstance();
 
-		using LaserQuads = std::array<cocos2d::V3F_C4B_T2F_Quad, LGOBJ_MAXLASERNODE>;
+		using LaserQuads = std::array<cc::V3F_C4B_T2F_Quad, LGOBJ_MAXLASERNODE>;
 
 		XTrianglesCommand* getXTrianglesCommand() { return xtcmdPool.get(); }
-		cocos2d::CallbackCommand* getCallbackCommand();
-		cocos2d::V3F_C4B_T2F_Quad* getQuad() { return quadsPool.get(); }
-		cocos2d::Mat4* getMat4() { return matPool.get(); }
-		cocos2d::Mat4* getMat4(float x, float y, float z,
-			float rot, float hscale, float vscale, const cocos2d::Vec2& anchorPointInPoints);
+		cc::CallbackCommand* getCallbackCommand();
+		cc::V3F_C4B_T2F_Quad* getQuad() { return quadsPool.get(); }
+		cc::Mat4* getMat4() { return matPool.get(); }
+		cc::Mat4* getMat4(float x, float y, float z,
+			float rot, float hscale, float vscale, const cc::Vec2& anchorPointInPoints);
 		LaserQuads* getLaserQuads() { return laserQuadsPool.get(); }
 
 		void trim();
@@ -34,14 +34,14 @@ namespace lstg
 		std::shared_ptr<std::array<T, N>> applyArray();
 		void clearArrays();
 	protected:
-		std::shared_ptr<ProgramStatePool> getProgramStatePool(cc::IntrusivePtr<cocos2d::backend::Program> program);
-		void removeProgramStatePool(cocos2d::backend::Program* program);
+		std::shared_ptr<ProgramStatePool> getProgramStatePool(cc::IntrusivePtr<cc::backend::Program> program);
+		void removeProgramStatePool(cc::backend::Program* program);
 	private:
 		ArrayObjectPool<XTrianglesCommand, 4096> xtcmdPool;
-		ArrayObjectPool<cocos2d::V3F_C4B_T2F_Quad, 4096> quadsPool;
-		ArrayObjectPool<cocos2d::Mat4, 4096> matPool;
+		ArrayObjectPool<cc::V3F_C4B_T2F_Quad, 4096> quadsPool;
+		ArrayObjectPool<cc::Mat4, 4096> matPool;
 		ArrayObjectPool<LaserQuads, 1> laserQuadsPool;
-		std::unordered_map<cocos2d::backend::Program*, std::shared_ptr<ProgramStatePool>> statePool;
+		std::unordered_map<cc::backend::Program*, std::shared_ptr<ProgramStatePool>> statePool;
 		std::vector<std::shared_ptr<void>> arrays;
 		MemPoolManager() = default;
 		friend class RenderMode;
@@ -58,13 +58,13 @@ namespace lstg
 	constexpr size_t ProgramStatePoolBlockSize = 32;
 
 	class ProgramStatePool : public AutoObjectPool<
-		cocos2d::backend::ProgramState, ProgramStatePoolBlockSize, cocos2d::Vector<cocos2d::backend::ProgramState*>>
+		cc::backend::ProgramState, ProgramStatePoolBlockSize, cc::Vector<cc::backend::ProgramState*>>
 	{
 	protected:
-		cc::IntrusivePtr<cocos2d::backend::Program> _program;
+		cc::IntrusivePtr<cc::backend::Program> _program;
 		void alloc_();
 	public:
-		cocos2d::backend::ProgramState* get();
-		explicit ProgramStatePool(cc::IntrusivePtr<cocos2d::backend::Program> program);
+		cc::backend::ProgramState* get();
+		explicit ProgramStatePool(cc::IntrusivePtr<cc::backend::Program> program);
 	};
 }

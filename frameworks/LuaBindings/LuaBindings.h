@@ -9,7 +9,7 @@ namespace lstg
 namespace lua
 {
 	bool luaval_to_RenderMode(lua_State* L, int lo, lstg::RenderMode** outValue, const char* fName = "");
-	bool luaval_to_Color4B(lua_State* L, int lo, cocos2d::Color4B* outValue, const char* fName = "");
+	bool luaval_to_Color4B(lua_State* L, int lo, cc::Color4B* outValue, const char* fName = "");
 
 	template<>
 	struct to_native<lstg::RenderMode*> {

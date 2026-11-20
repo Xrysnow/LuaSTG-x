@@ -62,7 +62,7 @@ LUA_REGISTER_FUNC_DEF(lstg, Print)
 	}
 	string info = luaL_checkstring(L, -1);
 	lua_pop(L, 2);
-	cocos2d::log("%s", info.c_str());
+	cc::log("%s", info.c_str());
 	return 0;
 }
 
@@ -163,7 +163,7 @@ LUA_REGISTER_FUNC_DEF(lstg, SetOnWriteLog)
 #endif
 LUA_REGISTER_FUNC_DEF(lstg, MessageBox)
 {
-	cocos2d::ccMessageBox(luaL_checkstring(L, 1), luaL_checkstring(L, 2));
+	cc::ccMessageBox(luaL_checkstring(L, 1), luaL_checkstring(L, 2));
 	return 0;
 }
 
@@ -269,9 +269,9 @@ LUA_REGISTER_FUNC_DEF(lstg, Base64Decode)
 	{
 		unsigned char* decoded = nullptr;
 #ifdef CC_VERSION
-		using cocos2d::utils::base64Decode;
+		using cc::utils::base64Decode;
 #else
-		using cocos2d::base64Decode;
+		using cc::base64Decode;
 #endif
 		const int length = base64Decode((const unsigned char*)data, (unsigned)size, &decoded);
 		if (decoded)
@@ -293,9 +293,9 @@ LUA_REGISTER_FUNC_DEF(lstg, Base64Encode)
 	{
 		char* encoded = nullptr;
 #ifdef CC_VERSION
-		using cocos2d::utils::base64Encode;
+		using cc::utils::base64Encode;
 #else
-		using cocos2d::base64Encode;
+		using cc::base64Encode;
 #endif
 		const int length = base64Encode((const unsigned char*)data, (unsigned)size, &encoded);
 		if (encoded)

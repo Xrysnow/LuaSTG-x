@@ -273,7 +273,7 @@ bool ZipArchive::extractEntry(const std::string& name, const std::string& dstPat
 	if (!isOpen()) { recordResult(NOT_OPEN); return false; }
 	const auto entry = getEntry(name, state);
 	if (entry.isNull()) { recordResult(INVALID_ENTRY); return false; }
-	const auto path = cocos2d::FileUtils::getInstance()->getSuitableFOpen(dstPath);
+	const auto path = cc::FileUtils::getInstance()->getSuitableFOpen(dstPath);
 	std::ofstream output(path, std::ios::out | std::ios::binary);
 	if (!output.is_open()) { recordResult(INVALID_PARAMETER); return false; }
 	int result = archive->readEntry(entry, output, static_cast<libzippp::ZipArchive::State>(state));

@@ -7,20 +7,20 @@ namespace lstg {
 	class ResRenderTarget :
 		public Resource
 	{
-		cc::IntrusivePtr<cocos2d::RenderTexture> target;
-		cocos2d::Color4B clearColor;
+		cc::IntrusivePtr<cc::RenderTexture> target;
+		cc::Color4B clearColor;
 		bool autoResize;
 		bool pushed = false;
 		bool blendFix = false;
 	public:
 		bool isNeedBlendFix() const;
 		void setNeedBlendFix(bool b);
-		cocos2d::Color4B getClearColor() const;
-		void setClearColor(const cocos2d::Color4B& color);
+		cc::Color4B getClearColor() const;
+		void setClearColor(const cc::Color4B& color);
 
-		cocos2d::RenderTexture* getTarget();
-		cocos2d::Texture2D* getTexture();
-		cc::IntrusivePtr<cocos2d::Texture2D> copyTexture(bool flip = false);
+		cc::RenderTexture* getTarget();
+		cc::Texture2D* getTexture();
+		cc::IntrusivePtr<cc::Texture2D> copyTexture(bool flip = false);
 		bool checkTarget();
 		bool push();
 		bool pop();
@@ -29,7 +29,7 @@ namespace lstg {
 		std::unordered_map<std::string, std::string> getInfo() const override;
 		size_t getMemorySize() override;
 
-		ResRenderTarget(const std::string& name, cc::IntrusivePtr<cocos2d::RenderTexture> tex, bool autoResize = true);
+		ResRenderTarget(const std::string& name, cc::IntrusivePtr<cc::RenderTexture> tex, bool autoResize = true);
 		~ResRenderTarget() override;
 
 		static cc::IntrusivePtr<ResRenderTarget> create(const std::string& name);

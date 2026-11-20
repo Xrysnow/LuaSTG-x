@@ -111,7 +111,7 @@ int WindowHelperWin32::SetVisiable(bool Visiable)
 	return ShowWindow(m_hWnd, m_bShow ? SW_SHOW : SW_HIDE) == TRUE;
 }
 
-cocos2d::Rect WindowHelperWin32::GetRect()
+cc::Rect WindowHelperWin32::GetRect()
 {
 	RECT tRect;
 	GetWindowRect(m_hWnd, &tRect);
@@ -122,7 +122,7 @@ cocos2d::Rect WindowHelperWin32::GetRect()
 		(float)tRect.top - tRect.bottom };
 }
 
-int WindowHelperWin32::SetRect(const cocos2d::Rect& Range)
+int WindowHelperWin32::SetRect(const cc::Rect& Range)
 {
 	if (!m_hWnd) return 0;
 	return SetWindowPos(m_hWnd, 0,
@@ -131,7 +131,7 @@ int WindowHelperWin32::SetRect(const cocos2d::Rect& Range)
 		SWP_NOZORDER) == TRUE;
 }
 
-cocos2d::Rect WindowHelperWin32::GetClientRect()
+cc::Rect WindowHelperWin32::GetClientRect()
 {
 	RECT tRect;
 	::GetClientRect(m_hWnd, &tRect);
@@ -142,7 +142,7 @@ cocos2d::Rect WindowHelperWin32::GetClientRect()
 		(float)tRect.top - tRect.bottom };
 }
 
-int WindowHelperWin32::SetClientRect(const cocos2d::Rect& Range)
+int WindowHelperWin32::SetClientRect(const cc::Rect& Range)
 {
 	RECT tWinRect = { (int)Range.getMinX() , (int)Range.getMaxY() , (int)Range.getMaxX() , (int)Range.getMinY() };
 	AdjustWindowRect(&tWinRect, GetWindowLong(m_hWnd, GWL_STYLE), FALSE);
@@ -235,7 +235,7 @@ BOOL WindowHelperWin32::IsWindows10BuildOrGreaterWin32(WORD build)
 	return 0;
 }
 
-WindowHelperWin32::WindowHelperWin32(cocos2d::GLViewImpl* view, HWND handle)
+WindowHelperWin32::WindowHelperWin32(cc::GLViewImpl* view, HWND handle)
 	: WindowHelperDesktop(view), m_hWnd(handle), m_bShow(false), m_CaptionText(L"")
 {
 }

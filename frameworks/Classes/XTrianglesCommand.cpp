@@ -4,7 +4,7 @@
 #include "xxhash/xxhash.h"
 
 using namespace lstg;
-using namespace cocos2d;
+using namespace cc;
 using namespace backend;
 
 XTrianglesCommand::XTrianglesCommand()

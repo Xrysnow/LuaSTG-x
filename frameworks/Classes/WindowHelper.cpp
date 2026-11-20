@@ -12,7 +12,7 @@
 
 using namespace std;
 using namespace lstg;
-using namespace cocos2d;
+using namespace cc;
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
 namespace
@@ -341,14 +341,14 @@ float WindowHelperDesktop::getDpiScale()
 	return (xscale + yscale) / 2;
 }
 
-cocos2d::Vec2 WindowHelperDesktop::getDisplayResolution()
+cc::Vec2 WindowHelperDesktop::getDisplayResolution()
 {
 	return view->getMonitorSize();
 }
 
-std::vector<cocos2d::Vec2> WindowHelperDesktop::enumDisplayResolution()
+std::vector<cc::Vec2> WindowHelperDesktop::enumDisplayResolution()
 {
-	std::vector<cocos2d::Vec2> res{};
+	std::vector<cc::Vec2> res{};
 	GLFWmonitor* monitor = view->getMonitor();
 	if (!monitor)
 		return res;
@@ -380,7 +380,7 @@ GLFWwindow* WindowHelperDesktop::getWindow()
 
 #endif // CC_PLATFORM_PC
 
-cocos2d::Map<void*, MonitorHelper*> MonitorHelper::instances;
+cc::Map<void*, MonitorHelper*> MonitorHelper::instances;
 
 std::vector<cc::IntrusivePtr<MonitorHelper>> MonitorHelper::getMonitors()
 {
@@ -432,7 +432,7 @@ bool MonitorHelperDesktop::isValid()
 	return false;
 }
 
-cocos2d::Vec2 MonitorHelperDesktop::getPosition()
+cc::Vec2 MonitorHelperDesktop::getPosition()
 {
 	int x = 0;
 	int y = 0;
@@ -440,7 +440,7 @@ cocos2d::Vec2 MonitorHelperDesktop::getPosition()
 	return { float(x),float(y) };
 }
 
-cocos2d::Rect MonitorHelperDesktop::getWorkarea()
+cc::Rect MonitorHelperDesktop::getWorkarea()
 {
 	int x = 0;
 	int y = 0;
@@ -450,7 +450,7 @@ cocos2d::Rect MonitorHelperDesktop::getWorkarea()
 	return { float(x),float(y),float(w),float(h) };
 }
 
-cocos2d::Vec2 MonitorHelperDesktop::getPhysicalSize()
+cc::Vec2 MonitorHelperDesktop::getPhysicalSize()
 {
 	int w = 0;
 	int h = 0;
@@ -458,7 +458,7 @@ cocos2d::Vec2 MonitorHelperDesktop::getPhysicalSize()
 	return { float(w),float(h) };
 }
 
-cocos2d::Vec2 MonitorHelperDesktop::getContentScale()
+cc::Vec2 MonitorHelperDesktop::getContentScale()
 {
 	float x = 0;
 	float y = 0;

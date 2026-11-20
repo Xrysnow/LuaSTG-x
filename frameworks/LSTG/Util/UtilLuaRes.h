@@ -15,7 +15,7 @@ namespace lstg
 		ResFX* toResFX(lua_State* L, int lo);
 		ResRenderTarget* toResRenderTarget(lua_State* L, int lo);
 		// get Texture2D from ResTexture or ResRenderTarget
-		cocos2d::Texture2D* toTexture2D(lua_State* L, int lo);
+		cc::Texture2D* toTexture2D(lua_State* L, int lo);
 
 		int setResFX(ResFX* p, lua_State* L, int lo);
 	}

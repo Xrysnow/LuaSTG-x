@@ -18,7 +18,7 @@ static std::string s_ambientLightUniformColorName = "u_AmbientLightSourceColor";
 
 using namespace std;
 using namespace lstg;
-using namespace cocos2d;
+using namespace cc;
 
 bool ComponentDataLight::init()
 {
@@ -64,7 +64,7 @@ void ComponentDataLight::resetUniforms()
 	spotLightUniformRangeInverseValues.assign(maxSpotLight, 0.0f);
 }
 
-void ComponentDataLight::applyLights(const std::vector<cocos2d::BaseLight*>& lights)
+void ComponentDataLight::applyLights(const std::vector<cc::BaseLight*>& lights)
 {
 	ambientColor = Vec3::ZERO;
 	size_t dirNum = 0;

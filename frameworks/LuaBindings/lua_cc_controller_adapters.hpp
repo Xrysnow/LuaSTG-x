@@ -6,8 +6,8 @@ namespace lua
 {
 // KeyStatus is a Lua snapshot, never a borrowed view into a device's state map.
 template<>
-struct to_lua<cocos2d::Controller::KeyStatus> {
-	static void F(lua_State* L, const cocos2d::Controller::KeyStatus& value) {
+struct to_lua<cc::Controller::KeyStatus> {
+	static void F(lua_State* L, const cc::Controller::KeyStatus& value) {
 		// Lua allocation can run finalizers that change or destroy the device.
 		const auto snapshot = value;
 		lua_createtable(L, 0, 3);

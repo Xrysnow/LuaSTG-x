@@ -57,7 +57,7 @@ namespace lstg
 	}
 
 
-	class Resource : public cocos2d::Ref
+	class Resource : public cc::Ref
 	{
 	protected:
 		static std::unordered_set<Resource*> instances;
@@ -117,17 +117,17 @@ namespace lstg
 	class ResourceQuad : public ResourceColliable
 	{
 	protected:
-		cocos2d::V3F_C4B_T2F_Quad vertex;
+		cc::V3F_C4B_T2F_Quad vertex;
 		RenderMode* renderMode = RenderMode::getDefault();
 	public:
-		virtual void setVertex(const cocos2d::V3F_C4B_T2F_Quad& v) { vertex = v; }
-		virtual cocos2d::V3F_C4B_T2F_Quad& getVertex() { return vertex; }
+		virtual void setVertex(const cc::V3F_C4B_T2F_Quad& v) { vertex = v; }
+		virtual cc::V3F_C4B_T2F_Quad& getVertex() { return vertex; }
 
-		virtual void setColor(const cocos2d::Color4B& color);
-		virtual void setColor(const cocos2d::Color4B& color, int i);
+		virtual void setColor(const cc::Color4B& color);
+		virtual void setColor(const cc::Color4B& color, int i);
 		virtual void setAlpha(uint8_t alpha);
 
-		cocos2d::Color4B getColor(int i = 0) const;
+		cc::Color4B getColor(int i = 0) const;
 
 		RenderMode* getRenderMode() const { return renderMode; }
 		void setRenderMode(RenderMode* m) { renderMode = m; }

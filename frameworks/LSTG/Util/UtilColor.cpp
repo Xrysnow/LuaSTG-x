@@ -1,7 +1,7 @@
 ﻿#include "UtilColor.h"
 
 using namespace std;
-using namespace cocos2d;
+using namespace cc;
 #define CLAMP(v) std::min(std::max(0, (int32_t)(v)), 0xff)
 #define CLAMP_UP(v) std::min((int32_t)(v), 0xff)
 #define CLAMP_DOWN(v) std::max(0, (int32_t)(v))

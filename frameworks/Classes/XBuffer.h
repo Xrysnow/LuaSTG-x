@@ -3,7 +3,7 @@
 
 namespace lstg
 {
-	class Buffer : public cocos2d::Ref
+	class Buffer : public cc::Ref
 	{
 		Buffer();
 		~Buffer() override;

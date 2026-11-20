@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "2d/Label.h"
 
-class XLabel : public cocos2d::Label
+class XLabel : public cc::Label
 {
 public:
 	enum class LabelType {
@@ -12,22 +12,22 @@ public:
 	};
 
 	static cc::IntrusivePtr<XLabel> createWithBMFont(const std::string& bmfontPath, const std::string& text,
-		const cocos2d::Vec2& imageOffset = cocos2d::Vec2::ZERO);
+		const cc::Vec2& imageOffset = cc::Vec2::ZERO);
 
-	static cc::IntrusivePtr<XLabel> createWithTTF(const cocos2d::TTFConfig& ttfConfig, const std::string& text,
-		cocos2d::TextHAlignment hAlignment = cocos2d::TextHAlignment::LEFT, int maxLineWidth = 0);
+	static cc::IntrusivePtr<XLabel> createWithTTF(const cc::TTFConfig& ttfConfig, const std::string& text,
+		cc::TextHAlignment hAlignment = cc::TextHAlignment::LEFT, int maxLineWidth = 0);
 
 	static cc::IntrusivePtr<XLabel> createWithSystemFont(const std::string& text, const std::string& font, float fontSize,
-		const cocos2d::Size& dimensions = cocos2d::Size::ZERO,
-		cocos2d::TextHAlignment hAlignment = cocos2d::TextHAlignment::LEFT,
-		cocos2d::TextVAlignment vAlignment = cocos2d::TextVAlignment::TOP);
+		const cc::Size& dimensions = cc::Size::ZERO,
+		cc::TextHAlignment hAlignment = cc::TextHAlignment::LEFT,
+		cc::TextVAlignment vAlignment = cc::TextVAlignment::TOP);
 
-	XLabel(cocos2d::TextHAlignment hAlignment = cocos2d::TextHAlignment::LEFT,
-		cocos2d::TextVAlignment vAlignment = cocos2d::TextVAlignment::TOP);
+	XLabel(cc::TextHAlignment hAlignment = cc::TextHAlignment::LEFT,
+		cc::TextVAlignment vAlignment = cc::TextVAlignment::TOP);
 	~XLabel() override;
 
-	void setBlendColor(const cocos2d::Color4B& color) { blendColor = color; }
-	cocos2d::Color4B& getBlendColor() { return blendColor; }
+	void setBlendColor(const cc::Color4B& color) { blendColor = color; }
+	cc::Color4B& getBlendColor() { return blendColor; }
 
 	bool isItalics() const { return getRotationSkewX() == 12.0f; }
 	bool isBold() const { return _boldEnabled; }
@@ -37,8 +37,8 @@ public:
 	LabelType getLabelType() const;
 
 protected:
-	std::vector<cocos2d::V3F_C4B_T2F_Quad> tempQuads;
-	std::vector<std::shared_ptr<cocos2d::RenderCommand>> tempCommends;
+	std::vector<cc::V3F_C4B_T2F_Quad> tempQuads;
+	std::vector<std::shared_ptr<cc::RenderCommand>> tempCommends;
 
-	cocos2d::Color4B blendColor;
+	cc::Color4B blendColor;
 };

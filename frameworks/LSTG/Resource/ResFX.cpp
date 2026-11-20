@@ -5,7 +5,7 @@
 #include "ResourceMgr.h"
 
 using namespace std;
-using namespace cocos2d;
+using namespace cc;
 using namespace lstg;
 
 //static const std::string Uniform_PosteffectTexture = "POSTEFFECTTEXTURE";

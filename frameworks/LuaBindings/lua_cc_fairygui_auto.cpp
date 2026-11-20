@@ -1055,7 +1055,7 @@ int luaReg_fgui_fguiUIEventDispatcher(lua_State* lua_S)
 {
 	LUA_ENTRY("fgui");
 	LUA_CLS_DEF_BASE(fairygui::UIEventDispatcher, "UIEventDispatcher", "fgui.UIEventDispatcher",
-		cocos2d::Ref, "fgui.cocos2d.Ref",
+		cc::Ref, "fgui.cocos2d.Ref",
 		nullptr, nullptr);
 	LUA_METHOD("addEventListener", lua_fairygui_UIEventDispatcher_addEventListener);
 	LUA_METHOD("hasEventListener", lua_fairygui_UIEventDispatcher_hasEventListener);
@@ -1804,8 +1804,8 @@ int lua_fairygui_GObject_getYMin(lua_State* lua_S)
 int lua_fairygui_GObject_globalToLocal(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GObject", "fgui.GObject:globalToLocal");
-	LUA_TRY_INVOKE_R_OVERLOAD(1, static_cast<cocos2d::Rect(fairygui::GObject::*)(const cocos2d::Rect&)>(&fairygui::GObject::globalToLocal));
-	LUA_TRY_INVOKE_R_OVERLOAD(1, static_cast<cocos2d::Vec2(fairygui::GObject::*)(const cocos2d::Vec2&)>(&fairygui::GObject::globalToLocal));
+	LUA_TRY_INVOKE_R_OVERLOAD(1, static_cast<cc::Rect(fairygui::GObject::*)(const cc::Rect&)>(&fairygui::GObject::globalToLocal));
+	LUA_TRY_INVOKE_R_OVERLOAD(1, static_cast<cc::Vec2(fairygui::GObject::*)(const cc::Vec2&)>(&fairygui::GObject::globalToLocal));
 	LUA_INVOKE_FOOTER("1");
 }
 int lua_fairygui_GObject_hitTest(lua_State* lua_S)
@@ -1853,8 +1853,8 @@ int lua_fairygui_GObject_isVisible(lua_State* lua_S)
 int lua_fairygui_GObject_localToGlobal(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GObject", "fgui.GObject:localToGlobal");
-	LUA_TRY_INVOKE_R_OVERLOAD(1, static_cast<cocos2d::Rect(fairygui::GObject::*)(const cocos2d::Rect&)>(&fairygui::GObject::localToGlobal));
-	LUA_TRY_INVOKE_R_OVERLOAD(1, static_cast<cocos2d::Vec2(fairygui::GObject::*)(const cocos2d::Vec2&)>(&fairygui::GObject::localToGlobal));
+	LUA_TRY_INVOKE_R_OVERLOAD(1, static_cast<cc::Rect(fairygui::GObject::*)(const cc::Rect&)>(&fairygui::GObject::localToGlobal));
+	LUA_TRY_INVOKE_R_OVERLOAD(1, static_cast<cc::Vec2(fairygui::GObject::*)(const cc::Vec2&)>(&fairygui::GObject::localToGlobal));
 	LUA_INVOKE_FOOTER("1");
 }
 int lua_fairygui_GObject_makeFullScreen(lua_State* lua_S)
@@ -2475,7 +2475,7 @@ int luaReg_fgui_fguiPackageItem(lua_State* lua_S)
 {
 	LUA_ENTRY("fgui");
 	LUA_CLS_DEF_BASE(fairygui::PackageItem, "PackageItem", "fgui.PackageItem",
-		cocos2d::Ref, "fgui.cocos2d.Ref",
+		cc::Ref, "fgui.cocos2d.Ref",
 		nullptr, nullptr);
 	LUA_FIELD("animation", lua_fairygui_PackageItem_animation_getter, lua_fairygui_PackageItem_animation_setter);
 	LUA_FIELD("delayPerUnit", lua_fairygui_PackageItem_delayPerUnit_getter, lua_fairygui_PackageItem_delayPerUnit_setter);
@@ -2637,7 +2637,7 @@ int luaReg_fgui_fguiUIPackage(lua_State* lua_S)
 {
 	LUA_ENTRY("fgui");
 	LUA_CLS_DEF_BASE(fairygui::UIPackage, "UIPackage", "fgui.UIPackage",
-		cocos2d::Ref, "fgui.cocos2d.Ref",
+		cc::Ref, "fgui.cocos2d.Ref",
 		nullptr, nullptr);
 	LUA_SFIELD("URL_PREFIX", lua_fairygui_UIPackage_URL_PREFIX_getter, nullptr);
 	LUA_SFIELD("_constructing", lua_fairygui_UIPackage__constructing_getter, lua_fairygui_UIPackage__constructing_setter);
@@ -3259,7 +3259,7 @@ int luaReg_fgui_fguiFUILabel(lua_State* lua_S)
 {
 	LUA_ENTRY("fgui");
 	LUA_CLS_DEF_BASE(fairygui::FUILabel, "FUILabel", "fgui.FUILabel",
-		cocos2d::Label, "fgui.cocos2d.Label",
+		cc::Label, "fgui.cocos2d.Label",
 		nullptr, nullptr);
 	LUA_METHOD("applyTextFormat", lua_fairygui_FUILabel_applyTextFormat);
 	LUA_METHOD("getText", lua_fairygui_FUILabel_getText);
@@ -3524,7 +3524,7 @@ int luaReg_fgui_fguiFUIRichText(lua_State* lua_S)
 {
 	LUA_ENTRY("fgui");
 	LUA_CLS_DEF_BASE(fairygui::FUIRichText, "FUIRichText", "fgui.FUIRichText",
-		cocos2d::Node, "fgui.cocos2d.Node",
+		cc::Node, "fgui.cocos2d.Node",
 		nullptr, nullptr);
 	LUA_METHOD("applyTextFormat", lua_fairygui_FUIRichText_applyTextFormat);
 	LUA_METHOD("getAnchorFontColor", lua_fairygui_FUIRichText_getAnchorFontColor);
@@ -3647,7 +3647,7 @@ int luaReg_fgui_fguiFUIInput(lua_State* lua_S)
 {
 	LUA_ENTRY("fgui");
 	LUA_CLS_DEF_BASE(fairygui::FUIInput, "FUIInput", "fgui.FUIInput",
-		cocos2d::ui::EditBox, "fgui.cocos2d.ui.EditBox",
+		cc::ui::EditBox, "fgui.cocos2d.ui.EditBox",
 		nullptr, nullptr);
 	LUA_METHOD("applyTextFormat", lua_fairygui_FUIInput_applyTextFormat);
 	LUA_METHOD("getText", lua_fairygui_FUIInput_getText);
@@ -4348,11 +4348,11 @@ int lua_fairygui_ScrollPane_scrollRight(lua_State* lua_S)
 int lua_fairygui_ScrollPane_scrollToView(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.ScrollPane", "fgui.ScrollPane:scrollToView");
-	LUA_TRY_INVOKE_OVERLOAD(3, (static_cast<void(fairygui::ScrollPane::*)(const cocos2d::Rect&, bool, bool)>(&fairygui::ScrollPane::scrollToView)));
+	LUA_TRY_INVOKE_OVERLOAD(3, (static_cast<void(fairygui::ScrollPane::*)(const cc::Rect&, bool, bool)>(&fairygui::ScrollPane::scrollToView)));
 	LUA_TRY_INVOKE_OVERLOAD(3, (static_cast<void(fairygui::ScrollPane::*)(fairygui::GObject*, bool, bool)>(&fairygui::ScrollPane::scrollToView)));
-	LUA_TRY_INVOKE_OVERLOAD(2, ([](fairygui::ScrollPane* obj,const cocos2d::Rect& arg0,bool arg1){{return obj->scrollToView(arg0,std::move(arg1));}}));
+	LUA_TRY_INVOKE_OVERLOAD(2, ([](fairygui::ScrollPane* obj,const cc::Rect& arg0,bool arg1){{return obj->scrollToView(arg0,std::move(arg1));}}));
 	LUA_TRY_INVOKE_OVERLOAD(2, ([](fairygui::ScrollPane* obj,fairygui::GObject* arg0,bool arg1){{return obj->scrollToView(arg0,std::move(arg1));}}));
-	LUA_TRY_INVOKE_OVERLOAD(1, ([](fairygui::ScrollPane* obj,const cocos2d::Rect& arg0){{return obj->scrollToView(arg0);}}));
+	LUA_TRY_INVOKE_OVERLOAD(1, ([](fairygui::ScrollPane* obj,const cc::Rect& arg0){{return obj->scrollToView(arg0);}}));
 	LUA_TRY_INVOKE_OVERLOAD(1, ([](fairygui::ScrollPane* obj,fairygui::GObject* arg0){{return obj->scrollToView(arg0);}}));
 	LUA_INVOKE_FOOTER("1,2,3");
 }
@@ -4483,7 +4483,7 @@ int luaReg_fgui_fguiScrollPane(lua_State* lua_S)
 {
 	LUA_ENTRY("fgui");
 	LUA_CLS_DEF_BASE(fairygui::ScrollPane, "ScrollPane", "fgui.ScrollPane",
-		cocos2d::Ref, "fgui.cocos2d.Ref",
+		cc::Ref, "fgui.cocos2d.Ref",
 		nullptr, nullptr);
 	LUA_METHOD("cancelDragging", lua_fairygui_ScrollPane_cancelDragging);
 	LUA_METHOD("getContentSize", lua_fairygui_ScrollPane_getContentSize);
@@ -4690,7 +4690,7 @@ int luaReg_fgui_fguiTransition(lua_State* lua_S)
 {
 	LUA_ENTRY("fgui");
 	LUA_CLS_DEF_BASE(fairygui::Transition, "Transition", "fgui.Transition",
-		cocos2d::Ref, "fgui.cocos2d.Ref",
+		cc::Ref, "fgui.cocos2d.Ref",
 		nullptr, nullptr);
 	LUA_FIELD("name", lua_fairygui_Transition_name_getter, lua_fairygui_Transition_name_setter);
 	LUA_METHOD("changePlayTimes", lua_fairygui_Transition_changePlayTimes);
@@ -4801,7 +4801,7 @@ int luaReg_fgui_fguiFUIContainer(lua_State* lua_S)
 {
 	LUA_ENTRY("fgui");
 	LUA_CLS_DEF_BASE(fairygui::FUIContainer, "FUIContainer", "fgui.FUIContainer",
-		cocos2d::Node, "fgui.cocos2d.Node",
+		cc::Node, "fgui.cocos2d.Node",
 		nullptr, nullptr);
 	LUA_FIELD("gOwner", lua_fairygui_FUIContainer_gOwner_getter, lua_fairygui_FUIContainer_gOwner_setter);
 	LUA_METHOD("getAlphaThreshold", lua_fairygui_FUIContainer_getAlphaThreshold);
@@ -5282,7 +5282,7 @@ int lua_fairygui_GComponent_setMask(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GComponent", "fgui.GComponent:setMask");
 	LUA_TRY_INVOKE(2, &fairygui::GComponent::setMask);
-	LUA_TRY_INVOKE(1, ([](fairygui::GComponent* obj,cocos2d::Node* arg0){{return obj->setMask(arg0);}}));
+	LUA_TRY_INVOKE(1, ([](fairygui::GComponent* obj,cc::Node* arg0){{return obj->setMask(arg0);}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_fairygui_GComponent_setOpaque(lua_State* lua_S)
@@ -6648,7 +6648,7 @@ int luaReg_fgui_fguiGTreeNode(lua_State* lua_S)
 {
 	LUA_ENTRY("fgui");
 	LUA_CLS_DEF_BASE(fairygui::GTreeNode, "GTreeNode", "fgui.GTreeNode",
-		cocos2d::Ref, "fgui.cocos2d.Ref",
+		cc::Ref, "fgui.cocos2d.Ref",
 		nullptr, nullptr);
 	LUA_METHOD("addChild", lua_fairygui_GTreeNode_addChild);
 	LUA_METHOD("addChildAt", lua_fairygui_GTreeNode_addChildAt);
@@ -6827,7 +6827,7 @@ int luaReg_fgui_fguiIUISource(lua_State* lua_S)
 {
 	LUA_ENTRY("fgui");
 	LUA_CLS_DEF_BASE(fairygui::IUISource, "IUISource", "fgui.IUISource",
-		cocos2d::Ref, "fgui.cocos2d.Ref",
+		cc::Ref, "fgui.cocos2d.Ref",
 		nullptr, nullptr);
 	LUA_METHOD("getFileName", lua_fairygui_IUISource_getFileName);
 	LUA_METHOD("isLoaded", lua_fairygui_IUISource_isLoaded);
@@ -7331,7 +7331,7 @@ int lua_fairygui_GRoot_create(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("fgui.GRoot", "fgui.GRoot:create");
 	LUA_TRY_INVOKE_R(2, &fairygui::GRoot::create);
-	LUA_TRY_INVOKE_R(1, [](cocos2d::Scene* arg0){{return fairygui::GRoot::create(arg0);}});
+	LUA_TRY_INVOKE_R(1, [](cc::Scene* arg0){{return fairygui::GRoot::create(arg0);}});
 	LUA_SINVOKE_FOOTER("1,2");
 }
 int lua_fairygui_GRoot_getInstance(lua_State* lua_S)
@@ -7492,7 +7492,7 @@ int luaReg_fgui_fguiPopupMenu(lua_State* lua_S)
 {
 	LUA_ENTRY("fgui");
 	LUA_CLS_DEF_BASE(fairygui::PopupMenu, "PopupMenu", "fgui.PopupMenu",
-		cocos2d::Ref, "fgui.cocos2d.Ref",
+		cc::Ref, "fgui.cocos2d.Ref",
 		nullptr, nullptr);
 	LUA_METHOD("addItem", lua_fairygui_PopupMenu_addItem);
 	LUA_METHOD("addItemAt", lua_fairygui_PopupMenu_addItemAt);
@@ -7568,7 +7568,7 @@ int lua_fairygui_DragDropManager_startDrag(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.DragDropManager", "fgui.DragDropManager:startDrag");
 	LUA_TRY_INVOKE(3, &fairygui::DragDropManager::startDrag);
-	LUA_TRY_INVOKE(2, ([](fairygui::DragDropManager* obj,const std::string& arg0,const cocos2d::Value& arg1){{return obj->startDrag(arg0,arg1);}}));
+	LUA_TRY_INVOKE(2, ([](fairygui::DragDropManager* obj,const std::string& arg0,const cc::Value& arg1){{return obj->startDrag(arg0,arg1);}}));
 	LUA_TRY_INVOKE(1, ([](fairygui::DragDropManager* obj,const std::string& arg0){{return obj->startDrag(arg0);}}));
 	LUA_INVOKE_FOOTER("1,2,3");
 }
@@ -7818,8 +7818,8 @@ int lua_fairygui_GTweener_setSnapping(lua_State* lua_S)
 int lua_fairygui_GTweener_setTarget(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GTweener", "fgui.GTweener:setTarget");
-	LUA_TRY_INVOKE_R(2, (static_cast<fairygui::GTweener*(fairygui::GTweener::*)(cocos2d::Ref*, fairygui::TweenPropType)>(&fairygui::GTweener::setTarget)));
-	LUA_TRY_INVOKE_R(1, static_cast<fairygui::GTweener*(fairygui::GTweener::*)(cocos2d::Ref*)>(&fairygui::GTweener::setTarget));
+	LUA_TRY_INVOKE_R(2, (static_cast<fairygui::GTweener*(fairygui::GTweener::*)(cc::Ref*, fairygui::TweenPropType)>(&fairygui::GTweener::setTarget)));
+	LUA_TRY_INVOKE_R(1, static_cast<fairygui::GTweener*(fairygui::GTweener::*)(cc::Ref*)>(&fairygui::GTweener::setTarget));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_fairygui_GTweener_setTargetAny(lua_State* lua_S)
@@ -7844,7 +7844,7 @@ int luaReg_fgui_fguiGTweener(lua_State* lua_S)
 {
 	LUA_ENTRY("fgui");
 	LUA_CLS_DEF_BASE(fairygui::GTweener, "GTweener", "fgui.GTweener",
-		cocos2d::Ref, "fgui.cocos2d.Ref",
+		cc::Ref, "fgui.cocos2d.Ref",
 		nullptr, nullptr);
 	LUA_FIELD("deltaValue", lua_fairygui_GTweener_deltaValue_getter, lua_fairygui_GTweener_deltaValue_setter);
 	LUA_FIELD("endValue", lua_fairygui_GTweener_endValue_getter, lua_fairygui_GTweener_endValue_setter);
@@ -7897,23 +7897,23 @@ int lua_fairygui_GTween_delayedCall(lua_State* lua_S)
 int lua_fairygui_GTween_getTween(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("fgui.GTween", "fgui.GTween:getTween");
-	LUA_TRY_INVOKE_R(2, (static_cast<fairygui::GTweener*(*)(cocos2d::Ref*, fairygui::TweenPropType)>(&fairygui::GTween::getTween)));
-	LUA_TRY_INVOKE_R(1, static_cast<fairygui::GTweener*(*)(cocos2d::Ref*)>(&fairygui::GTween::getTween));
+	LUA_TRY_INVOKE_R(2, (static_cast<fairygui::GTweener*(*)(cc::Ref*, fairygui::TweenPropType)>(&fairygui::GTween::getTween)));
+	LUA_TRY_INVOKE_R(1, static_cast<fairygui::GTweener*(*)(cc::Ref*)>(&fairygui::GTween::getTween));
 	LUA_SINVOKE_FOOTER("1,2");
 }
 int lua_fairygui_GTween_isTweening(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("fgui.GTween", "fgui.GTween:isTweening");
-	LUA_TRY_INVOKE_R(2, (static_cast<bool(*)(cocos2d::Ref*, fairygui::TweenPropType)>(&fairygui::GTween::isTweening)));
-	LUA_TRY_INVOKE_R(1, static_cast<bool(*)(cocos2d::Ref*)>(&fairygui::GTween::isTweening));
+	LUA_TRY_INVOKE_R(2, (static_cast<bool(*)(cc::Ref*, fairygui::TweenPropType)>(&fairygui::GTween::isTweening)));
+	LUA_TRY_INVOKE_R(1, static_cast<bool(*)(cc::Ref*)>(&fairygui::GTween::isTweening));
 	LUA_SINVOKE_FOOTER("1,2");
 }
 int lua_fairygui_GTween_kill(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("fgui.GTween", "fgui.GTween:kill");
-	LUA_TRY_INVOKE(3, (static_cast<void(*)(cocos2d::Ref*, fairygui::TweenPropType, bool)>(&fairygui::GTween::kill)));
-	LUA_TRY_INVOKE(2, (static_cast<void(*)(cocos2d::Ref*, bool)>(&fairygui::GTween::kill)));
-	LUA_TRY_INVOKE(1, static_cast<void(*)(cocos2d::Ref*)>(&fairygui::GTween::kill));
+	LUA_TRY_INVOKE(3, (static_cast<void(*)(cc::Ref*, fairygui::TweenPropType, bool)>(&fairygui::GTween::kill)));
+	LUA_TRY_INVOKE(2, (static_cast<void(*)(cc::Ref*, bool)>(&fairygui::GTween::kill)));
+	LUA_TRY_INVOKE(1, static_cast<void(*)(cc::Ref*)>(&fairygui::GTween::kill));
 	LUA_SINVOKE_FOOTER("1,2,3");
 }
 int lua_fairygui_GTween_shake(lua_State* lua_S)
@@ -7925,10 +7925,10 @@ int lua_fairygui_GTween_shake(lua_State* lua_S)
 int lua_fairygui_GTween_to(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("fgui.GTween", "fgui.GTween:to");
-	LUA_TRY_INVOKE_R_OVERLOAD(3, (static_cast<fairygui::GTweener*(*)(const cocos2d::Color4B&, const cocos2d::Color4B&, float)>(&fairygui::GTween::to)));
-	LUA_TRY_INVOKE_R_OVERLOAD(3, (static_cast<fairygui::GTweener*(*)(const cocos2d::Vec4&, const cocos2d::Vec4&, float)>(&fairygui::GTween::to)));
-	LUA_TRY_INVOKE_R_OVERLOAD(3, (static_cast<fairygui::GTweener*(*)(const cocos2d::Vec3&, const cocos2d::Vec3&, float)>(&fairygui::GTween::to)));
-	LUA_TRY_INVOKE_R_OVERLOAD(3, (static_cast<fairygui::GTweener*(*)(const cocos2d::Vec2&, const cocos2d::Vec2&, float)>(&fairygui::GTween::to)));
+	LUA_TRY_INVOKE_R_OVERLOAD(3, (static_cast<fairygui::GTweener*(*)(const cc::Color4B&, const cc::Color4B&, float)>(&fairygui::GTween::to)));
+	LUA_TRY_INVOKE_R_OVERLOAD(3, (static_cast<fairygui::GTweener*(*)(const cc::Vec4&, const cc::Vec4&, float)>(&fairygui::GTween::to)));
+	LUA_TRY_INVOKE_R_OVERLOAD(3, (static_cast<fairygui::GTweener*(*)(const cc::Vec3&, const cc::Vec3&, float)>(&fairygui::GTween::to)));
+	LUA_TRY_INVOKE_R_OVERLOAD(3, (static_cast<fairygui::GTweener*(*)(const cc::Vec2&, const cc::Vec2&, float)>(&fairygui::GTween::to)));
 	LUA_TRY_INVOKE_R_OVERLOAD(3, (static_cast<fairygui::GTweener*(*)(float, float, float)>(&fairygui::GTween::to)));
 	LUA_SINVOKE_FOOTER("3");
 }
@@ -8186,7 +8186,7 @@ int lua_fairygui_GPath_getAllPoints(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("fgui.GPath", "fgui.GPath:getAllPoints");
 	LUA_TRY_INVOKE(2, &fairygui::GPath::getAllPoints);
-	LUA_TRY_INVOKE(1, ([](fairygui::GPath* obj,std::vector<cocos2d::Vec3>& arg0){{return obj->getAllPoints(arg0);}}));
+	LUA_TRY_INVOKE(1, ([](fairygui::GPath* obj,std::vector<cc::Vec3>& arg0){{return obj->getAllPoints(arg0);}}));
 	LUA_INVOKE_FOOTER("1,2");
 }
 int lua_fairygui_GPath_getLength(lua_State* lua_S)
@@ -8317,7 +8317,7 @@ int luaReg_fgui_fguiFUISprite(lua_State* lua_S)
 {
 	LUA_ENTRY("fgui");
 	LUA_CLS_DEF_BASE(fairygui::FUISprite, "FUISprite", "fgui.FUISprite",
-		cocos2d::Sprite, "fgui.cocos2d.Sprite",
+		cc::Sprite, "fgui.cocos2d.Sprite",
 		nullptr, nullptr);
 	LUA_METHOD("clearContent", lua_fairygui_FUISprite_clearContent);
 	LUA_METHOD("getFillAmount", lua_fairygui_FUISprite_getFillAmount);

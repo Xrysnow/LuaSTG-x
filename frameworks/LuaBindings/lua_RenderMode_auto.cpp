@@ -89,7 +89,7 @@ int lua_lstg_RenderMode_setTexture(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.RenderMode", "lstg.RenderMode:setTexture");
 	LUA_TRY_INVOKE(3, &lstg::RenderMode::setTexture);
-	LUA_TRY_INVOKE(2, ([](lstg::RenderMode* obj,const std::string& arg0,cocos2d::Texture2D* arg1){{return obj->setTexture(arg0,arg1);}}));
+	LUA_TRY_INVOKE(2, ([](lstg::RenderMode* obj,const std::string& arg0,cc::Texture2D* arg1){{return obj->setTexture(arg0,arg1);}}));
 	LUA_INVOKE_FOOTER("2,3");
 }
 int lua_lstg_RenderMode_setUniformBuffer(lua_State* lua_S)
@@ -119,8 +119,8 @@ int lua_lstg_RenderMode_setVec4(lua_State* lua_S)
 int lua_lstg_RenderMode_create(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("lstg.RenderMode", "lstg.RenderMode:create");
-	LUA_TRY_INVOKE_R(5, (static_cast<cc::IntrusivePtr<lstg::RenderMode>(*)(const std::string&, cocos2d::backend::BlendOperation, cocos2d::backend::BlendFactor, cocos2d::backend::BlendFactor, cc::IntrusivePtr<cocos2d::backend::Program>)>(&lstg::RenderMode::create)));
-	LUA_TRY_INVOKE_R(2, (static_cast<cc::IntrusivePtr<lstg::RenderMode>(*)(const std::string&, cc::IntrusivePtr<cocos2d::backend::Program>)>(&lstg::RenderMode::create)));
+	LUA_TRY_INVOKE_R(5, (static_cast<cc::IntrusivePtr<lstg::RenderMode>(*)(const std::string&, cc::backend::BlendOperation, cc::backend::BlendFactor, cc::backend::BlendFactor, cc::IntrusivePtr<cc::backend::Program>)>(&lstg::RenderMode::create)));
+	LUA_TRY_INVOKE_R(2, (static_cast<cc::IntrusivePtr<lstg::RenderMode>(*)(const std::string&, cc::IntrusivePtr<cc::backend::Program>)>(&lstg::RenderMode::create)));
 	LUA_SINVOKE_FOOTER("2,5");
 }
 int lua_lstg_RenderMode_getByID(lua_State* lua_S)
@@ -157,7 +157,7 @@ int luaReg_RenderMode_lstgRenderMode(lua_State* lua_S)
 {
 	LUA_ENTRY("lstg");
 	LUA_CLS_DEF_BASE(lstg::RenderMode, "RenderMode", "lstg.RenderMode",
-		cocos2d::Ref, "cc.Ref",
+		cc::Ref, "cc.Ref",
 		nullptr, nullptr);
 	LUA_METHOD("clone", lua_lstg_RenderMode_clone);
 	LUA_METHOD("getBlendDescriptor", lua_lstg_RenderMode_getBlendDescriptor);
