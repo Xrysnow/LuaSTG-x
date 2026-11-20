@@ -940,14 +940,14 @@ bool GameObjectManager::SetImgState(size_t id, RenderMode* m, const Color4B& c) 
 		{
 		case ResourceType::Sprite:
 		{
-			auto s = static_cast<ResSprite*>(p->res);
+			auto s = static_cast<ResSprite*>(p->res.get());
 			s->setRenderMode(m);
 			s->setColor(c);
 		}
 		break;
 		case ResourceType::Animation:
 		{
-			auto ani = static_cast<ResAnimation*>(p->res);
+			auto ani = static_cast<ResAnimation*>(p->res.get());
 			ani->setRenderMode(m);
 			ani->setColor(c);
 		}
@@ -1026,10 +1026,10 @@ bool GameObjectManager::DoDefaultRender(GameObject* p)
 		switch (p->res->getType())
 		{
 		case ResourceType::Sprite:
-			p->cm->renderSprite((ResSprite*)p->res);
+			p->cm->renderSprite(static_cast<ResSprite*>(p->res.get()));
 			break;
 		case ResourceType::Animation:
-			p->cm->renderAnimation((ResAnimation*)p->res);
+			p->cm->renderAnimation(static_cast<ResAnimation*>(p->res.get()));
 			break;
 		case ResourceType::Particle:
 			p->cm->renderParticle();
@@ -1038,7 +1038,7 @@ bool GameObjectManager::DoDefaultRender(GameObject* p)
 			p->cm->renderLabel();
 			break;
 		case ResourceType::Texture:
-			p->cm->renderTexture((ResTexture*)p->res);
+			p->cm->renderTexture(static_cast<ResTexture*>(p->res.get()));
 			break;
 		default:
 			break;
@@ -1302,7 +1302,7 @@ int GameObjectManager::GetAttr(lua_State* L) noexcept
 		if (isExtProperty(p))
 		{
 			if (p->res)
-				p->cm->pushLua(L, p->res);
+				p->cm->pushLua(L, p->res.get());
 			else
 				lua_pushnil(L);
 		}

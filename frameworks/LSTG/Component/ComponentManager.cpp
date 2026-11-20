@@ -13,12 +13,10 @@ using xmath::collision::ColliderType;
 
 void ComponentManager::setBindNode(Node* node)
 {
-	if (_node != node)
+	if (_node.get() != node)
 	{
-		CC_SAFE_RETAIN(node);
-		CC_SAFE_RELEASE(_node);
-		_node = node;
-		if (_node&&tr)
+		_node.reset(node);
+		if (_node && tr)
 		{
 			PROP(anchor) = _node->getAnchorPointInPoints();
 		}
@@ -28,29 +26,29 @@ void ComponentManager::setBindNode(Node* node)
 ComponentDataBlend* ComponentManager::getOrCreateBlend()
 {
 	if (!blend)
-		setDataBlend(ComponentDataBlend::create().get());
-	return blend;
+		setDataBlend(ComponentDataBlend::create());
+	return blend.get();
 }
 
 ComponentDataColli* ComponentManager::getOrCreateColli()
 {
 	if (!colli)
-		setDataColli(ComponentDataColli::create().get());
-	return colli;
+		setDataColli(ComponentDataColli::create());
+	return colli.get();
 }
 
 ComponentDataTrasform2D* ComponentManager::getOrCreateTrasform2D()
 {
 	if (!tr)
-		setDataTrasform(ComponentDataTrasform2D::create().get());
-	return tr;
+		setDataTrasform(ComponentDataTrasform2D::create());
+	return tr.get();
 }
 
 ComponentDataLight* ComponentManager::getOrCreateLight()
 {
 	if (!light)
-		setDataLight(ComponentDataLight::create().get());
-	return light;
+		setDataLight(ComponentDataLight::create());
+	return light.get();
 }
 
 void ComponentManager::updateCommandAni(ResAnimation* res)
@@ -128,10 +126,7 @@ void ComponentManager::updateCommandTexture(ResTexture* res)
 	*xtcmd.getTri() = vert->tri;
 }
 
-ComponentManager::ComponentManager():
-	ani(nullptr), blend(nullptr), colli(nullptr), label(nullptr), par(nullptr),
-	vert(nullptr), tr(nullptr), light(nullptr), lightSource(nullptr),
-	_node(nullptr), programStateCopy(nullptr)
+ComponentManager::ComponentManager()
 {
 	auto tri = xtcmd.getTri();
 	tri->vertCount = 4;
@@ -139,9 +134,7 @@ ComponentManager::ComponentManager():
 	tri->indices = XRenderer::quadIndices9;
 }
 
-ComponentManager::~ComponentManager()
-{
-}
+ComponentManager::~ComponentManager() = default;
 
 void ComponentManager::reset()
 {
@@ -286,8 +279,8 @@ bool ComponentManager::collisionCheck(ComponentManager* other) const
 {
 	if (other && other->colli && other->tr && tr && colli)
 	{
-		const auto colli1 = this->colli;
-		const auto colli2 = other->colli;
+		const auto colli1 = this->colli.get();
+		const auto colli2 = other->colli.get();
 		const auto dx = PROP(x) - pool->x[other->obj->id];
 		const auto dy = PROP(y) - pool->y[other->obj->id];
 		const auto sum = colli1->col_r + colli2->col_r;
@@ -317,10 +310,10 @@ bool ComponentManager::collisionCheck3D(ComponentManager* other) const
 	// only support sphere
 	if (other && other->colli && other->tr && tr && colli)
 	{
-		const auto tr1 = this->tr;
-		const auto tr2 = other->tr;
-		const auto colli1 = this->colli;
-		const auto colli2 = other->colli;
+		const auto tr1 = this->tr.get();
+		const auto tr2 = other->tr.get();
+		const auto colli1 = this->colli.get();
+		const auto colli2 = other->colli.get();
 		const auto dx = PROP(x) - pool->x[other->obj->id];
 		const auto dy = PROP(y) - pool->y[other->obj->id];
 		const auto dz = tr1->z - tr2->z;

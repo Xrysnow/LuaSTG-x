@@ -82,6 +82,7 @@ GameObjectPool::GameObjectPool(size_t capacity)
 
 GameObjectPool::~GameObjectPool()
 {
+	delete[] _obj;
 	delete[] obj;
 	delete[] anchor;
 	delete[] hscale;

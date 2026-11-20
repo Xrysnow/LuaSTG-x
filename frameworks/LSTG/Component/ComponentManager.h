@@ -4,6 +4,7 @@
 #include "Resource/ResSprite.h"
 #include "../Classes/XTrianglesCommand.h"
 #include "Object/GameObjectPool.h"
+#include <utility>
 
 namespace lstg
 {
@@ -14,38 +15,30 @@ namespace lstg
 	{
 	protected:
 		XTrianglesCommand xtcmd;
-		cocos2d::Node* _node;
+		cc::IntrusivePtr<cocos2d::Node> _node;
 	public:
 		GameObjectPool* pool = nullptr;
 		GameObject* obj = nullptr;
 
-#define PROPERTY_RETAIN(varType, varName, funName)    \
-private: varType varName; \
-public: inline varType get##funName(void) const { return varName; } \
-inline void set##funName(varType var) \
-{ \
-    if (varName != var) \
-    { \
-        CC_SAFE_RETAIN(var); \
-        CC_SAFE_RELEASE(varName); \
-        varName = var; \
-    } \
-}
-		PROPERTY_RETAIN(ComponentDataAni*, ani, DataAni);
-		PROPERTY_RETAIN(ComponentDataBlend*, blend, DataBlend);
-		PROPERTY_RETAIN(ComponentDataColli*, colli, DataColli);
-		PROPERTY_RETAIN(ComponentDataLabel*, label, DataLabel);
-		PROPERTY_RETAIN(ComponentDataParticle*, par, DataParticle);
-		PROPERTY_RETAIN(ComponentDataVertex*, vert, DataVertex);
-		PROPERTY_RETAIN(ComponentDataTrasform2D*, tr, DataTrasform);
-		PROPERTY_RETAIN(ComponentDataLight*, light, DataLight);
+#define PROPERTY_INTRUSIVE_PTR(varType, varName, funName) \
+private: cc::IntrusivePtr<varType> varName; \
+public: varType* get##funName() const { return varName.get(); } \
+void set##funName(cc::IntrusivePtr<varType> value) { varName = std::move(value); }
+		PROPERTY_INTRUSIVE_PTR(ComponentDataAni, ani, DataAni);
+		PROPERTY_INTRUSIVE_PTR(ComponentDataBlend, blend, DataBlend);
+		PROPERTY_INTRUSIVE_PTR(ComponentDataColli, colli, DataColli);
+		PROPERTY_INTRUSIVE_PTR(ComponentDataLabel, label, DataLabel);
+		PROPERTY_INTRUSIVE_PTR(ComponentDataParticle, par, DataParticle);
+		PROPERTY_INTRUSIVE_PTR(ComponentDataVertex, vert, DataVertex);
+		PROPERTY_INTRUSIVE_PTR(ComponentDataTrasform2D, tr, DataTrasform);
+		PROPERTY_INTRUSIVE_PTR(ComponentDataLight, light, DataLight);
 
-		PROPERTY_RETAIN(cocos2d::BaseLight*, lightSource, LightSource);
-		PROPERTY_RETAIN(cocos2d::backend::ProgramState*, programStateCopy, ProgramStateCopy);
-#undef PROPERTY_RETAIN
+		PROPERTY_INTRUSIVE_PTR(cocos2d::BaseLight, lightSource, LightSource);
+		PROPERTY_INTRUSIVE_PTR(cocos2d::backend::ProgramState, programStateCopy, ProgramStateCopy);
+#undef PROPERTY_INTRUSIVE_PTR
 
 	public:
-		cocos2d::Node* getBindNode() const { return _node; }
+		cocos2d::Node* getBindNode() const { return _node.get(); }
 		void setBindNode(cocos2d::Node* node);
 
 		//ComponentDataAni* getOrCreateAni(ResAnimation* res);

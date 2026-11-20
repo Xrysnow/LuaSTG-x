@@ -2,6 +2,7 @@
 #include "LogSystem.h"
 #include "GameObjectManager.h"
 #include "GameClass.h"
+#include <utility>
 
 using namespace lstg;
 
@@ -16,18 +17,13 @@ void GameObject::_Reset()
 	timer = 0;
 
 	ReleaseResource();
-	res = nullptr;
 	cm = nullptr;
 	cls = nullptr;
 }
 
 void GameObject::ReleaseResource()
 {
-	if (res)
-	{
-		res->release();
-		res = nullptr;
-	}
+	res.reset();
 	if (cm)
 	{
 		// just release things related to game resource
@@ -37,72 +33,64 @@ void GameObject::ReleaseResource()
 
 bool GameObject::ChangeResource(Resource* r)
 {
-	if (!r || r == res)
+	if (!r || r == res.get())
 		return true;
-	//const auto factor = LRES.GetGlobalImageScaleFactor();
+	const auto replaceResource = [this](Resource* replacement)
+	{
+		cc::IntrusivePtr<Resource> next{replacement, cc::retain_ref};
+		ReleaseResource();
+		res = std::move(next);
+	};
 	switch (r->getType()) {
 	case ResourceType::Sprite:
 	{
-		ReleaseResource();
 		const auto sprite = dynamic_cast<ResSprite*>(r);
-		res = sprite;
-		res->retain();
+		replaceResource(sprite);
 		cm->applyResSprite(sprite);
 		return true;
 	}
 	case ResourceType::Animation:
 	{
-		ReleaseResource();
 		const auto animation = dynamic_cast<ResAnimation*>(r);
-		res = animation;
-		res->retain();
-		const auto data = ComponentDataAni::create(animation);
-		cm->setDataAni(data);
+		replaceResource(animation);
+		cm->setDataAni(ComponentDataAni::create(animation));
 		cm->applyResAnimation(animation);
 		return true;
 	}
 	case ResourceType::Particle:
 	{
-		ReleaseResource();
 		const auto particle = dynamic_cast<ResParticle*>(r);
-		res = particle;
-		const auto data = ComponentDataParticle::create(particle);
+		replaceResource(particle);
+		auto data = ComponentDataParticle::create(particle);
 		if (!data || !data->pool)
 		{
-			res = nullptr;
+			res.reset();
 			LERROR("failed to create particle pool");
 			return false;
 		}
-		cm->setDataParticle(data);
-		cm->applyResParticle(particle);
 		auto ps = data->pool;
+		cm->setDataParticle(std::move(data));
+		cm->applyResParticle(particle);
 		const auto tr = cm->getDataTrasform();
 		ps->setActive(false);
 		ps->setCenter(cm->pool->getPosition(id));
 		ps->setRotation(cm->pool->rot[id]);
 		ps->setActive(true);
-		res->retain();
 		return true;
 	}
 	case ResourceType::Font:
 	{
-		ReleaseResource();
 		const auto font = dynamic_cast<ResFont*>(r);
-		res = font;
-		res->retain();
-		const auto data = ComponentDataLabel::create(font);
-		cm->setDataLabel(data);
+		replaceResource(font);
+		cm->setDataLabel(ComponentDataLabel::create(font));
 		cm->applyResFont(font);
 		return true;
 	}
 	case ResourceType::Texture:
 	{
-		ReleaseResource();
 		const auto tex = dynamic_cast<ResTexture*>(r);
-		res = tex;
-		res->retain();
-		const auto data = ComponentDataVertex::create(tex);
-		cm->setDataVertex(data);
+		replaceResource(tex);
+		cm->setDataVertex(ComponentDataVertex::create(tex));
 		return true;
 	}
 	default:;

@@ -18,7 +18,7 @@ namespace lstg
 	struct GameObject
 	{
 		ComponentManager* cm = nullptr;
-		Resource* res = nullptr;   // resource for render
+		cc::IntrusivePtr<Resource> res; // resource for render
 		lua_Integer timer = 0;     // frame timer
 		lua_Integer ani_timer = 0; // ani timer (for compatibility)
 		lua_Number layer = 0.0;    // render layer
