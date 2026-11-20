@@ -25,7 +25,7 @@ namespace lstg
 		void setProgram(cc::IntrusivePtr<cc::backend::Program> program);
 		cc::backend::Program* getProgram() const;
 		cc::backend::ProgramState* getDefaultProgramState() const;
-		cc::backend::ProgramState* newProgramState();
+		cc::IntrusivePtr<cc::backend::ProgramState> newProgramState();
 
 		// uniform setter
 

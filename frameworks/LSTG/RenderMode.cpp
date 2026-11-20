@@ -135,11 +135,11 @@ ProgramState* RenderMode::getDefaultProgramState() const
 	return defaultState;
 }
 
-ProgramState* RenderMode::newProgramState()
+cc::IntrusivePtr<ProgramState> RenderMode::newProgramState()
 {
 	cc::IntrusivePtr ret{new ProgramState(_program)};
 	syncUniform(ret.get());
-	return ret.detach();
+	return ret;
 }
 
 void RenderMode::setFloat(const std::string& uniform, float value)
