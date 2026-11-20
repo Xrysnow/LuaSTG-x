@@ -1,5 +1,6 @@
 ﻿#include "XBuffer.h"
 #include <cstring>
+#include <utility>
 
 using namespace lstg;
 
@@ -314,28 +315,23 @@ bool Buffer::init(size_t size)
 	return true;
 }
 
-void BufferStreamBuf::init(Buffer* buffer)
-{
-	buf = buffer;
-	pupdate(0);
-	gupdate(0);
-}
-
 BufferStreamBuf::BufferStreamBuf()
+	: BufferStreamBuf(Buffer::create())
 {
-	init(Buffer::create().get());
 }
 
 BufferStreamBuf::BufferStreamBuf(size_t reserve)
+	: BufferStreamBuf()
 {
-	init(Buffer::create().get());
 	if (buf)
 		buf->reserve(reserve);
 }
 
-BufferStreamBuf::BufferStreamBuf(Buffer* buffer)
+BufferStreamBuf::BufferStreamBuf(cc::IntrusivePtr<Buffer> buffer)
+	: buf(std::move(buffer))
 {
-	init(buffer);
+	pupdate(0);
+	gupdate(0);
 }
 
 BufferStreamBuf::~BufferStreamBuf() noexcept

@@ -73,13 +73,12 @@ namespace lstg
 	class BufferStreamBuf : public std::streambuf
 	{
 		using traits = std::char_traits<char>;
-		void init(Buffer* buffer);
 	public:
 		BufferStreamBuf();
 		explicit BufferStreamBuf(size_t reserve);
-		explicit BufferStreamBuf(Buffer* buffer);
+		explicit BufferStreamBuf(cc::IntrusivePtr<Buffer> buffer);
 		~BufferStreamBuf() noexcept override;
-		Buffer* buffer() const { return buf; }
+		Buffer* buffer() const { return buf.get(); }
 	protected:
 		int_type overflow(int_type ch) override;
 		//int_type pbackfail(int_type) override;
