@@ -2,7 +2,7 @@
 #include "XMath.h"
 #include "XMathInternal.h"
 
-using namespace cocos2d;
+using namespace cc;
 using namespace xmath;
 
 float distance::Point_Triangle(const Vec2& p,

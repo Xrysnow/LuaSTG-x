@@ -4,7 +4,7 @@
 #include "XMathInternal.h"
 
 using namespace xmath;
-using namespace cocos2d;
+using namespace cc;
 
 bool intersect::Point_AABB(const Vec2& p0, const Vec2& p1, float halfW, float halfH)
 {

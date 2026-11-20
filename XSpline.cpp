@@ -1,6 +1,6 @@
 ﻿#include "XSpline.h"
 
-using namespace cocos2d;
+using namespace cc;
 using namespace xmath;
 using namespace xmath::spline;
 

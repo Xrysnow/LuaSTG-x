@@ -7,7 +7,7 @@ namespace xmath
 {
 	namespace detail
 	{
-		inline double orientation(const cocos2d::Vec2& A, const cocos2d::Vec2& B, const cocos2d::Vec2& C)
+		inline double orientation(const cc::Vec2& A, const cc::Vec2& B, const cc::Vec2& C)
 		{
 			const auto abx = double(B.x) - A.x;
 			const auto aby = double(B.y) - A.y;
@@ -16,7 +16,7 @@ namespace xmath
 			return abx * acy - aby * acx;
 		}
 
-		inline bool collinear(const cocos2d::Vec2& A, const cocos2d::Vec2& B, const cocos2d::Vec2& C)
+		inline bool collinear(const cc::Vec2& A, const cc::Vec2& B, const cc::Vec2& C)
 		{
 			return orientation(A, B, C) == 0.0;
 		}
@@ -37,21 +37,21 @@ namespace xmath
 			return std::abs(dx * (py - ay) - dy * (px - ax)) / std::sqrt(length2);
 		}
 
-		inline double pointSegmentDistance(const cocos2d::Vec2& p,
-			const cocos2d::Vec2& A, const cocos2d::Vec2& B)
+		inline double pointSegmentDistance(const cc::Vec2& p,
+			const cc::Vec2& A, const cc::Vec2& B)
 		{
 			return pointSegmentDistance(p.x, p.y, A.x, A.y, B.x, B.y);
 		}
 
-		inline double degenerateTriangleDistance(const cocos2d::Vec2& p,
-			const cocos2d::Vec2& A, const cocos2d::Vec2& B, const cocos2d::Vec2& C)
+		inline double degenerateTriangleDistance(const cc::Vec2& p,
+			const cc::Vec2& A, const cc::Vec2& B, const cc::Vec2& C)
 		{
 			return std::min(pointSegmentDistance(p, A, B),
 				std::min(pointSegmentDistance(p, B, C), pointSegmentDistance(p, C, A)));
 		}
 
-		inline bool pointInClosedTriangle(const cocos2d::Vec2& p,
-			const cocos2d::Vec2& A, const cocos2d::Vec2& B, const cocos2d::Vec2& C)
+		inline bool pointInClosedTriangle(const cc::Vec2& p,
+			const cc::Vec2& A, const cc::Vec2& B, const cc::Vec2& C)
 		{
 			if (collinear(A, B, C))
 				return degenerateTriangleDistance(p, A, B, C) == 0.0;
@@ -61,8 +61,8 @@ namespace xmath
 			return (a >= 0.0 && b >= 0.0 && c >= 0.0) || (a <= 0.0 && b <= 0.0 && c <= 0.0);
 		}
 
-		inline bool triangleEdgesIntersect(const cocos2d::Vec2& A, const cocos2d::Vec2& B,
-			const cocos2d::Vec2& C, const cocos2d::Vec2& D)
+		inline bool triangleEdgesIntersect(const cc::Vec2& A, const cc::Vec2& B,
+			const cc::Vec2& C, const cc::Vec2& D)
 		{
 			const auto a = orientation(A, B, C);
 			const auto b = orientation(A, B, D);
