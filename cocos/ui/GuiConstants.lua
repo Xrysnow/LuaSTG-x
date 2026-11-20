@@ -53,8 +53,8 @@ ccui.RadioButtonGroupEventType=
 
 ccui.TextFieldEventType =
 {
-    attach_with_ime = 0,
-    detach_with_ime = 1,
+    editing_began = 0,
+    editing_ended = 1,
     insert_text = 2,
     delete_backward = 3,
 }

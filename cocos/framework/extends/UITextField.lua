@@ -29,9 +29,9 @@ function TextField:onEvent(callback)
     self:addEventListener(function(sender, eventType)
         local event = {}
         if eventType == 0 then
-            event.name = "ATTACH_WITH_IME"
+            event.name = "EDITING_BEGAN"
         elseif eventType == 1 then
-            event.name = "DETACH_WITH_IME"
+            event.name = "EDITING_ENDED"
         elseif eventType == 2 then
             event.name = "INSERT_TEXT"
         elseif eventType == 3 then
