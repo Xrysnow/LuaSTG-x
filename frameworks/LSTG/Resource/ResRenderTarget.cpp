@@ -152,8 +152,8 @@ size_t ResRenderTarget::getMemorySize()
 	return total;
 }
 
-ResRenderTarget::ResRenderTarget(const std::string& name, RenderTexture* tex, bool autoResize_)
-	:Resource(ResourceType::RenderTarget, name), target(tex), autoResize(autoResize_)
+ResRenderTarget::ResRenderTarget(const std::string& name, cc::IntrusivePtr<RenderTexture> tex, bool autoResize_)
+	:Resource(ResourceType::RenderTarget, name), target(std::move(tex)), autoResize(autoResize_)
 {
 	clearColor = Color4B(0, 0, 0, 0);
 }

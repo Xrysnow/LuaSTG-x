@@ -29,7 +29,7 @@ namespace lstg {
 		std::unordered_map<std::string, std::string> getInfo() const override;
 		size_t getMemorySize() override;
 
-		ResRenderTarget(const std::string& name, cocos2d::RenderTexture* tex, bool autoResize = true);
+		ResRenderTarget(const std::string& name, cc::IntrusivePtr<cocos2d::RenderTexture> tex, bool autoResize = true);
 		~ResRenderTarget() override;
 
 		static cc::IntrusivePtr<ResRenderTarget> create(const std::string& name);

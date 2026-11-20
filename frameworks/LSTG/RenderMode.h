@@ -12,9 +12,9 @@ namespace lstg
 			cocos2d::backend::BlendOperation blendOp,
 			cocos2d::backend::BlendFactor blendFactorSrc,
 			cocos2d::backend::BlendFactor blendFactorDst,
-			cocos2d::backend::Program* program);
+			cc::IntrusivePtr<cocos2d::backend::Program> program);
 		static cc::IntrusivePtr<RenderMode> create(const std::string& name,
-			cocos2d::backend::Program* program);
+			cc::IntrusivePtr<cocos2d::backend::Program> program);
 
 		std::string getName() const { return _name; }
 		size_t getID() const { return id; }
@@ -22,7 +22,7 @@ namespace lstg
 		cocos2d::backend::BlendDescriptor getBlendDescriptor() const { return desc; }
 		std::vector<std::string> getUniformNames() const { return uniformNames; }
 
-		void setProgram(cocos2d::backend::Program* program);
+		void setProgram(cc::IntrusivePtr<cocos2d::backend::Program> program);
 		cocos2d::backend::Program* getProgram() const;
 		cocos2d::backend::ProgramState* getDefaultProgramState() const;
 		cocos2d::backend::ProgramState* newProgramState();
@@ -46,7 +46,7 @@ namespace lstg
 		    cocos2d::backend::BlendOperation equation,
 			cocos2d::backend::BlendFactor funcSrc,
 			cocos2d::backend::BlendFactor funcDst,
-			cocos2d::backend::Program* program);
+			cc::IntrusivePtr<cocos2d::backend::Program> program);
 		cocos2d::backend::ProgramState* tempraryProgramState();
 		void syncUniform(cocos2d::backend::ProgramState* state);
 		void setUniform(const std::string& name, const void* data, size_t size);
@@ -55,8 +55,8 @@ namespace lstg
 		std::string _name;
 		size_t id = 0;
 		cocos2d::backend::BlendDescriptor desc;
-		cocos2d::backend::Program* _program = nullptr;
-		cocos2d::backend::ProgramState* defaultState = nullptr;
+		cc::IntrusivePtr<cocos2d::backend::Program> _program;
+		cc::IntrusivePtr<cocos2d::backend::ProgramState> defaultState;
 		char* fragUniformBuffer = nullptr;
 		char* vertUniformBuffer = nullptr;
 		size_t fragUniformBufferSize = 0;

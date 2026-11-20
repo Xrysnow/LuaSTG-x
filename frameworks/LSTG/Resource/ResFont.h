@@ -115,7 +115,7 @@ namespace lstg {
 		cc::IntrusivePtr<cocos2d::Label> createLabel();
 		void syncLabelSetting(cocos2d::Label* target);
 
-		ResFont(const std::string& name, XLabel* label, LabelType type);
+		ResFont(const std::string& name, cc::IntrusivePtr<XLabel> label_, LabelType type);
 		~ResFont() override;
 
 		static cc::IntrusivePtr<ResFont> createHGE(const std::string& name, const std::string& path);

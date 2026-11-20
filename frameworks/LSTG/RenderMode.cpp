@@ -42,13 +42,7 @@ static void SetDefaultVertexLayout(Program* program, VertexLayout* v)
 
 RenderMode::RenderMode() = default;
 
-RenderMode::~RenderMode()
-{
-	//if(pool)
-	//	LMP.removeProgramStatePool(_program);
-	CC_SAFE_RELEASE(_program);
-	CC_SAFE_RELEASE(defaultState);
-}
+RenderMode::~RenderMode() = default;
 
 RenderMode* RenderMode::getDefault()
 {
@@ -67,10 +61,10 @@ cc::IntrusivePtr<RenderMode> RenderMode::create(const std::string& name,
 	backend::BlendOperation blendOp,
 	backend::BlendFactor blendFactorSrc,
 	backend::BlendFactor blendFactorDst,
-	Program* program)
+	cc::IntrusivePtr<Program> program)
 {
 	cc::IntrusivePtr ret{new (std::nothrow) RenderMode()};
-	if (ret&&ret->init(name, blendOp, blendFactorSrc, blendFactorDst, program))
+	if (ret&&ret->init(name, blendOp, blendFactorSrc, blendFactorDst, std::move(program)))
 	{
 
 		addMode(ret.get());
@@ -79,13 +73,13 @@ cc::IntrusivePtr<RenderMode> RenderMode::create(const std::string& name,
 	return nullptr;
 }
 
-cc::IntrusivePtr<RenderMode> RenderMode::create(const std::string& name, Program* program)
+cc::IntrusivePtr<RenderMode> RenderMode::create(const std::string& name, cc::IntrusivePtr<Program> program)
 {
 	return create(name,
 		backend::BlendOperation::ADD,
 		backend::BlendFactor::SRC_ALPHA,
 		backend::BlendFactor::ONE_MINUS_SRC_ALPHA,
-		program);
+		std::move(program));
 }
 
 BlendFunc RenderMode::getBlendFunc() const
@@ -93,7 +87,7 @@ BlendFunc RenderMode::getBlendFunc() const
 	return { desc.sourceRGBBlendFactor, desc.destinationRGBBlendFactor };
 }
 
-void RenderMode::setProgram(Program* program)
+void RenderMode::setProgram(cc::IntrusivePtr<Program> program)
 {
 	if (!program || program == _program)
 		return;
@@ -104,9 +98,7 @@ void RenderMode::setProgram(Program* program)
 		//LMP.removeProgramStatePool(_program);
 		pool = LMP.getProgramStatePool(program);
 	}
-	CC_SAFE_RELEASE(_program);
-	_program = program;
-	CC_SAFE_RETAIN(_program);
+	_program = std::move(program);
 
 	if (_program->getVertexLayout()->getAttributes().empty())
 	{
@@ -114,8 +106,7 @@ void RenderMode::setProgram(Program* program)
 		SetDefaultVertexLayout(_program, _program->getVertexLayout());
 	}
 
-	CC_SAFE_RELEASE(defaultState);
-	defaultState = cc::IntrusivePtr{new backend::ProgramState(_program)}.detach();
+	defaultState = cc::IntrusivePtr{new backend::ProgramState(_program.get())};
 	defaultState->getFragmentUniformBuffer(&fragUniformBuffer, fragUniformBufferSize);
 	defaultState->getVertexUniformBuffer(&vertUniformBuffer, vertUniformBufferSize);
 
@@ -225,7 +216,7 @@ cc::IntrusivePtr<RenderMode> RenderMode::clone(const std::string& newName)
 }
 
 bool RenderMode::init(const std::string& name, backend::BlendOperation equation,
-                      BlendFactor funcSrc, BlendFactor funcDst, Program* program)
+                      BlendFactor funcSrc, BlendFactor funcDst, cc::IntrusivePtr<Program> program)
 {
 	if (!program)return false;
 	if (!util::CheckBlendOperation(equation))return false;
@@ -243,7 +234,7 @@ bool RenderMode::init(const std::string& name, backend::BlendOperation equation,
 	desc.sourceAlphaBlendFactor = backend::BlendFactor::ONE;
 	desc.destinationAlphaBlendFactor = backend::BlendFactor::ONE_MINUS_SRC_ALPHA;
 
-	setProgram(program);
+	setProgram(std::move(program));
 	return true;
 }
 

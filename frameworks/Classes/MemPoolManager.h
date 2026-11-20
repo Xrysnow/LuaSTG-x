@@ -34,7 +34,7 @@ namespace lstg
 		std::shared_ptr<std::array<T, N>> applyArray();
 		void clearArrays();
 	protected:
-		std::shared_ptr<ProgramStatePool> getProgramStatePool(cocos2d::backend::Program* program);
+		std::shared_ptr<ProgramStatePool> getProgramStatePool(cc::IntrusivePtr<cocos2d::backend::Program> program);
 		void removeProgramStatePool(cocos2d::backend::Program* program);
 	private:
 		ArrayObjectPool<XTrianglesCommand, 4096> xtcmdPool;
@@ -61,11 +61,10 @@ namespace lstg
 		cocos2d::backend::ProgramState, ProgramStatePoolBlockSize, cocos2d::Vector<cocos2d::backend::ProgramState*>>
 	{
 	protected:
-		cocos2d::backend::Program* _program;
+		cc::IntrusivePtr<cocos2d::backend::Program> _program;
 		void alloc_();
 	public:
 		cocos2d::backend::ProgramState* get();
-		ProgramStatePool(cocos2d::backend::Program* program);
-		~ProgramStatePool();
+		explicit ProgramStatePool(cc::IntrusivePtr<cocos2d::backend::Program> program);
 	};
 }

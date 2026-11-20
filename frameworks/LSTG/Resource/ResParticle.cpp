@@ -298,11 +298,10 @@ ResParticle::ParticleInstance* ResParticle::ParticlePool::getParticleInstance(in
 	return nullptr;
 }
 
-ResParticle::ParticlePool::ParticlePool(ResParticle* res)
-	: host(res), particleInfo()
+ResParticle::ParticlePool::ParticlePool(cc::IntrusivePtr<ResParticle> res)
+	: host(std::move(res)), particleInfo()
 {
 	CC_ASSERT(host);
-	CC_SAFE_RETAIN(host);
 	particleInfo = host->getParticleInfo();
 	const auto quad = host->getBindSprite()->getQuad();
 	// for texCoords
@@ -327,12 +326,11 @@ ResParticle::ParticlePool::ParticlePool(ResParticle* res)
 ResParticle::ParticlePool::~ParticlePool()
 {
 	host->poolInstances.erase(this);
-	CC_SAFE_RELEASE_NULL(host);
 }
 
 ResParticle::ParticlePool* ResParticle::newPool()
 {
-	cc::IntrusivePtr pool{new (std::nothrow) ParticlePool(this)};
+	cc::IntrusivePtr pool{new (std::nothrow) ParticlePool(cc::IntrusivePtr(this, cc::retain_ref))};
 	if (pool)
 	{		
 		pool->setRenderMode(renderMode);
@@ -457,10 +455,10 @@ size_t ResParticle::getMemorySize()
 	return total;
 }
 
-ResParticle::ResParticle(const std::string& name, const ParticleInfo& pinfo, Sprite* sprite,
+ResParticle::ResParticle(const std::string& name, const ParticleInfo& pinfo, cc::IntrusivePtr<Sprite> sprite,
 	RenderMode* rm, double a, double b, XColliderType colliType)
 : ResourceColliable(ResourceType::Particle, name, colliType, a, b),
-  particleInfo(pinfo), bindSprite(sprite), renderMode(rm)
+  particleInfo(pinfo), bindSprite(std::move(sprite)), renderMode(rm)
 {
 	CC_ASSERT(bindSprite && renderMode);
 }
@@ -474,7 +472,7 @@ cc::IntrusivePtr<ResParticle> ResParticle::create(const std::string& name, const
 {
 	if (!sprite)
 		return nullptr;
-	const auto clone = Sprite::createWithSpriteFrame(sprite->getSprite()->getSpriteFrame().get());
+	auto clone = Sprite::createWithSpriteFrame(sprite->getSprite()->getSpriteFrame().get());
 	if (!clone)
 		return nullptr;
 	const auto data = LRES.getFileData(path);
@@ -505,7 +503,7 @@ cc::IntrusivePtr<ResParticle> ResParticle::create(const std::string& name, const
 		}
 		if (!blend)
 			return nullptr;
-		cc::IntrusivePtr ret{new (nothrow) ResParticle(name, tInfo, clone,
+		cc::IntrusivePtr ret{new (nothrow) ResParticle(name, tInfo, std::move(clone),
 			blend, a, b, colliType)};
 		if (ret)
 			ret->resPath = path;

@@ -1,5 +1,6 @@
 ﻿#include "MemPoolManager.h"
 #include "Util/Utility.h"
+#include <utility>
 
 using namespace std;
 using namespace lstg;
@@ -67,15 +68,16 @@ void MemPoolManager::clearArrays()
 	arrays.clear();
 }
 
-std::shared_ptr<ProgramStatePool> MemPoolManager::getProgramStatePool(Program* program)
+std::shared_ptr<ProgramStatePool> MemPoolManager::getProgramStatePool(cc::IntrusivePtr<Program> program)
 {
-	const auto it = statePool.find(program);
+	auto* key = program.get();
+	const auto it = statePool.find(key);
 	if (it != statePool.end())
 		return it->second;
 	if (!program)
 		return nullptr;
-	const auto p = std::make_shared<ProgramStatePool>(program);
-	statePool[program] = p;
+	const auto p = std::make_shared<ProgramStatePool>(std::move(program));
+	statePool[key] = p;
 	return p;
 }
 
@@ -91,7 +93,7 @@ void ProgramStatePool::alloc_()
 	auto p = std::make_shared<Vector<backend::ProgramState*>>();
 	for (size_t i = 0; i < ProgramStatePoolBlockSize; ++i)
 	{
-		cc::IntrusivePtr s{new backend::ProgramState(_program)};
+		cc::IntrusivePtr s{new backend::ProgramState(_program.get())};
 		p->pushBack(s.get());
 	}
 	blocks.emplace_back(p);
@@ -104,15 +106,9 @@ backend::ProgramState* ProgramStatePool::get()
 	return blocks[idx_b]->at(idx_a++);
 }
 
-ProgramStatePool::ProgramStatePool(Program* program)
+ProgramStatePool::ProgramStatePool(cc::IntrusivePtr<Program> program)
+	: _program(std::move(program))
 {
-	_program = program;
-	CC_SAFE_RETAIN(_program);
 	on_alloc = [this] { alloc_(); };
 	clear();
-}
-
-ProgramStatePool::~ProgramStatePool()
-{
-	CC_SAFE_RELEASE(_program);
 }

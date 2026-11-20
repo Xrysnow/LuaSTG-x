@@ -119,8 +119,8 @@ int lua_lstg_RenderMode_setVec4(lua_State* lua_S)
 int lua_lstg_RenderMode_create(lua_State* lua_S)
 {
 	LUA_SINVOKE_HEADER("lstg.RenderMode", "lstg.RenderMode:create");
-	LUA_TRY_INVOKE_R(5, (static_cast<cc::IntrusivePtr<lstg::RenderMode>(*)(const std::string&, cocos2d::backend::BlendOperation, cocos2d::backend::BlendFactor, cocos2d::backend::BlendFactor, cocos2d::backend::Program*)>(&lstg::RenderMode::create)));
-	LUA_TRY_INVOKE_R(2, (static_cast<cc::IntrusivePtr<lstg::RenderMode>(*)(const std::string&, cocos2d::backend::Program*)>(&lstg::RenderMode::create)));
+	LUA_TRY_INVOKE_R(5, (static_cast<cc::IntrusivePtr<lstg::RenderMode>(*)(const std::string&, cocos2d::backend::BlendOperation, cocos2d::backend::BlendFactor, cocos2d::backend::BlendFactor, cc::IntrusivePtr<cocos2d::backend::Program>)>(&lstg::RenderMode::create)));
+	LUA_TRY_INVOKE_R(2, (static_cast<cc::IntrusivePtr<lstg::RenderMode>(*)(const std::string&, cc::IntrusivePtr<cocos2d::backend::Program>)>(&lstg::RenderMode::create)));
 	LUA_SINVOKE_FOOTER("2,5");
 }
 int lua_lstg_RenderMode_getByID(lua_State* lua_S)

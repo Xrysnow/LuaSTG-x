@@ -111,10 +111,10 @@ cc::IntrusivePtr<ResFX> ResFX::create(const std::string& name,
 	const auto fs = LRES.getStringFromFile(fsPath);
 	if (vs.empty() && fs.empty())
 		return nullptr;
-	const auto program = util::CreateProgramFromString(vs, fs);
+	auto program = util::CreateProgramFromString(vs, fs);
 	if (!program)
 		return nullptr;
-	auto ret = createWithProgram(name, program);
+	auto ret = createWithProgram(name, std::move(program));
 	if (ret)
 		ret->resPath = fsPath;
 	return ret;
@@ -123,20 +123,20 @@ cc::IntrusivePtr<ResFX> ResFX::create(const std::string& name,
 cc::IntrusivePtr<ResFX> ResFX::createWithString(const std::string& name,
 	const std::string& vShader, const std::string& fShader)
 {
-	const auto program =
+	auto program =
 		util::CreateProgramFromString(vShader, fShader);
 	if (!program)
 		return nullptr;
-	return createWithProgram(name, program);
+	return createWithProgram(name, std::move(program));
 }
 
-cc::IntrusivePtr<ResFX> ResFX::createWithProgram(const std::string& name, backend::Program* program)
+cc::IntrusivePtr<ResFX> ResFX::createWithProgram(const std::string& name, cc::IntrusivePtr<backend::Program> program)
 {
 	if (!program)
 		return nullptr;
-	const auto m = RenderMode::create(name, program);
+	const auto m = RenderMode::create(name, std::move(program));
 	if (!m)
 		return nullptr;
-	cc::IntrusivePtr owner{new (nothrow) ResFX(name, m)};
+	cc::IntrusivePtr owner{new (nothrow) ResFX(name, m.get())};
 	return Resource::finishConstruction(std::move(owner));
 }

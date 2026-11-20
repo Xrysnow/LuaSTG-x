@@ -14,7 +14,7 @@ namespace lstg {
 		bool isTextureFlipped();
 
 		Triangles* getTriangles() const { return triangles; }
-		void setTriangles(Triangles* tri);
+		void setTriangles(cc::IntrusivePtr<Triangles> tri);
 
 		bool render(const cocos2d::V3F_C4B_T2F_Quad& quad);
 		bool render(RenderMode* blend, const cocos2d::V3F_C4B_T2F_Quad& quad);
@@ -22,10 +22,9 @@ namespace lstg {
 		std::unordered_map<std::string, std::string> getInfo() const override;
 		size_t getMemorySize() override;
 
-		ResTexture(const std::string& name, cocos2d::Texture2D* tex);
-		~ResTexture() override;
+		ResTexture(const std::string& name, cc::IntrusivePtr<cocos2d::Texture2D> tex);
 
 		static cc::IntrusivePtr<ResTexture> create(const std::string& name, const std::string& path);
-		static cc::IntrusivePtr<ResTexture> createWithTexture(const std::string& name, cocos2d::Texture2D* texture);
+		static cc::IntrusivePtr<ResTexture> createWithTexture(const std::string& name, cc::IntrusivePtr<cocos2d::Texture2D> texture);
 	};
 }

@@ -250,8 +250,8 @@ void ResFont::syncLabelSetting(Label* target)
 		target->disableEffect(LabelEffect::STRIKETHROUGH);
 }
 
-ResFont::ResFont(const std::string& name, XLabel* label, LabelType type)
-	: Resource(ResourceType::Font, name), label(label), labelType(type)
+ResFont::ResFont(const std::string& name, cc::IntrusivePtr<XLabel> label_, LabelType type)
+	: Resource(ResourceType::Font, name), label(std::move(label_)), labelType(type)
 {
 	CC_ASSERT(label);
 	config = label->getTTFConfig();
@@ -283,11 +283,11 @@ cc::IntrusivePtr<ResFont> ResFont::createHGE(const std::string& name, const std:
 		//auto tpath  = ReplacePathSep(fpath + "\\" + tex_name);
 		const auto font_path = ReplacePathSep(path);
 		XFileUtils::SetFileStringToReplace(font_path, bmf);
-		const auto lb = XLabel::createWithBMFont(font_path, "");// very slow here
+		auto lb = XLabel::createWithBMFont(font_path, "");// very slow here
 		if (!lb)
 			return nullptr;
 		// construct
-		cc::IntrusivePtr res{new (nothrow) ResFont(name, lb, LabelType::BMFONT)};
+		cc::IntrusivePtr res{new (nothrow) ResFont(name, std::move(lb), LabelType::BMFONT)};
 		if (!res)
 			return nullptr;
 		res->getTTFConfig().fontFilePath = font_path;
@@ -303,10 +303,10 @@ cc::IntrusivePtr<ResFont> ResFont::createBMF(const std::string& name, const std:
 	try
 	{
 		const auto font_path = ReplacePathSep(path);
-		const auto lb = XLabel::createWithBMFont(font_path, "");
+		auto lb = XLabel::createWithBMFont(font_path, "");
 		if (!lb)
 			return nullptr;
-		cc::IntrusivePtr res{new ResFont(name, lb, LabelType::BMFONT)};
+		cc::IntrusivePtr res{new ResFont(name, std::move(lb), LabelType::BMFONT)};
 		if (!res)
 			return nullptr;
 		res->getTTFConfig().fontFilePath = font_path;
@@ -334,7 +334,7 @@ cc::IntrusivePtr<ResFont> ResFont::createTTF(const std::string& name, const std:
 			if (!lb)
 				return nullptr;
 		}
-		cc::IntrusivePtr owner{new (nothrow) ResFont(name, lb, type)};
+		cc::IntrusivePtr owner{new (nothrow) ResFont(name, std::move(lb), type)};
 		return Resource::finishConstruction(std::move(owner));
 	}
 	catch (...) {}

@@ -13,9 +13,9 @@ bool ResTexture::isTextureFlipped()
 		texture->getBackendTexture()->getTextureUsage() == TextureUsage::RENDER_TARGET;
 }
 
-void ResTexture::setTriangles(Triangles* tri)
+void ResTexture::setTriangles(cc::IntrusivePtr<Triangles> tri)
 {
-	triangles = tri;
+	triangles = std::move(tri);
 }
 
 bool ResTexture::render(const V3F_C4B_T2F_Quad& quad)
@@ -48,16 +48,11 @@ size_t ResTexture::getMemorySize()
 	return total;
 }
 
-ResTexture::ResTexture(const std::string& name, Texture2D* tex)
-: Resource(ResourceType::Texture, name), texture(tex)
+ResTexture::ResTexture(const std::string& name, cc::IntrusivePtr<Texture2D> tex)
+: Resource(ResourceType::Texture, name), texture(std::move(tex))
 {
 	const auto size = texture->getContentSize();
-	setTriangles(Triangles::createQuad(Vec2(size)).get());
-}
-
-ResTexture::~ResTexture()
-{
-	setTriangles(nullptr);
+	setTriangles(Triangles::createQuad(Vec2(size)));
 }
 
 cc::IntrusivePtr<ResTexture> ResTexture::create(const std::string& name, const std::string& path)
@@ -73,7 +68,7 @@ cc::IntrusivePtr<ResTexture> ResTexture::create(const std::string& name, const s
 		{
 			if (tex->initWithImage(image.get()))
 			{
-				cc::IntrusivePtr ret{new (nothrow) ResTexture(name, tex.get())};
+				cc::IntrusivePtr ret{new (nothrow) ResTexture(name, std::move(tex))};
 				if (ret)
 					ret->resPath = path;
 				return Resource::finishConstruction(std::move(ret));
@@ -86,10 +81,10 @@ cc::IntrusivePtr<ResTexture> ResTexture::create(const std::string& name, const s
 	return nullptr;
 }
 
-cc::IntrusivePtr<ResTexture> ResTexture::createWithTexture(const std::string& name, Texture2D* texture)
+cc::IntrusivePtr<ResTexture> ResTexture::createWithTexture(const std::string& name, cc::IntrusivePtr<Texture2D> texture)
 {
 	if (!texture)
 		return nullptr;
-	cc::IntrusivePtr owner{new (nothrow) ResTexture(name, texture)};
+	cc::IntrusivePtr owner{new (nothrow) ResTexture(name, std::move(texture))};
 	return Resource::finishConstruction(std::move(owner));
 }

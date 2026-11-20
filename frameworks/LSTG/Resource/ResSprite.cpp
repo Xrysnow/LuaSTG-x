@@ -8,9 +8,9 @@ using namespace lstg;
 using namespace cocos2d;
 
 
-void ResSprite::setNormalMap(Texture2D* texture)
+void ResSprite::setNormalMap(cc::IntrusivePtr<Texture2D> texture)
 {
-	normalMap = texture;
+	normalMap = std::move(texture);
 }
 
 bool ResSprite::render(float x, float y, float rot, float hscale, float vscale, float z)
@@ -33,13 +33,13 @@ cc::IntrusivePtr<ResSprite> ResSprite::clone(const std::string& newName)
 {
 	if (newName == resName)
 		return this;
-	const auto sp = Sprite::createWithSpriteFrame(sprite->getSpriteFrame().get());
+	auto sp = Sprite::createWithSpriteFrame(sprite->getSpriteFrame().get());
 	if (!sp)
 	{
 		XERROR("failed when creating Sprite.");
 		return nullptr;
 	}
-	cc::IntrusivePtr res{new (nothrow) ResSprite(newName, sp, colliderType, halfSizeX, halfSizeY, resPath)};
+	cc::IntrusivePtr res{new (nothrow) ResSprite(newName, std::move(sp), colliderType, halfSizeX, halfSizeY, resPath)};
 	if(!res)
 	{
 		XERROR("failed when creating ResSprite.");
@@ -68,9 +68,9 @@ size_t ResSprite::getMemorySize()
 	return total;
 }
 
-ResSprite::ResSprite(const std::string& name, Sprite* sprite,
+ResSprite::ResSprite(const std::string& name, cc::IntrusivePtr<Sprite> sprite_,
                      XColliderType colliType, double a, double b, const std::string& path)
-: ResourceQuad(ResourceType::Sprite, name, colliType, a, b, path), sprite(sprite)
+: ResourceQuad(ResourceType::Sprite, name, colliType, a, b, path), sprite(std::move(sprite_))
 {
 	sprite->setColor(Color3B::WHITE);
 	sprite->setOpacity(255);
@@ -88,21 +88,21 @@ cc::IntrusivePtr<ResSprite> ResSprite::create(const std::string& name, ResTextur
 {
 	if (!texture)
 		return nullptr;
-	const auto sp = Sprite::createWithTexture(
+	auto sp = Sprite::createWithTexture(
 		texture->getTexture(), Rect(x, y, w, h));
 	if (!sp)
 		return nullptr;
-	cc::IntrusivePtr ret{new (nothrow) ResSprite(name, sp, colliType, a, b)};
+	cc::IntrusivePtr ret{new (nothrow) ResSprite(name, std::move(sp), colliType, a, b)};
 	if (ret)
 		ret->resPath = texture->getPath();
 	return Resource::finishConstruction(std::move(ret));
 }
 
-cc::IntrusivePtr<ResSprite> ResSprite::createWithSprite(const std::string& name, Sprite* sprite, double a, double b,
-	XColliderType colliType)
+cc::IntrusivePtr<ResSprite> ResSprite::createWithSprite(const std::string& name,
+	cc::IntrusivePtr<Sprite> sprite, double a, double b, XColliderType colliType)
 {
 	if (!sprite)
 		return nullptr;
-	cc::IntrusivePtr owner{new (nothrow) ResSprite(name, sprite, colliType, a, b)};
+	cc::IntrusivePtr owner{new (nothrow) ResSprite(name, std::move(sprite), colliType, a, b)};
 	return Resource::finishConstruction(std::move(owner));
 }

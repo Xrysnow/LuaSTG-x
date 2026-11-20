@@ -67,7 +67,7 @@ namespace lstg {
 				Sleep
 			};
 		private:
-			ResParticle* host = nullptr;
+			cc::IntrusivePtr<ResParticle> host;
 			ParticleInfo particleInfo;
 			RandomWELL512 rng;
 			cocos2d::TrianglesCommand::Triangles triangles;
@@ -119,7 +119,7 @@ namespace lstg {
 			cocos2d::Color4B getColorEnd();
 			void setColorEnd(const cocos2d::Color4B& color);
 
-			ResParticle* getResource() const { return host; }
+			ResParticle* getResource() const { return host.get(); }
 			size_t getAliveCount() const { return numAlive; }
 
 			void setSeed(uint32_t seed) { rng.seed(seed); }
@@ -137,7 +137,7 @@ namespace lstg {
 			void render(float scaleX = 1.f, float scaleY = 1.f);
 			ParticleInstance* getParticleInstance(int32_t index);
 
-			explicit ParticlePool(ResParticle* res);
+			explicit ParticlePool(cc::IntrusivePtr<ResParticle> res);
 			~ParticlePool() override;
 		};
 	protected:
@@ -156,7 +156,7 @@ namespace lstg {
 		std::unordered_map<std::string, std::string> getInfo() const override;
 		size_t getMemorySize() override;
 
-		ResParticle(const std::string& name, const ParticleInfo& pinfo, cocos2d::Sprite* sprite,
+		ResParticle(const std::string& name, const ParticleInfo& pinfo, cc::IntrusivePtr<cocos2d::Sprite> sprite,
 			RenderMode* rm, double a, double b, XColliderType colliType = XColliderType::Circle);
 		~ResParticle() override;
 

@@ -37,6 +37,6 @@ namespace lstg {
 		static cc::IntrusivePtr<ResFX> createWithString(const std::string& name,
 			const std::string& vShader, const std::string& fShader);
 		static cc::IntrusivePtr<ResFX> createWithProgram(const std::string& name,
-			cocos2d::backend::Program* program);
+			cc::IntrusivePtr<cocos2d::backend::Program> program);
 	};
 }
