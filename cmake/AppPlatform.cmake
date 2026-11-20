@@ -24,8 +24,10 @@ if(APPLE)
             set(MACOSX_BUNDLE_GUI_IDENTIFIER "com.xrysnow.lstgx")
         endif()
         # Xcode uses the caller's signing settings for the app and embedded frameworks.
+        set(LSTGX_IOS_INFO_PLIST "${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/Info.plist")
+        set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${LSTGX_IOS_INFO_PLIST}")
         set_target_properties(${APP_NAME} PROPERTIES
-            MACOSX_BUNDLE_INFO_PLIST "${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/Info.plist"
+            MACOSX_BUNDLE_INFO_PLIST "${LSTGX_IOS_INFO_PLIST}"
             MACOSX_BUNDLE_GUI_IDENTIFIER "${MACOSX_BUNDLE_GUI_IDENTIFIER}"
             XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${MACOSX_BUNDLE_GUI_IDENTIFIER}"
             BUILD_WITH_INSTALL_RPATH TRUE
