@@ -17,7 +17,7 @@ if(DEFINED LSTGX_NO_VIDEO)
     unset(LSTGX_NO_VIDEO)
 endif()
 
-# Keep the internal compatibility flag until all renderer branches are migrated.
+# Keep the internal CMake variable for compatibility.
 set(CC_USE_GFX ON)
 
 # Preserve an explicitly selected policy when upgrading the local cache.

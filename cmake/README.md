@@ -7,9 +7,8 @@ unchanged by the file layout.
 
 1. `MSVCDebugInfo.cmake` runs before `project()` to select embedded MSVC debug
    information for compiler initialization.
-2. `Options.cmake` declares application options, fixes the internal `CC_USE_GFX`
-   flag to ON after the feature options, and migrates the legacy Lua binding
-   diagnostics option.
+2. `Options.cmake` declares application options, sets the internal `CC_USE_GFX`
+   CMake variable to ON, and migrates the legacy Lua binding diagnostics option.
 3. `CocosSetup.cmake` maps application options to cocos settings and includes
    `CocosBuildSet.cmake` for platform detection, Apple build defaults, and Lua
    binding diagnostics. It then builds cocos and its extensions and applies
@@ -23,8 +22,8 @@ unchanged by the file layout.
 7. `AppPlatform.cmake` configures application bundles, Windows DLL copying, and
    Linux resource and runtime deployment after the module link graph is complete.
 
-The renderer always uses gfx. `CC_USE_GFX` is an internal compatibility flag;
-there is no public renderer-selection option.
+The renderer always uses gfx. `CC_USE_GFX` remains a CMake variable for
+compatibility. There is no public renderer-selection option.
 
 # FairyGUI
 

@@ -67,8 +67,6 @@ target_include_directories(${APP_NAME} PRIVATE ${GAME_INCLUDE})
 # Set application output, IDE grouping, and resource synchronization targets.
 setup_cocos_app_config(${APP_NAME})
 
-target_compile_definitions(${APP_NAME} PUBLIC CC_USE_GFX)
-
 if(CC_EXTENSION_LIBS)
     target_link_libraries(${APP_NAME} ${CC_EXTENSION_LIBS})
 endif()
