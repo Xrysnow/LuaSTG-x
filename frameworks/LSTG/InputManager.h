@@ -25,7 +25,7 @@ namespace lstg
 		void setKeyState(int code, bool value);
 
 		// get last presesed key
-		int getLastKey() const { return lastKey; }
+		int getLastKey() const;
 
 		// get mouse position (to the left bottom)
 		cocos2d::Vec2 getMousePosition() const { return mousePosition; }
@@ -43,7 +43,8 @@ namespace lstg
 
 	private:
 		int32_t lastKey = 0;
-		bool KeyStateMap[256];
+		bool textFocused = false;
+		bool capturedKeys[256]{};
 		cocos2d::Vec2 mousePosition;
 		bool mouseState[3];
 		bool inputStateMap[256];

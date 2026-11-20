@@ -13,6 +13,7 @@
 	#include "../Live2D/L2DFramework.h"
 #endif
 #include "LuaWrapper/LuaWrapper.h"
+#include "../LuaBindings/lua_TextInput_manual.hpp"
 #include "Renderer.h"
 #include "InputManager.h"
 #include "WindowHelper.h"
@@ -25,7 +26,6 @@
 #include <iostream>
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
-#include "../runtime-src/proj.win32/WindowHelperWin32.h"
 #include "timeapi.h"
 #ifdef LSTGX_HP_GPU
 extern "C"
@@ -341,15 +341,6 @@ bool AppFrame::frameInit()
 		return false;
 	}
 
-	const auto wHelper = WindowHelper::getInstance();
-	//TODO: Mac & Linux
-#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
-	auto winhelper = (WindowHelperWin32*)wHelper;
-	winhelper->SetHideIME(true);
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_MAC
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_LINUX
-#endif
-
 #ifdef CC_PLATFORM_PC
 	WindowHelperDesktop::getInstance()->setTitle("LuaSTG-x");
 #endif
@@ -427,6 +418,7 @@ bool AppFrame::frameInit()
 		LuaEngine::getInstance()->executeGlobalFunction(LFUNC_GAINFOCUS);
 	});
 	e->addCustomEventListener(GLViewImpl::EVENT_WINDOW_UNFOCUSED, [](EventCustom*) {
+		InputManager::getInstance()->clearState();
 		LuaEngine::getInstance()->executeGlobalFunction(LFUNC_LOSEFOCUS);
 	});
 
@@ -452,6 +444,7 @@ void AppFrame::frameShutdown(bool fromNative)
 			return;
 	}
 
+	resetLuaTextInput(L);
 	XRenderer::end();
 
 	gameObjectPool = nullptr;
@@ -481,6 +474,7 @@ void AppFrame::frameShutdown(bool fromNative)
 bool AppFrame::frameReset()
 {
 	status = Status::Initializing;
+	resetLuaTextInput(L);
 
 	gameObjectPool->ResetPool();
 	LINFO("clear GameObjectPool");
@@ -532,6 +526,51 @@ static void PVRFrameEnableControlWindow(bool bEnable)
 	RegCloseKey(hKey);
 }
 
+namespace
+{
+LONGLONG performanceTicks()
+{
+	LARGE_INTEGER ticks;
+	QueryPerformanceCounter(&ticks);
+	return ticks.QuadPart;
+}
+
+class Win32FramePacer
+{
+public:
+	explicit Win32FramePacer(LONGLONG frequency) : _frequency(frequency) {}
+
+	bool beforePoll(LONGLONG interval, bool previousFrameDrawn)
+	{
+		auto now = performanceTicks();
+		if (interval <= 0 || !previousFrameDrawn || interval != _interval)
+		{
+			_interval = interval;
+			_deadline = now + interval;
+			return false;
+		}
+		const bool late = now > _deadline;
+		if (!late)
+		{
+			const auto remainingMs = (_deadline - now) * 1000 / _frequency;
+			if (remainingMs > 1)
+				Sleep(static_cast<DWORD>(remainingMs - 1));
+			while ((now = performanceTicks()) < _deadline)
+				YieldProcessor();
+		}
+		_deadline += interval;
+		if (_deadline <= now)
+			_deadline = now + interval;
+		return late;
+	}
+
+private:
+	LONGLONG _frequency;
+	LONGLONG _interval = 0;
+	LONGLONG _deadline = 0;
+};
+}
+
 int AppFrame::run()
 {
 	PVRFrameEnableControlWindow(false);
@@ -543,90 +582,27 @@ int AppFrame::run()
 	if (TIMERR_NOERROR == timeGetDevCaps(&tc, sizeof(TIMECAPS)))
 	{
 		wTimerRes = std::min(std::max(tc.wPeriodMin, TARGET_RESOLUTION), tc.wPeriodMax);
-		timeBeginPeriod(wTimerRes);
+		if (timeBeginPeriod(wTimerRes) != TIMERR_NOERROR)
+			wTimerRes = 0;
 	}
-	LARGE_INTEGER nLast;
-	LARGE_INTEGER nNow;
-	QueryPerformanceCounter(&nLast);
 	initGLContextAttrs();
 	if (!applicationDidFinishLaunching())
 	{
+		if (wTimerRes)
+			timeEndPeriod(wTimerRes);
 		return 1;
 	}
 
 	auto director = Director::getInstance();
 	auto glview = director->getOpenGLView();
 	glview->retain();
-	LONG waitMS = 0L;
 	LARGE_INTEGER freq;
 	QueryPerformanceFrequency(&freq);
-	//uint32_t timer = 0;
-	//double pe_t1 = 0;
-	StopWatch sw, sw2;
-	LONGLONG sleep_skip = 0LL;
-
+	Win32FramePacer pacer(freq.QuadPart);
+	bool drewFrame = false;
 	auto e = director->getEventDispatcher();
-	const auto listener = EventListenerCustom::create(Director::EVENT_AFTER_DRAW, [&](EventCustom* event)
-	{
-		// there will be strange frame drop on screen without this, although frame time is steady
-		//glFinish();
-
-		//if (glview->windowShouldClose())
-		//	return;
-
-		//const auto waitMS_max = _animationInterval.QuadPart * 1000LL / freq.QuadPart;
-		//LINFO("waitMS_max = %d, _animationInterval = %d", waitMS_max, _animationInterval.QuadPart);
-		QueryPerformanceCounter(&nNow);
-		LONGLONG interval = nNow.QuadPart - nLast.QuadPart;
-		const auto delta = interval - _animationInterval.QuadPart;
-		if (delta < 0LL)
-		{
-			const auto last = nLast.QuadPart + sleep_skip;
-			waitMS = (-delta - sleep_skip) * 1000LL / freq.QuadPart - 1L;
-			if (waitMS > 1L)
-				Sleep(waitMS);
-			//if (sleep_skip > 0LL)
-			//{
-			//	LINFO("skip %f, slept %d", double(sleep_skip) / freq.QuadPart * 1000, waitMS);
-			//}
-			sleep_skip = 0LL;
-
-			QueryPerformanceCounter(&nNow);
-			interval = nNow.QuadPart - last;
-			// note: interval may overflow sometime
-			if (interval < _animationInterval.QuadPart && interval > 0)
-			{
-				while (interval < _animationInterval.QuadPart)
-				{
-					QueryPerformanceCounter(&nNow);
-					interval = nNow.QuadPart - last;
-				}
-			}
-			nLast.QuadPart = nNow.QuadPart;
-			//else
-			//{
-			//	double got = double(interval) / freq.QuadPart * 1000;
-			//	double target = double(_animationInterval.QuadPart) / freq.QuadPart * 1000;
-			//	LINFO("oversleep %d, t: %d, %f / %f", timer, waitMS, got, target);
-			//}
-		}
-		else
-		{
-			sleep_skip = delta;
-			//if (double(delta) / freq.QuadPart > 2e-3)
-			//{
-			//	auto times = XProfiler::getInstance()->getAllLast();
-			//	string inf = "\n";
-			//	for(auto& it : times)
-			//	{
-			//		inf += StringUtils::format("%s = %.2f\n", it.first.c_str(), it.second * 1000);
-			//	}
-			//	LINFO("%s", inf.c_str());
-			//}
-			dropCounter++;
-			QueryPerformanceCounter(&nNow);
-			nLast.QuadPart = nNow.QuadPart;
-		}
+	const auto listener = EventListenerCustom::create(Director::EVENT_AFTER_DRAW, [&](EventCustom*) {
+		drewFrame = true;
 	});
 	e->addEventListenerWithFixedPriority(listener, 9);
 	const auto listener2 = EventListenerCustom::create(
@@ -639,6 +615,9 @@ int AppFrame::run()
 
 	while (!glview->windowShouldClose())
 	{
+		if (pacer.beforePoll(_animationInterval.QuadPart, drewFrame))
+			++dropCounter;
+		drewFrame = false;
 		XProfiler::getInstance()->tic("pullEvents");
 		director->mainLoop();
 

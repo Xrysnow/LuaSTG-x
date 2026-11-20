@@ -74,9 +74,6 @@ namespace lstg
 			return std::vector<cocos2d::Vec2>{};
 		}
 
-		virtual void setImeEnabled(bool enable) {}
-		virtual bool isImeEnabled() { return false; }
-
 		// Case-sensitive method names; unknown operations return false.
 		// setDesignResolution denotes GLView design-size control, not a physical resize.
 		virtual bool supportsOperation(const std::string& operation) { return false; }
@@ -150,8 +147,6 @@ namespace lstg
 		cocos2d::Vec2 getDisplayResolution() override;
 		std::vector<cocos2d::Vec2> enumDisplayResolution() override;
 
-		void setImeEnabled(bool enabled) override;
-		bool isImeEnabled() override;
 		bool supportsOperation(const std::string& operation) override;
 	protected:
 		// it's better to get window dynamicly

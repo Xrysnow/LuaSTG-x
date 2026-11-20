@@ -25,13 +25,6 @@ LUA_REGISTER_FUNC_DEF(lstg, SetKeyboardHookEnabled)
 	LIM.setKeyboardHookEnabled(lua_toboolean(L, 1));
 	return 0;
 }
-LUA_REGISTER_FUNC_DEF(lstg, GetLastChar)
-{
-	// deprecated
-	lua_pushliteral(L, "");
-	return 1;
-}
-
 // controller
 
 LUA_REGISTER_FUNC_DEF(lstg, GetAllControllers)

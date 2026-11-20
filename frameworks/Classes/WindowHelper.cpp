@@ -57,25 +57,12 @@ namespace
 			return JniHelper::callStaticStringMethod(androidHostClass, "getClipboardString");
 		}
 
-		void setImeEnabled(bool enabled) override
-		{
-			// Reuse the existing GLView channel; text submission belongs to that channel.
-			if (auto* view = Director::getInstance()->getOpenGLView())
-				view->setIMEKeyboardState(enabled);
-		}
-
-		bool isImeEnabled() override
-		{
-			return isVisible() && JniHelper::callStaticBooleanMethod(androidHostClass, "isImeVisible");
-		}
-
 		bool supportsOperation(const std::string& operation) override
 		{
 			return operation == "supportsOperation" || operation == "setDesignResolution"
 				|| operation == "getSize" || operation == "getDisplayResolution"
 				|| operation == "getDpiScale" || operation == "isVisible"
-				|| operation == "setClipboardString" || operation == "getClipboardString"
-				|| operation == "setImeEnabled" || operation == "isImeEnabled";
+				|| operation == "setClipboardString" || operation == "getClipboardString";
 		}
 	};
 }
@@ -120,14 +107,6 @@ WindowHelperDesktop* WindowHelperDesktop::getInstance()
 
 bool WindowHelperDesktop::supportsOperation(const std::string& operation)
 {
-	if (operation == "setImeEnabled" || operation == "isImeEnabled")
-	{
-#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
-		return true;
-#else
-		return false;
-#endif
-	}
 	return operation == "supportsOperation" || operation == "setDesignResolution"
 		|| operation == "setVsync" || operation == "isVsync" || operation == "operate"
 		|| operation == "setClipboardString" || operation == "getClipboardString"
@@ -392,34 +371,6 @@ std::vector<cocos2d::Vec2> WindowHelperDesktop::enumDisplayResolution()
 		res.emplace_back(float(mode.width), float(mode.height));
 	}
 	return res;
-}
-
-void WindowHelperDesktop::setImeEnabled(bool enabled)
-{
-#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
-	HWND hwnd = Director::getInstance()->getOpenGLView()->getWin32Window();
-	HIMC hIMC = ImmGetContext(hwnd);
-	if (hIMC)
-	{
-		ImmSetOpenStatus(hIMC, enabled);
-		ImmReleaseContext(hwnd, hIMC);
-	}
-#endif
-}
-
-bool WindowHelperDesktop::isImeEnabled()
-{
-#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
-	HWND hwnd = Director::getInstance()->getOpenGLView()->getWin32Window();
-	HIMC hIMC = ImmGetContext(hwnd);
-	if (hIMC)
-	{
-		bool b = ImmGetOpenStatus(hIMC);
-		ImmReleaseContext(hwnd, hIMC);
-		return b;
-	}
-#endif
-	return false;
 }
 
 GLFWwindow* WindowHelperDesktop::getWindow()

@@ -1,5 +1,6 @@
 ﻿#include "InputManager.h"
 #include "cocos2d.h"
+#include "platform/TextInputService.h"
 #include "LogSystem.h"
 #include "Util/UtilLua.h"
 #include "Util/Utility.h"
@@ -18,8 +19,19 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 using namespace std;
 using namespace lstg;
 using namespace cocos2d;
-using TKeyCode = underlying_type<EventKeyboard::KeyCode>::type;
 using TMouseButton = underlying_type<EventMouse::MouseButton>::type;
+
+namespace
+{
+using Key = EventKeyboard::KeyCode;
+constexpr int firstArrow = static_cast<int>(Key::KEY_LEFT_ARROW);
+constexpr int firstPad = static_cast<int>(Key::KEY_DPAD_LEFT);
+
+bool isPadDirection(int code)
+{
+	return code >= firstPad && code <= static_cast<int>(Key::KEY_DPAD_DOWN);
+}
+}
 
 InputManager::InputManager()
 {
@@ -34,6 +46,18 @@ bool InputManager::_init()
 	clearState();
 	ControllerHelper::getInstance()->init();
 	const auto director = Director::getInstance();
+	if (auto view = director->getOpenGLView())
+		view->getTextInputService().setFocusChangedCallback([this](TextInputFocus focus) {
+			// The action that opened the field may already have observed this press.
+			// Subsequent hook repeats must stay with the field until the physical release.
+			if (focus && !textFocused && lastKey > 0 && !isPadDirection(lastKey) && inputStateMap[lastKey])
+			{
+				capturedKeys[lastKey] = true;
+				inputStateMap[lastKey] = false;
+				lastKey = 0;
+			}
+			textFocused = static_cast<bool>(focus);
+		});
 	auto e = director->getEventDispatcher();
 	// note: EventKeyboard is sent in GLView::pollEvents (called in Director::drawScene),
 	// which is before EVENT_BEFORE_UPDATE
@@ -45,21 +69,10 @@ bool InputManager::_init()
 	});
 	auto listenerK = EventListenerKeyboard::create();
 	listenerK->onKeyPressed = [this](EventKeyboard::KeyCode keyCode, Event* event) {
-		// cast to int
-		auto i = static_cast<TKeyCode>(keyCode);
-		// DPAD -> ARROW
-		if (159 <= i && i <= 162)
-			i = i - 133;
-		inputStateMap[i] = true;
-		lastKey = i;
+		setKeyState(static_cast<int>(keyCode), true);
 	};
 	listenerK->onKeyReleased = [this](EventKeyboard::KeyCode keyCode, Event* event) {
-		auto i = static_cast<TKeyCode>(keyCode);
-		if (159 <= i && i <= 162)
-			i = i - 133;
-		inputStateMap[i] = false;
-		if (lastKey == i)
-			lastKey = 0;
+		setKeyState(static_cast<int>(keyCode), false);
 	};
 	e->addEventListenerWithFixedPriority(listenerK, 1);
 
@@ -91,6 +104,9 @@ bool InputManager::_end()
 {
 	ControllerHelper::getInstance()->end();
 	setKeyboardHookEnabled(false);
+	if (auto view = Director::getInstance()->getOpenGLView())
+		view->getTextInputService().setFocusChangedCallback({});
+	textFocused = false;
 	return true;
 }
 
@@ -113,28 +129,49 @@ bool InputManager::end()
 void InputManager::clearState()
 {
 	lastKey = 0;
-	memset(KeyStateMap, 0, sizeof(KeyStateMap));
+	memset(capturedKeys, 0, sizeof(capturedKeys));
 	memset(mouseState, 0, sizeof(mouseState));
 	memset(inputStateMap, 0, sizeof(inputStateMap));
 }
 
 bool InputManager::getKeyState(int code)
 {
-	if (0 < code && code <= 255)
+	if (code >= firstArrow && code <= static_cast<int>(Key::KEY_DOWN_ARROW))
+		return inputStateMap[code] || inputStateMap[firstPad + code - firstArrow];
+	if (0 < code && code <= 255 && !isPadDirection(code))
 		return inputStateMap[code];
 	return false;
 }
 
+int InputManager::getLastKey() const
+{
+	return isPadDirection(lastKey) ? firstArrow + lastKey - firstPad : lastKey;
+}
+
 void InputManager::setKeyState(int code, bool value)
 {
-	if (0 < code && code <= 255)
+	if (code <= 0 || code > 255)
+		return;
+	// A held key keeps its original owner through focus changes and repeats.
+	if (!value)
 	{
-		inputStateMap[code] = value;
-		if (value)
-			lastKey = code;
-		else if (lastKey == code)
+		capturedKeys[code] = false;
+		inputStateMap[code] = false;
+		if (lastKey == code)
 			lastKey = 0;
+		return;
 	}
+	if (capturedKeys[code])
+		return;
+	if (textFocused && !inputStateMap[code] && !isPadDirection(code) &&
+		code != static_cast<int>(EventKeyboard::KeyCode::KEY_PLAY) &&
+		code != static_cast<int>(EventKeyboard::KeyCode::KEY_PRINT))
+	{
+		capturedKeys[code] = true;
+		return;
+	}
+	inputStateMap[code] = true;
+	lastKey = code;
 }
 
 bool InputManager::getMouseState(int button)
@@ -323,8 +360,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 		if (nCode != HC_ACTION)
 			break;
 		const auto view = dynamic_cast<GLViewImpl*>(Director::getInstance()->getOpenGLView());
-		CC_ASSERT(view);
-		if(view->getWindowHandle() != GetForegroundWindow())
+		if (!view || view->getWindowHandle() != GetForegroundWindow())
 			break;
 		const auto ks = reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
 		const auto it = KeyCodeMap.find((int)ks->vkCode);

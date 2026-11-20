@@ -1,107 +1,10 @@
 ﻿#include "WindowHelperWin32.h"
-#include <unordered_map>
 
 using namespace lstg;
 
 #define F2DWINDOWSTYLENONEBORDER     ( WS_POPUP   | WS_SYSMENU )
 #define F2DWINDOWSTYLEFIXEDBORDER    ( WS_SYSMENU | WS_MINIMIZEBOX | WS_CAPTION )
 #define F2DWINDOWSTYLESIZEABLEBORDER ( WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CAPTION | WS_THICKFRAME )
-
-void WindowHelperWin32::InitIMEContext()
-{
-	if (!m_hWnd) return;
-	m_hIMC = ImmCreateContext();
-	m_hIMC = ImmAssociateContext(m_hWnd, m_hIMC);
-}
-
-void WindowHelperWin32::UninitIMEContext()
-{
-	if (!m_hWnd) return;
-	m_hIMC = ImmAssociateContext(m_hWnd, m_hIMC);
-	ImmDestroyContext(m_hIMC);
-}
-
-void WindowHelperWin32::HandleIMELanguageChanged()
-{
-	if (!m_hWnd) return;
-	HKL hKL = GetKeyboardLayout(0);
-	int iSize = ::ImmGetDescription(hKL, NULL, 0);
-	if (iSize == 0)
-	{
-		// 输入法关闭
-		m_CurIMEDesc.clear();
-	}
-	else
-	{
-		// 输入法切换
-		m_CurIMEDesc.clear();
-		m_CurIMEDesc.resize(iSize);
-		ImmGetDescription(hKL, &m_CurIMEDesc[0], iSize);
-	}
-}
-
-void WindowHelperWin32::HandleIMEComposition()
-{
-	if (!m_hWnd) return;
-	HIMC hIMC = ImmGetContext(m_hWnd);
-	LONG lSize = ImmGetCompositionString(hIMC, GCS_COMPSTR, 0, 0);
-
-	if (lSize == 0)
-		m_CurIMEComposition.clear();
-	else
-	{
-		m_CurIMEComposition.clear();
-		m_CurIMEComposition.resize(lSize);
-		ImmGetCompositionString(hIMC, GCS_COMPSTR, &m_CurIMEComposition[0], lSize);
-		ImmReleaseContext(m_hWnd, hIMC);
-	}
-}
-
-void WindowHelperWin32::HandleIMECandidate()
-{
-	if (!m_hWnd) return;
-	// 获得上下文
-	HIMC hIMC = ImmGetContext(m_hWnd);
-
-	// 获得候选词列表大小
-	LONG dwSize = ImmGetCandidateList(hIMC, 0, NULL, 0);
-
-	if (dwSize == 0)
-	{
-		m_IMEPageCandidateCount = m_IMEPageStartCandidate = m_IMETotalCandidate = m_IMESelectedCandidate = 0;
-		m_IMECandidateList.clear();
-
-		return;
-	}
-
-	// 申请全局空间来存放候选词
-	LPCANDIDATELIST pList = (LPCANDIDATELIST)GlobalAlloc(GPTR, dwSize);
-
-	// 获得候选词列表
-	if (pList)
-		ImmGetCandidateList(hIMC, 0, pList, dwSize);
-	else
-		return;  // 内存分配失败
-
-	m_IMEPageCandidateCount = pList->dwPageSize;
-	m_IMEPageStartCandidate = pList->dwPageStart;
-	m_IMETotalCandidate = pList->dwCount;
-	m_IMESelectedCandidate = pList->dwSelection;
-
-	// 获得候选词列表
-	m_IMECandidateList.clear();
-	m_IMECandidateList.reserve(pList->dwCount);
-	for (uint32_t i = 0; i<pList->dwCount; ++i)
-	{
-		const wchar_t* pStr = (const wchar_t*)((size_t)pList + (size_t)pList->dwOffset[i]);
-
-		m_IMECandidateList.push_back(pStr);
-	}
-
-	// clean up
-	GlobalFree(pList);
-	ImmReleaseContext(m_hWnd, hIMC);
-}
 
 int32_t WindowHelperWin32::GetHandle()
 {
@@ -274,22 +177,6 @@ void WindowHelperWin32::HideMouse(bool bHide)
 	ShowCursor((BOOL)!bHide);
 }
 
-uint32_t WindowHelperWin32::GetIMEInfo(F2DIMEINFO InfoType)
-{
-	switch (InfoType)
-	{
-	case F2DIMEINFO_CANDIDATECOUNT:
-		return m_IMETotalCandidate;
-	case F2DIMEINFO_CANDIDATEINDEX:
-		return m_IMESelectedCandidate;
-	case F2DIMEINFO_PAGESIZE:
-		return m_IMEPageCandidateCount;
-	case F2DIMEINFO_PAGESTART:
-		return m_IMEPageStartCandidate;
-	default: return 0;
-	}
-}
-
 void WindowHelperWin32::setCloseNotify(bool notify)
 {
 	//SimulatorWin::setCloseNotify(notify);
@@ -349,9 +236,7 @@ BOOL WindowHelperWin32::IsWindows10BuildOrGreaterWin32(WORD build)
 }
 
 WindowHelperWin32::WindowHelperWin32(cocos2d::GLViewImpl* view, HWND handle)
-	: WindowHelperDesktop(view), m_hWnd(handle), m_bShow(false), m_CaptionText(L""), m_hIMC(nullptr),
-	  m_bHideIME(true), m_IMETotalCandidate(0), m_IMESelectedCandidate(0),
-	  m_IMEPageStartCandidate(0), m_IMEPageCandidateCount(0)
+	: WindowHelperDesktop(view), m_hWnd(handle), m_bShow(false), m_CaptionText(L"")
 {
 }
 
