@@ -537,7 +537,7 @@ cc::IntrusivePtr<Operator> Operator::create(const std::string& name)
 	CREATE_CHECK(ret, ret&&ret->init(name));
 }
 
-void Operator::addInput(ComputeNode* node)
+void Operator::addInput(cc::IntrusivePtr<ComputeNode> node)
 {
 	if (node)
 	{
@@ -545,7 +545,7 @@ void Operator::addInput(ComputeNode* node)
 			is_atomic = false;
 		if (node->requireLuaObj())
 			require_luaobj = true;
-		inputs.pushBack(node);
+		inputs.pushBack(std::move(node));
 	}
 }
 
@@ -704,16 +704,17 @@ void Operator::registBase()
 	});
 }
 
-cc::IntrusivePtr<Assigment> Assigment::create(ComputeNode* var)
+cc::IntrusivePtr<Assigment> Assigment::create(cc::IntrusivePtr<ComputeNode> var)
 {
 	cc::IntrusivePtr ret{new(std::nothrow) Assigment()};
-	CREATE_CHECK(ret, ret&&ret->initWithRValue(var));
+	CREATE_CHECK(ret, ret&&ret->initWithRValue(std::move(var)));
 }
 
-cc::IntrusivePtr<Assigment> Assigment::createWithObjProperty(const std::string& property, ComputeNode* var)
+cc::IntrusivePtr<Assigment> Assigment::createWithObjProperty(
+	const std::string& property, cc::IntrusivePtr<ComputeNode> var)
 {
 	cc::IntrusivePtr ret{new(std::nothrow) Assigment()};
-	CREATE_CHECK(ret, ret&&ret->initWithObjProperty(property, var));
+	CREATE_CHECK(ret, ret&&ret->initWithObjProperty(property, std::move(var)));
 }
 
 float Assigment::getNumber()
@@ -744,23 +745,22 @@ void Assigment::exe()
 	eval();
 }
 
-bool Assigment::initWithRValue(ComputeNode* var)
+bool Assigment::initWithRValue(cc::IntrusivePtr<ComputeNode> var)
 {
 	if (!var)
 		return false;
-	rvalue = var;
-	rvalue->retain();
+	rvalue = std::move(var);
 	num_in = 0;
 	num_out = 0;
-	is_atomic = var->isAtomic();
-	require_luaobj = var->requireLuaObj();
+	is_atomic = rvalue->isAtomic();
+	require_luaobj = rvalue->requireLuaObj();
 	switch (rvalue->getType()) {
 	case Type::Number:
-		output = Number::createWithValue(0.f).detach();
+		output = Number::createWithValue(0.f);
 		eval = [this]() {output->_setNumber(rvalue->getNumber()); };
 		return true;
 	case Type::Boolean:
-		output = Boolean::createWithValue(false).detach();
+		output = Boolean::createWithValue(false);
 		eval = [this]() {output->_setBoolean(rvalue->getBoolean()); };
 		return true;
 	//case Type::String: break;
@@ -771,22 +771,21 @@ bool Assigment::initWithRValue(ComputeNode* var)
 	}
 }
 
-bool Assigment::initWithObjProperty(const std::string& objProperty, ComputeNode* var)
+bool Assigment::initWithObjProperty(const std::string& objProperty, cc::IntrusivePtr<ComputeNode> var)
 {
 	if (!var)
 		return false;
-	rvalue = var;
-	rvalue->retain();
+	rvalue = std::move(var);
 	num_in = 0;
 	num_out = 0;
-	is_atomic = var->isAtomic();
-	require_luaobj = var->requireLuaObj();
+	is_atomic = rvalue->isAtomic();
+	require_luaobj = rvalue->requireLuaObj();
 	objField = objProperty;
 	const auto t = GameObjectPropertyHash(objProperty);
-	eval = SetGamePropertyByNode(t, var);
+	eval = SetGamePropertyByNode(t, rvalue.get());
 	if (eval)
 		return true;
-	const auto type = var->getType();
+	const auto type = rvalue->getType();
 	const auto L = lua::stack()->getLuaState();
 	if (type == Operand::Type::Number)
 	{
@@ -817,11 +816,7 @@ bool Assigment::initWithObjProperty(const std::string& objProperty, ComputeNode*
 	return false;
 }
 
-Assigment::~Assigment()
-{
-	CC_SAFE_RELEASE_NULL(rvalue);
-	CC_SAFE_RELEASE_NULL(output);
-}
+Assigment::~Assigment() = default;
 
 cocos2d::Vector<Block*> Block::created;
 
@@ -837,14 +832,15 @@ cc::IntrusivePtr<Block> Block::create()
 	return nullptr;;
 }
 
-void Block::push(Statement* s)
+void Block::push(cc::IntrusivePtr<Statement> s)
 {
 	if (!s)
 		return;
-	statements.pushBack(s);
-	if (!s->isAtomic())
+	statements.pushBack(std::move(s));
+	auto* statement = statements.back();
+	if (!statement->isAtomic())
 		is_atomic = false;
-	if (s->requireLuaObj())
+	if (statement->requireLuaObj())
 		require_luaobj = true;
 }
 
@@ -869,12 +865,12 @@ void Block::exe(GameObject* obj)
 	currentObjs.pop_back();
 }
 
-void Block::addOutputNode(ComputeNode* node)
+void Block::addOutputNode(cc::IntrusivePtr<ComputeNode> node)
 {
 	if(node)
 	{
-		outputs.pushBack(node);
-		num_out += node->getNumOut();
+		outputs.pushBack(std::move(node));
+		num_out += outputs.back()->getNumOut();
 		if (num_out > 0)
 			is_atomic = false;
 	}

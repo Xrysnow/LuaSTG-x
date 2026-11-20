@@ -140,7 +140,7 @@ namespace lstg
 			bool init(const std::string& name);
 		public:
 			static cc::IntrusivePtr<Operator> create(const std::string& name);
-			void addInput(ComputeNode* node);
+			void addInput(cc::IntrusivePtr<ComputeNode> node);
 			bool check();
 
 			void execute();
@@ -172,12 +172,12 @@ namespace lstg
 		{
 			std::function<void()> eval;
 			std::string objField;
-			ComputeNode* rvalue = nullptr;
-			Operand* output = nullptr;
+			cc::IntrusivePtr<ComputeNode> rvalue;
+			cc::IntrusivePtr<Operand> output;
 		public:
-			static cc::IntrusivePtr<Assigment> create(ComputeNode* var);
+			static cc::IntrusivePtr<Assigment> create(cc::IntrusivePtr<ComputeNode> var);
 			static cc::IntrusivePtr<Assigment> createWithObjProperty(
-				const std::string& property, ComputeNode* var);
+				const std::string& property, cc::IntrusivePtr<ComputeNode> var);
 
 			float getNumber() override;
 			bool getBoolean() override;
@@ -188,8 +188,8 @@ namespace lstg
 
 			void exe() override;
 		private:	
-			bool initWithRValue(ComputeNode* var);
-			bool initWithObjProperty(const std::string& objProperty, ComputeNode* var);
+			bool initWithRValue(cc::IntrusivePtr<ComputeNode> var);
+			bool initWithObjProperty(const std::string& objProperty, cc::IntrusivePtr<ComputeNode> var);
 		public:
 			Assigment(){}
 			virtual ~Assigment();
@@ -211,11 +211,11 @@ namespace lstg
 		public:
 			static cc::IntrusivePtr<Block> create();
 
-			void push(Statement* s);
+			void push(cc::IntrusivePtr<Statement> s);
 			void clear();
 			void exe(GameObject* obj);
 
-			void addOutputNode(ComputeNode* node);
+			void addOutputNode(cc::IntrusivePtr<ComputeNode> node);
 			uint32_t getNumOutput() { return num_out; }
 			void executeLua(GameObject* obj);
 			void executeLua();
