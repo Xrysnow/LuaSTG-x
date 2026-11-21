@@ -33,6 +33,10 @@ function M:onCreate()
     display.runScene(scene)
     local la = im.on(scene)
     self._la = la
+    if require('platform.GamepadActions').enabled then
+        im.setGamepadPlayer(setting.gamepad_actions.slot or 0)
+        im.configFlagEnable(im.ConfigFlags.NavEnableGamepad)
+    end
 
     setting.xe = setting.xe or {}
     ChangeVideoMode(

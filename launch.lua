@@ -150,7 +150,13 @@ function lstg.saveSettingFile()
     local t = getmetatable(setting).__index
     local s = setting_util.format_json(Serialize(t))
     assert(setting_util.compare(DeSerialize(s), t))
-    if not FU:writeStringToFile(s, setting_path) then
+    local saved
+    if lstg.SaveSettingsAtomically then
+        saved = lstg.SaveSettingsAtomically(setting_path, s)
+    else
+        saved = FU:writeStringToFile(s, setting_path)
+    end
+    if not saved then
         error(('failed to save settings to %q'):format(setting_path))
     end
     return true

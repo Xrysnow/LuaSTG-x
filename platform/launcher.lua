@@ -2,7 +2,7 @@
 local M = class('Launcher', require('cc.ViewBase'))
 local im = imgui
 local director = cc.Director:getInstance()
-local controller = require('platform.ControllerHelper')
+local gamepad = require('platform.GamepadActions')
 
 local function tr(en, zh)
     return i18n({ en = en, zh = zh })
@@ -19,8 +19,8 @@ end
 local preferences = {
     'bgmvolume', 'sevolume', 'res_ratio', 'resy', 'resx', 'windowsize_w',
     'windowsize_h', 'windowed', 'vsync', 'posteffect', 'render_skip',
-    'keys', 'keysys', 'controller_map', 'username', 'allowsnapshot',
-    'orientation', 'touchkey',
+    'keys', 'keysys', 'username', 'allowsnapshot',
+    'orientation', 'touchkey', 'gamepad_actions', 'gamepad_hardware', 'gamepad_preferred',
 }
 local pages = {
     { 'mod', 'MOD library', 'MOD 库' },
@@ -122,7 +122,7 @@ function M:onCreate()
         local capture = self._capture
         if not capture then return end
         if code == KEY.ESCAPE then
-            self._capture = nil
+            self:_cancelCapture()
         elseif capture.kind == 'keyboard' then
             local keys = self._draft[capture.group]
             local old = keys[capture.name]
@@ -141,21 +141,7 @@ function M:onCreate()
         -- onEnter runs inside the parent scene's child traversal. Add the
         -- shared ImGui layer only after that traversal has finished.
         if not self._renderer then self:_initImGui() end
-        local capture = self._capture
-        local last = capture and capture.kind == 'controller' and controller.getLast()
-        if last then
-            local map = self._draft.controller_map
-            local old = map[capture.group][capture.name]
-            local direction
-            if last.is_axis then direction = last.is_pos end
-            for _, group in pairs(map) do
-                for name, binding in pairs(group) do
-                    if binding[1] == last.key and binding[2] == direction then group[name] = copy(old) end
-                end
-            end
-            map[capture.group][capture.name] = last.is_axis and { last.key, last.is_pos } or { last.key }
-            self._dirty, self._capture = true, nil
-        end
+        self:_sampleGamepad()
     end, 0)
 end
 
@@ -164,7 +150,9 @@ function M:_initImGui()
     -- on return instead of creating a second layer before it is reattached.
     if not self._layer then
         self._layer = im.on()
-        im.configFlagDisable(im.ConfigFlags.NavEnableKeyboard, im.ConfigFlags.NavEnableGamepad)
+        im.configFlagDisable(im.ConfigFlags.NavEnableKeyboard)
+        im.setGamepadPlayer(self._draft.gamepad_actions.slot or 0)
+        im.configFlagEnable(im.ConfigFlags.NavEnableGamepad)
     end
     local layer = self._layer
     layer:setVisible(true)
@@ -192,7 +180,12 @@ function M:onEnter()
 end
 
 function M:onExit()
-    self._active, self._capture = false, nil
+    self._active = false
+    self:_cancelCapture()
+    if self._rumbleTest then
+        cc.gamepad.submit(self._rumbleTest.device, { kind = 'stop', channel = 'body' })
+        self._rumbleTest = nil
+    end
     director:setDisplayStats(self._previousStats)
     local layer = self._layer
     if layer then layer:setVisible(false) end
@@ -208,7 +201,8 @@ end
 
 function M:_queue(action)
     if not self._pending then
-        self._capture, self._error = nil, false
+        self:_cancelCapture()
+        self._error = false
         self._pending = action
         -- Run outside both ImGui's frame and Node::update: reload can destroy
         -- this view, so its native update callback must have returned first.
@@ -225,6 +219,78 @@ function M:_queue(action)
             end
         end, 0, false)
     end
+end
+
+function M:_cancelCapture()
+    if self._capture and self._capture.lease then self._capture.lease:close() end
+    self._capture = nil
+    if self._active and self._layer then
+        im.configFlagEnable(im.ConfigFlags.NavEnableGamepad)
+    end
+end
+
+function M:_beginCapture(capture)
+    self:_cancelCapture()
+    if capture.kind ~= 'keyboard' then
+        local frame = cc.gamepad.frame()
+        capture.device = self._gamepadDevice
+        capture.tick = frame:tick()
+        if capture.kind == 'hardware' then
+            local err
+            capture.lease, err = cc.gamepad.watchRaw(capture.device)
+            if not capture.lease then
+                self._status, self._error = err, true
+                return
+            end
+        end
+        im.configFlagDisable(im.ConfigFlags.NavEnableGamepad)
+    end
+    self._capture = capture
+end
+
+function M:_sampleGamepad()
+    local gp = cc.gamepad
+    local frame = gp.frame()
+    if self._rumbleTest then
+        local test = self._rumbleTest
+        for event in frame:events() do
+            if event.kind == 'outputDone' and event.device == test.device and event.command == test.command then
+                self._status = event.status == 'applied' and tr('Vibration sent.', '已发送震动。') or event.error
+                self._error = event.status == 'failed'
+                self._rumbleTest = nil
+                break
+            end
+        end
+    end
+    local capture = self._capture
+    if not capture or capture.kind == 'keyboard' or capture.tick == frame:tick() then return end
+    capture.tick = frame:tick()
+    local pad = frame:find(capture.device)
+    if not pad then
+        self:_cancelCapture()
+        return
+    end
+    local draft = self._draft
+    if capture.kind == 'hardware' then
+        local identity = gamepad.identity(pad:info())
+        local line = gp.mappingFor(capture.device)
+        local previous = draft.gamepad_hardware[identity] or (line and line:match('^[^,]*,[^,]*,(.*)$'))
+        local fields = gamepad.learnHardware(frame, capture.device, capture.name, previous)
+        if not fields then return end
+        draft.gamepad_hardware[identity] = fields
+    else
+        local binding = gamepad.learnAction(frame, capture.device)
+        if not binding then return end
+        local profile = draft.gamepad_actions
+        local previous = profile[capture.group][capture.name]
+        for _, action in ipairs(actions) do
+            local group, name = action[1], action[2]
+            if profile[group][name] == binding then profile[group][name] = previous end
+        end
+        profile[capture.group][capture.name] = binding
+    end
+    self._dirty = true
+    self:_cancelCapture()
 end
 
 function M:_reload()
@@ -301,7 +367,7 @@ function M:_apply()
     SetBGMVolume(setting.bgmvolume / 100)
     SetSEVolume(setting.sevolume / 100)
     SetFPS(setting.render_skip == 1 and 30 or 60)
-    controller.loadFromSetting()
+    gamepad.loadFromSetting()
     M.saveSetting()
     self._draft = self:_readPreferences(setting)
     self._dirty = false
@@ -583,8 +649,9 @@ function M:_renderInputPage()
     if self._capture then
         im.textColored(accent, tr('Waiting for input...', '等待输入……'))
         im.sameLine()
-        if im.button(tr('Cancel', '取消')) then self._capture = nil end
+        if im.button(tr('Cancel', '取消')) then self:_cancelCapture() end
     end
+    local pad = self:_renderGamepadDevices()
     im.spacing()
     im.columns(3, 'bindings', true)
     text(tr('Action', '操作')); im.nextColumn()
@@ -598,26 +665,125 @@ function M:_renderInputPage()
         text(tr(action[3], action[4])); im.nextColumn()
         local code = self._draft[group][name]
         if im.button(keyNames[code] or tostring(code), im.p(-1, 0)) then
-            self._capture = { kind = 'keyboard', group = group, name = name }
+            self:_beginCapture({ kind = 'keyboard', group = group, name = name })
         end
         im.nextColumn()
-        local binding = self._draft.controller_map[group][name]
-        if binding then
-            local label = binding[2] ~= nil and ('Axis %d %s'):format(binding[1], binding[2] and '+' or '-')
-                    or ('Button %d'):format(binding[1])
-            if im.button(label, im.p(-1, 0)) then
-                self._capture = { kind = 'controller', group = group, name = name }
+        local logical = self._draft.gamepad_actions[group][name]
+        local label = gamepad.bindLabel(pad, logical)
+        if pad and pad:mapped() then
+            if im.button(label .. '###gamepad', im.p(-1, 0)) then
+                self:_beginCapture({ kind = 'controller', group = group, name = name })
             end
-        else text('-') end
+        else text(label) end
         im.nextColumn()
         im.popID()
     end
     im.columns(1)
     im.spacing()
     if im.button(tr('Reset input bindings', '恢复默认输入映射')) then
-        for _, name in ipairs({ 'keys', 'keysys', 'controller_map' }) do self._draft[name] = copy(default_setting[name]) end
-        self._dirty, self._capture = true, nil
+        for _, name in ipairs({ 'keys', 'keysys', 'gamepad_actions' }) do
+            self._draft[name] = copy(default_setting[name])
+        end
+        self._dirty = true
+        self:_cancelCapture()
     end
+end
+
+function M:_renderGamepadDevices()
+    local gp = cc.gamepad
+    local frame = gp.frame()
+    local ids, labels = frame:devices(), {}
+    local slot = self._draft.gamepad_actions.slot or 0
+    local selected
+    for index, id in ipairs(ids) do
+        local pad = frame:find(id)
+        labels[index] = ('%s #%d'):format(pad:info().name, id)
+        if id == self._gamepadDevice then selected = index end
+    end
+    if not frame:find(self._gamepadDevice or 0) then
+        self._gamepadDevice = nil
+        for index, id in ipairs(ids) do
+            if frame:find(id):player() == slot then
+                selected, self._gamepadDevice = index, id
+                break
+            end
+        end
+    end
+    if #ids == 0 then
+        text(tr('No gamepads connected.', '未连接手柄。'))
+    else
+        combo(tr('Device', '设备'), labels[selected] or tr('Select a gamepad', '选择手柄'), labels, selected, function(index)
+            self:_cancelCapture()
+            self._gamepadDevice = ids[index]
+        end)
+    end
+    local id = self._gamepadDevice
+    local pad = id and frame:find(id)
+    if pad then
+        local info = pad:info()
+        text(pad:mapped() and (info.mappingName ~= '' and info.mappingName or info.name)
+            or tr('Raw controls · learn a hardware mapping', '原始输入 · 请学习硬件映射'))
+        if pad:mapped() and im.button(tr('Use for player 1', '分配给玩家 1')) then
+            if pad:player() == nil or pad:player() == slot then
+                for _, other in ipairs(ids) do
+                    if other ~= id and frame:find(other):player() == slot then gp.assignPlayer(other, nil) end
+                end
+                local ok, err = gp.assignPlayer(id, slot)
+                if ok then
+                    self._draft.gamepad_preferred, self._dirty = gamepad.identity(info), true
+                else
+                    self._status, self._error = err, true
+                end
+            end
+        end
+        if pad:has('bodyRumble') then
+            im.sameLine()
+            if im.button(tr('Test vibration', '试振')) then
+                local command, err = gp.submit(id, { kind = 'rumble', low = 0.3, high = 0.5, durationMs = 200 })
+                if command then self._rumbleTest = { device = id, command = command }
+                else self._status, self._error = err, true end
+            end
+        end
+        local controls = gamepad.hardwareButtons
+        local target = self._hardwareTarget or 1
+        local names = {}
+        for i, control in ipairs(controls) do names[i] = gamepad.bindLabel(pad, control) end
+        combo(tr('Logical button', '逻辑键'), names[target], names, target, function(i) self._hardwareTarget = i end)
+        if im.button(tr('Learn raw control', '学习原始控件')) then
+            self:_beginCapture({ kind = 'hardware', name = controls[self._hardwareTarget or 1] })
+        end
+        if self._draft.gamepad_hardware[gamepad.identity(info)] then
+            im.sameLine()
+            if im.button(tr('Reset hardware mapping', '还原硬件映射')) then
+                self._draft.gamepad_hardware[gamepad.identity(info)] = nil
+                self._dirty = true
+                self:_cancelCapture()
+            end
+        end
+    end
+    local profile = self._draft.gamepad_actions
+    if not profile.legacyReviewed then
+        local preview, missing = gamepad.migration(setting)
+        if preview then
+            local done = {}
+            for _, action in ipairs(actions) do
+                local group, name = action[1], action[2]
+                local control = preview[group][name]
+                if control then done[#done + 1] = tr(action[3], action[4]) .. ' → ' .. control end
+            end
+            if #done > 0 then text(table.concat(done, ', ')) end
+            if #missing > 0 then
+                hint(tr('Rebind ambiguous legacy controls for ', '请重新绑定旧设置中的这些动作 ') .. table.concat(missing, ', '))
+            end
+            if #done > 0 and im.button(tr('Use recognised legacy bindings', '采用已识别的旧映射')) then
+                for _, group in ipairs({ 'keys', 'keysys' }) do
+                    for name, value in pairs(preview[group]) do profile[group][name] = value end
+                end
+                profile.legacyReviewed, self._dirty = true, true
+            end
+        end
+    end
+    return pad
 end
 
 function M:_renderOthersPage()
@@ -700,7 +866,8 @@ function M:_render()
             im.spacing()
             for _, page in ipairs(pages) do
                 if im.selectable(tr(page[2], page[3]) .. '###' .. page[1], self._page == page[1], 0, im.p(0, 40)) then
-                    self._page, self._capture = page[1], nil
+                    self._page = page[1]
+                    self:_cancelCapture()
                 end
             end
         end
@@ -719,13 +886,15 @@ function M:_render()
         im.sameLine()
         if im.button(tr('Revert', '撤销更改')) then
             self._draft = self:_readPreferences(setting)
-            self._dirty, self._capture = false, nil
+            self._dirty = false
+            self:_cancelCapture()
             self._status, self._error = tr('Unsaved edits discarded.', '已撤销未保存的更改。'), false
         end
         im.sameLine()
         if im.button(tr('Defaults', '恢复默认')) then
             self._draft = self:_readPreferences(default_setting)
-            self._dirty, self._capture = true, nil
+            self._dirty = true
+            self:_cancelCapture()
         end
         im.sameLine()
         if im.button(tr('Exit', '退出')) then self:_queue(GameExit) end

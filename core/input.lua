@@ -5,7 +5,9 @@ KeyStatePre = {}
 
 local _GetKeyState = lstg.GetKeyState
 local _GetLastKey = lstg.GetLastKey
-local ch = require('platform.ControllerHelper')
+local actions = require('platform.GamepadActions')
+local actionFrame
+local playback
 
 ---@~chinese 给出按键代码检测是否按下。
 ---@~chinese > 请查阅`keycode.lua`。
@@ -14,7 +16,7 @@ local ch = require('platform.ControllerHelper')
 ---@~english > See `keycode.lua`.
 ---
 function GetKeyState(code)
-    return _GetKeyState(code) or ch.getStatus(code)
+    return _GetKeyState(code) or actions.getStatus(code)
 end
 
 ---@~chinese 返回最后一次输入的按键的按键代码。
@@ -25,7 +27,7 @@ end
 function GetLastKey()
     local ret = _GetLastKey()
     if ret == 0 then
-        return ch.getLastKey()
+        return actions.getLastKey()
     else
         return ret
     end
@@ -33,7 +35,24 @@ end
 
 ---获取输入并保存
 function GetInput()
+    playback = false
+    actionFrame = actions.consume()
+    if actionFrame then
+        for action in pairs(actionFrame.held) do KeyStatePre[action] = KeyState[action] end
+    end
     lstg.eventDispatcher:dispatchEvent('onGetInput')
+    if not playback and actionFrame then
+        for action, held in pairs(actionFrame.held) do KeyState[action] = held end
+    end
+end
+
+function lstg.GetInputActions()
+    return actionFrame
+end
+
+function lstg.SetReplayInputActions(recorded)
+    playback = true
+    actionFrame = recorded
 end
 
 ---key是否被按下
@@ -47,7 +66,10 @@ end
 ---@param key string
 ---@return boolean
 function KeyIsPressed(key)
-    return KeyState[key] and (not KeyStatePre[key])
+    if actionFrame and actionFrame.held[key] ~= nil and (playback or KeyState[key] == actionFrame.held[key]) then
+        return actionFrame.pressed[key] or false
+    end
+    return (actionFrame and actionFrame.pressed[key]) or (KeyState[key] and not KeyStatePre[key])
 end
 
 ---key是否被按下
@@ -60,7 +82,10 @@ KeyTrigger = KeyIsPressed
 ---@param key string
 ---@return boolean
 function KeyIsReleased(key)
-    return KeyStatePre[key] and (not KeyState[key])
+    if actionFrame and actionFrame.held[key] ~= nil and (playback or KeyState[key] == actionFrame.held[key]) then
+        return actionFrame.released[key] or false
+    end
+    return (actionFrame and actionFrame.released[key]) or (KeyStatePre[key] and not KeyState[key])
 end
 
 --

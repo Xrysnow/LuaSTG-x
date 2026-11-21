@@ -235,95 +235,58 @@ local ctr_btns = {
     'repslow',
     'snapshot',
 }
-local ctr_labels = {}
-local controllerHelper = require('platform.ControllerHelper')
-
----@type table
-local ctr_last, ctr_curr
-local function listenCtrStart()
-    ctr_last = nil
-    ctr_curr = nil
-    scene_tasks[1] = function()
-        ctr_curr = controllerHelper.getLast()
-        if ctr_curr then
-            ctr_labels._set(ctr_last, ctr_curr)
-        end
-    end
-end
-local function listenCtrStop()
-    scene_tasks[1] = nil
-end
+local gamepad = require('platform.GamepadActions')
 
 local function unsel_ctr_btns(lc)
     for _, v in ipairs(ctr_btns) do
         lc['btn_ctr_' .. v]:setSelect(false)
     end
-    listenCtrStop()
+    scene_tasks[1] = nil
 end
 
 local function setInput(lc)
-    local kset = controllerHelper.convertSetting()
-    for _, v in ipairs(ctr_btns) do
-        local btn = lc['btn_ctr_' .. v]
-        if not btn then
-            error('setInput: cannot find label')
+    local function current()
+        local frame = cc.gamepad.frame()
+        local slot = setting.gamepad_actions.slot or 0
+        for _, id in ipairs(frame:devices()) do
+            local pad = frame:find(id)
+            if pad:player() == slot then return frame, pad, id end
         end
-        local str = 'N/A'
-        local kc = kset[v] and kset[v][1]
-        if kc then
-            kc = kc >= 1000 and (kc - 1000) or kc
-            local s = 'key %d'
-            if kset[v][2] ~= nil then
-                s = kset[v][2] and 'axis %d +' or 'axis %d -'
-            end
-            str = string.format(s, kc)
-        end
-        local label = cc.Label:createWithSystemFont(str, 'Arial', 36)
-        ctr_labels[v] = label
-        btn:addChild(label)
+        return frame
+    end
+    for _, name in ipairs(ctr_btns) do
+        local btn = lc['btn_ctr_' .. name]
+        local group = setting.keys[name] and 'keys' or 'keysys'
+        local _, pad = current()
+        local label = cc.Label:createWithSystemFont(
+            gamepad.bindLabel(pad, setting.gamepad_actions[group][name]), 'Arial', 36)
         local size = btn:getContentSize()
         label:setPosition(cc.p(size.x / 2, size.y / 2))
-
-        btn._sel = false
-        btn.setSelect = function(self, b)
-            if b == self._sel then
-                return
-            end
-            if b then
-                self:setColor(cc.c3b(127, 127, 0))
-                unsel_ctr_btns(lc)
-                listenCtrStart()
-                ctr_labels._set = function(_last, _curr)
-                    --local keyCode = _last.key
-                    local keyCode = _curr.key
-                    if keyCode < 0 then
-                        error('wrong key code')
-                    end
-                    --local positive = true
-                    --if _last.isAnalog then
-                    --    positive = _last.value < _curr.value
-                    --end
-                    controllerHelper.setMapping(v, keyCode, _curr.is_axis, _curr.is_pos)
-                    --local k_ = keyCode >= 1000 and (keyCode - 1000) or keyCode
-                    local s = 'key %d'
-                    --if _last.isAnalog then
-                    --    s = positive and 'axis %d +' or 'axis %d -'
-                    --end
-                    if _curr.is_axis then
-                        s = _curr.is_pos and 'axis %d +' or 'axis %d -'
-                    end
-                    s = string.format(s, keyCode)
-                    label:setString(s)
-                    self:setSelect(false)
-                    listenCtrStop()
-                end
-            else
-                self:setColor(cc.c3b(51, 51, 51))
-            end
-            self._sel = b
+        btn:addChild(label)
+        btn.setSelect = function(self, selected)
+            self._sel = selected
+            self:setColor(selected and cc.c3b(127, 127, 0) or cc.c3b(51, 51, 51))
         end
         btn:addClickEventListener(function()
-            btn:setSelect(not btn._sel)
+            local wasSelected = btn._sel
+            unsel_ctr_btns(lc)
+            local frame, _, id = current()
+            if wasSelected or not id then return end
+            local tick = frame:tick()
+            btn:setSelect(true)
+            scene_tasks[1] = function()
+                local nextFrame, nextPad, nextId = current()
+                if nextId ~= id then unsel_ctr_btns(lc); return end
+                if nextFrame:tick() == tick then return end
+                tick = nextFrame:tick()
+                local binding = gamepad.learnAction(nextFrame, id)
+                if binding then
+                    setting.gamepad_actions[group][name] = binding
+                    label:setString(gamepad.bindLabel(nextPad, binding))
+                    gamepad.loadFromSetting()
+                    unsel_ctr_btns(lc)
+                end
+            end
         end)
     end
 end

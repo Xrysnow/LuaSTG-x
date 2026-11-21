@@ -50,9 +50,6 @@ end
 
 -- extensions
 require "cocos.extension.ExtensionConstants"
-if cc.Controller then
-    require "cocos.controller.ControllerConstants"
-end
 require "cocos.3d.3dConstants"
 -- network
 require "cocos.network.NetworkConstants"

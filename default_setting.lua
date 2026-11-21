@@ -61,6 +61,17 @@ local M = {
             snapshot = { 10 },
         },
     },
+    gamepad_actions = {
+        version = 2,
+        slot = 0,
+        keys = {
+            up = 'dpup', down = 'dpdown', left = 'dpleft', right = 'dpright',
+            slow = 'leftshoulder', shoot = 'south', spell = 'east', special = 'west',
+        },
+        keysys = { repfast = '+righttrigger', repslow = '+lefttrigger', menu = 'start', snapshot = 'back' },
+    },
+    gamepad_hardware = {},
+    gamepad_preferred = '',
     --
     render_skip    = 0,
     --

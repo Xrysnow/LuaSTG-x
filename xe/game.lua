@@ -89,7 +89,8 @@ function M.start(rank, player, stage_, debugStage, debugSC)
     end
     FileExist = plus.FileExists
     lstg.loadData()
-    require('platform.ControllerHelper').init()
+    local gamepad = require('platform.GamepadActions')
+    gamepad.init()
     lstg.ResourceMgr:getInstance():clearLocalFileCache()
 
     --
