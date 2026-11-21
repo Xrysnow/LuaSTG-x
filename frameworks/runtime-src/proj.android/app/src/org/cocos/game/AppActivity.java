@@ -28,9 +28,9 @@ package org.cocos.game;
 
 import android.os.Bundle;
 import android.os.Environment;
-import org.cocos.lib.GameControllerActivity;
+import org.cocos.lib.CocosActivity;
 
-public class AppActivity extends GameControllerActivity {
+public class AppActivity extends CocosActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.setEnableVirtualButton(false);

@@ -44,7 +44,6 @@ InputManager::~InputManager()
 bool InputManager::_init()
 {
 	clearState();
-	ControllerHelper::getInstance()->init();
 	const auto director = Director::getInstance();
 	if (auto view = director->getOpenGLView())
 		view->getTextInputService().setFocusChangedCallback([this](TextInputFocus focus) {
@@ -102,7 +101,6 @@ bool InputManager::_init()
 
 bool InputManager::_end()
 {
-	ControllerHelper::getInstance()->end();
 	setKeyboardHookEnabled(false);
 	if (auto view = Director::getInstance()->getOpenGLView())
 		view->getTextInputService().setFocusChangedCallback({});

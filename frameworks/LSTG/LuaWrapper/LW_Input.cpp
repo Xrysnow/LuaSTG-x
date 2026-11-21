@@ -6,6 +6,10 @@
 #include "Util/UtilLua.h"
 #include "../Classes/XLuaModuleRegistry.h"
 
+#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
+#include "ntcvt/ntcvt.hpp"
+#endif
+
 using namespace std;
 using namespace lstg;
 using namespace cc;
@@ -25,92 +29,31 @@ LUA_REGISTER_FUNC_DEF(lstg, SetKeyboardHookEnabled)
 	LIM.setKeyboardHookEnabled(lua_toboolean(L, 1));
 	return 0;
 }
-// controller
 
-LUA_REGISTER_FUNC_DEF(lstg, GetAllControllers)
+#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
+LUA_REGISTER_FUNC_DEF(lstg, SaveSettingsAtomically)
 {
-	int idx = 1;
-	lua_newtable(L);
-	for (auto c : Controller::getAllController())
+	const auto path = luaL_checkstring(L, 1);
+	size_t size = 0;
+	const auto* data = luaL_checklstring(L, 2, &size);
+	const std::string temporary = std::string(path) + ".tmp-" + std::to_string(GetCurrentProcessId())
+		+ "-" + std::to_string(GetTickCount64());
+	const auto files = FileUtils::getInstance();
+	if (!files->writeStringToFile(std::string_view(data, size), temporary))
 	{
-		lua_pushnumber(L, idx);
-		object_to_luaval(L, "cc.Controller", (Controller*)c);
-		lua_rawset(L, -3);
-		++idx;
+		files->removeFile(temporary);
+		lua_pushboolean(L, false);
+		return 1;
 	}
+	const auto from = ntcvt::from_chars(temporary);
+	const auto to = ntcvt::from_chars(std::string_view(path));
+	const bool saved = MoveFileExW(from.c_str(), to.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH) != 0;
+	if (!saved)
+		files->removeFile(temporary);
+	lua_pushboolean(L, saved);
 	return 1;
 }
-ControllerHelper::KeyCallBack getKeyCallBack(LUA_FUNCTION handler)
-{
-	return [=](Controller* controller, int keyCode, float value, bool isPressed, bool isAnalog)
-	{
-		auto* callbackStack = LuaEngine::getInstance()->getLuaStack();
-		callbackStack->executeCallback([=]() mutable -> int {
-			const auto state = LuaEngine::getInstance()->getLuaStack()->getLuaState();
-			//object_to_luaval(state, "cc.Controller", controller);
-			// push id instead of object for better performance
-			lua_pushinteger(state, controller->getDeviceId());
-			lua_pushinteger(state, keyCode);
-			lua_pushnumber(state, value);
-			lua_pushboolean(state, isPressed);
-			lua_pushboolean(state, isAnalog);
-			LuaEngine::getInstance()->getLuaStack()->executeFunctionByHandler(handler, 5);
-
-			return 0;
-		});
-	};
-}
-ControllerHelper::ConnectCallBack getConnectCallBack(LUA_FUNCTION handler)
-{
-	return [=](Controller* controller)
-	{
-		auto* callbackStack = LuaEngine::getInstance()->getLuaStack();
-		callbackStack->executeCallback([=]() mutable -> int {
-			const auto state = LuaEngine::getInstance()->getLuaStack()->getLuaState();
-			object_to_luaval(state, "cc.Controller", controller);
-			LuaEngine::getInstance()->getLuaStack()->executeFunctionByHandler(handler, 1);
-
-			return 0;
-		});
-	};
-}
-LUA_REGISTER_FUNC_DEF(lstg, SetOnControllerKeyDown)
-{
-	const LUA_FUNCTION handler = toluafix_ref_function(L, 1, 0);
-	ControllerHelper::getInstance()->setOnKeyDown(
-		(handler == 0) ? nullptr : getKeyCallBack(handler));
-	return 0;
-}
-LUA_REGISTER_FUNC_DEF(lstg, SetOnControllerKeyUp)
-{
-	const LUA_FUNCTION handler = toluafix_ref_function(L, 1, 0);
-	ControllerHelper::getInstance()->setOnKeyUp(
-		(handler == 0) ? nullptr : getKeyCallBack(handler));
-	return 0;
-}
-LUA_REGISTER_FUNC_DEF(lstg, SetOnControllerAxisEvent)
-{
-	const LUA_FUNCTION handler = toluafix_ref_function(L, 1, 0);
-	ControllerHelper::getInstance()->setOnAxisEvent(
-		(handler == 0) ? nullptr : getKeyCallBack(handler));
-	return 0;
-}
-LUA_REGISTER_FUNC_DEF(lstg, SetOnControllerConnect)
-{
-	const LUA_FUNCTION handler = toluafix_ref_function(L, 1, 0);
-	ControllerHelper::getInstance()->setOnConnect(
-		(handler == 0) ? nullptr : getConnectCallBack(handler));
-	return 0;
-}
-
-LUA_REGISTER_FUNC_DEF(lstg, SetOnControllerDisconnect)
-{
-	const LUA_FUNCTION handler = toluafix_ref_function(L, 1, 0);
-	ControllerHelper::getInstance()->setOnDisconnect(
-		(handler == 0) ? nullptr : getConnectCallBack(handler));
-	return 0;
-}
-
+#endif
 // mouse
 
 LUA_REGISTER_FUNC_DEF(lstg, GetMousePosition)

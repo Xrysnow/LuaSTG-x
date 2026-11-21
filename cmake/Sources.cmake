@@ -21,7 +21,6 @@ set(LSTGX_SRC_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/frameworks)
 set(GAME_HEADER
 	${LSTGX_SRC_ROOT}/Classes/ArrayObjectPool.hpp
 	${LSTGX_SRC_ROOT}/Classes/CirularQueue.hpp
-	${LSTGX_SRC_ROOT}/Classes/ControllerHelper.h
 	${LSTGX_SRC_ROOT}/Classes/LabelPool.h
 	${LSTGX_SRC_ROOT}/Classes/MemPoolManager.h
 	${LSTGX_SRC_ROOT}/Classes/RandomWELL512.h
@@ -106,10 +105,6 @@ set(GAME_HEADER
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_audio_manual.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Buffer_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_configuration_auto.hpp
-	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_auto.hpp
-	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_adapters.hpp
-	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_legacy.hpp
-	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_manual.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_ext.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_FileDialog_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Latex_auto.hpp
@@ -127,7 +122,6 @@ set(GAME_HEADER
 	${LSTGX_SRC_ROOT}/LuaBindings/LuaBindings.h
 )
 set(GAME_SOURCE
-	${LSTGX_SRC_ROOT}/Classes/ControllerHelper.cpp
 	${LSTGX_SRC_ROOT}/Classes/LabelPool.cpp
 	${LSTGX_SRC_ROOT}/Classes/MemPoolManager.cpp
 	${LSTGX_SRC_ROOT}/Classes/RandomWELL512.cpp
@@ -210,8 +204,6 @@ set(GAME_SOURCE
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_audio_manual.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Buffer_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_configuration_auto.cpp
-	$<IF:$<PLATFORM_ID:Windows>,${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_auto.cpp,${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_legacy.cpp>
-	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_controller_manual.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_ext.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_FileDialog_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Latex_auto.cpp

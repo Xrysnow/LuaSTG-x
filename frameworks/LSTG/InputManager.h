@@ -1,5 +1,8 @@
 ﻿#pragma once
-#include "ControllerHelper.h"
+
+#include "math/Vec2.h"
+
+#include <cstdint>
 
 #define LIM (*lstg::InputManager::getInstance())
 
@@ -42,7 +45,7 @@ namespace lstg
 		void setKeyboardHookEnabled(bool enabled);
 
 	private:
-		int32_t lastKey = 0;
+		std::int32_t lastKey = 0;
 		bool textFocused = false;
 		bool capturedKeys[256]{};
 		cc::Vec2 mousePosition;
