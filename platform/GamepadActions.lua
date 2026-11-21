@@ -57,8 +57,15 @@ end
 
 -- Match layout as well as model. Same-model units without serials keep separate
 -- live IDs and require Start (or explicit selection) when more than one matches.
+local layoutsWithLegacyIdentity = {
+    ['win-directinput8-v1'] = true, ['win-raw-hid-v1'] = true,
+    ['linux-evdev-v1'] = true, ['linux-dualsense-hid-v1'] = true,
+    ['macos-iohid-v1'] = true, ['apple-gc-extended-v1'] = true,
+}
 function M.identity(info)
-    return table.concat({ info.layout, info.mappingGuid, info.name, info.vendor or '',
+    -- These layouts acquired an SDL GUID without changing their existing local indices.
+    local guid = layoutsWithLegacyIdentity[info.layout:match('^[^/]+')] and '' or info.mappingGuid
+    return table.concat({ info.layout, guid, info.name, info.vendor or '',
         info.product or '', info.serial or '' }, '|')
 end
 
@@ -82,6 +89,7 @@ local profile, configured, selected, tick, lastKey, consumedAt
 local actions, codeActions, installed = {}, {}, {}
 local edges = {}
 local inPause = false
+local databaseLoaded = false
 
 local function source(action, key, down, emit)
     if action[key] == down then return end
@@ -204,6 +212,18 @@ local function observe(frame)
 end
 
 function M.init()
+    if not databaseLoaded then
+        local path = 'cocos/gamecontrollerdb.txt'
+        local files = cc.FileUtils:getInstance()
+        if files:isFileExist(path) then
+            local report = gp.importMappings(files:getStringFromFile(path), 'builtIn')
+            databaseLoaded = report.batchError == 'None'
+            SystemLog(('Gamepad database: %d added, %d replaced, %d rejected (%s)'):format(
+                report.added, report.replaced, report.failed, report.batchError))
+        else
+            SystemLog('Gamepad database not found: ' .. path)
+        end
+    end
     M.loadFromSetting()
     if not M.listener then
         M.listener = cc.Director:getInstance():getEventDispatcher():addCustomEventListener(
