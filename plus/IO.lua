@@ -294,6 +294,13 @@ end
 ---@brief 以小端序写入一个32位浮点数
 ---@param f number 要写入的浮点数
 function BinaryWriter:WriteFloat(f)
+    if f == 0.0 then
+        self._stream:WriteByte(0)
+        self._stream:WriteByte(0)
+        self._stream:WriteByte(0)
+        self._stream:WriteByte(0)
+    end
+
     local sign = 0
     if f < 0.0 then
         sign = 0x80
