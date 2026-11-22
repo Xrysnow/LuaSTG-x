@@ -1,0 +1,16 @@
+{
+	[1]={
+		["attr"]={
+			[1]="unnamed",
+			[2]="LuaSTG User",
+			[3]="true",
+			[4]="true",
+		},
+		["type"]="setting",
+		["child"]={
+		},
+		["expand"]=false,
+		["select"]=true,
+	},
+	["_proj_version"]=4096,
+}

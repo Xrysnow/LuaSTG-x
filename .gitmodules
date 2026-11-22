@@ -13,9 +13,6 @@
 [submodule "frameworks/cocos-x"]
 	path = frameworks/cocos-x
 	url = https://github.com/Xrysnow/cocos-x.git
-[submodule "src"]
-	path = src
-	url = https://github.com/Xrysnow/lstgx_LuaCore.git
 [submodule "doc"]
 	path = doc
 	url = https://github.com/Xrysnow/lstgx_Doc.git

@@ -1,0 +1,9 @@
+--
+require('util.mbg.Event.ActionHelper')
+require('util.mbg.Event.CommandAction')
+require('util.mbg.Event.Condition')
+require('util.mbg.Event.DataOperateAction')
+require('util.mbg.Event.Event')
+require('util.mbg.Event.EventGroup')
+require('util.mbg.Event.GlobalEvents')
+require('util.mbg.Event.ReflexBoardAction')

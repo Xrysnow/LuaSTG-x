@@ -43,7 +43,7 @@ For an existing checkout, populate submodules at the revisions recorded by the r
 git submodule update --init --recursive
 ```
 
-Directories such as `frameworks/cocos-x/` and its dependencies, `frameworks/Live2D/Framework/`, and `src/` must be complete. GitHub's automatically generated source ZIP archives do not include submodule contents. LuaJIT source snapshots also need either a `.relver` file resolved to a numeric version or readable submodule Git metadata.
+The main repository includes the Lua scripts in `src/`. GitHub's automatically generated source ZIP archives omit submodule contents, including `frameworks/cocos-x/` and `frameworks/Live2D/Framework/`. LuaJIT source snapshots also need either a `.relver` file resolved to a numeric version or readable submodule Git metadata.
 
 ### Prepare build tools
 

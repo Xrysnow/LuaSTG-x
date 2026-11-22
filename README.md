@@ -83,5 +83,4 @@ LuaSTG-x\
 │　　├ [nanosvg](https://github.com/memononen/nanosvg)\
 │　　├ [NativeFileDialog](https://github.com/mlabbe/nativefiledialog)\
 │　　└ [Yuescript](https://github.com/pigpigyyy/Yuescript) (optional)\
-├　[lstgx_Math](https://github.com/Xrysnow/lstgx_Math)\
-└　[lstgx_LuaCore](https://github.com/Xrysnow/lstgx_LuaCore)
+└　[lstgx_Math](https://github.com/Xrysnow/lstgx_Math)

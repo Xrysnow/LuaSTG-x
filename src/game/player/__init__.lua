@@ -1,0 +1,3 @@
+--
+
+require('game.player.base')
