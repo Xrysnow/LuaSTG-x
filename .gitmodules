@@ -4,9 +4,6 @@
 [submodule "frameworks/imgui"]
 	path = frameworks/imgui
 	url = https://github.com/Xrysnow/cocos-x-imgui.git
-[submodule "frameworks/Math"]
-	path = frameworks/Math
-	url = https://github.com/Xrysnow/lstgx_Math.git
 [submodule "frameworks/external"]
 	path = frameworks/external
 	url = https://github.com/Xrysnow/lstgx_external.git

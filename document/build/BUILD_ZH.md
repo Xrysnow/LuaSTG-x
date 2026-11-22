@@ -43,7 +43,7 @@ cd LuaSTG-x
 git submodule update --init --recursive
 ```
 
-`src/` 中的 Lua 脚本随主仓库提供。GitHub 自动生成的源码 ZIP 缺少 `frameworks/cocos-x/` 和 `frameworks/Live2D/Framework/` 等子模块的内容。LuaJIT 源码快照还需要已解析为数字的 `.relver`，或保留可读取的子模块 Git 元数据。
+`src/` 中的 Lua 脚本和 `frameworks/Math/` 中的数学库随主仓库提供。GitHub 自动生成的源码 ZIP 缺少 `frameworks/cocos-x/` 和 `frameworks/Live2D/Framework/` 等子模块的内容。LuaJIT 源码快照还需要已解析为数字的 `.relver`，或保留可读取的子模块 Git 元数据。
 
 ### 准备构建工具
 

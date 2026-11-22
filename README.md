@@ -72,15 +72,14 @@ LuaSTG-x\
 ├　[cocos-x-live2d](https://github.com/Xrysnow/cocos-x-live2d) (optional)\
 │　├ [CubismNativeFramework](https://github.com/Live2D/CubismNativeFramework)\
 │　└ [Cubism SDK for Native](https://www.live2d.com/en/download/cubism-sdk/download-native)\
-├　[lstgx_external](https://github.com/Xrysnow/lstgx_external)\
-│　　├ [BurstLinker](https://github.com/Xrysnow/BurstLinker)\
-│　　├ [libzippp](https://github.com/ctabin/libzippp)\
-│　　│　└ [libzip](https://github.com/nih-at/libzip)\
-│　　├ [Lua CJSON](https://kyne.com.au/~mark/software/lua-cjson.php)\
-│　　├ [luafilesystem](http://keplerproject.github.io/luafilesystem)\
-│　　├ [LPeg](http://www.inf.puc-rio.br/~roberto/lpeg)\
-│　　├ [MicroTeX](https://github.com/Xrysnow/MicroTeX)\
-│　　├ [nanosvg](https://github.com/memononen/nanosvg)\
-│　　├ [NativeFileDialog](https://github.com/mlabbe/nativefiledialog)\
-│　　└ [Yuescript](https://github.com/pigpigyyy/Yuescript) (optional)\
-└　[lstgx_Math](https://github.com/Xrysnow/lstgx_Math)
+└　[lstgx_external](https://github.com/Xrysnow/lstgx_external)\
+　　　├ [BurstLinker](https://github.com/Xrysnow/BurstLinker)\
+　　　├ [libzippp](https://github.com/ctabin/libzippp)\
+　　　│　└ [libzip](https://github.com/nih-at/libzip)\
+　　　├ [Lua CJSON](https://kyne.com.au/~mark/software/lua-cjson.php)\
+　　　├ [luafilesystem](http://keplerproject.github.io/luafilesystem)\
+　　　├ [LPeg](http://www.inf.puc-rio.br/~roberto/lpeg)\
+　　　├ [MicroTeX](https://github.com/Xrysnow/MicroTeX)\
+　　　├ [nanosvg](https://github.com/memononen/nanosvg)\
+　　　├ [NativeFileDialog](https://github.com/mlabbe/nativefiledialog)\
+　　　└ [Yuescript](https://github.com/pigpigyyy/Yuescript) (optional)
