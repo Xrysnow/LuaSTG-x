@@ -192,7 +192,7 @@ private:
 	private:
 		void frameBufferStart();
 		void frameBufferEnd();
-		void renderFrameBuffer(float scale, bool copy = false);
+		void renderFrameBuffer(float scale, const cc::Mat4& projection, bool copy = false);
 
 	public:
 		cc::IntrusivePtr<cc::RenderTexture> copyFrameBuffer(bool transparent = false);

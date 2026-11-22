@@ -1008,27 +1008,32 @@ void XRenderer::frameBufferEnd()
 		_lastFrameSize = fsize;
 		Mat4::createOrthographicOffCenter(0, fsize.width, 0, fsize.height, -1024.f, 1024.f, &_FBProjection);
 	}
-	pushCallbackCommand([=]()
+	auto viewport = Camera::getDefaultViewport();
+	auto projection = _FBProjection;
+	float scale = 1.f;
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+	// The camera viewport is already fitted to the drawable in pixels.
+	const auto size = frameBuffer->getSprite()->getContentSize();
+	Mat4::createOrthographicOffCenter(0, size.width, 0, size.height, -1024.f, 1024.f, &projection);
+#else
+	viewport.x /= view->getScaleX();
+	viewport.y /= view->getScaleY();
+	viewport.w = fsize.width;
+	viewport.h = fsize.height;
+	const auto textureSize = frameBuffer->getSprite()->getTexture()->getContentSizeInPixels();
+	scale = min(fsize.width / textureSize.width, fsize.height / textureSize.height);
+#endif
+	pushCallbackCommand([this, viewport, projection]()
 	{
-		// offset on fullscreen
-		const auto& vp = Camera::getDefaultViewport();
-		pRenderer->setViewPort(
-			vp.x / view->getScaleX(),
-			vp.y / view->getScaleY(),
-			fsize.width,
-			fsize.height);
-		Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, _FBProjection);
+		pRenderer->setViewPort(viewport.x, viewport.y, viewport.w, viewport.h);
+		Director::getInstance()->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, projection);
 	});
 
 	if (!bOffscreen)
-	{
-		const auto tsize = frameBuffer->getSprite()->getTexture()->getContentSizeInPixels();
-		const auto scale = min(fsize.width / tsize.width, fsize.height / tsize.height);
-		renderFrameBuffer(scale);
-	}
+		renderFrameBuffer(scale, projection);
 }
 
-void XRenderer::renderFrameBuffer(float scale, bool copy)
+void XRenderer::renderFrameBuffer(float scale, const Mat4& projection, bool copy)
 {
 	if (!frameBuffer)
 		return;
@@ -1061,7 +1066,7 @@ void XRenderer::renderFrameBuffer(float scale, bool copy)
 	state->setTexture(state->getUniformLocation(backend::TEXTURE),
 		0, tex->getBackendTexture());
 	state->setUniform(state->getUniformLocation(backend::MVP_MATRIX),
-		_FBProjection.m, sizeof(_FBProjection.m));
+		projection.m, sizeof(projection.m));
 	addCommand(cmd);
 }
 
@@ -1076,7 +1081,7 @@ cc::IntrusivePtr<cc::RenderTexture> XRenderer::copyFrameBuffer(bool transparent)
 		backend::PixelFormat::D24S8,
 		false);
 	tmpRT->beginWithClear(0, 0, 0, transparent ? 0 : 1);
-	renderFrameBuffer(1.f, true);
+	renderFrameBuffer(1.f, _FBProjection, true);
 	tmpRT->end();
 	pushCallbackCommand([tmpRT]() mutable
 	{
