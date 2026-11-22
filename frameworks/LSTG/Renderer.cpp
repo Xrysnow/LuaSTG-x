@@ -1011,7 +1011,7 @@ void XRenderer::frameBufferEnd()
 	auto viewport = Camera::getDefaultViewport();
 	auto projection = _FBProjection;
 	float scale = 1.f;
-#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#ifdef CC_PLATFORM_PC
 	// The camera viewport is already fitted to the drawable in pixels.
 	const auto size = frameBuffer->getSprite()->getContentSize();
 	Mat4::createOrthographicOffCenter(0, size.width, 0, size.height, -1024.f, 1024.f, &projection);

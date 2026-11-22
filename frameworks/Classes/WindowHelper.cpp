@@ -227,6 +227,10 @@ void WindowHelperDesktop::moveToCenter()
 {
 	if (isFullscreen())
 		return;
+#if CC_TARGET_PLATFORM == CC_PLATFORM_LINUX
+	if (glfwGetPlatform() == GLFW_PLATFORM_WAYLAND)
+		return;
+#endif
 	auto monitor = view->getMonitor();
 	if (!monitor)
 		monitor = glfwGetPrimaryMonitor();
@@ -237,8 +241,10 @@ void WindowHelperDesktop::moveToCenter()
 		return;
 	int xpos = 0, ypos = 0;
 	glfwGetMonitorPos(monitor, &xpos, &ypos);
+	int width = 0, height = 0;
+	glfwGetWindowSize(getWindow(), &width, &height);
 	const auto monitorSize = Size(float(mode->width), float(mode->height));
-	const auto s = (monitorSize - getSize()) / 2 + Vec2(xpos, ypos);
+	const auto s = (monitorSize - Size(float(width), float(height))) / 2 + Vec2(xpos, ypos);
 	setPosition(Vec2(s.width, s.height));
 }
 
