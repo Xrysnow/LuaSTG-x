@@ -62,6 +62,7 @@ The following defaults are defined by the source; the build examples do not repe
 | --- | --- | --- |
 | `LSTGX_NO_LIVE2D` | `OFF` | Enables Live2D; requires a separately supplied Cubism Core SDK |
 | `CC_ENABLE_VIDEO_TEXTURE` | `ON` | Enables video textures, FFmpeg linking, and registration of the Lua `video` API |
+| `CC_BUILD_APPIMAGE` | `ON` | Registers an explicit AppImage packaging target on native Linux |
 | `LSTGX_NO_YUESCRIPT` | `ON` | Disables YueScript |
 | `LSTGX_NO_FAIRY_GUI` | `OFF` | Allows FairyGUI; also requires `CC_ENABLE_EXT_FAIRYGUI=ON` |
 | `CC_LUA_BINDING_CHECKS` | `AUTO` | Lua binding diagnostics follow the Debug configuration; can be explicitly set to `ON` or `OFF` |
@@ -171,6 +172,7 @@ System development packages cover:
 - X11/XCB, Wayland, xkbcommon, and OpenGL for windowing and graphics. GLFW builds both X11 and Wayland backends by default.
 - ALSA and PulseAudio interfaces for the OpenAL audio backends built from source.
 - GTK3, Fontconfig, and FreeType 2.11+ for text input, font discovery, and font rendering.
+- D-Bus (`libdbus-1-dev`) for the XDG Desktop Portal file dialog.
 
 Select a CMake installation that meets the version requirement separately. To use Clang, also install `clang` and a compatible C++ standard library. On other distributions, install equivalent tools and system interfaces with the native package manager. Running the application also requires a graphical session and graphics drivers.
 
@@ -202,6 +204,26 @@ cd build/linux-x86_64-debug/deploy/LuaSTG-x/Debug
 ```
 
 Deployment requires `objdump` and RPATH support. Do not set `CMAKE_SKIP_RPATH` or `CMAKE_SKIP_INSTALL_RPATH`. Copy the entire deployment directory and preserve library symbolic links. System libraries and plugins loaded only through `dlopen` are not automatically packaged, so the target machine still needs a compatible system environment. Refreshing does not remove stale files; use a new build directory when preparing a clean distribution. See the [Linux deployment documentation](../../cmake/README.md#linux-runtime-deployment).
+
+### AppImage packaging
+
+Native Linux builds register `appimage-LuaSTG-x` by default. Set
+`-DCC_BUILD_APPIMAGE=OFF` at configure time to omit the target. The packaging
+target searches `PATH` for `linuxdeploy` and `appimagetool` when invoked. You can
+also set `CC_APPIMAGE_LINUXDEPLOY` and `CC_APPIMAGE_APPIMAGETOOL` to executable
+paths and `CC_APPIMAGE_RUNTIME_FILE` to a pinned Type 2 runtime.
+
+```sh
+cmake --build build/linux-x86_64-debug --target appimage-LuaSTG-x --parallel
+```
+
+This produces `build/linux-x86_64-debug/packages/Debug/LuaSTG-x-x86_64.AppImage`.
+With video enabled, make the prebuilt FFmpeg library's runtime dependencies
+available during linking and packaging. For x86_64 these include `libc++.so.1`.
+The AppImage stores settings and user-installed MODs under
+`$XDG_CONFIG_HOME/LuaSTG-x` or `$HOME/.config/LuaSTG-x`.
+See the [packaging tool requirements](../../frameworks/cocos-x/cmake/README.md#linux-appimage-packaging)
+and the [standalone cocos-x demo build](../../frameworks/cocos-x/templates/README.md#linux).
 
 ## Android
 

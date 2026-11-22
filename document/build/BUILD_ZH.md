@@ -62,6 +62,7 @@ git submodule update --init --recursive
 | --- | --- | --- |
 | `LSTGX_NO_LIVE2D` | `OFF` | 启用 Live2D，需要额外准备 Cubism Core SDK |
 | `CC_ENABLE_VIDEO_TEXTURE` | `ON` | 启用视频纹理、FFmpeg 链接及 Lua `video` 注册 |
+| `CC_BUILD_APPIMAGE` | `ON` | 在原生 Linux 构建中注册显式 AppImage 打包目标 |
 | `LSTGX_NO_YUESCRIPT` | `ON` | 关闭 YueScript |
 | `LSTGX_NO_FAIRY_GUI` | `OFF` | 允许启用 FairyGUI，同时要求 `CC_ENABLE_EXT_FAIRYGUI=ON` |
 | `CC_LUA_BINDING_CHECKS` | `AUTO` | Lua 绑定诊断随 Debug 状态变化；可显式指定 `ON`、`OFF` |
@@ -171,6 +172,7 @@ bash frameworks/cocos-x/install-deps-linux.sh
 - X11 / XCB、Wayland、xkbcommon 和 OpenGL：窗口与图形接口。GLFW 默认同时编译 X11 和 Wayland 后端。
 - ALSA、PulseAudio：源码构建的 OpenAL 所需音频后端接口。
 - GTK3、Fontconfig、FreeType 2.11+：文本输入、字体发现与字体渲染。
+- D-Bus（`libdbus-1-dev`）：通过 XDG Desktop Portal 打开文件对话框。
 
 CMake 需自行选用满足版本要求的安装。若使用 Clang，另外准备 `clang` 及兼容的 C++ 标准库。其他发行版使用各自包管理器安装对应工具和系统接口；运行应用还需要图形会话与显卡驱动。
 
@@ -202,6 +204,25 @@ cd build/linux-x86_64-debug/deploy/LuaSTG-x/Debug
 ```
 
 部署要求 `objdump` 和 RPATH 支持，不要设置 `CMAKE_SKIP_RPATH` 或 `CMAKE_SKIP_INSTALL_RPATH`。复制时保留整个部署目录及库的符号链接。系统库及仅通过 `dlopen` 加载的插件不会自动打包，目标机器仍需兼容的系统环境。刷新不会删除旧文件，制作干净发行目录时使用新构建目录。详见 [Linux 部署说明](../../cmake/README.md#linux-runtime-deployment)。
+
+### AppImage 打包
+
+原生 Linux 构建默认注册 `appimage-LuaSTG-x` 目标。配置时可用
+`-DCC_BUILD_APPIMAGE=OFF` 关闭。执行打包目标时会从 `PATH` 查找
+`linuxdeploy` 和 `appimagetool`。也可用 `CC_APPIMAGE_LINUXDEPLOY` 和
+`CC_APPIMAGE_APPIMAGETOOL` 指定工具路径，用 `CC_APPIMAGE_RUNTIME_FILE`
+指定固定的 Type 2 运行时文件。
+
+```sh
+cmake --build build/linux-x86_64-debug --target appimage-LuaSTG-x --parallel
+```
+
+产物位于 `build/linux-x86_64-debug/packages/Debug/LuaSTG-x-x86_64.AppImage`。
+启用视频时，链接器和打包扫描均需能找到预置 FFmpeg 的运行依赖，x86_64
+包括 `libc++.so.1`。AppImage 将设置与用户安装的 MOD 存放在
+`$XDG_CONFIG_HOME/LuaSTG-x` 或 `$HOME/.config/LuaSTG-x` 下。
+详见[打包工具要求](../../frameworks/cocos-x/cmake/README.md#linux-appimage-packaging)及
+[cocos-x 独立 demo 构建说明](../../frameworks/cocos-x/templates/README.md#linux)。
 
 ## Android
 

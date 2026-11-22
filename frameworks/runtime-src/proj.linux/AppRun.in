@@ -1,0 +1,26 @@
+#!/bin/sh
+set -eu
+
+case ${APPDIR:-} in
+    /*) appdir=$APPDIR ;;
+    *) appdir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P) ;;
+esac
+
+# LuaSTG-x uses the startup working directory for writable files on Linux.
+case ${XDG_CONFIG_HOME:-} in
+    /*) config_home=$XDG_CONFIG_HOME ;;
+    *)
+        case ${HOME:-} in
+            /*) config_home=$HOME/.config ;;
+            *)
+                printf '%s\n' 'LuaSTG-x requires an absolute XDG_CONFIG_HOME or HOME.' >&2
+                exit 1
+                ;;
+        esac
+        ;;
+esac
+
+user_dir=$config_home/LuaSTG-x
+mkdir -p -- "$user_dir"
+cd -- "$user_dir"
+exec "$appdir/usr/bin/LuaSTG-x" "$@"

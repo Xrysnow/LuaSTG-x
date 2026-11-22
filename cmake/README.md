@@ -65,6 +65,23 @@ compatible Linux system libraries. Libraries under `/lib`, `/lib32`, `/lib64`,
 Refresh updates/adds files without removing old files. Use a fresh build directory
 when a distribution must exclude obsolete resources or dependencies.
 
+## Linux AppImage packaging
+
+Configure a native Linux build from the LuaSTG-x source root and build the
+packaging target. `CC_BUILD_APPIMAGE` is enabled by default:
+
+```sh
+cmake -S . -B build-appimage -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build-appimage --target appimage-LuaSTG-x
+```
+
+On x86_64 the resulting image is `build-appimage/packages/Release/LuaSTG-x-x86_64.AppImage`.
+See [packaging tools and configuration](../frameworks/cocos-x/cmake/README.md#linux-appimage-packaging).
+With video enabled, make the prebuilt FFmpeg library's dependencies available
+when linking and packaging. The AppImage starts with a writable working directory
+at `$XDG_CONFIG_HOME/LuaSTG-x`, falling back to `$HOME/.config/LuaSTG-x`.
+Use that directory's `mod/` for user-installed MODs.
+
 # Video textures
 
 LuaSTG-x builds video textures and registers the Lua `video` module by default.

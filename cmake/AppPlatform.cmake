@@ -82,6 +82,13 @@ elseif(LINUX)
     include("${CMAKE_CURRENT_LIST_DIR}/LinuxRuntime.cmake")
     lstgx_deploy_linux_runtime(${APP_NAME}
         RESOURCE_DIRS "${res_res_folders}" "${res_src_folders}")
+    if(CC_BUILD_APPIMAGE AND COMMAND cocos_add_appimage)
+        cocos_add_appimage(${APP_NAME}
+            DESKTOP_FILE "${RUNTIME_SRC_ROOT}/proj.linux/com.xrysnow.lstgx.desktop"
+            ICON_FILE "${RUNTIME_SRC_ROOT}/proj.android/app/res/mipmap-xxxhdpi/ic_launcher.png"
+            APP_RUN "${RUNTIME_SRC_ROOT}/proj.linux/AppRun.in"
+            RESOURCE_DIRS ${res_res_folders} ${res_src_folders})
+    endif()
 endif()
 # copy resource on linux next to the executable, matching FileUtilsLinux's root
 if(LINUX)
