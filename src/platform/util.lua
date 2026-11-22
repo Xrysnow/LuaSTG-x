@@ -47,33 +47,13 @@ function M.changeWritablePath()
             error(('failed to open app log in %q'):format(ret))
         end
     elseif osname == 'mac' then
-        local home = os.getenv('HOME')
-        if home and #home > 1 then
-            -- use Documents
-            local path = home .. '/Documents/lstg'
-            if FU:isDirectoryExist(path) then
-                path = setWritablePath(path)
-                if M.changeLogPath(path .. 'lstg_log.txt') then
-                    FU:addSearchPath(path)
-                    ret = path
-                end
-            end
+        -- Reset to the system Documents directory before applying the Lua override.
+        local documents = setWritablePath('')
+        ret = setWritablePath(documents .. 'LuaSTG-x')
+        if not M.changeLogPath(ret .. 'lstg_log.txt') then
+            error(('failed to open app log in %q'):format(ret))
         end
-
-        if not ret then
-            -- use Resources
-            local native = require('platform.apple.native')
-            local p = native.getBundleResourcesDirectory()
-            if p and #p > 1 and FU:isDirectoryExist(p) then
-                local path = setWritablePath(p)
-                if M.changeLogPath(path .. 'lstg_log.txt') then
-                    FU:addSearchPath(path)
-                    ret = path
-                else
-                    error(('failed to open app log in %q'):format(path))
-                end
-            end
-        end
+        FU:addSearchPath(ret)
     elseif osname == 'windows' or osname == 'linux' then
         -- Resolve against the CWD of this call, independently of resource paths.
         ret = setWritablePath('./')
