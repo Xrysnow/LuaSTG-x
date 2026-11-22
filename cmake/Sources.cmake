@@ -28,7 +28,6 @@ set(GAME_HEADER
 	${LSTGX_SRC_ROOT}/Classes/XAudioIO.h
 	${LSTGX_SRC_ROOT}/Classes/XBinaryHelper.h
 	${LSTGX_SRC_ROOT}/Classes/XBuffer.h
-	${LSTGX_SRC_ROOT}/Classes/XFileDialog.h
 	${LSTGX_SRC_ROOT}/Classes/XFileUtils.h
 	${LSTGX_SRC_ROOT}/Classes/XGifRecoder.h
 	${LSTGX_SRC_ROOT}/Classes/XInfoware.h
@@ -106,7 +105,6 @@ set(GAME_HEADER
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Buffer_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_configuration_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_ext.hpp
-	${LSTGX_SRC_ROOT}/LuaBindings/lua_FileDialog_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Latex_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_LogSystem_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_ObjSym_auto.hpp
@@ -130,7 +128,6 @@ set(GAME_SOURCE
 	${LSTGX_SRC_ROOT}/Classes/XAudioIO.cpp
 	${LSTGX_SRC_ROOT}/Classes/XBinaryHelper.cpp
 	${LSTGX_SRC_ROOT}/Classes/XBuffer.cpp
-	${LSTGX_SRC_ROOT}/Classes/XFileDialog.cpp
 	${LSTGX_SRC_ROOT}/Classes/XFileUtils.cpp
 	${LSTGX_SRC_ROOT}/Classes/XGifRecoder.cpp
 	${LSTGX_SRC_ROOT}/Classes/XInfoware.cpp
@@ -205,7 +202,6 @@ set(GAME_SOURCE
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Buffer_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_configuration_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_cc_ext.cpp
-	${LSTGX_SRC_ROOT}/LuaBindings/lua_FileDialog_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Latex_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_LogSystem_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_ObjSym_auto.cpp

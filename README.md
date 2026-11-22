@@ -81,5 +81,4 @@ LuaSTG-x\
 　　　├ [LPeg](http://www.inf.puc-rio.br/~roberto/lpeg)\
 　　　├ [MicroTeX](https://github.com/Xrysnow/MicroTeX)\
 　　　├ [nanosvg](https://github.com/memononen/nanosvg)\
-　　　├ [NativeFileDialog](https://github.com/mlabbe/nativefiledialog)\
 　　　└ [Yuescript](https://github.com/pigpigyyy/Yuescript) (optional)

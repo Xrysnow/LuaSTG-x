@@ -11,8 +11,6 @@ LUA_REGISTER_MODULE(x_Buffer, luaReg_Buffer);
 LUA_REGISTER_MODULE(cc_configuration, register_all_cc_configuration);
 #include "lua_cc_ext.hpp"
 LUA_REGISTER_MODULE(cc_Image_ext, register_all_cc_ext);
-#include "lua_FileDialog_auto.hpp"
-LUA_REGISTER_MODULE(x_FileDialog, luaReg_FileDialog);
 #include "lua_Latex_auto.hpp"
 LUA_REGISTER_MODULE(x_Latex, luaReg_Latex);
 #include "lua_LogSystem_auto.hpp"
