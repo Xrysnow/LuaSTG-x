@@ -549,34 +549,43 @@ function M:_renderModPage()
     changed, self._filter = im.inputText('##mod_search', self._filter)
     im.sameLine()
     if im.button(tr('Refresh', '刷新'), im.p(94, 0)) then self:_refreshMods() end
-    hint(tr('Search by name. Folders and ZIP archives are supported.', '输入名称筛选，支持包含 root.lua 的目录及 ZIP 压缩包。'))
+    local empty = #self._mods == 0
+    local help = empty and tr('Add a MOD to the directory below, then refresh. Folders and ZIP archives are supported.',
+            '请将 MOD 放入下方目录，然后刷新。支持包含 root.lua 的目录及 ZIP 压缩包。')
+            or tr('Search by name. Folders and ZIP archives are supported.',
+                   '输入名称筛选，支持包含 root.lua 的目录及 ZIP 压缩包。')
     -- Keep the footer consistent with its measurements if selection changes below.
     local mod = self._selected
     local path = plus.getWritablePath() .. 'mod/'
     local selection = mod and (tr('Selected: ', '已选择：') .. mod.name) or tr('Nothing selected', '尚未选择')
     local kind = mod and (mod.isDirectory and tr('Folder MOD', '目录 MOD') or tr('ZIP archive', 'ZIP 压缩包'))
-    local spacing = im.getStyle().ItemSpacing.y
-    local footerHeight = textHeight(path, true) + textHeight(selection) + im.getFrameHeight() + spacing * 3
+    local style = im.getStyle()
+    local spacing = style.ItemSpacing.y
+    local footerHeight = textHeight(help, true) + textHeight(path, true) + textHeight(selection)
+            + im.getFrameHeight() + spacing * 4
     if kind then footerHeight = footerHeight + textHeight(kind, true) + spacing end
-    local height = math.max(4, im.getContentRegionAvail().y - footerHeight)
+    local rowHeight = math.max(36, im.getTextLineHeight())
+    local minimumHeight = rowHeight + 2 * (style.WindowPadding.y + style.ChildBorderSize)
+    -- Keep one item visible and let the outer page scroll any overflowing footer.
+    local height = math.max(minimumHeight, im.getContentRegionAvail().y - footerHeight)
     local count = 0
     if im.beginChild('mod_list', im.p(0, height), true) then
         for i, mod in ipairs(self._mods) do
             if mod.name:lower():find(self._filter:lower(), 1, true) then
                 count = count + 1
                 im.pushID(i)
-                if im.selectable(mod.name .. '###mod', self._selected == mod, 0, im.p(0, 36)) then
+                if im.selectable(mod.name .. '###mod', self._selected == mod, 0, im.p(0, rowHeight)) then
                     self._selected = mod
                 end
                 im.popID()
             end
         end
         if count == 0 then
-            hint(#self._mods == 0 and tr('No MODs found. Add a MOD to the directory below, then refresh.',
-                    '未发现 MOD。请放入下方目录，然后刷新。') or tr('No matches.', '没有匹配的 MOD。'))
+            hint(empty and tr('No MODs found.', '未发现 MOD。') or tr('No matches.', '没有匹配的 MOD。'))
         end
     end
     im.endChild()
+    hint(help)
     hint(path)
     text(selection)
     if kind then hint(kind) end
