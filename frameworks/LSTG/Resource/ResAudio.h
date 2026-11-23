@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "ResBase.h"
+#include "../ResourceFileCache.h"
 #include "cocos/audio/AudioSource.h"
 #include "io/Stream.h"
 
@@ -50,7 +51,7 @@ namespace lstg
 		bool checkFFT();
 		bool doFFT();
 
-		bool init(cc::io::StreamPtr stream_);
+		bool init(FileBytes bytes);
 		ResAudio(const std::string& name, ResourceType type, const std::string& _path);
 	public:
 		~ResAudio() override;
@@ -68,7 +69,7 @@ namespace lstg
 	class ResMusic :
 		public ResAudio
 	{
-		bool initWithStream(cc::io::StreamPtr stream_, double loopA, double loopB);
+		bool initWithSnapshot(FileBytes bytes, double loopA, double loopB);
 		ResMusic(const std::string& name, const std::string& path);
 		~ResMusic() override;
 	public:

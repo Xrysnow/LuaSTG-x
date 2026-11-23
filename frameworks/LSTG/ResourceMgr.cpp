@@ -425,8 +425,12 @@ FileBytes ResourceMgr::getFileData(const string& path)
 
 io::Result<io::StreamPtr> ResourceMgr::openReadStream(const string& path)
 {
+	return openFileSnapshot(getFileData(path));
+}
+
+io::Result<io::StreamPtr> ResourceMgr::openFileSnapshot(const FileBytes& bytes)
+{
 	using Output = io::Result<io::StreamPtr>;
-	const auto bytes = getFileData(path);
 	// The snapshot loader does not distinguish a missing file from other errors.
 	if (!bytes)
 		return Output::failure({io::ErrorCode::IoError});

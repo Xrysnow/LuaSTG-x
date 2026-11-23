@@ -127,6 +127,7 @@ namespace lstg
 		// Each call opens an independent read-only cursor over a shared snapshot.
 		// The stream keeps its bytes alive across cache eviction and pack unloading.
 		cc::io::Result<cc::io::StreamPtr> openReadStream(const std::string& filePath);
+		static cc::io::Result<cc::io::StreamPtr> openFileSnapshot(const FileBytes& bytes);
 
 		std::string getStringFromFile(const std::string& filePath);
 

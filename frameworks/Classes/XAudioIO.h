@@ -1,6 +1,7 @@
 #pragma once
 #include "audio/AudioStreamAdapter.h"
 #include "audio/AudioDecoder.h"
+#include "../LSTG/ResourceFileCache.h"
 #include <string>
 
 namespace cc
@@ -17,6 +18,7 @@ namespace lstg
 	// Engine restarts and game resets retain this resource-system configuration.
 	void installAudioFileOpener();
 	void clearAudioFileOpener();
+	cc::AudioStream::ReopenFactory makeAudioFileReopener(FileBytes bytes);
 
 	// Independent immutable input snapshots with an owned Atomic adapter and
 	// cursor. These factories do not use autorelease pools or expose a Lua object.

@@ -6,6 +6,7 @@
 #include "../Classes/XInfoware.h"
 #include "../Classes/XAudioIO.h"
 #include "cocos/audio/AudioEngine.h"
+#include "input/gamepad/private/PlatformGamepadBackend.h"
 #ifdef CC_ENABLE_VIDEO_TEXTURE
 	#include "video/VideoCommon.h"
 #endif
@@ -357,6 +358,7 @@ bool AppFrame::frameInit()
 #endif
 
 	// audio engine
+	cc::input::detail::primeGamepadAudioPolicy();
 	if (!AudioEngine::init())
 	{
 		LERROR("Audio engine initialization failed: %s", AudioEngine::getLastError().c_str());

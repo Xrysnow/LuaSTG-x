@@ -3,6 +3,7 @@
 #include "AppFrame.h"
 #include "ResourceMgr.h"
 #include "Util/Utility.h"
+#include "XAudioIO.h"
 #include "../Math/XFFT.h"
 #include "audio/AudioStreamAdapter.h"
 #include "cocos/audio/AudioDecoder.h"
@@ -207,17 +208,19 @@ bool ResAudio::doFFT()
 	return true;
 }
 
-bool ResAudio::init(cc::io::StreamPtr stream_)
+bool ResAudio::init(FileBytes bytes)
 {
-	if (!stream_)
+	auto input = ResourceMgr::openFileSnapshot(bytes);
+	if (!input)
 		return false;
-	stream = std::move(stream_);
+	stream = std::move(input.value);
 	if (!cc::AudioEngine::isValid())
 		return true;
 	auto s = cc::AudioStreamAdapter::create(stream);
 	if (!s)
 		return false;
-	auto d = cc::AudioDecoder::createFromStream(s.value.get(), decoderBufferSize, cc::AudioDecoder::getDecoderTypeFromPath(path));
+	auto d = cc::AudioDecoder::createFromReopenableStream(s.value.get(), decoderBufferSize,
+		cc::AudioDecoder::getDecoderTypeFromPath(path), makeAudioFileReopener(std::move(bytes)));
 	if (!d)
 	{
 		XINFO("failed to create Decoder");
@@ -257,20 +260,20 @@ ResSound::~ResSound()
 
 cc::IntrusivePtr<ResSound> ResSound::create(const std::string& name, const std::string& path)
 {
-	auto input = LRES.openReadStream(path);
-	if (!input)
+	auto bytes = LRES.getFileData(path);
+	if (!bytes)
 		return nullptr;
 	cc::IntrusivePtr ret{new (nothrow) ResSound(name, path)};
-	if (ret && ret->init(std::move(input.value)))
+	if (ret && ret->init(std::move(bytes)))
 	{
 		return Resource::finishConstruction(std::move(ret));
 	}
 	return nullptr;
 }
 
-bool ResMusic::initWithStream(cc::io::StreamPtr input, double loopA, double loopB)
+bool ResMusic::initWithSnapshot(FileBytes bytes, double loopA, double loopB)
 {
-	if (!init(std::move(input)))
+	if (!init(std::move(bytes)))
 		return false;
 	if (source)
 	{
@@ -291,11 +294,11 @@ ResMusic::~ResMusic()
 
 cc::IntrusivePtr<ResMusic> ResMusic::create(const std::string& name, const std::string& path, double loopStart, double loopEnd)
 {
-	auto input = LRES.openReadStream(path);
-	if (!input)
+	auto bytes = LRES.getFileData(path);
+	if (!bytes)
 		return nullptr;
 	cc::IntrusivePtr ret{new (nothrow) ResMusic(name, path)};
-	if (ret && ret->initWithStream(std::move(input.value), loopStart, loopEnd))
+	if (ret && ret->initWithSnapshot(std::move(bytes), loopStart, loopEnd))
 	{
 		return Resource::finishConstruction(std::move(ret));
 	}
