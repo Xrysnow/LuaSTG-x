@@ -3,6 +3,7 @@ local M = class('Launcher', require('cc.ViewBase'))
 local im = imgui
 local director = cc.Director:getInstance()
 local gamepad = require('platform.GamepadActions')
+local gp = require('cocos.cocos2d.Gamepad')
 
 local function tr(en, zh)
     return i18n({ en = en, zh = zh })
@@ -183,7 +184,7 @@ function M:onExit()
     self._active = false
     self:_cancelCapture()
     if self._rumbleTest then
-        cc.gamepad.stop(self._rumbleTest.device, cc.gamepad.Channel.Body)
+        gp.stop(self._rumbleTest.device, gp.Channel.Body)
         self._rumbleTest = nil
     end
     director:setDisplayStats(self._previousStats)
@@ -232,12 +233,12 @@ end
 function M:_beginCapture(capture)
     self:_cancelCapture()
     if capture.kind ~= 'keyboard' then
-        local frame = cc.gamepad.frame()
+        local frame = gp.frame()
         capture.device = self._gamepadDevice
         capture.tick = frame:tick()
         if capture.kind == 'hardware' then
             local err
-            capture.lease, err = cc.gamepad.watchRaw(capture.device)
+            capture.lease, err = gp.watchRaw(capture.device)
             if not capture.lease then
                 self._status, self._error = tostring(err), true
                 return
@@ -249,11 +250,10 @@ function M:_beginCapture(capture)
 end
 
 function M:_sampleGamepad()
-    local gp = cc.gamepad
     local frame = gp.frame()
     if self._rumbleTest then
         local test = self._rumbleTest
-        for event in frame:events() do
+        for event in gp.events(frame) do
             local payload = event.payload
             if event.kind == gp.EventKind.OutputDone and event.device == test.device and payload.command == test.command then
                 self._status = payload.status == gp.Completion.Applied and tr('Vibration sent.', '已发送震动。') or tostring(payload.error)
@@ -704,7 +704,6 @@ function M:_renderInputPage()
 end
 
 function M:_renderGamepadDevices()
-    local gp = cc.gamepad
     local frame = gp.frame()
     local ids, labels = frame:devices(), {}
     local slot = self._draft.gamepad_actions.slot or 0

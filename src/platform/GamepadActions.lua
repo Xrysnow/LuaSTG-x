@@ -1,4 +1,4 @@
-local gp = cc.gamepad
+local gp = require('cocos.cocos2d.Gamepad')
 local M = {}
 
 local groups = { 'keys', 'keysys' }
@@ -179,7 +179,7 @@ local function observe(frame)
         end
     end
     local useEdges = selected == id
-    for e in frame:events() do
+    for e in gp.events(frame) do
         local payload = e.payload
         if not pad and e.kind == gp.EventKind.Button and payload.button == gp.Button.Start and payload.down and e.reason == gp.Reason.Physical then
             local candidate = frame:find(e.device)
@@ -273,7 +273,7 @@ end
 
 function M.learnAction(frame, id)
     if not id then return end
-    for e in frame:events() do
+    for e in gp.events(frame) do
         local payload = e.payload
         if e.device == id and e.reason == gp.Reason.Physical then
             if e.kind == gp.EventKind.Button and payload.down then return payload.button end
@@ -288,7 +288,7 @@ end
 function M.learnHardware(frame, id, target, existing)
     local field = buttons[target]
     if not field then return end
-    for e in frame:events() do
+    for e in gp.events(frame) do
         local payload = e.payload
         if e.device == id and e.reason == gp.Reason.Physical and e.kind == gp.EventKind.Raw then
             local binding

@@ -236,6 +236,7 @@ local ctr_btns = {
     'snapshot',
 }
 local gamepad = require('platform.GamepadActions')
+local gp = require('cocos.cocos2d.Gamepad')
 
 local function unsel_ctr_btns(lc)
     for _, v in ipairs(ctr_btns) do
@@ -246,7 +247,7 @@ end
 
 local function setInput(lc)
     local function current()
-        local frame = cc.gamepad.frame()
+        local frame = gp.frame()
         local slot = setting.gamepad_actions.slot or 0
         for _, id in ipairs(frame:devices()) do
             local pad = frame:find(id)
