@@ -254,9 +254,10 @@ function M:_sampleGamepad()
     if self._rumbleTest then
         local test = self._rumbleTest
         for event in frame:events() do
-            if event.kind == gp.EventKind.OutputDone and event.device == test.device and event.command == test.command then
-                self._status = event.status == gp.Completion.Applied and tr('Vibration sent.', '已发送震动。') or tostring(event.error)
-                self._error = event.status == gp.Completion.Failed
+            local payload = event.payload
+            if event.kind == gp.EventKind.OutputDone and event.device == test.device and payload.command == test.command then
+                self._status = payload.status == gp.Completion.Applied and tr('Vibration sent.', '已发送震动。') or tostring(payload.error)
+                self._error = payload.status == gp.Completion.Failed
                 self._rumbleTest = nil
                 break
             end

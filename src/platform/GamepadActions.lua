@@ -180,21 +180,22 @@ local function observe(frame)
     end
     local useEdges = selected == id
     for e in frame:events() do
-        if not pad and e.kind == gp.EventKind.Button and e.button == gp.Button.Start and e.down and e.reason == gp.Reason.Physical then
+        local payload = e.payload
+        if not pad and e.kind == gp.EventKind.Button and payload.button == gp.Button.Start and payload.down and e.reason == gp.Reason.Physical then
             local candidate = frame:find(e.device)
             if candidate and candidate:mapped() and candidate:player() == nil then
                 if gp.assignPlayer(e.device, slot) then break end
             end
-        elseif pad and e.device == id and e.kind == gp.EventKind.Device and e.change == gp.Change.PlayerChanged then
+        elseif pad and e.device == id and e.kind == gp.EventKind.Device and payload.kind == gp.Change.PlayerChanged then
             useEdges = true
         elseif pad and useEdges and e.device == id and (e.kind == gp.EventKind.Button or e.kind == gp.EventKind.Axis) then
             for _, action in ipairs(actions) do
                 local axis, sign = action.axis, action.sign
                 local down
-                if e.kind == gp.EventKind.Button and action.button == e.button then
-                    down = e.down
-                elseif e.kind == gp.EventKind.Axis and axis == e.axis then
-                    local value = axisValue(axis, e.value) * sign
+                if e.kind == gp.EventKind.Button and action.button == payload.button then
+                    down = payload.down
+                elseif e.kind == gp.EventKind.Axis and axis == payload.axis then
+                    local value = axisValue(axis, payload.value) * sign
                     down = action.pad and value >= 0.45 or value >= 0.60
                 end
                 if down ~= nil then
@@ -273,11 +274,12 @@ end
 function M.learnAction(frame, id)
     if not id then return end
     for e in frame:events() do
+        local payload = e.payload
         if e.device == id and e.reason == gp.Reason.Physical then
-            if e.kind == gp.EventKind.Button and e.down then return e.button end
+            if e.kind == gp.EventKind.Button and payload.down then return payload.button end
             if e.kind == gp.EventKind.Axis then
-                local value = axisValue(e.axis, e.value)
-                if math.abs(value) >= 0.60 then return { axis = e.axis, sign = value < 0 and -1 or 1 } end
+                local value = axisValue(payload.axis, payload.value)
+                if math.abs(value) >= 0.60 then return { axis = payload.axis, sign = value < 0 and -1 or 1 } end
             end
         end
     end
@@ -287,13 +289,14 @@ function M.learnHardware(frame, id, target, existing)
     local field = buttons[target]
     if not field then return end
     for e in frame:events() do
+        local payload = e.payload
         if e.device == id and e.reason == gp.Reason.Physical and e.kind == gp.EventKind.Raw then
             local binding
-            if e.control == gp.RawKind.Button and e.value ~= 0 then binding = 'b' .. e.index
-            elseif e.control == gp.RawKind.Axis and math.abs(e.value) >= 22000 then
-                binding = (e.value < 0 and '-' or '+') .. 'a' .. e.index
-            elseif e.control == gp.RawKind.Hat and (e.value == 1 or e.value == 2 or e.value == 4 or e.value == 8) then
-                binding = 'h' .. e.index .. '.' .. e.value
+            if payload.kind == gp.RawKind.Button and payload.value ~= 0 then binding = 'b' .. payload.index
+            elseif payload.kind == gp.RawKind.Axis and math.abs(payload.value) >= 22000 then
+                binding = (payload.value < 0 and '-' or '+') .. 'a' .. payload.index
+            elseif payload.kind == gp.RawKind.Hat and (payload.value == 1 or payload.value == 2 or payload.value == 4 or payload.value == 8) then
+                binding = 'h' .. payload.index .. '.' .. payload.value
             end
             if binding then
                 local fields = {}
