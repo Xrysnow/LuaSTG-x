@@ -1,5 +1,6 @@
 --
 local KEY = require('keycode')
+local Button, Axis = cc.gamepad.Button, cc.gamepad.Axis
 ---@class lstg.setting
 local M = {
     allowsnapshot  = true,
@@ -62,13 +63,17 @@ local M = {
         },
     },
     gamepad_actions = {
-        version = 2,
+        version = 3,
         slot = 0,
         keys = {
-            up = 'dpup', down = 'dpdown', left = 'dpleft', right = 'dpright',
-            slow = 'leftshoulder', shoot = 'south', spell = 'east', special = 'west',
+            up = Button.DpadUp, down = Button.DpadDown, left = Button.DpadLeft, right = Button.DpadRight,
+            slow = Button.LeftShoulder, shoot = Button.South, spell = Button.East, special = Button.West,
         },
-        keysys = { repfast = '+righttrigger', repslow = '+lefttrigger', menu = 'start', snapshot = 'back' },
+        keysys = {
+            repfast = { axis = Axis.RightTrigger, sign = 1 },
+            repslow = { axis = Axis.LeftTrigger, sign = 1 },
+            menu = Button.Start, snapshot = Button.Back,
+        },
     },
     gamepad_hardware = {},
     gamepad_preferred = '',

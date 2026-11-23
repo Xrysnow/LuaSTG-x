@@ -183,7 +183,7 @@ function M:onExit()
     self._active = false
     self:_cancelCapture()
     if self._rumbleTest then
-        cc.gamepad.submit(self._rumbleTest.device, { kind = 'stop', channel = 'body' })
+        cc.gamepad.stop(self._rumbleTest.device, cc.gamepad.Channel.Body)
         self._rumbleTest = nil
     end
     director:setDisplayStats(self._previousStats)
@@ -239,7 +239,7 @@ function M:_beginCapture(capture)
             local err
             capture.lease, err = cc.gamepad.watchRaw(capture.device)
             if not capture.lease then
-                self._status, self._error = err, true
+                self._status, self._error = tostring(err), true
                 return
             end
         end
@@ -254,9 +254,9 @@ function M:_sampleGamepad()
     if self._rumbleTest then
         local test = self._rumbleTest
         for event in frame:events() do
-            if event.kind == 'outputDone' and event.device == test.device and event.command == test.command then
-                self._status = event.status == 'applied' and tr('Vibration sent.', '已发送震动。') or event.error
-                self._error = event.status == 'failed'
+            if event.kind == gp.EventKind.OutputDone and event.device == test.device and event.command == test.command then
+                self._status = event.status == gp.Completion.Applied and tr('Vibration sent.', '已发送震动。') or tostring(event.error)
+                self._error = event.status == gp.Completion.Failed
                 self._rumbleTest = nil
                 break
             end
@@ -285,7 +285,11 @@ function M:_sampleGamepad()
         local previous = profile[capture.group][capture.name]
         for _, action in ipairs(actions) do
             local group, name = action[1], action[2]
-            if profile[group][name] == binding then profile[group][name] = previous end
+            local other = profile[group][name]
+            if other == binding or (type(binding) == 'table' and type(other) == 'table'
+                    and other.axis == binding.axis and other.sign == binding.sign) then
+                profile[group][name] = previous
+            end
         end
         profile[capture.group][capture.name] = binding
     end
@@ -735,22 +739,22 @@ function M:_renderGamepadDevices()
         if pad:mapped() and im.button(tr('Use for player 1', '分配给玩家 1')) then
             if pad:player() == nil or pad:player() == slot then
                 for _, other in ipairs(ids) do
-                    if other ~= id and frame:find(other):player() == slot then gp.assignPlayer(other, nil) end
+                    if other ~= id and frame:find(other):player() == slot then gp.clearPlayer(other) end
                 end
                 local ok, err = gp.assignPlayer(id, slot)
                 if ok then
                     self._draft.gamepad_preferred, self._dirty = gamepad.identity(info), true
                 else
-                    self._status, self._error = err, true
+                    self._status, self._error = tostring(err), true
                 end
             end
         end
-        if pad:has('bodyRumble') then
+        if pad:hasFeature(gp.Feature.BodyRumble) then
             im.sameLine()
             if im.button(tr('Test vibration', '试振')) then
-                local command, err = gp.submit(id, { kind = 'rumble', low = 0.3, high = 0.5, durationMs = 200 })
+                local command, err = gp.rumble(id, 0.3, 0.5, 200)
                 if command then self._rumbleTest = { device = id, command = command }
-                else self._status, self._error = err, true end
+                else self._status, self._error = tostring(err), true end
             end
         end
         local controls = gamepad.hardwareButtons
@@ -778,7 +782,7 @@ function M:_renderGamepadDevices()
             for _, action in ipairs(actions) do
                 local group, name = action[1], action[2]
                 local control = preview[group][name]
-                if control then done[#done + 1] = tr(action[3], action[4]) .. ' → ' .. control end
+                if control then done[#done + 1] = tr(action[3], action[4]) .. ' → ' .. gamepad.bindLabel(pad, control) end
             end
             if #done > 0 then text(table.concat(done, ', ')) end
             if #missing > 0 then

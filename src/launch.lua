@@ -140,7 +140,9 @@ function lstg.loadSettingFile()
     if f and f ~= '' then
         local s = DeSerialize(f)
         for k, v in pairs(s) do
-            setting[k] = v
+            if k ~= 'gamepad_actions' or (type(v) == 'table' and v.version == default_setting.gamepad_actions.version) then
+                setting[k] = v
+            end
         end
     end
 end

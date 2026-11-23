@@ -2,33 +2,33 @@ local gp = cc.gamepad
 local M = {}
 
 local groups = { 'keys', 'keysys' }
-local stickAxes = { leftx = true, lefty = true, rightx = true, righty = true }
+local stickAxes = { [gp.Axis.LeftX] = true, [gp.Axis.LeftY] = true, [gp.Axis.RightX] = true, [gp.Axis.RightY] = true }
 local buttons = {
-    south = 'a', east = 'b', west = 'x', north = 'y', back = 'back', start = 'start',
-    leftstick = 'leftstick', rightstick = 'rightstick', leftshoulder = 'leftshoulder',
-    rightshoulder = 'rightshoulder', dpup = 'dpup', dpdown = 'dpdown',
-    dpleft = 'dpleft', dpright = 'dpright',
+    [gp.Button.South] = 'a', [gp.Button.East] = 'b', [gp.Button.West] = 'x', [gp.Button.North] = 'y', [gp.Button.Back] = 'back', [gp.Button.Start] = 'start',
+    [gp.Button.LeftStick] = 'leftstick', [gp.Button.RightStick] = 'rightstick', [gp.Button.LeftShoulder] = 'leftshoulder',
+    [gp.Button.RightShoulder] = 'rightshoulder', [gp.Button.DpadUp] = 'dpup', [gp.Button.DpadDown] = 'dpdown',
+    [gp.Button.DpadLeft] = 'dpleft', [gp.Button.DpadRight] = 'dpright',
 }
 M.hardwareButtons = {
-    'south', 'east', 'west', 'north', 'leftshoulder', 'rightshoulder',
-    'dpup', 'dpdown', 'dpleft', 'dpright', 'start', 'back',
+    gp.Button.South, gp.Button.East, gp.Button.West, gp.Button.North, gp.Button.LeftShoulder, gp.Button.RightShoulder,
+    gp.Button.DpadUp, gp.Button.DpadDown, gp.Button.DpadLeft, gp.Button.DpadRight, gp.Button.Start, gp.Button.Back,
 }
 
 local legacyButtons = {
-    [4] = 'south', [5] = 'east', [7] = 'west', [8] = 'north',
-    [10] = 'dpup', [11] = 'dpdown', [12] = 'dpleft', [13] = 'dpright',
-    [15] = 'leftshoulder', [16] = 'rightshoulder',
-    [19] = 'leftstick', [20] = 'rightstick', [21] = 'start', [22] = 'back',
+    [4] = gp.Button.South, [5] = gp.Button.East, [7] = gp.Button.West, [8] = gp.Button.North,
+    [10] = gp.Button.DpadUp, [11] = gp.Button.DpadDown, [12] = gp.Button.DpadLeft, [13] = gp.Button.DpadRight,
+    [15] = gp.Button.LeftShoulder, [16] = gp.Button.RightShoulder,
+    [19] = gp.Button.LeftStick, [20] = gp.Button.RightStick, [21] = gp.Button.Start, [22] = gp.Button.Back,
 }
 local legacyAxes = {
-    [0] = 'leftx', [1] = 'lefty', [2] = 'rightx', [3] = 'righty',
-    [17] = 'lefttrigger', [18] = 'righttrigger',
+    [0] = gp.Axis.LeftX, [1] = gp.Axis.LeftY, [2] = gp.Axis.RightX, [3] = gp.Axis.RightY,
+    [17] = gp.Axis.LeftTrigger, [18] = gp.Axis.RightTrigger,
 }
 
 function M.migration(config)
     local old = config.controller_map
     if type(old) ~= 'table' then return end
-    local profile = { version = 2, slot = 0, keys = {}, keysys = {} }
+    local profile = { version = 3, slot = 0, keys = {}, keysys = {} }
     local missing = {}
     local different = false
     for _, group in ipairs(groups) do
@@ -42,7 +42,7 @@ function M.migration(config)
                 if key[1] >= 1000 and key[2] == nil and legacyButtons[code] then
                     profile[group][name] = legacyButtons[code]
                 elseif key[1] >= 1000 and type(key[2]) == 'boolean' and legacyAxes[code] then
-                    profile[group][name] = (key[2] and '+' or '-') .. legacyAxes[code]
+                    profile[group][name] = { axis = legacyAxes[code], sign = key[2] and 1 or -1 }
                 else
                     missing[#missing + 1] = name
                 end
@@ -69,16 +69,17 @@ function M.identity(info)
         info.product or '', info.serial or '' }, '|')
 end
 
-local function direction(binding)
-    local sign, axis = binding:match('^([%+%-])(.+)$')
-    return axis, sign == '-' and -1 or 1
+local function valueAt(pad, action)
+    if action.button then return pad:down(action.button) end
+    if not action.axis then return false end
+    local value = (pad:axis(action.axis) or 0) * action.sign
+    return action.pad and value >= 0.45 or value >= 0.60
 end
 
-local function valueAt(pad, binding, previous)
-    local axis, sign = direction(binding)
-    if not axis then return pad:down(binding) end
-    local value = (pad:axis(axis) or 0) * sign
-    return previous and value >= 0.45 or value >= 0.60
+local function enumName(values, value)
+    for name, id in pairs(values) do
+        if id == value then return name end
+    end
 end
 
 local function axisValue(name, value)
@@ -105,7 +106,7 @@ end
 function M.loadFromSetting()
     configured = setting
     profile = configured.gamepad_actions
-    if type(profile) ~= 'table' or profile.version ~= 2 then profile = default_setting.gamepad_actions end
+    if type(profile) ~= 'table' or profile.version ~= 3 then profile = default_setting.gamepad_actions end
     actions, codeActions = {}, {}
     edges = {}
     for _, group in ipairs(groups) do
@@ -115,7 +116,10 @@ function M.loadFromSetting()
         for _, name in ipairs(names) do
             local binding = (profile[group] or {})[name]
             local action = {
-                name = name, code = configured[group][name], binding = type(binding) == 'string' and binding or '',
+                axis = type(binding) == 'table' and binding.axis,
+                sign = type(binding) == 'table' and binding.sign == -1 and -1 or 1,
+                button = type(binding) == 'number' and binding,
+                name = name, code = configured[group][name],
                 keyboard = false, pad = false, held = false,
             }
             actions[#actions + 1] = action
@@ -176,34 +180,34 @@ local function observe(frame)
     end
     local useEdges = selected == id
     for e in frame:events() do
-        if not pad and e.kind == 'button' and e.button == 'start' and e.down and e.reason == 'physical' then
+        if not pad and e.kind == gp.EventKind.Button and e.button == gp.Button.Start and e.down and e.reason == gp.Reason.Physical then
             local candidate = frame:find(e.device)
             if candidate and candidate:mapped() and candidate:player() == nil then
                 if gp.assignPlayer(e.device, slot) then break end
             end
-        elseif pad and e.device == id and e.kind == 'playerChanged' then
+        elseif pad and e.device == id and e.kind == gp.EventKind.Device and e.change == gp.Change.PlayerChanged then
             useEdges = true
-        elseif pad and useEdges and e.device == id and (e.kind == 'button' or e.kind == 'axis') then
+        elseif pad and useEdges and e.device == id and (e.kind == gp.EventKind.Button or e.kind == gp.EventKind.Axis) then
             for _, action in ipairs(actions) do
-                local axis, sign = direction(action.binding)
+                local axis, sign = action.axis, action.sign
                 local down
-                if e.kind == 'button' and action.binding == e.button then
+                if e.kind == gp.EventKind.Button and action.button == e.button then
                     down = e.down
-                elseif e.kind == 'axis' and axis == e.axis then
+                elseif e.kind == gp.EventKind.Axis and axis == e.axis then
                     local value = axisValue(axis, e.value) * sign
                     down = action.pad and value >= 0.45 or value >= 0.60
                 end
                 if down ~= nil then
-                    if down and not action.pad and e.reason == 'physical' then lastKey = action.code end
-                    source(action, 'pad', down, emit and (not down or e.reason == 'physical'))
+                    if down and not action.pad and e.reason == gp.Reason.Physical then lastKey = action.code end
+                    source(action, 'pad', down, emit and (not down or e.reason == gp.Reason.Physical))
                 end
             end
         end
     end
     if pad then
         for _, action in ipairs(actions) do
-            if action.binding ~= '' then
-                local down = not not valueAt(pad, action.binding, action.pad)
+            if action.axis or action.button then
+                local down = not not valueAt(pad, action)
                 source(action, 'pad', down, emit and not down and selected == id)
             end
         end
@@ -216,8 +220,8 @@ function M.init()
         local path = 'cocos/gamecontrollerdb.txt'
         local files = cc.FileUtils:getInstance()
         if files:isFileExist(path) then
-            local report = gp.importMappings(files:getStringFromFile(path), 'builtIn')
-            databaseLoaded = report.batchError == 'None'
+            local report = gp.importMappings(files:getStringFromFile(path), gp.MappingSource.BuiltIn)
+            databaseLoaded = report.batchError == gp.Error.None
             SystemLog(('Gamepad database: %d added, %d replaced, %d rejected (%s)'):format(
                 report.added, report.replaced, report.failed, report.batchError))
         else
@@ -257,23 +261,23 @@ function M.consume()
 end
 
 function M.bindLabel(pad, binding)
-    if not binding or binding == '' then return '-' end
-    local axis = direction(binding)
-    if pad and not axis then
-        local label = pad:label(binding)
-        if label and label ~= '' then return label end
+    if type(binding) == 'table' then
+        local name = enumName(gp.Axis, binding.axis)
+        return name and ((binding.sign == -1 and '-' or '+') .. name) or '-'
     end
-    return binding
+    if type(binding) ~= 'number' then return '-' end
+    local label = pad and pad:label(binding)
+    return (label and label ~= '' and label) or enumName(gp.Button, binding) or '-'
 end
 
 function M.learnAction(frame, id)
     if not id then return end
     for e in frame:events() do
-        if e.device == id and e.reason == 'physical' then
-            if e.kind == 'button' and e.down then return e.button end
-            if e.kind == 'axis' then
+        if e.device == id and e.reason == gp.Reason.Physical then
+            if e.kind == gp.EventKind.Button and e.down then return e.button end
+            if e.kind == gp.EventKind.Axis then
                 local value = axisValue(e.axis, e.value)
-                if math.abs(value) >= 0.60 then return (value < 0 and '-' or '+') .. e.axis end
+                if math.abs(value) >= 0.60 then return { axis = e.axis, sign = value < 0 and -1 or 1 } end
             end
         end
     end
@@ -283,12 +287,12 @@ function M.learnHardware(frame, id, target, existing)
     local field = buttons[target]
     if not field then return end
     for e in frame:events() do
-        if e.device == id and e.reason == 'physical' and e.kind == 'raw' then
+        if e.device == id and e.reason == gp.Reason.Physical and e.kind == gp.EventKind.Raw then
             local binding
-            if e.control == 'button' and e.value ~= 0 then binding = 'b' .. e.index
-            elseif e.control == 'axis' and math.abs(e.value) >= 22000 then
+            if e.control == gp.RawKind.Button and e.value ~= 0 then binding = 'b' .. e.index
+            elseif e.control == gp.RawKind.Axis and math.abs(e.value) >= 22000 then
                 binding = (e.value < 0 and '-' or '+') .. 'a' .. e.index
-            elseif e.control == 'hat' and (e.value == 1 or e.value == 2 or e.value == 4 or e.value == 8) then
+            elseif e.control == gp.RawKind.Hat and (e.value == 1 or e.value == 2 or e.value == 4 or e.value == 8) then
                 binding = 'h' .. e.index .. '.' .. e.value
             end
             if binding then
