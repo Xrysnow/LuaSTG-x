@@ -11,7 +11,7 @@ function M.clear()
     require('xe.main'):getInstance()._output:clear()
 end
 
----@return fun
+---@return fun(msg:string,...)
 function M.getLogger(trace, type)
     if not type then
         return function(type_, msg, ...)
