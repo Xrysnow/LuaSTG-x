@@ -18,19 +18,21 @@ Label* LabelPool::getWithResFont(ResFont* res, const std::string& str)
 	if (!res)
 		return nullptr;
 	const auto it = idle.find(res);
-	if (it != idle.end())
+	if (it != idle.end() && !it->second.empty())
 	{
-		if (!it->second.empty())
-		{
-			auto ret = it->second.back();
-			it->second.popBack();
-			res->syncLabelSetting(ret);
-			return ret;
-		}
+		auto ret = it->second.back();
+		it->second.popBack();
+		CC_ASSERT(ret->getRasterMode() == res->getRasterMode());
+		res->syncLabelSetting(ret);
+		ret->setString(str);
+		return ret;
 	}
 	auto ret = res->createLabel();
-	if(ret)
+	if (ret)
+	{
+		ret->setString(str);
 		pool[res].pushBack(ret);
+	}
 	return ret;
 }
 
@@ -44,10 +46,10 @@ void LabelPool::onResFontRemove(ResFont* res)
 
 void LabelPool::restore()
 {
-	for (auto& p : pool)
-	{
-		idle[p.first] = p.second;
-	}
+	for (auto& entry : idle)
+		for (auto* label : entry.second)
+			label->setString("");
+	idle = pool;
 }
 
 void LabelPool::clear()

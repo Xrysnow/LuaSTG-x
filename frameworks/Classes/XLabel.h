@@ -37,6 +37,8 @@ public:
 	LabelType getLabelType() const;
 
 protected:
+	XLabel(cc::FontRasterMode mode, cc::TextHAlignment hAlignment, cc::TextVAlignment vAlignment);
+
 	std::vector<cc::V3F_C4B_T2F_Quad> tempQuads;
 	std::vector<std::shared_ptr<cc::RenderCommand>> tempCommends;
 

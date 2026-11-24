@@ -13,6 +13,6 @@ public:
 	void clear();
 private:
 
-	std::unordered_map<void*, cc::Vector<cc::Label*>> pool;
-	std::unordered_map<void*, cc::Vector<cc::Label*>> idle;
+	std::unordered_map<lstg::ResFont*, cc::Vector<cc::Label*>> pool;
+	std::unordered_map<lstg::ResFont*, cc::Vector<cc::Label*>> idle;
 };

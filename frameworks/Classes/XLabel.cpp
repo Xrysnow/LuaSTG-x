@@ -16,7 +16,9 @@ cc::IntrusivePtr<XLabel> XLabel::createWithBMFont(const string& bmfontFilePath, 
 
 cc::IntrusivePtr<XLabel> XLabel::createWithTTF(const TTFConfig& ttfConfig, const string& text, TextHAlignment hAlignment, int maxLineWidth)
 {
-	cc::IntrusivePtr ret{new (nothrow) XLabel(hAlignment)};
+	const auto mode = ttfConfig.distanceFieldEnabled || ttfConfig.outlineSize > 0
+		? FontRasterMode::Sdf : FontRasterMode::Bitmap;
+	cc::IntrusivePtr ret{new (nothrow) XLabel(mode, hAlignment, TextVAlignment::TOP)};
 	if (ret && ret->initWithTTF(ttfConfig, text, hAlignment, maxLineWidth))
 	{
 		return ret;
@@ -42,12 +44,17 @@ XLabel::XLabel(TextHAlignment hAlignment, TextVAlignment vAlignment) :Label(hAli
 {
 }
 
+XLabel::XLabel(FontRasterMode mode, TextHAlignment hAlignment, TextVAlignment vAlignment)
+	: Label(mode, hAlignment, vAlignment)
+{
+}
+
 XLabel::~XLabel()
 {
 }
 
 XLabel::LabelType XLabel::getLabelType() const
 {
-	auto i = static_cast<underlying_type<Label::LabelType>::type>(_currentLabelType);
+	auto i = static_cast<underlying_type<Label::LabelType>::type>(Label::getLabelType());
 	return (LabelType)i;
 }

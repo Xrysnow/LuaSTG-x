@@ -7,11 +7,31 @@
 #include "Renderer.h"
 #include "ResourceMgr.h"
 #include "LabelPool.h"
-#include "2d/FontFreeType.h"
+#include "2d/font/FontRendering.h"
+#include <algorithm>
+#include <cctype>
+#include <cmath>
 
 using namespace std;
 using namespace cc;
 using namespace lstg;
+
+namespace
+{
+bool isFontPath(const std::string& name)
+{
+	if (name.find_first_of("/\\") != std::string::npos)
+		return true;
+	const auto dot = name.find_last_of('.');
+	if (dot == std::string::npos)
+		return false;
+	auto extension = name.substr(dot);
+	std::transform(extension.begin(), extension.end(), extension.begin(), [](unsigned char c) {
+		return static_cast<char>(std::tolower(c));
+	});
+	return extension == ".ttf" || extension == ".otf" || extension == ".ttc" || extension == ".otc";
+}
+}
 
 void ResFont::setRenderMode(RenderMode* m)
 {
@@ -120,13 +140,22 @@ void ResFont::disableAllEffects()
 
 int ResFont::getFontAscender() const
 {
-	const auto atlas = label->getFontAtlas();
-	if (!atlas)
-		return -1;
-	const auto font = dynamic_cast<const FontFreeType*>(atlas->getFont());
-	if(!font)
-		return -1;
-	return font->getFontAscender();
+	FontMetrics metrics;
+	return label->getFontMetrics(metrics) ? static_cast<int>(std::lround(metrics.ascent * CC_CONTENT_SCALE_FACTOR())) : -1;
+}
+
+void ResFont::setTTFConfig(const TTFConfig& conf)
+{
+	if (labelType == LabelType::TTF)
+	{
+		if (label->setTTFConfig(conf))
+		{
+			config = label->getTTFConfig();
+			_isOutlined = config.outlineSize > 0;
+		}
+	}
+	else
+		config = conf;
 }
 
 bool ResFont::render(const std::string& str, float x, float y, float width, float height, float scaleX, float scaleY)
@@ -136,6 +165,11 @@ bool ResFont::render(const std::string& str, float x, float y, float width, floa
 
 Vec2 ResFont::calcSize(const string& text)
 {
+	if (labelType == LabelType::TTF)
+	{
+		Size size;
+		return label->measureText(text, size) ? size : Size::ZERO;
+	}
 	const auto last_str = label->getString();
 	label->setString(text);
 	const auto s = label->getContentSize();// content size
@@ -166,14 +200,12 @@ size_t ResFont::getMemorySize()
 cc::IntrusivePtr<Label> ResFont::createLabel()
 {
 	cc::IntrusivePtr<Label> ret;
-	const auto exist = FileUtils::getInstance()->isFileExist(config.fontFilePath);
 	switch (getLabelType())
 	{
 	case LabelType::TTF:
-		if (exist)
-			ret = Label::createWithTTF(config, "");
-		else
-			ret = Label::createWithSystemFont("", config.fontFilePath, config.fontSize);
+		ret = cc::IntrusivePtr{new (nothrow) Label(rasterMode)};
+		if (!ret || !ret->setTTFConfig(config))
+			return nullptr;
 		break;
 	case LabelType::BMFONT:
 		ret = Label::createWithBMFont(config.fontFilePath, "");
@@ -197,6 +229,14 @@ void ResFont::syncLabelSetting(Label* target)
 	if (!src || !target)
 		return;
 	const auto type = src->getLabelType();
+	if (type == XLabel::LabelType::TTF)
+	{
+		const auto& targetConfig = target->getTTFConfig();
+		if (targetConfig.fontFilePath != config.fontFilePath || targetConfig.fontSize != config.fontSize ||
+			targetConfig.glyphs != config.glyphs || targetConfig.customGlyphs != config.customGlyphs)
+			target->setTTFConfig(config);
+		target->setGlyphRenderPolicy(src->getGlyphRenderPolicy());
+	}
 	if (type == XLabel::LabelType::TTF || type == XLabel::LabelType::STRING_TEXTURE)
 		target->setTextColor(src->getTextColor());
 	if (src->isShadowEnabled())
@@ -224,7 +264,7 @@ void ResFont::syncLabelSetting(Label* target)
 	if (type != XLabel::LabelType::STRING_TEXTURE)
 	{
 		target->setLineHeight(src->getLineHeight());
-		target->setAdditionalKerning(target->getAdditionalKerning());
+		target->setAdditionalKerning(src->getAdditionalKerning());
 	}
 	target->setLineSpacing(src->getLineSpacing());
 	if (src->getBlendFunc() != target->getBlendFunc())
@@ -251,7 +291,8 @@ void ResFont::syncLabelSetting(Label* target)
 }
 
 ResFont::ResFont(const std::string& name, cc::IntrusivePtr<XLabel> label_, LabelType type)
-	: Resource(ResourceType::Font, name), label(std::move(label_)), labelType(type)
+	: Resource(ResourceType::Font, name), label(std::move(label_)),
+	rasterMode(label ? label->getRasterMode() : FontRasterMode::Bitmap), labelType(type)
 {
 	CC_ASSERT(label);
 	config = label->getTTFConfig();
@@ -325,16 +366,26 @@ cc::IntrusivePtr<ResFont> ResFont::createTTF(const std::string& name, const std:
 		cfg.fontFilePath = path;
 		if (fontSize > 1.f)
 			cfg.fontSize = fontSize;
-		auto type = LabelType::TTF;
-		auto lb = XLabel::createWithTTF(cfg, "_");
-		if (!lb)
+		const auto status = FontRendering::getInstance().inspectFont(path);
+		if (status == GlyphStatus::Ready)
 		{
-			type = LabelType::SYSTEM;
-			lb = XLabel::createWithSystemFont("_", path, fontSize);
+			// LuaSTG resources can acquire an outline after loading and be drawn only once.
+			cfg.distanceFieldEnabled = true;
+			auto lb = XLabel::createWithTTF(cfg, "");
 			if (!lb)
 				return nullptr;
+			lb->setGlyphRenderPolicy(GlyphRenderPolicy::Synchronous);
+			cc::IntrusivePtr owner{new (nothrow) ResFont(name, std::move(lb), LabelType::TTF)};
+			return Resource::finishConstruction(std::move(owner));
 		}
-		cc::IntrusivePtr owner{new (nothrow) ResFont(name, std::move(lb), type)};
+		if (status != GlyphStatus::FileNotFound || isFontPath(path))
+			return nullptr;
+		auto lb = XLabel::createWithSystemFont("_", path, fontSize);
+		if (!lb)
+			return nullptr;
+		cc::IntrusivePtr owner{new (nothrow) ResFont(name, std::move(lb), LabelType::SYSTEM)};
+		if (owner)
+			owner->config = std::move(cfg);
 		return Resource::finishConstruction(std::move(owner));
 	}
 	catch (...) {}

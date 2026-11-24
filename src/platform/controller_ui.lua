@@ -46,7 +46,7 @@ local function createKeys(parent)
             -- UIKit draws the glyph and its outline together using the bundled font.
             label = cc.Label:createWithSystemFont(text, font, size)
         else
-            label = cc.Label:createWithTTF(text, font, size)
+            label = cc.Label:createWithFont({ name = font, size = size }, text, cc.FontRasterMode.Sdf)
         end
         cc.SetNode(label, parent, position, nil, color):enableOutline(color_outline, 1)
     end

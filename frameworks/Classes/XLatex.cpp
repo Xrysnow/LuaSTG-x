@@ -1,6 +1,7 @@
 ﻿#include "XLatex.h"
-#include "2d/FontFreeType.h"
+#include "2d/font/FontRendering.h"
 #include "Util/Utility.h"
+#include <cmath>
 #ifdef TRANSPARENT
 #undef TRANSPARENT
 #endif
@@ -354,8 +355,11 @@ bool Latex::_init(const std::string& str,
 		g2->tr.decompose(&scale, &q, &trans);
 		cfg.fontSize *= std::max(scale.x, scale.y);
 		auto lb = cc::Label::createWithTTF(cfg, s);
-		auto ttf = dynamic_cast<const cc::FontFreeType*>(lb->getFontAtlas()->getFont());
-		int ascent = ttf ? ttf->getFontAscender() : cfg.fontSize;
+		if (!lb)
+			return;
+		cc::FontMetrics metrics;
+		const auto ascent = lb->getFontMetrics(metrics)
+			? std::round(metrics.ascent * CC_CONTENT_SCALE_FACTOR()) : std::trunc(cfg.fontSize);
 		lb->setAlignment(cc::TextHAlignment::LEFT, cc::TextVAlignment::TOP);
 		lb->setAnchorPoint(cc::Vec2::ANCHOR_TOP_LEFT);
 		lb->setIgnoreAnchorPointForPosition(false);

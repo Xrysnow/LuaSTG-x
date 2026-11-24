@@ -29,6 +29,7 @@ namespace lstg {
 
 		cc::IntrusivePtr<XLabel> label;
 		cc::TTFConfig config;
+		const cc::FontRasterMode rasterMode;
 
 		cc::TextHAlignment h_alignment = cc::TextHAlignment::LEFT;
 		cc::TextVAlignment v_alignment = cc::TextVAlignment::TOP;
@@ -88,10 +89,11 @@ namespace lstg {
 		void disableAllEffects();
 
 
-		XLabel* getLabel() const { return label; }
+		cc::Label* getLabel() const { return label; }
 		LabelType getLabelType() const { return labelType; }
+		cc::FontRasterMode getRasterMode() const { return rasterMode; }
 		cc::TTFConfig& getTTFConfig() { return config; }
-		void setTTFConfig(const cc::TTFConfig& conf) { config = conf; }
+		void setTTFConfig(const cc::TTFConfig& conf);
 
 		cc::TextHAlignment getHAlign() const { return h_alignment; }
 		void setHAlign(cc::TextHAlignment ha) { h_alignment = ha; }

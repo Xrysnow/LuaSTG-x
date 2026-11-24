@@ -570,9 +570,10 @@ bool XRenderer::renderText(ResFont* p, const std::string& str,
 
 	// use temprary label
 	auto label = labelPool.getWithResFont(p, str);
+	if (!label)
+		return false;
 	const auto ha = p->getHAlign();
 	const auto va = p->getVAlign();
-	label->setString(str);
 	label->setAnchorPoint(AlignmentToAnchorPoint(ha, va));
 	label->setAlignment(p->getHAlign(), p->getVAlign());
 	//label->setOverflow(bWordBreak ? Label::Overflow::RESIZE_HEIGHT : Label::Overflow::NONE);
@@ -582,17 +583,7 @@ bool XRenderer::renderText(ResFont* p, const std::string& str,
 	label->setPosition(x, y);
 	const auto func = currentRenderMode->getBlendFunc();
 	label->setBlendFunc(func);
-	if (p->getLabelType() == ResFont::LabelType::TTF)
-	{
-		// for TTF
-		for (int i = 0; i < label->getStringLength(); ++i)
-		{
-			auto sp = label->getLetter(i);
-			if (sp)
-				sp->setBlendFunc(func);
-		}
-	}
-	else
+	if (p->getLabelType() != ResFont::LabelType::TTF)
 	{
 		//label->setBlendColor(p->GetBlendColor());//TODO: check
 		label->setOpacity(p->getColor().a);
