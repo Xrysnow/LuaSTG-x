@@ -605,8 +605,12 @@ end
 function string.split(input, delimiter)
     input = tostring(input)
     delimiter = tostring(delimiter)
-    if (delimiter == '') then
-        return false
+    if delimiter == '' then
+        local arr = {}
+        for i = 1, #input do
+            table.insert(arr, string.sub(input, i, i))
+        end
+        return arr
     end
     local pos, arr = 0, {}
     -- for each divider found
