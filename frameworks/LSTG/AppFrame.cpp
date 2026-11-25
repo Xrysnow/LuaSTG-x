@@ -2,7 +2,7 @@
 #include "Global.h"
 #include "../Classes/XProfiler.h"
 #include "../Classes/XLuaModuleRegistry.h"
-#include "../Classes/XInfoware.h"
+#include "platform/SystemInfo.h"
 #include "../Classes/XAudioIO.h"
 #include "cocos/audio/AudioEngine.h"
 #include "input/gamepad/private/PlatformGamepadBackend.h"
@@ -135,12 +135,23 @@ bool AppFrame::applicationDidFinishLaunching()
 	::strftime(tmp, sizeof(tmp), "%H:%M:%S", ::localtime(&t));
 	LINFO("=== Application start at: %s ===", tmp);
 	LINFO("Build date: %s", getBuildDate());
-	LINFO("CPU name: %s", infoware::cpu::model_name().c_str());
-	const auto mem_info = infoware::system::memory();
-	constexpr uint64_t mem_factor = 1024 * 1024;
-	LINFO("Memory: %ldMB / %ldMB", mem_info.physical_available / mem_factor, mem_info.physical_total / mem_factor);
-	const auto os_info = infoware::system::os_info();
-	LINFO("OS name: %s", os_info.full_name.c_str());
+	const auto field = [](const cc::ValueMap& data, const char* key) {
+		const auto it = data.find(key);
+		return it == data.end() ? std::string{} : it->second.asString();
+	};
+	auto cpuName = field(cc::SystemInfo::getCpu(), "model");
+	if (cpuName.empty())
+		cpuName = field(cc::SystemInfo::getComputer(), "socModel");
+	LINFO("CPU/SoC: %s", cpuName.empty() ? "unknown" : cpuName.c_str());
+	const auto memory = cc::SystemInfo::getMemoryUsage();
+	const auto mib = [&](const char* key) {
+		const auto it = memory.find(key);
+		return it == memory.end() ? std::string("unknown") : std::to_string(it->second.asUint64() / 1048576);
+	};
+	LINFO("Memory (available / total MiB): %s / %s", mib("available").c_str(), mib("total").c_str());
+	const auto os = cc::SystemInfo::getOs();
+	const auto name = field(os, "name");
+	LINFO("OS: %s %s", name.empty() ? "unknown" : name.c_str(), field(os, "version").c_str());
 
 	// default FPS is set in lua
 	//Director::getInstance()->setAnimationInterval(1.0 / 60.0f);
