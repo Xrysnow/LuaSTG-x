@@ -97,11 +97,11 @@ SDK 下载入口见 [Live2D 官方页面](https://www.live2d.com/en/download/cub
 | --- | --- | --- |
 | 随源码构建 | OpenSSL、LuaJIT、curl、libpng、libjpeg-turbo、OpenAL、GLFW 等 | 完整的递归子模块，以及编译器、Perl、make 等构建工具 |
 | 平台相关的 FreeType | Linux 使用系统库；其他平台由仓库源码构建 | 仅 Linux 需要 FreeType 2.11+ 开发包 |
-| 仓库预编译库 | FFmpeg、非 iOS 平台的 zlib 等 | 对应平台和架构的文件；保留目录结构及符号链接，无需全局安装 |
+| 仓库预编译库 | FFmpeg 等二进制依赖 | 对应平台和架构的文件；保留目录结构及符号链接，无需全局安装 |
 | 平台 SDK / 系统接口 | Windows SDK、Android SDK/NDK、Apple SDK，Linux 的窗口、图形、音频接口 | 所选平台的 SDK 或系统开发包，见各平台小节 |
 | 单独分发的 SDK | Live2D Cubism Core | 启用 Live2D 时按上一节放置 SDK |
 
-Linux 虽有 PNG、ZLIB 的 CMake 查找调用，但项目已为它们指定仓库内的头文件和库；不需要另行安装 `libpng-dev`、`zlib1g-dev`。iOS 的 zlib 由所选 SDK 提供。
+项目使用仓库内源码编译 libpng 和 zlib，包括 Linux 和 iOS。引擎使用随源码提供的头文件，无需另行安装 `libpng-dev`、`zlib1g-dev`。
 
 OpenSSL 使用仓库固定的源码和构建配置。首次 CMake 配置会准备并编译依赖、执行链接探测，因此配置阶段可能耗时较长。Windows 输出 DLL，其他平台输出静态 PIC 库。工具选择及并行选项见 [OpenSSL 构建说明](../../frameworks/cocos-x/external/openssl/README.md)。
 
@@ -367,7 +367,7 @@ LuaJIT 构建适配会为设备和模拟器设置不同的目标三元组，并�
 
 Live2D 仍需准备完整的 Cubism Core SDK，包括 `Core/lib/ios/` 中设备和模拟器、Debug 和 Release 对应的目录。视频使用 Apple FFmpeg XCFramework 中的对应切片。
 
-iOS 的 zlib 头文件和链接 stub 来自所选 SDK，无需安装独立 zlib。真机和模拟器的库即使同为 arm64，也不能互换。
+iOS 构建使用所选 SDK 将仓库内的 zlib 源码编译成静态库。真机和模拟器即使同为 arm64，也须使用独立的构建目录。
 
 ### arm64 模拟器 Debug
 
@@ -439,6 +439,6 @@ bin/LuaSTG-x/Debug/LuaSTG-x.app
 | Linux 部署报缺少库、RPATH 或 objdump | 安装 binutils、恢复 RPATH 支持，并核对链接依赖；不要跳过失败的依赖扫描 |
 | Apple 报缺少架构、SDK 或部署版本 | 首次配置显式指定 `CMAKE_OSX_ARCHITECTURES`、`CMAKE_OSX_SYSROOT`、`CMAKE_OSX_DEPLOYMENT_TARGET` |
 | Apple FFmpeg Framework 不完整 | 检查 XCFramework、配套头文件及符号链接；保留原文件字节，不手工改写已签名包 |
-| iOS 模拟器链接到真机对象 | 检查 SDK、架构及设备/模拟器依赖切片；zlib 应使用 SDK 链接 stub，Cubism Core 应使用对应的 simulator 目录 |
+| iOS 模拟器链接到真机对象 | 检查 SDK、架构及依赖切片。zlib 应使用 `iphonesimulator` 编译，Cubism Core 应使用对应的 simulator 目录 |
 
 复用已有目录前先检查 `CMakeCache.txt` 中的源码路径、生成器、架构、配置与功能开关。构建故障应从源码配置和工具环境解决，不手改生成的工程或缓存。

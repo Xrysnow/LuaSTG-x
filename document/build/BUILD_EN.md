@@ -97,11 +97,11 @@ Distinguish build tools from target libraries before installing packages. Librar
 | --- | --- | --- |
 | Built from bundled source | OpenSSL, LuaJIT, curl, libpng, libjpeg-turbo, OpenAL, GLFW, and others | Complete recursive submodules and build tools such as the compiler, Perl, and make |
 | Platform-dependent FreeType | System library on Linux; bundled source on other platforms | FreeType 2.11+ development package on Linux only |
-| Bundled prebuilt libraries | FFmpeg, zlib on non-iOS platforms, and others | Files matching the target platform and architecture; preserve directory layouts and symbolic links; no global installation is needed |
+| Bundled prebuilt libraries | FFmpeg and other binary dependencies | Files matching the target platform and architecture; preserve directory layouts and symbolic links; no global installation is needed |
 | Platform SDKs and system interfaces | Windows SDK, Android SDK/NDK, Apple SDKs, Linux windowing, graphics, and audio interfaces | The target platform's SDK or system development packages, as listed below |
 | Separately distributed SDK | Live2D Cubism Core | Place the SDK as described above when enabling Live2D |
 
-Although Linux configuration calls CMake's PNG and ZLIB discovery routines, the project supplies their bundled header and library locations. There is no need to install `libpng-dev` or `zlib1g-dev` separately. On iOS, zlib comes from the selected SDK.
+The project builds libpng and zlib from bundled sources, including on Linux and iOS. The engine build uses these bundled headers and needs no separate `libpng-dev` or `zlib1g-dev` packages.
 
 OpenSSL uses the source and build settings pinned by the repository. Initial CMake configuration prepares and builds dependencies and runs link probes, so this step can take some time. Windows builds DLLs; other platforms build static PIC libraries. See the [OpenSSL build documentation](../../frameworks/cocos-x/external/openssl/README.md) for tool selection and parallel build options.
 
@@ -368,7 +368,7 @@ The LuaJIT adapter sets distinct target triples for devices and simulators and u
 
 Live2D requires the complete Cubism Core SDK, including the device/simulator and Debug/Release directories under `Core/lib/ios/`. Video support uses the matching slice of the Apple FFmpeg XCFramework.
 
-The iOS zlib headers and link stub come from the selected SDK; no separate zlib installation is needed. Device and simulator libraries are not interchangeable, even when both use arm64.
+The iOS build compiles a static zlib archive from bundled sources for the selected SDK. Keep separate build directories for device and simulator even when both use arm64.
 
 ### arm64 simulator Debug
 
@@ -440,6 +440,6 @@ For device installation, append your development team and application identifier
 | Linux deployment reports missing libraries, RPATH, or objdump | Install binutils, enable RPATH support, and check linked dependencies. Do not bypass a failed dependency scan |
 | Apple configuration reports a missing architecture, SDK, or deployment version | Explicitly set `CMAKE_OSX_ARCHITECTURES`, `CMAKE_OSX_SYSROOT`, and `CMAKE_OSX_DEPLOYMENT_TARGET` during initial configuration |
 | The Apple FFmpeg framework is incomplete | Check the XCFramework, accompanying headers, and symbolic links. Preserve the original files rather than manually rewriting signed bundles |
-| An iOS simulator build links device objects | Check the SDK, architecture, and device/simulator dependency slices. zlib should use the SDK link stub, and Cubism Core should use the matching simulator directory |
+| An iOS simulator build links device objects | Check the SDK, architecture, and dependency slices. Build zlib for `iphonesimulator` and use the matching Cubism Core simulator directory |
 
 Before reusing a build directory, check its `CMakeCache.txt` for the source path, generator, architecture, configuration, and feature settings. Fix build issues in source configuration or the tool environment rather than manually editing generated projects or caches.
