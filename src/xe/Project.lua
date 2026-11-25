@@ -6,11 +6,37 @@ local err = require('xe.logger').getLogger('New Project', 'error')
 
 local curProjFile
 local curProjDir
+local curProjSearchPath
 local generation = 0
 local auto_save_counter = 1
 
 local function get_tree()
     return require('xe.main').getTree()
+end
+
+local function physicalAdapter(fu)
+    for _, adapter in ipairs(fu:getReadAdapters()) do
+        if adapter.name == 'physical' then
+            return adapter
+        end
+    end
+end
+
+local function removeProjectSearchPath(fu)
+    if not curProjSearchPath then
+        return
+    end
+    local adapter = physicalAdapter(fu)
+    if adapter and adapter.id == curProjSearchPath.id then
+        for i, path in ipairs(adapter.roots) do
+            if path == curProjSearchPath.path then
+                table.remove(adapter.roots, i)
+                fu:setAdapterSearchPaths(adapter.id, adapter.roots)
+                break
+            end
+        end
+    end
+    curProjSearchPath = nil
 end
 
 function M.getFile()
@@ -81,17 +107,20 @@ function M._loadFromFile(path)
     M._setCurFile(path)
 
     local fu = cc.FileUtils:getInstance()
-    local find
-    local folder = M.getDir()
-    folder = string.path_uniform(folder)
-    for i, v in ipairs(fu:getSearchPaths()) do
-        if v == folder or v == folder .. '/' then
-            find = true
-            break
+    removeProjectSearchPath(fu)
+    local adapter = physicalAdapter(fu)
+    if adapter then
+        local folder = string.path_uniform(M.getDir())
+        local exists = false
+        for _, root in ipairs(adapter.roots) do
+            if root == folder or root == folder .. '/' then
+                exists = true
+                break
+            end
         end
-    end
-    if not find then
-        fu:addSearchPath(folder)
+        if not exists and fu:addAdapterSearchPath(adapter.id, folder) then
+            curProjSearchPath = { id = adapter.id, path = folder }
+        end
     end
 
     local tree = get_tree()
@@ -149,23 +178,11 @@ function M.needSave()
 end
 
 function M._close(onFinish)
-    local dir = M.getDir()
     M._setCurFile(nil)
     local tree = get_tree()
     tree:reset()
     logger.clear()
-    -- remove search path
-    local fu = cc.FileUtils:getInstance()
-    if dir then
-        local paths = fu:getSearchPaths()
-        local new_paths = {}
-        for i, v in ipairs(paths) do
-            if v ~= dir and v ~= dir .. '/' then
-                table.insert(new_paths, v)
-            end
-        end
-        fu:setSearchPaths(new_paths)
-    end
+    removeProjectSearchPath(cc.FileUtils:getInstance())
     if onFinish then
         onFinish()
     end
@@ -266,40 +283,36 @@ function M.pack()
 
     local zip_path
     if setting.xe.pack_to_engine_path then
-        zip_path = fu:fullPathForFilename('mod/')
+        zip_path = fu:fullPathForDirectory('mod/')
+        if zip_path == '' or zip_path:sub(1, 7) == 'assets/' then
+            zip_path = fu:getWritablePath() .. 'mod/'
+            if not fu:isDirectoryExist(zip_path) and not fu:createDirectory(zip_path) then
+                logger.log(('failed to create output directory %q'):format(zip_path), 'error')
+                return false
+            end
+        end
     else
         zip_path = M.getDir() .. '/'
     end
     local name = string.filename(curProjFile)
     zip_path = zip_path .. name .. '.zip'
 
-    if fu:isFileExist(zip_path) then
-        local ok, msg = os.remove(zip_path)
-        if not ok then
-            logger.log(('failed to delete file: %q'):format(msg), 'error')
-            return false
-        end
-    end
-
-    local zip = lstg.ZipArchive:create(zip_path)
+    local zip, openError = cc.ZipWriter:begin(zip_path, cc.ZipWriter.WriteIntent.Replace)
     if not zip then
-        logger.log(('failed to create zip file %q'):format(zip_path), 'error')
+        logger.log(('failed to open zip file %q (error %d)'):format(zip_path, openError.code), 'error')
         return false
     end
-    if not zip:open(lstg.ZipArchive.OpenMode.New) then
-        zip:unlink()
-        logger.log(('failed to open zip file %q'):format(zip_path), 'error')
-        return false
-    end
-    for i, v in ipairs(entries) do
-        if not zip:addFile(v[1], v[2]) then
-            zip:unlink()
-            logger.log(('failed add entry %q to zip file'):format(v[1]), 'error')
+    for _, entry in ipairs(entries) do
+        local ok, addError = zip:addFile(entry[1], entry[2])
+        if not ok then
+            zip:discard()
+            logger.log(('failed to add entry %q (error %d)'):format(entry[1], addError.code), 'error')
             return false
         end
     end
-    if zip:close() ~= lstg.ZipArchive.ErrorCode.OK then
-        logger.log(('failed to close zip file %q: %s'):format(zip_path, zip:getLastError()), 'error')
+    local ok, commitError = zip:commit()
+    if not ok then
+        logger.log(('failed to commit zip file %q (error %d)'):format(zip_path, commitError.code), 'error')
         zip:discard()
         return false
     end

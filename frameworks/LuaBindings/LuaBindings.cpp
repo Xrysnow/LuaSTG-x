@@ -23,6 +23,8 @@ LUA_REGISTER_MODULE(x_Random, luaReg_Random);
 LUA_REGISTER_MODULE(x_Resource, luaReg_Resource);
 #include "lua_ResourceMgr_auto.hpp"
 LUA_REGISTER_MODULE(x_ResourceMgr, luaReg_ResourceMgr);
+#include "ResourceMgr.h"
+#include "scripting/lua-bindings/manual/base/cclua_file_read.hpp"
 #include "lua_StopWatch_auto.hpp"
 LUA_REGISTER_MODULE(x_StopWatch, luaReg_StopWatch);
 #include "lua_TextInput_manual.hpp"
@@ -32,8 +34,6 @@ LUA_REGISTER_MODULE(x_TextInput, registerLuaTextInput);
 LUA_REGISTER_MODULE(x_Triangles, luaReg_Triangles);
 #include "lua_WindowHelper_auto.hpp"
 LUA_REGISTER_MODULE(x_WindowHelper, luaReg_WindowHelper);
-#include "lua_ZipArchive_auto.hpp"
-LUA_REGISTER_MODULE(x_ZipArchive, luaReg_ZipArchive);
 
 #ifdef CC_USE_FAIRYGUI
 	#include "lua_cc_fairygui_auto.hpp"
@@ -73,6 +73,86 @@ LUA_REGISTER_MODULE(imgui, luaopen_imgui);
 #endif
 
 #include "Util/UtilLua.h"
+
+namespace
+{
+	template<class T>
+	T& resourceBindingSelf(lua_State* L, const char* type)
+	{
+		if (!lua::isusertype(L, 1, type))
+			luaL_argerror(L, 1, type);
+		auto self = static_cast<T*>(tolua_tousertype(L, 1, nullptr));
+		if (!self)
+			luaL_argerror(L, 1, type);
+		return *self;
+	}
+
+	int resourcePackForHit(lua_State* L)
+	{
+		auto& manager = resourceBindingSelf<lstg::ResourceMgr>(L, "lstg.ResourceMgr");
+		lua::native_to_luaval(L, manager.getResourcePackForHit(cc::luaio::checkFileHit(L, 2)));
+		return 1;
+	}
+
+	int cacheFileHit(lua_State* L)
+	{
+		auto& manager = resourceBindingSelf<lstg::ResourceMgr>(L, "lstg.ResourceMgr");
+		lua_pushboolean(L, manager.cacheFileHit(cc::luaio::checkFileHit(L, 2)));
+		return 1;
+	}
+
+	int cacheFileHitAsync(lua_State* L)
+	{
+		auto& manager = resourceBindingSelf<lstg::ResourceMgr>(L, "lstg.ResourceMgr");
+		const auto& hit = lua_isnil(L, 2) ? cc::FileHit{} : cc::luaio::checkFileHit(L, 2);
+		std::function<void()> callback;
+		if (!lua_isnoneornil(L, 3) &&
+			!lua::luaval_to_owned_callback(L, 3, &callback, "lstg.ResourceMgr:cacheFileHitAsync"))
+			return luaL_argerror(L, 3, "callback expected");
+		manager.cacheFileHitAsync(hit, callback);
+		return 0;
+	}
+
+	int removeFileHitCache(lua_State* L)
+	{
+		auto& manager = resourceBindingSelf<lstg::ResourceMgr>(L, "lstg.ResourceMgr");
+		lua_pushboolean(L, manager.removeFileHitCache(cc::luaio::checkFileHit(L, 2)));
+		return 1;
+	}
+
+	template<auto Method>
+	int packFileSize(lua_State* L)
+	{
+		auto& pack = resourceBindingSelf<lstg::ResourcePack>(L, "lstg.ResourcePack");
+		const std::string path(cc::luaio::checkString(L, 2));
+		cc::luaio::pushExact(L, (pack.*Method)(path));
+		return 1;
+	}
+
+	int registerResourceFileBindings(lua_State* L)
+	{
+		luaL_getmetatable(L, "lstg.ResourceMgr");
+		const luaL_Reg methods[] = {
+			{"getResourcePackForHit", resourcePackForHit}, {"cacheFileHit", cacheFileHit},
+			{"cacheFileHitAsync", cacheFileHitAsync}, {"removeFileHitCache", removeFileHitCache},
+			{nullptr, nullptr}
+		};
+		luaL_register(L, nullptr, methods);
+		lua_pop(L, 1);
+		luaL_getmetatable(L, "lstg.ResourcePack");
+		const luaL_Reg packMethods[] = {
+			{"getCompressedSize", packFileSize<&lstg::ResourcePack::getCompressedSize>},
+			{"getUncompressedSize", packFileSize<&lstg::ResourcePack::getUncompressedSize>},
+			{nullptr, nullptr}
+		};
+		luaL_register(L, nullptr, packMethods);
+		lua_pop(L, 1);
+		return 0;
+	}
+}
+
+static CC_UNUSED auto& resourceFileModule = LuaModuleRegistry::addModule(
+	"x_resource_file_reads", registerResourceFileBindings, 1);
 #include "Symbol/GameObjectSymbol.h"
 
 // Block::executeLua is a stack-producing helper, so its Lua adapter owns the

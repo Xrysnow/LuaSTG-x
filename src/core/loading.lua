@@ -1,5 +1,16 @@
 local FU = cc.FileUtils:getInstance()
 
+local function physicalFile(path)
+    for _, adapter in ipairs(FU:getReadAdapters()) do
+        if adapter.kind == 'physical' then
+            local hit = FU:findFileIn(adapter.id, path)
+            if hit and hit.nativePath then
+                return hit.nativePath
+            end
+        end
+    end
+end
+
 ---
 function lstg.loadData()
     local wp = plus.getWritablePath()
@@ -9,7 +20,7 @@ function lstg.loadData()
         local find = false
         for _, dir in ipairs(possible_dir) do
             if FU:isDirectoryExist(dir) then
-                local fp = FU:fullPathForFilename(dir)
+                local fp = FU:fullPathForDirectory(dir)
                 if fp ~= '' then
                     FU:addSearchPath(fp)
                     SystemLog(string.format(i18n "load %s from local path %q", v, fp))
@@ -20,13 +31,11 @@ function lstg.loadData()
         end
         if not find then
             for _, zip in ipairs(possible_zip) do
-                if plus.FileExists(zip) then
-                    local fp = FU:fullPathForFilename(zip)
-                    if fp ~= '' then
-                        SystemLog(string.format(i18n "load %s from %q", v, fp))
-                        LoadPack(fp)
-                        find = true
-                    end
+                local fp = physicalFile(zip)
+                if fp then
+                    SystemLog(string.format(i18n "load %s from %q", v, fp))
+                    LoadPack(fp)
+                    find = true
                     break
                 end
             end
@@ -52,8 +61,10 @@ function lstg.loadMod()
     if plus.os == 'android' and setting.mod_info and setting.mod_info.bundled then
         p = ''
     end
-    local path = (p == '' and 'mod/' or p .. '/mod/') .. setting.mod
-    path = path:gsub('//', '/')
+    if p ~= '' and p:sub(-1) ~= '/' and p:sub(-1) ~= '\\' then
+        p = p .. '/'
+    end
+    local path = p .. 'mod/' .. setting.mod
     local dir, zip = true, true
     if setting.mod_info then
         dir = setting.mod_info.isDirectory
@@ -62,7 +73,7 @@ function lstg.loadMod()
     if dir and plus.FileExists(path .. '/root.lua') then
         FU:addSearchPath(path)
         SystemLog(string.format(i18n 'load mod %q from local path', setting.mod))
-    elseif zip and plus.FileExists(path .. '.zip') then
+    elseif zip and physicalFile(path .. '.zip') then
         SystemLog(string.format(i18n 'load mod %q from zip file', setting.mod))
         LoadPack(path .. '.zip')
     else
@@ -88,7 +99,7 @@ function lstg.enumPlugins()
         SystemLog('no direcory for plugin')
         return {}
     end
-    local path = FU:fullPathForFilename(p)
+    local path = FU:fullPathForDirectory(p)
     FU:addSearchPath(path)
     SystemLog(string.format('enum plugins in %q', path))
     local ret = {}
@@ -120,14 +131,14 @@ function lstg.loadPlugins()
     for i, v in ipairs(files) do
         local name = v.name
         if v.isDirectory then
-            local fp = FU:fullPathForFilename(string.format('plugin/%s/__init__.lua', name))
-            if fp ~= '' then
+            local fp = string.format('plugin/%s/__init__.lua', name)
+            if FU:isFileExist(fp) then
                 SystemLog(string.format(i18n 'load plugin %q from local path', name))
                 Include(fp)
             end
         else
-            local fp = FU:fullPathForFilename('plugin/' .. name .. '.zip')
-            if fp ~= '' then
+            local fp = physicalFile('plugin/' .. name .. '.zip')
+            if fp then
                 SystemLog(string.format(i18n 'load plugin %q from zip file', name))
                 LoadPack(fp)
                 Include(name .. '/__init__.lua')

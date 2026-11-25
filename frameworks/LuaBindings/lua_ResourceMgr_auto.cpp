@@ -39,12 +39,6 @@ int lua_lstg_ResourcePack_getCRC32(lua_State* lua_S)
 	LUA_TRY_INVOKE_R(1, &lstg::ResourcePack::getCRC32);
 	LUA_INVOKE_FOOTER("1");
 }
-int lua_lstg_ResourcePack_getCompressedSize(lua_State* lua_S)
-{
-	LUA_INVOKE_HEADER("lstg.ResourcePack", "lstg.ResourcePack:getCompressedSize");
-	LUA_TRY_INVOKE_R(1, &lstg::ResourcePack::getCompressedSize);
-	LUA_INVOKE_FOOTER("1");
-}
 int lua_lstg_ResourcePack_getFileCacheSize(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ResourcePack", "lstg.ResourcePack:getFileCacheSize");
@@ -73,12 +67,6 @@ int lua_lstg_ResourcePack_getStringFromFile(lua_State* lua_S)
 {
 	LUA_INVOKE_HEADER("lstg.ResourcePack", "lstg.ResourcePack:getStringFromFile");
 	LUA_TRY_INVOKE_R(1, &lstg::ResourcePack::getStringFromFile);
-	LUA_INVOKE_FOOTER("1");
-}
-int lua_lstg_ResourcePack_getUncompressedSize(lua_State* lua_S)
-{
-	LUA_INVOKE_HEADER("lstg.ResourcePack", "lstg.ResourcePack:getUncompressedSize");
-	LUA_TRY_INVOKE_R(1, &lstg::ResourcePack::getUncompressedSize);
 	LUA_INVOKE_FOOTER("1");
 }
 int lua_lstg_ResourcePack_isFileCached(lua_State* lua_S)
@@ -141,13 +129,11 @@ int luaReg_ResourceMgr_lstgResourcePack(lua_State* lua_S)
 	LUA_METHOD("cacheFileAsync", lua_lstg_ResourcePack_cacheFileAsync);
 	LUA_METHOD("clearFileCache", lua_lstg_ResourcePack_clearFileCache);
 	LUA_METHOD("getCRC32", lua_lstg_ResourcePack_getCRC32);
-	LUA_METHOD("getCompressedSize", lua_lstg_ResourcePack_getCompressedSize);
 	LUA_METHOD("getFileCacheSize", lua_lstg_ResourcePack_getFileCacheSize);
 	LUA_METHOD("getFileCount", lua_lstg_ResourcePack_getFileCount);
 	LUA_METHOD("getPath", lua_lstg_ResourcePack_getPath);
 	LUA_METHOD("getPriority", lua_lstg_ResourcePack_getPriority);
 	LUA_METHOD("getStringFromFile", lua_lstg_ResourcePack_getStringFromFile);
-	LUA_METHOD("getUncompressedSize", lua_lstg_ResourcePack_getUncompressedSize);
 	LUA_METHOD("isFileCached", lua_lstg_ResourcePack_isFileCached);
 	LUA_METHOD("isFileOrDirectoryExist", lua_lstg_ResourcePack_isFileOrDirectoryExist);
 	LUA_METHOD("listCachedFiles", lua_lstg_ResourcePack_listCachedFiles);

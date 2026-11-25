@@ -28,7 +28,6 @@ set(GAME_HEADER
 	${LSTGX_SRC_ROOT}/Classes/XAudioIO.h
 	${LSTGX_SRC_ROOT}/Classes/XBinaryHelper.h
 	${LSTGX_SRC_ROOT}/Classes/XBuffer.h
-	${LSTGX_SRC_ROOT}/Classes/XFileUtils.h
 	${LSTGX_SRC_ROOT}/Classes/XGifRecoder.h
 	${LSTGX_SRC_ROOT}/Classes/XInfoware.h
 	${LSTGX_SRC_ROOT}/Classes/XLabel.h
@@ -41,7 +40,6 @@ set(GAME_HEADER
 	${LSTGX_SRC_ROOT}/Classes/XThreadPool.hpp
 	${LSTGX_SRC_ROOT}/Classes/XTriangles.h
 	${LSTGX_SRC_ROOT}/Classes/XTrianglesCommand.h
-	${LSTGX_SRC_ROOT}/Classes/XZipArchive.h
 	${LSTGX_SRC_ROOT}/LSTG/AppFrame.h
 	${LSTGX_SRC_ROOT}/LSTG/CollisionDetect.h
 	${LSTGX_SRC_ROOT}/LSTG/Global.h
@@ -116,7 +114,6 @@ set(GAME_HEADER
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_TextInput_manual.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Triangles_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_WindowHelper_auto.hpp
-	${LSTGX_SRC_ROOT}/LuaBindings/lua_ZipArchive_auto.hpp
 	${LSTGX_SRC_ROOT}/LuaBindings/LuaBindings.h
 )
 set(GAME_SOURCE
@@ -128,7 +125,6 @@ set(GAME_SOURCE
 	${LSTGX_SRC_ROOT}/Classes/XAudioIO.cpp
 	${LSTGX_SRC_ROOT}/Classes/XBinaryHelper.cpp
 	${LSTGX_SRC_ROOT}/Classes/XBuffer.cpp
-	${LSTGX_SRC_ROOT}/Classes/XFileUtils.cpp
 	${LSTGX_SRC_ROOT}/Classes/XGifRecoder.cpp
 	${LSTGX_SRC_ROOT}/Classes/XInfoware.cpp
 	${LSTGX_SRC_ROOT}/Classes/XLabel.cpp
@@ -140,7 +136,6 @@ set(GAME_SOURCE
 	${LSTGX_SRC_ROOT}/Classes/XStopWatch.cpp
 	${LSTGX_SRC_ROOT}/Classes/XTriangles.cpp
 	${LSTGX_SRC_ROOT}/Classes/XTrianglesCommand.cpp
-	${LSTGX_SRC_ROOT}/Classes/XZipArchive.cpp
 	${LSTGX_SRC_ROOT}/LSTG/AppFrame.cpp
 	${LSTGX_SRC_ROOT}/LSTG/CollisionDetect.cpp
 	${LSTGX_SRC_ROOT}/LSTG/InputManager.cpp
@@ -213,7 +208,6 @@ set(GAME_SOURCE
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_TextInput_manual.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_Triangles_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/lua_WindowHelper_auto.cpp
-	${LSTGX_SRC_ROOT}/LuaBindings/lua_ZipArchive_auto.cpp
 	${LSTGX_SRC_ROOT}/LuaBindings/LuaBindings.cpp
 )
 

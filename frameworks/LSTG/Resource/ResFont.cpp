@@ -1,7 +1,7 @@
 ﻿#include "ResFont.h"
 #include "Global.h"
 #include "Util/Utility.h"
-#include "XFileUtils.h"
+#include "platform/FileUtils.h"
 #include "AppFrame.h"
 #include "LogSystem.h"
 #include "Renderer.h"
@@ -208,7 +208,9 @@ cc::IntrusivePtr<Label> ResFont::createLabel()
 			return nullptr;
 		break;
 	case LabelType::BMFONT:
-		ret = Label::createWithBMFont(config.fontFilePath, "");
+		ret = cc::IntrusivePtr{new (nothrow) Label()};
+		if (!ret || !ret->copyBMFontFrom(*label))
+			return nullptr;
 		break;
 	case LabelType::SYSTEM:
 		ret = Label::createWithSystemFont("", config.fontFilePath, config.fontSize);
@@ -305,34 +307,24 @@ ResFont::~ResFont()
 
 cc::IntrusivePtr<ResFont> ResFont::createHGE(const std::string& name, const std::string& path)
 {
-	if (!FileUtils::getInstance()->isFileExist(path))
-		return nullptr;
 	try
 	{
-		const string fData = LRES.getStringFromFile(path);
-		auto pos = path.find_last_of('/');
-		if (pos == string::npos)
-			pos = path.find_last_of('\\');
-		if (pos == string::npos)
+		const auto fontPath = ReplacePathSep(path);
+		const auto fu = FileUtils::getInstance();
+		const auto source = fu->findFile(fontPath);
+		string data;
+		if (!source || fu->getContents(source.value, &data) != FileUtils::Status::OK)
 			return nullptr;
-		string fpath = path.substr(0, pos);
 		string tex_name;
-		auto bmf = HGE2BMF(fData, tex_name);
-		if (bmf.empty())
+		const auto bmf = HGE2BMF(data, tex_name);
+		cc::IntrusivePtr lb{new (nothrow) XLabel()};
+		if (bmf.empty() || !lb || !lb->setBMFontData(source.value, bmf))
 			return nullptr;
-		// convert to '/'
-		//auto tpath  = ReplacePathSep(fpath + "\\" + tex_name);
-		const auto font_path = ReplacePathSep(path);
-		XFileUtils::SetFileStringToReplace(font_path, bmf);
-		auto lb = XLabel::createWithBMFont(font_path, "");// very slow here
-		if (!lb)
-			return nullptr;
-		// construct
 		cc::IntrusivePtr res{new (nothrow) ResFont(name, std::move(lb), LabelType::BMFONT)};
 		if (!res)
 			return nullptr;
-		res->getTTFConfig().fontFilePath = font_path;
-		res->resPath = font_path;
+		res->getTTFConfig().fontFilePath = fontPath;
+		res->resPath = fontPath;
 		return Resource::finishConstruction(std::move(res));
 	}
 	catch (...){}

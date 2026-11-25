@@ -55,7 +55,7 @@ function M:open(dir)
     end
     self:close()
     -- dir should be abs path
-    dir = fu:fullPathForFilename(dir)
+    dir = fu:fullPathForDirectory(dir)
     assert(fu:isDirectoryExist(dir), ('directory %s dose not exist'):format(dir))
     self._dir = dir
     self:_update()

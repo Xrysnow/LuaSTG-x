@@ -2,7 +2,7 @@
 #include "ResBase.h"
 #include "../ResourceFileCache.h"
 #include "cocos/audio/AudioSource.h"
-#include "io/Stream.h"
+#include "io/core/Stream.h"
 
 namespace lstg
 {

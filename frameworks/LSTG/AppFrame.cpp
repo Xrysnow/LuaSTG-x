@@ -2,7 +2,6 @@
 #include "Global.h"
 #include "../Classes/XProfiler.h"
 #include "../Classes/XLuaModuleRegistry.h"
-#include "../Classes/XFileUtils.h"
 #include "../Classes/XInfoware.h"
 #include "../Classes/XAudioIO.h"
 #include "cocos/audio/AudioEngine.h"
@@ -103,9 +102,6 @@ static int register_all_packages()
 }
 bool AppFrame::applicationDidFinishLaunching()
 {
-#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-	XFileUtils::start();
-#endif
 	// Install before any launch script can call the audio file factories.
 	installAudioFileOpener();
 
@@ -257,9 +253,6 @@ AppFrame::AppFrame()
 	// LuaEngine
 	auto engine = LuaEngine::getInstance();
 	ScriptEngineManager::getInstance()->setScriptEngine(engine);
-#if CC_TARGET_PLATFORM != CC_PLATFORM_ANDROID
-	XFileUtils::start();
-#endif
 }
 
 AppFrame::~AppFrame()

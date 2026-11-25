@@ -1,14 +1,12 @@
 ﻿#pragma once
 #include "Global.h"
-#include "unzip/unzip.h"
 #include "Resource/GameResources.h"
 #include "../Classes/XBuffer.h"
 #include "ResourceFileCache.h"
-#include "io/Stream.h"
+#include "io/core/Stream.h"
+#include "platform/FileReadAdapter.h"
 
 #define LRES (*lstg::ResourceMgr::getInstance())
-
-class XFileUtils;
 
 namespace lstg
 {
@@ -22,6 +20,7 @@ namespace lstg
 		// Workers retain only State, never this Ref or a Buffer/autorelease object.
 		struct State;
 		std::shared_ptr<State> state;
+		cc::AdapterId adapterId = 0;
 		std::unordered_map<std::string, std::pair<FileBytes, cc::IntrusivePtr<Buffer>>> bufferViews;
 		friend class ResourceMgr;
 
@@ -35,8 +34,8 @@ namespace lstg
 		bool isFileOrDirectoryExist(const std::string& fpath) const;
 		//
 		uint32_t getCRC32(const std::string& fpath);
-		uint32_t getCompressedSize(const std::string& fpath);
-		uint32_t getUncompressedSize(const std::string& fpath);
+		uint64_t getCompressedSize(const std::string& fpath);
+		uint64_t getUncompressedSize(const std::string& fpath);
 		//
 		// Legacy Ref/Buffer and pack registry APIs are main-thread only.
 		Buffer* loadAndCache(const std::string& fpath);
@@ -69,21 +68,18 @@ namespace lstg
 	};
 
 	/**
-	 * ResourceMgr is a singleton class that manages ResourcePacks and cache local files.
-	 * Like ResourcePack, you have to manully release caches of local files.
-	 * It is connected to FileUtils (by XFileUtils class) so that cocos engine can load files from here.
+	 * ResourceMgr mounts ResourcePacks in FileUtils and caches file snapshots.
 	 */
 	class ResourceMgr
 	{
 		cc::Map<std::string, ResourcePack*> packs;
-		mutable std::mutex mut;
+		std::unordered_map<std::string, std::string> packAliases;
+		uint64_t nextPackPriority = 0;
 		ResourceFileCache localFiles;
 		// Buffer views are legacy main-thread API objects, separate from worker data.
 		std::unordered_map<std::string, std::pair<FileBytes, cc::IntrusivePtr<Buffer>>> localBuffers;
-		std::vector<std::shared_ptr<ResourcePack::State>> getPackStates() const;
-		FileBytes getLocalFileData(const std::string& fpath);
-		std::vector<std::string> listPackFiles(const std::string& directory) const;
-		friend class ::XFileUtils;
+		cc::io::Result<FileBytes> readFileHit(const cc::FileHit& hit);
+		std::string resolvePackAlias(const std::string& path) const;
 
 		ResourceMgr();
 		~ResourceMgr();
@@ -114,6 +110,7 @@ namespace lstg
 		ResourcePack* getResourcePack(const std::string& packPath);
 		/** Gives a vector of all ResourcePacks in priority order (higher in front). */
 		std::vector<ResourcePack*> getResourcePacks();
+		ResourcePack* getResourcePackForHit(const cc::FileHit& hit);
 
 		//
 
@@ -124,6 +121,9 @@ namespace lstg
 		Buffer* getBufferFromFile(const std::string& filePath);
 		// C++ readers must hold this snapshot through consumption of its bytes.
 		FileBytes getFileData(const std::string& filePath);
+		bool cacheFileHit(const cc::FileHit& hit);
+		void cacheFileHitAsync(const cc::FileHit& hit, const std::function<void()>& callback);
+		bool removeFileHitCache(const cc::FileHit& hit);
 		// Each call opens an independent read-only cursor over a shared snapshot.
 		// The stream keeps its bytes alive across cache eviction and pack unloading.
 		cc::io::Result<cc::io::StreamPtr> openReadStream(const std::string& filePath);

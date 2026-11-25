@@ -75,11 +75,6 @@ block(SCOPE_FOR VARIABLES PROPAGATE EXTERNAL_LIBS)
 	add_subdirectory(${LSTGX_EXT_ROOT}/LuaExtensions/lua53)
 	list(APPEND EXTERNAL_LIBS ext_lua53)
 
-	# libzippp
-
-	add_subdirectory(${LSTGX_EXT_ROOT}/libzippp)
-	list(APPEND EXTERNAL_LIBS ext_libzippp)
-
 	# Yuescript
 
 	if(NOT LSTGX_NO_YUESCRIPT)

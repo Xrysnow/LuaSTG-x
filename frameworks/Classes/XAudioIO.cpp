@@ -1,6 +1,6 @@
 #include "XAudioIO.h"
 #include "audio/AudioSoundData.h"
-#include "io/MemoryStream.h"
+#include "io/core/MemoryStream.h"
 #include <new>
 #include <stdexcept>
 

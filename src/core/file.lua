@@ -9,9 +9,7 @@ local LRES = lstg.ResourceMgr:getInstance()
 ---
 ---@~chinese >   后加载的资源包有较高的查找优先级。这意味着可以通过该机制加载资源包来覆盖基础资源包中的文件。
 ---
----@~chinese >   一旦zip文件被打开，将不能被访问。
----
----@~chinese >   加载文件时将按照优先级依次搜索资源包，若资源包中不含文件则从当前目录加载。
+---@~chinese >   文件查找按 FileUtils 中配置的适配器优先级进行。
 ---
 ---@~english Load zip pack at `path` with an optional password. Will throw an error if failed.
 ---
@@ -19,24 +17,16 @@ local LRES = lstg.ResourceMgr:getInstance()
 ---
 ---@~english >   Zip pack loaded later will have higher priority. So you can override files in previous packs.
 ---
----@~english >   Zip file will be occupied after loaded.
----
----@~english >   Files required by engine will be searched in packs at first, then local path.
+---@~english >   Files are looked up in the configured FileUtils adapter order.
 ---
 ---@param path string
 ---@param password string @optional
 ---@return lstg.ResourcePack
 function LoadPack(path, password)
-    path = FU:fullPathForFilename(path)
     local pack = LRES:loadResourcePack(path, password or '')
     if not pack then
         error("failed to load resource pack at " .. path)
     end
-    --local lst = pack:listFiles()
-    --Print('---------------')
-    --for i, v in ipairs(lst) do
-    --    Print(v)
-    --end
     return pack
 end
 
@@ -45,7 +35,6 @@ end
 ---@~english Unload zip pack loaded at `path`. Will NOT throw an error if failed.
 ---
 function UnloadPack(path)
-    path = FU:fullPathForFilename(path)
     if not LRES:unloadResourcePack(path) then
         Print("failed to unload resource pack " .. path)
     end
@@ -56,7 +45,6 @@ end
 ---@~english Extract files in pack to local path. Will throw an error if failed.
 ---
 function ExtractRes(path, target)
-    path = FU:fullPathForFilename(path)
     if not LRES:extractFile(path, target) then
         error("failed to extract resource pack " .. path)
     end
@@ -66,78 +54,49 @@ end
 
 ---FindResourcePackForPath
 ---@param path string
----@return lstg.ResourcePack
+---@return lstg.ResourcePack|nil
 function FindResourcePackForPath(path)
-    local packs = LRES:getResourcePacks()
-    for _, v in ipairs(packs) do
-        if v:isFileOrDirectoryExist(path) then
-            return v
+    for _, hit in ipairs(FU:findAllFiles(path) or {}) do
+        local pack = LRES:getResourcePackForHit(hit)
+        if pack then
+            return pack
         end
     end
 end
 
----@return boolean,lstg.ResourcePack
+---@return boolean,lstg.ResourcePack|nil
 function CacheFile(path)
-    local packs = LRES:getResourcePacks()
-    for _, v in ipairs(packs) do
-        if v:cacheFile(path) then
-            --Print(string.format('cache file %q in pack %q',path,v:getPath()))
-            return true, v
-        end
+    local hit = FU:findFile(path)
+    if hit and LRES:cacheFileHit(hit) then
+        return true, LRES:getResourcePackForHit(hit)
     end
-    path = FU:fullPathForFilename(path)
-    --Print(string.format('cache file %q from local',path))
-    return LRES:cacheLocalFile(path)
+    return false
 end
 
----@return lstg.ResourcePack
+---@return lstg.ResourcePack|nil
 function CacheFileAsync(path, callback)
-    local packs = LRES:getResourcePacks()
-    callback = callback or function()
-    end
-    for _, v in ipairs(packs) do
-        if v:isFileOrDirectoryExist(path) then
-            v:cacheFileAsync(path, callback)
-            return v
-        end
-    end
-    LRES:cacheLocalFileAsync(path, callback)
+    local hit = FU:findFile(path)
+    LRES:cacheFileHitAsync(hit, callback)
+    return hit and LRES:getResourcePackForHit(hit)
 end
 
 function FileTaskWrapper(path, autoRelease, task)
-    local ok, pack = CacheFile(path)
+    local hit = FU:findFile(path)
+    local ok = hit and LRES:cacheFileHit(hit)
     local ret = { task() }
     if autoRelease and ok then
-        if pack then
-            pack:removeFileCache(path)
-        else
-            LRES:removeLocalFileCache(path)
-        end
+        LRES:removeFileHitCache(hit)
     end
     return unpack(ret)
 end
 
 function FileTaskAsyncWrapper(path, autoRelease, task)
-    local pack = FindResourcePackForPath(path)
-    if pack then
-        local pack_path = pack:getPath()
-        pack:cacheFileAsync(path, function()
-            task()
-            if autoRelease then
-                -- pack may be unloaded
-                local pack_ = LRES:getResourcePack(pack_path)
-                if pack_ then
-                    pack_:removeFileCache(path)
-                end
-            end
-        end)
-    else
-        LRES:cacheLocalFileAsync(path, function()
-            task()
-            if autoRelease then
-                LRES:removeLocalFileCache(path)
-            end
-        end)
-    end
+    local hit = FU:findFile(path)
+    LRES:cacheFileHitAsync(hit, function()
+        task()
+        if autoRelease and hit then
+            LRES:removeFileHitCache(hit)
+        end
+    end)
 end
 

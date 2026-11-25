@@ -88,7 +88,7 @@ for i, v in ipairs(list) do
         assert(s ~= '', v)
         local m = mbg.Parse(s)
         local str = mbg.Serialize(m)
-        local fp = fu:fullPathForFilename('Example/')
+        local fp = fu:fullPathForDirectory('Example/')
         local path = fp .. string.filename(v) .. '.lua'
         print(path)
         fu:writeStringToFile(str, path)

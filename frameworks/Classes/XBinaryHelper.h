@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "io/Stream.h"
+#include "io/core/Stream.h"
 #include <string>
 
 namespace lstg

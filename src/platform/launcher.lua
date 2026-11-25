@@ -304,12 +304,9 @@ function M:_reload()
     local replacement
     package.loaded[name] = nil
     local ok, err = pcall(function()
-        -- XFileUtils caches script bytes separately from Lua's module cache.
-        local path = debug.getinfo(M._reload, 'S').source:match('^@(.+)$')
-        if path then
-            local resources = lstg.ResourceMgr:getInstance()
-            resources:removeLocalFileCache(path)
-            for _, pack in ipairs(resources:getResourcePacks()) do pack:removeFileCache(path) end
+        local hit = cc.FileUtils:getInstance():findFile('platform/launcher.lua')
+        if hit then
+            lstg.ResourceMgr:getInstance():removeFileHitCache(hit)
         end
         local launcher = require(name)
         -- Keep the shared layer and font atlas across reloads.

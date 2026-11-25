@@ -55,7 +55,7 @@ function plus.EnumFiles(path)
         SystemLog(string.format(i18n 'path %q dose not exist', path))
         return {}
     end
-    local pp = FU:fullPathForFilename(path)
+    local pp = FU:fullPathForDirectory(path)
     assert(pp ~= '', 'can not find ' .. path)
     local files = FU:listFiles(pp)
     local ret = {}

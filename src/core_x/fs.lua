@@ -56,15 +56,13 @@ end
 ---getScriptPath
 ---@return string
 function M.getScriptPath()
-    local p = debug.getinfo(2, "S").source
-    p = fu:fullPathForFilename(p)
-    return p
+    local path = debug.getinfo(2, "S").source
+    return path:match('^@(.+)$') or fu:fullPathForFilename(path)
 end
 
 function M.getScriptFolder()
-    local p = debug.getinfo(2, "S").source
-    p = fu:fullPathForFilename(p)
-    return M.getFolder(p)
+    local path = debug.getinfo(2, "S").source
+    return M.getFolder(path:match('^@(.+)$') or fu:fullPathForFilename(path))
 end
 
 return M

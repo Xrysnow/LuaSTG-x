@@ -1,11 +1,11 @@
 #include "ResourceMgr.h"
-#include "AppFrame.h"
-#include "Util/Utility.h"
-#include "XFileUtils.h"
-#include "LogSystem.h"
-#include "platform/FileStream.h"
-#include "io/MemoryStream.h"
-#include <atomic>
+#include "base/AsyncTaskPool.h"
+#include "io/core/MemoryStream.h"
+#include "io/zip/ZipReadAdapter.h"
+#include "io/zip/ZipReader.h"
+#include "platform/FileUtils.h"
+#include <cmath>
+#include <limits>
 
 using namespace std;
 using namespace lstg;
@@ -13,8 +13,6 @@ using namespace cc;
 
 namespace
 {
-	// Only this Atomic owner and immutable native bytes cross thread boundaries;
-	// resource caches keep their existing FileBytes ownership and generation rules.
 	class FileSnapshotOwner final : public Ref
 	{
 	public:
@@ -30,13 +28,12 @@ namespace
 			? string(reinterpret_cast<const char*>(data->data()), data->size()) : string{};
 	}
 
-	// Legacy main-thread API only. Worker caches never own Refs.
-	Buffer* bufferView(const string& path, const FileBytes& data,
+	Buffer* bufferView(const string& key, const FileBytes& data,
 		unordered_map<string, pair<FileBytes, cc::IntrusivePtr<Buffer>>>& views)
 	{
 		if (!data)
 			return nullptr;
-		const auto source = views.find(path);
+		const auto source = views.find(key);
 		if (source != views.end() && source->second.first == data)
 			return source->second.second;
 		const auto ret = Buffer::create();
@@ -45,114 +42,71 @@ namespace
 		ret->assign_values(*data);
 		ret->setWritable(false);
 		ret->setResizable(false);
-		// Pair the source and its view atomically; RAII also covers map allocation failure.
-		views.insert_or_assign(path, make_pair(data, cc::IntrusivePtr<Buffer>{ret}));
+		views.insert_or_assign(key, make_pair(data, cc::IntrusivePtr<Buffer>{ret}));
 		return ret;
+	}
+
+	string cacheKey(const FileHit& hit)
+	{
+		return to_string(hit.adapterId()) + ':' + hit.entry().entryKey;
+	}
+
+	const ZipReadAdapter* zipAdapter(const FileHit& hit)
+	{
+		return dynamic_cast<const ZipReadAdapter*>(hit.adapter().get());
+	}
+
+	template<class Work>
+	void cacheAsync(const function<void()>& callback, Work&& work)
+	{
+		AsyncTaskPool::getInstance()->enqueue(AsyncTaskPool::TaskType::TASK_IO,
+			[callback](void*) { if (callback) callback(); }, nullptr, std::forward<Work>(work));
 	}
 }
 
-// A queued task or in-flight reader owns this state independently of the Ref wrapper.
 struct ResourcePack::State
 {
-	struct ZipFile
-	{
-		unz_file_info info;
-		int64_t pos;
-	};
 	string path;
-	string password;
-	atomic<float> priority{0.f};
-	unzFile zipFile = nullptr;
-	mutex zipMutex;
-	unordered_map<string, ZipFile> files;
-	ResourceFileCache loadedFiles;
+	float priority = 0;
+	archive::ZipReader::Ptr reader;
+	shared_ptr<ZipReadAdapter> adapter;
 
-	~State()
+	void cacheAll() const
 	{
-		if (zipFile)
-			unzClose(zipFile);
-	}
-
-	bool init(const string& path_, const string& passwd)
-	{
-		path = path_;
-		password = passwd;
-		zlib_filefunc64_def funcs{};
-		fill_fopen64_filefunc(&funcs);
-		zipFile = unzOpen2_64(FileUtils::getInstance()->getSuitableFOpen(path).c_str(), &funcs);
-		if (!zipFile)
-			return false;
-		for (int status = unzGoToFirstFile(zipFile); status == UNZ_OK; status = unzGoToNextFile(zipFile))
-		{
-			ZipFile file{};
-			char name[MAX_PATH]{};
-			if (unzGetCurrentFileInfo(zipFile, &file.info, name, sizeof(name), nullptr, 0, nullptr, 0) == UNZ_OK
-				&& file.info.size_filename < sizeof(name))
-			{
-				file.pos = unzGetOffset64(zipFile);
-				files[name] = file;
-			}
-		}
-		return true;
-	}
-
-	FileBytes load(const string& fpath)
-	{
-		return loadedFiles.load(fpath, [this, &fpath]() -> FileBytes
-		{
-			const auto it = files.find(fpath);
-			if (it == files.end())
-				return nullptr;
-			lock_guard<mutex> lock(zipMutex);
-			if (unzSetOffset64(zipFile, it->second.pos) != UNZ_OK
-				|| unzOpenCurrentFilePassword(zipFile, password.empty() ? nullptr : password.c_str()) != UNZ_OK)
-				return nullptr;
-			struct CloseFile
-			{
-				unzFile file;
-				~CloseFile() { if (file) unzCloseCurrentFile(file); }
-			} close{zipFile};
-			auto data = make_shared<vector<uint8_t>>(it->second.info.uncompressed_size);
-			size_t offset = 0;
-			while (offset < data->size())
-			{
-				const auto length = static_cast<unsigned>(min(data->size() - offset, size_t(numeric_limits<int>::max())));
-				const auto count = unzReadCurrentFile(zipFile, data->data() + offset, length);
-				if (count <= 0)
-					return nullptr;
-				offset += count;
-			}
-			const auto status = unzCloseCurrentFile(zipFile);
-			close.file = nullptr;
-			return status == UNZ_OK ? data : nullptr;
-		});
-	}
-
-	void cacheAll()
-	{
-		for (const auto& file : files)
-			load(file.first);
+		for (const auto& entry : reader->entries())
+			if (entry.type == archive::EntryType::File)
+				adapter->readBytes(entry.name);
 	}
 };
 
 ResourcePack::ResourcePack() : state(make_shared<State>()) {}
 ResourcePack::~ResourcePack() = default;
 
-bool ResourcePack::init(const string& path, const string& passwd)
+bool ResourcePack::init(const string& path, const string& password)
 {
-	return state->init(path, passwd);
+	archive::ZipReadOptions options;
+	options.password = password;
+	auto reader = archive::ZipReader::openFile(path, options);
+	if (!reader)
+		return false;
+	cc::ZipMountOptions mountOptions;
+	mountOptions.entry.temporaryDirectory = FileUtils::getInstance()->getWritablePath();
+	auto adapter = ZipReadAdapter::create(reader.value, {""}, mountOptions);
+	if (!adapter)
+		return false;
+	state->path = path;
+	state->reader = std::move(reader.value);
+	state->adapter = std::move(adapter.value);
+	return true;
 }
 
 cc::IntrusivePtr<ResourcePack> ResourcePack::create(const string& fullPath, const string& password)
 {
-	cc::IntrusivePtr<ResourcePack> ret;
 	try
 	{
-		ret = cc::IntrusivePtr{new (nothrow) ResourcePack()};
-		if (ret && ret->init(fullPath, password))
-		{
+		cc::IntrusivePtr ret{new ResourcePack()};
+		if (ret->init(fullPath, password))
 			return ret;
-		}
 	}
 	catch (const bad_alloc&) {}
 	catch (const length_error&) {}
@@ -160,39 +114,58 @@ cc::IntrusivePtr<ResourcePack> ResourcePack::create(const string& fullPath, cons
 }
 
 string ResourcePack::getPath() const { return state->path; }
-size_t ResourcePack::getFileCount() const { return state->files.size(); }
-bool ResourcePack::isFileOrDirectoryExist(const string& path) const { return state->files.count(path) != 0; }
-float ResourcePack::getPriority() const { return state->priority.load(); }
-void ResourcePack::setPriority(float value) { state->priority.store(value); }
+size_t ResourcePack::getFileCount() const { return state->reader->entries().size(); }
+bool ResourcePack::isFileOrDirectoryExist(const string& path) const
+{
+	return state->adapter->containsEntry(path);
+}
+
+float ResourcePack::getPriority() const
+{
+	if (adapterId)
+		for (const auto& adapter : FileUtils::getInstance()->getReadAdapters())
+			if (adapter.id == adapterId)
+				return adapter.priority;
+	return state->priority;
+}
+
+void ResourcePack::setPriority(float value)
+{
+	if (std::isfinite(value) &&
+		(!adapterId || FileUtils::getInstance()->setAdapterPriority(adapterId, value)))
+		state->priority = value;
+}
 
 uint32_t ResourcePack::getCRC32(const string& path)
 {
-	const auto it = state->files.find(path);
-	return it == state->files.end() ? 0 : it->second.info.crc;
+	const auto info = state->adapter->entryInfo(path);
+	return info ? info->crc.value_or(0) : 0;
 }
 
-uint32_t ResourcePack::getCompressedSize(const string& path)
+uint64_t ResourcePack::getCompressedSize(const string& path)
 {
-	const auto it = state->files.find(path);
-	return it == state->files.end() ? 0 : it->second.info.compressed_size;
+	const auto info = state->adapter->entryInfo(path);
+	return info ? info->compressedSize.value_or(0) : 0;
 }
 
-uint32_t ResourcePack::getUncompressedSize(const string& path)
+uint64_t ResourcePack::getUncompressedSize(const string& path)
 {
-	const auto it = state->files.find(path);
-	return it == state->files.end() ? 0 : it->second.info.uncompressed_size;
+	const auto info = state->adapter->entryInfo(path);
+	return info ? info->size.value_or(0) : 0;
 }
 
 FileBytes ResourcePack::getFileData(const string& path)
 {
-	try { return state->load(path); }
-	catch (const bad_alloc&) { return nullptr; }
-	catch (const length_error&) { return nullptr; }
+	return state->adapter->readBytes(path).value;
 }
 
 Buffer* ResourcePack::loadAndCache(const string& path)
 {
-	try { return bufferView(path, getFileData(path), bufferViews); }
+	try
+	{
+		const auto info = state->adapter->entryInfo(path);
+		return info ? bufferView(info->name, getFileData(info->name), bufferViews) : nullptr;
+	}
 	catch (const bad_alloc&) { return nullptr; }
 	catch (const length_error&) { return nullptr; }
 }
@@ -202,56 +175,42 @@ bool ResourcePack::cacheFile(const string& path) { return !!getFileData(path); }
 
 void ResourcePack::cacheFileAsync(const string& path, const function<void()>& callback)
 {
-	const auto data = state;
-	AsyncTaskPool::getInstance()->enqueue(AsyncTaskPool::TaskType::TASK_IO,
-		[callback](void*) { if (callback) callback(); }, nullptr,
-		[data, path]()
-		{
-			try { data->load(path); }
-			catch (const bad_alloc&) {}
-			catch (const length_error&) {}
-		});
+	cacheAsync(callback, [archive = state->adapter, path]() { archive->readBytes(path); });
 }
 
-void ResourcePack::cacheAllFiles()
-{
-	for (const auto& file : state->files)
-		getFileData(file.first);
-}
+void ResourcePack::cacheAllFiles() { state->cacheAll(); }
 
 void ResourcePack::cacheAllFilesAsync(const function<void()>& callback)
 {
-	const auto data = state;
-	AsyncTaskPool::getInstance()->enqueue(AsyncTaskPool::TaskType::TASK_IO,
-		[callback](void*) { if (callback) callback(); }, nullptr,
-		[data]()
-		{
-			try { data->cacheAll(); }
-			catch (const bad_alloc&) {}
-			catch (const length_error&) {}
-		});
+	cacheAsync(callback, [archive = state]() { archive->cacheAll(); });
 }
 
-bool ResourcePack::isFileCached(const string& path) { return state->loadedFiles.contains(path); }
+bool ResourcePack::isFileCached(const string& path) { return state->adapter->isCached(path); }
+
 bool ResourcePack::removeFileCache(const string& path)
 {
-	bufferViews.erase(path);
-	return state->loadedFiles.remove(path);
+	if (const auto info = state->adapter->entryInfo(path))
+		bufferViews.erase(info->name);
+	return state->adapter->removeCached(path);
 }
+
 void ResourcePack::clearFileCache()
 {
 	bufferViews.clear();
-	state->loadedFiles.clear();
+	state->adapter->clearCache();
 }
-size_t ResourcePack::getFileCacheSize() { return state->loadedFiles.size(); }
+
+size_t ResourcePack::getFileCacheSize() { return state->adapter->cachedBytes(); }
+
 vector<string> ResourcePack::listFiles()
 {
-	vector<string> ret;
-	for (const auto& file : state->files)
-		ret.push_back(file.first);
-	return ret;
+	vector<string> files;
+	for (const auto& entry : state->reader->entries())
+		files.push_back(entry.name);
+	return files;
 }
-vector<string> ResourcePack::listCachedFiles() { return state->loadedFiles.list(); }
+
+vector<string> ResourcePack::listCachedFiles() { return state->adapter->cachedEntryNames(); }
 
 ResourceMgr::ResourceMgr() = default;
 ResourceMgr::~ResourceMgr() = default;
@@ -261,177 +220,283 @@ ResourceMgr* ResourceMgr::getInstance()
 	return &instance;
 }
 
-FileBytes ResourceMgr::getLocalFileData(const string& path)
+io::Result<FileBytes> ResourceMgr::readFileHit(const FileHit& hit)
 {
+	using Result = io::Result<FileBytes>;
+	if (!hit.adapterId())
+		return Result::failure({io::ErrorCode::NotFound});
+	if (const auto zip = zipAdapter(hit))
+		return zip->readBytes(hit.entry().entryKey);
 	try
 	{
-		if (const auto data = localFiles.find(path))
-			return data;
-		return localFiles.load(path, [&path]() -> FileBytes
+		io::StreamError error;
+		const auto data = localFiles.load(cacheKey(hit), [&hit, &error]() -> FileBytes
 		{
-			// The generation includes path resolution. No cache/map lock is held.
-			const auto fullPath = FileUtils::getInstance()->fullPathForFilename(path);
-			auto data = make_shared<vector<uint8_t>>();
-			return FileUtils::getInstance()->getContents(fullPath, data.get()) == FileUtils::Status::OK ? data : nullptr;
+			auto file = FileUtils::getInstance()->openRead(hit);
+			if (!file)
+			{
+				error = file.error;
+				return nullptr;
+			}
+			const auto size = file.value->size();
+			if (size < 0 || static_cast<uint64_t>(size) > numeric_limits<size_t>::max())
+			{
+				error = {size < 0 ? io::ErrorCode::IoError : io::ErrorCode::Overflow};
+				return nullptr;
+			}
+			auto bytes = make_shared<vector<uint8_t>>(static_cast<size_t>(size));
+			size_t offset = 0;
+			while (offset < bytes->size())
+			{
+				const auto chunk = min(bytes->size() - offset, size_t(numeric_limits<int>::max()));
+				const auto amount = file.value->read(bytes->data() + offset, static_cast<unsigned>(chunk));
+				if (amount <= 0)
+				{
+					error = {io::ErrorCode::IoError};
+					return nullptr;
+				}
+				offset += amount;
+			}
+			if (file.value->close() == 0)
+				return bytes;
+			error = {io::ErrorCode::IoError};
+			return nullptr;
 		});
+		return data ? Result::success(data) : Result::failure(error);
 	}
-	catch (const bad_alloc&) { return nullptr; }
-	catch (const length_error&) { return nullptr; }
+	catch (const bad_alloc&) { return Result::failure({io::ErrorCode::OutOfMemory}); }
+	catch (const length_error&) { return Result::failure({io::ErrorCode::Overflow}); }
 }
 
 Buffer* ResourceMgr::loadLocalFileAndCache(const string& path)
 {
-	try { return bufferView(path, getLocalFileData(path), localBuffers); }
+	const auto hit = FileUtils::getInstance()->findPlatformFile(path);
+	if (!hit)
+		return nullptr;
+	try { return bufferView(cacheKey(hit.value), readFileHit(hit.value).value, localBuffers); }
 	catch (const bad_alloc&) { return nullptr; }
 	catch (const length_error&) { return nullptr; }
 }
-string ResourceMgr::getStringFromLocalFile(const string& path) { return bytesToString(getLocalFileData(path)); }
-bool ResourceMgr::cacheLocalFile(const string& path) { return !!getLocalFileData(path); }
+
+string ResourceMgr::getStringFromLocalFile(const string& path)
+{
+	const auto hit = FileUtils::getInstance()->findPlatformFile(path);
+	return hit ? bytesToString(readFileHit(hit.value).value) : string{};
+}
+
+bool ResourceMgr::cacheLocalFile(const string& path)
+{
+	const auto hit = FileUtils::getInstance()->findPlatformFile(path);
+	return hit && cacheFileHit(hit.value);
+}
 
 void ResourceMgr::cacheLocalFileAsync(const string& path, const function<void()>& callback)
 {
-	AsyncTaskPool::getInstance()->enqueue(AsyncTaskPool::TaskType::TASK_IO,
-		[callback](void*) { if (callback) callback(); }, nullptr,
-		[this, path]() { cacheLocalFile(path); });
+	cacheFileHitAsync(FileUtils::getInstance()->findPlatformFile(path).value, callback);
 }
 
-bool ResourceMgr::isLocalFileCached(const string& path) { return localFiles.contains(path); }
+bool ResourceMgr::isLocalFileCached(const string& path)
+{
+	const auto hit = FileUtils::getInstance()->findPlatformFile(path);
+	return hit && localFiles.contains(cacheKey(hit.value));
+}
+
 bool ResourceMgr::removeLocalFileCache(const string& path)
 {
-	localBuffers.erase(path);
-	return localFiles.remove(path);
+	const auto hit = FileUtils::getInstance()->findPlatformFile(path);
+	return hit && removeFileHitCache(hit.value);
 }
+
 void ResourceMgr::clearLocalFileCache()
 {
 	localBuffers.clear();
 	localFiles.clear();
 }
-vector<string> ResourceMgr::listCachedLocalFiles() { return localFiles.list(); }
+
+vector<string> ResourceMgr::listCachedLocalFiles()
+{
+	auto entries = localFiles.list();
+	for (auto& entry : entries)
+		entry.erase(0, entry.find(':') + 1);
+	return entries;
+}
 
 size_t ResourceMgr::getFileCacheSize()
 {
 	size_t total = localFiles.size();
-	for (const auto& pack : getPackStates())
-		total += pack->loadedFiles.size();
+	for (const auto& pack : packs)
+		total += pack.second->getFileCacheSize();
 	return total;
+}
+
+string ResourceMgr::resolvePackAlias(const string& path) const
+{
+	auto key = path;
+	replace(key.begin(), key.end(), '\\', '/');
+	const auto alias = packAliases.find(key);
+	return alias != packAliases.end() ? alias->second : key;
 }
 
 ResourcePack* ResourceMgr::loadResourcePack(const string& path, const string& password)
 {
 	if (const auto loaded = getResourcePack(path))
 		return loaded;
-	const auto pack = ResourcePack::create(path, password);
-	if (!pack)
-		return nullptr;
-	lock_guard<mutex> lock(mut);
-	pack->setPriority(static_cast<float>(packs.size()));
-	packs.insert(path, pack);
-	return pack;
+	auto fu = FileUtils::getInstance();
+	for (const auto& info : fu->getReadAdapters())
+	{
+		if (info.kind != "physical")
+			continue;
+		const auto hit = fu->findFileIn(info.id, path);
+		if (!hit && hit.error.code != io::ErrorCode::NotFound)
+			return nullptr;
+		if (!hit || !hit.value.entry().nativePath)
+			continue;
+		const auto& nativePath = *hit.value.entry().nativePath;
+		auto pack = cc::IntrusivePtr<ResourcePack>{getResourcePack(nativePath)};
+		if (!pack)
+		{
+			pack = ResourcePack::create(nativePath, password);
+			if (!pack)
+				return nullptr;
+			pack->setPriority(static_cast<float>(nextPackPriority));
+			addResourcePack(pack, false);
+			if (!pack->adapterId)
+				return nullptr;
+			++nextPackPriority;
+		}
+		packAliases.insert_or_assign(resolvePackAlias(path), resolvePackAlias(nativePath));
+		return pack;
+	}
+	return nullptr;
 }
 
 bool ResourceMgr::isResourcePackLoaded(const string& path) { return !!getResourcePack(path); }
+
 void ResourceMgr::addResourcePack(ResourcePack* pack, bool override)
 {
-	if (!pack)
+	if (!pack || pack->adapterId)
 		return;
-	lock_guard<mutex> lock(mut);
-	if (override || packs.find(pack->getPath()) == packs.end())
-		packs.insert(pack->getPath(), pack);
-}
-bool ResourceMgr::unloadResourcePack(const string& path)
-{
-	lock_guard<mutex> lock(mut);
-	const auto it = packs.find(path);
-	if (it == packs.end())
-		return false;
-	packs.erase(it);
-	return true;
-}
-void ResourceMgr::unloadAllResourcePacks()
-{
-	lock_guard<mutex> lock(mut);
-	packs.clear();
-}
-ResourcePack* ResourceMgr::getResourcePack(const string& path)
-{
-	lock_guard<mutex> lock(mut);
-	const auto it = packs.find(path);
-	return it == packs.end() ? nullptr : it->second;
-}
-vector<ResourcePack*> ResourceMgr::getResourcePacks()
-{
-	lock_guard<mutex> lock(mut);
-	vector<ResourcePack*> ret;
-	for (const auto& pack : packs)
-		ret.push_back(pack.second);
-	sort(ret.begin(), ret.end(), [](ResourcePack* a, ResourcePack* b) { return a->getPriority() > b->getPriority(); });
-	return ret;
+	const auto key = resolvePackAlias(pack->getPath());
+	const auto it = packs.find(key);
+	const auto previous = it == packs.end() ? nullptr : it->second;
+	if (previous && !override)
+		return;
+	const auto previousPriority = previous ? previous->getPriority() : 0;
+	auto fu = FileUtils::getInstance();
+	const auto registration = previous
+		? fu->replaceReadAdapter(previous->adapterId, key, pack->state->adapter, pack->getPriority())
+		: fu->registerReadAdapter(key, pack->state->adapter, pack->getPriority());
+	if (!registration)
+		return;
+	if (previous)
+	{
+		previous->state->priority = previousPriority;
+		previous->adapterId = 0;
+	}
+	pack->adapterId = registration.value;
+	packs.insert(key, pack);
 }
 
-vector<shared_ptr<ResourcePack::State>> ResourceMgr::getPackStates() const
+bool ResourceMgr::unloadResourcePack(const string& path)
 {
-	lock_guard<mutex> lock(mut);
-	vector<pair<float, shared_ptr<ResourcePack::State>>> ordered;
+	const auto key = resolvePackAlias(path);
+	const auto it = packs.find(key);
+	if (it == packs.end())
+		return false;
+	auto pack = it->second;
+	pack->state->priority = pack->getPriority();
+	if (!FileUtils::getInstance()->unregisterReadAdapter(pack->adapterId))
+		return false;
+	pack->adapterId = 0;
+	packs.erase(it);
+	std::erase_if(packAliases, [&key](const auto& alias) { return alias.second == key; });
+	return true;
+}
+
+void ResourceMgr::unloadAllResourcePacks()
+{
+	vector<string> paths;
 	for (const auto& pack : packs)
-		ordered.emplace_back(pack.second->getPriority(), pack.second->state);
-	// Capture priority once: concurrent setPriority must not change the comparator
-	// during sort. Only standard shared ownership leaves the registry lock.
-	sort(ordered.begin(), ordered.end(), [](const auto& a, const auto& b) { return a.first > b.first; });
-	vector<shared_ptr<ResourcePack::State>> ret;
-	ret.reserve(ordered.size());
-	for (auto& pack : ordered)
-		ret.push_back(std::move(pack.second));
-	return ret;
+		paths.push_back(pack.first);
+	for (const auto& path : paths)
+		unloadResourcePack(path);
+}
+
+ResourcePack* ResourceMgr::getResourcePack(const string& path)
+{
+	const auto it = packs.find(resolvePackAlias(path));
+	return it == packs.end() ? nullptr : it->second;
+}
+
+vector<ResourcePack*> ResourceMgr::getResourcePacks()
+{
+	vector<ResourcePack*> ordered;
+	for (const auto& adapter : FileUtils::getInstance()->getReadAdapters())
+		if (auto pack = getResourcePack(adapter.name); pack && pack->adapterId == adapter.id)
+			ordered.push_back(pack);
+	return ordered;
+}
+
+ResourcePack* ResourceMgr::getResourcePackForHit(const FileHit& hit)
+{
+	auto pack = getResourcePack(hit.name());
+	return pack && pack->adapterId == hit.adapterId() ? pack : nullptr;
 }
 
 bool ResourceMgr::isFileOrDirectoryExist(const string& path) const
 {
-	if (!path.empty())
-		for (const auto& pack : getPackStates())
-			if (pack->files.count(path))
+	const auto matches = FileUtils::getInstance()->findAllFiles(path);
+	if (matches)
+		for (const auto& hit : matches.value)
+			if (zipAdapter(hit))
 				return true;
+	for (const auto& pack : packs)
+		if (pack.second->isFileOrDirectoryExist(path))
+			return true;
 	return false;
-}
-
-vector<string> ResourceMgr::listPackFiles(const string& directory) const
-{
-	vector<string> ret;
-	if (directory.empty())
-		return ret;
-	auto prefix = directory;
-	replace(prefix.begin(), prefix.end(), '\\', '/');
-	if (prefix.back() != '/')
-		prefix += '/';
-	for (const auto& pack : getPackStates())
-		for (const auto& file : pack->files)
-			if (file.first.compare(0, prefix.size(), prefix) == 0
-				&& file.first.find('/', prefix.size()) == string::npos)
-				ret.push_back(file.first);
-	return ret;
 }
 
 FileBytes ResourceMgr::getFileData(const string& path)
 {
-	try
+	const auto hit = FileUtils::getInstance()->findFile(path);
+	return hit ? readFileHit(hit.value).value : nullptr;
+}
+
+bool ResourceMgr::cacheFileHit(const FileHit& hit) { return !!readFileHit(hit); }
+
+void ResourceMgr::cacheFileHitAsync(const FileHit& hit, const function<void()>& callback)
+{
+	cacheAsync(callback, [this, hit]() { readFileHit(hit); });
+}
+
+bool ResourceMgr::removeFileHitCache(const FileHit& hit)
+{
+	if (!hit.adapterId())
+		return false;
+	if (const auto zip = zipAdapter(hit))
 	{
-		for (const auto& pack : getPackStates())
-			if (const auto data = pack->load(path))
-				return data;
-		return getLocalFileData(path);
+		if (const auto pack = getResourcePackForHit(hit))
+			if (const auto entry = zip->entryInfo(hit.entry().entryKey))
+				pack->bufferViews.erase(entry->name);
+		return zip->removeCached(hit.entry().entryKey);
 	}
-	catch (const bad_alloc&) { return nullptr; }
-	catch (const length_error&) { return nullptr; }
+	const auto key = cacheKey(hit);
+	localBuffers.erase(key);
+	return localFiles.remove(key);
 }
 
 io::Result<io::StreamPtr> ResourceMgr::openReadStream(const string& path)
 {
-	return openFileSnapshot(getFileData(path));
+	const auto hit = FileUtils::getInstance()->findFile(path);
+	if (!hit)
+		return io::Result<io::StreamPtr>::failure(hit.error);
+	auto bytes = readFileHit(hit.value);
+	return bytes ? openFileSnapshot(bytes.value) : io::Result<io::StreamPtr>::failure(bytes.error);
 }
 
 io::Result<io::StreamPtr> ResourceMgr::openFileSnapshot(const FileBytes& bytes)
 {
 	using Output = io::Result<io::StreamPtr>;
-	// The snapshot loader does not distinguish a missing file from other errors.
 	if (!bytes)
 		return Output::failure({io::ErrorCode::IoError});
 	try
@@ -447,12 +512,19 @@ io::Result<io::StreamPtr> ResourceMgr::openFileSnapshot(const FileBytes& bytes)
 
 Buffer* ResourceMgr::getBufferFromFile(const string& path)
 {
-	// Legacy Ref objects are materialized only on the main thread.
-	for (const auto& pack : getResourcePacks())
-		if (const auto data = pack->loadAndCache(path))
-			return data;
-	return loadLocalFileAndCache(path);
+	const auto hit = FileUtils::getInstance()->findFile(path);
+	if (!hit)
+		return nullptr;
+	try
+	{
+		if (const auto pack = getResourcePackForHit(hit.value))
+			return pack->loadAndCache(hit.value.entry().entryKey);
+		return bufferView(cacheKey(hit.value), readFileHit(hit.value).value, localBuffers);
+	}
+	catch (const bad_alloc&) { return nullptr; }
+	catch (const length_error&) { return nullptr; }
 }
+
 string ResourceMgr::getStringFromFile(const string& path) { return bytesToString(getFileData(path)); }
 
 bool ResourceMgr::extractFile(const string& path, const string& target)
@@ -460,7 +532,6 @@ bool ResourceMgr::extractFile(const string& path, const string& target)
 	const auto data = getFileData(path);
 	if (!data)
 		return false;
-	// A stream handles empty files and keeps ownership independent of Data::fastSet.
 	const auto file = FileUtils::getInstance()->openFileStream(target, FileStream::Mode::WRITE);
 	if (!file || !file->isOpen())
 		return false;
@@ -475,6 +546,7 @@ bool ResourceMgr::extractFile(const string& path, const string& target)
 	}
 	return file->close() == 0;
 }
+
 void ResourceMgr::clear()
 {
 	unloadAllResourcePacks();
