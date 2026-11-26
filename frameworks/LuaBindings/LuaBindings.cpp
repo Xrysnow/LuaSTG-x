@@ -9,8 +9,6 @@ LUA_REGISTER_MODULE(x_RenderMode, luaReg_RenderMode);
 LUA_REGISTER_MODULE(x_Buffer, luaReg_Buffer);
 #include "lua_cc_configuration_auto.hpp"
 LUA_REGISTER_MODULE(cc_configuration, register_all_cc_configuration);
-#include "lua_cc_system_info_auto.hpp"
-LUA_REGISTER_MODULE(cc_system_info, register_all_cc_system_info);
 #include "lua_cc_ext.hpp"
 LUA_REGISTER_MODULE(cc_Image_ext, register_all_cc_ext);
 #include "lua_Latex_auto.hpp"
